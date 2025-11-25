@@ -92,24 +92,8 @@
       "value": "#26256b",
       "type": "color"
     },
-    "mint-green-1300": {
-      "value": "#1e795f",
-      "type": "color"
-    },
-    "mint-green-1200": {
-      "value": "#1b5846",
-      "type": "color"
-    },
-    "mint-green-1400": {
-      "value": "#22a680",
-      "type": "color"
-    },
-    "mint-green-1500": {
-      "value": "#27d3a1",
-      "type": "color"
-    },
-    "mint-green-1700": {
-      "value": "#78f3c8",
+    "mint-green-500": {
+      "value": "#0ad69c",
       "type": "color"
     }
   }

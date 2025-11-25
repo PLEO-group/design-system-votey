@@ -1,7 +1,7 @@
 {
   "color": {
     "accent": {
-      "value": "{color.mint-green-1500}",
+      "value": "{color.mint-green-500}",
       "type": "color"
     },
     "text": {

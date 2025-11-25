@@ -95,6 +95,18 @@
     "mint-green-500": {
       "value": "#0ad69c",
       "type": "color"
+    },
+    "mint-green-800": {
+      "value": "#86a89e",
+      "type": "color"
+    },
+    "navy-blue-900": {
+      "value": "#010027",
+      "type": "color"
+    },
+    "orange-400": {
+      "value": "#ea7b20",
+      "type": "color"
     }
   }
 }

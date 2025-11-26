@@ -38,7 +38,6 @@ function buildTheme({dictionary, options}) {
         const originalValue = token.original.value;
         const inner = originalValue.slice(1, -1);
         const colorTokenName = inner.replace(/^color\./, '');
-
         return `${name}: var(--color-${colorTokenName});`;
     });
     return output(lines, selector)

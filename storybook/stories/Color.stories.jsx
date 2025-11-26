@@ -1,16 +1,14 @@
 import React from 'react';
 import {ColorSwatch} from '../components/ColorSwatch';
 import sourceTokens from '../../tokens/base/colors.json';
+import {ALL_SHADES, createShade, mapTokens} from "../utils";
 
 export default {
     title: 'Tokens/Colors',
     component: ColorSwatch,
 };
 
-const ALL_SHADES = [
-    '25', '50', '70', '100', '200', '300',
-    '400', '500', '600', '700', '800', '900'
-];
+
 
 const flattenTokens = (obj, prefix = '') => {
     let tokens = [];
@@ -106,27 +104,12 @@ const groupTokensByBaseColor = (flatTokens) => {
     return grouped;
 };
 
+
 const createShadeGrid = (groupName, definedTokens) => {
-    const tokenMap = definedTokens.reduce((acc, token) => {
-        // Nazwa odcienia to ostatni człon nazwy tokenu (np. "100")
-        const shade = token.name.substring(token.name.lastIndexOf('-') + 1);
-        acc[shade] = token;
-        return acc;
-    }, {});
+    const tokenMap = mapTokens(definedTokens);
 
     return ALL_SHADES.map(shade => {
-        if (tokenMap[shade]) {
-            // 🚨 TOKEN ISTNIEJE: Dodajemy pole 'shade'
-            return { ...tokenMap[shade], shade: shade };
-        } else {
-            // 🚨 PLACEHOLDER: Używamy numeru odcienia jako głównego tekstu
-            return {
-                name: `${groupName}-${shade} (Brak)`,
-                value: '',
-                isPlaceholder: true,
-                shade: shade
-            };
-        }
+        return createShade(tokenMap, groupName, shade)
     });
 };
 

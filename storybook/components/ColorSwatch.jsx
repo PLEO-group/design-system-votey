@@ -13,7 +13,7 @@ const swatchStyle = {
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
-    transition: 'transform 0.1s ease',
+    transition: 'transform 0.2s ease, background-color 200ms ease-in-out',
 };
 
 const textStyle = {
@@ -29,10 +29,11 @@ const hexStyle = {
     fontWeight: 'bold',
 };
 
-export const ColorSwatch = ({ key, token }) => {
+export const ColorSwatch = ({ token, fullName=false }) => {
     const backgroundColor = !token.isPlaceholder ? token.value : `var(${token.name})`;
     const borderColor = token.isPlaceholder ? '1px dashed #aaa' : 'none';
     const titleText = token.isPlaceholder ? token.name : `Token: ${token.name} | HEX: ${token.value}`;
+    const name = fullName ? token.name : token.shade
     return (
         <div
             style={{
@@ -43,7 +44,7 @@ export const ColorSwatch = ({ key, token }) => {
             title={titleText}
         >
             <p style={textStyle}>
-                {token.shade}
+                {name}
             </p>
             <p style={hexStyle}>
                 {token.value}

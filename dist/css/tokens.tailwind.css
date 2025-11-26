@@ -1,0 +1,8 @@
+@theme {
+  --color-accent: var(--color-accent);
+  --color-text: var(--color-text);
+  --color-background: var(--color-background);
+  --color-overlay-primary: var(--color-overlay-primary);
+  --color-overlay-secondary: var(--color-overlay-secondary);
+  --color-overlay-tertiary: var(--color-overlay-tertiary);
+}

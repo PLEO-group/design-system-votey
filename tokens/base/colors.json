@@ -107,6 +107,18 @@
     "orange-400": {
       "value": "#ea7b20",
       "type": "color"
+    },
+    "navy-blue-700": {
+      "value": "#13125d",
+      "type": "color"
+    },
+    "orange-800": {
+      "value": "#9a4601",
+      "type": "color"
+    },
+    "orange-300": {
+      "value": "#f19a58",
+      "type": "color"
     }
   }
 }

@@ -5,7 +5,7 @@
         "value": "{color.navy-blue-600}",
         "type": "color"
       },
-      "dark": {
+      "mild": {
         "value": "{color.navy-blue-800}",
         "type": "color"
       },
@@ -48,6 +48,10 @@
       "highlight": {
         "value": "{color.active-green-400}",
         "type": "color"
+      },
+      "active": {
+        "value": "{color.mint-green-500}",
+        "type": "color"
       }
     },
     "border": {
@@ -80,7 +84,7 @@
     },
     "button": {
       "background": {
-        "bright": {
+        "active": {
           "value": "{color.mint-green-500}",
           "type": "color"
         },
@@ -88,23 +92,61 @@
           "value": "{color.navy-blue-900}",
           "type": "color"
         },
+        "edit": {
+          "value": "{color.orange-300}",
+          "type": "color"
+        },
         "inactive": {
           "value": "{color.navy-blue-800}",
           "type": "color"
+        },
+        "hover": {
+          "active": {
+            "value": "{color.mint-green-400}",
+            "type": "color"
+          },
+          "dark": {
+            "value": "{color.navy-blue-700}",
+            "type": "color"
+          },
+          "edit": {
+            "value": "{color.orange-100}",
+            "type": "color"
+          }
         }
       },
       "text": {
-        "dark": {
-          "value": "{color.navy-blue-800}",
+        "active": {
+          "value": "{color.mint-green-400}",
           "type": "color"
         },
-        "bright": {
-          "value": "{color.mint-green-400}",
+        "dark": {
+          "value": "{color.navy-blue-800}",
           "type": "color"
         },
         "inactive": {
           "value": "{color.navy-blue-100}",
           "type": "color"
+        },
+        "edit": {
+          "value": "{color.orange-800}",
+          "type": "color"
+        }
+      },
+      "border": {
+        "hover": {
+          "active": {
+            "value": "{color.mint-green-300}",
+            "type": "color"
+          },
+          "dark": {
+            "value": "{color.navy-blue-400}",
+            "type": "color"
+          },
+          "edit": {
+            "value": "{color.orange-70}",
+            "type": "color"
+          }
         }
       }
     }

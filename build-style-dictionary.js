@@ -23,9 +23,8 @@ function getSemanticTokens(dictionary) {
 
 function buildTailwind({dictionary, options}) {
     const { selector = ':root' } = options;
-    const semanticTokens = getSemanticTokens(dictionary)
 
-    const lines = semanticTokens.map((token) => {
+    const lines = dictionary.allProperties.map((token) => {
         const name = `--${token.name}`;
         return `${name}: var(${name});`;
     });
@@ -39,7 +38,6 @@ function buildTheme({dictionary, options}) {
         const originalValue = token.original.value;
         const inner = originalValue.slice(1, -1);
         const colorTokenName = inner.replace(/^color\./, '');
-
         return `${name}: var(--color-${colorTokenName});`;
     });
     return output(lines, selector)

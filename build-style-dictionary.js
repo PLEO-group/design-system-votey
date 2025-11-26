@@ -1,54 +1,97 @@
 const StyleDictionary = require('style-dictionary');
 const fs = require('fs');
 
-StyleDictionary.registerFormat({
-    name: 'css/tailwind-theme',
-    formatter: function ({dictionary, options}) {
-        const lines = dictionary.allProperties.map(token => {
-            const name = `--${token.name}`;
-            return `${name}: ${token.value};`;
-        });
-        return `${options.selector || ':root'} {
-${lines.join('\n')}
+
+function output(lines, selector){
+    const joined = lines.map(line => `  ${line}`).join('\n')
+
+    return `${selector} {
+${joined}
 }`;
+}
+
+function getSemanticTokens(dictionary) {
+    return dictionary.allProperties.filter((token) => {
+        const originalValue = token.original && token.original.value;
+        return (
+            typeof originalValue === 'string' &&
+            originalValue.startsWith('{color.') &&
+            originalValue.endsWith('}')
+        );
+    });
+}
+
+function buildTailwind({dictionary, options}) {
+    const { selector = ':root' } = options;
+    const semanticTokens = getSemanticTokens(dictionary)
+
+    const lines = semanticTokens.map((token) => {
+        const name = `--${token.name}`;
+        return `${name}: var(${name});`;
+    });
+    return output(lines, selector)
+}
+
+function buildTheme({dictionary, options}) {
+    const { selector = ':root' } = options;
+    const lines = getSemanticTokens(dictionary).map(token => {
+        const name = `--${token.name}`;
+        const originalValue = token.original.value;
+        const inner = originalValue.slice(1, -1);
+        const colorTokenName = inner.replace(/^color\./, '');
+
+        return `${name}: var(--color-${colorTokenName});`;
+    });
+    return output(lines, selector)
+}
+
+const FORMATS = {
+    theme: {
+        name: 'css/theme',
+        formatter: buildTheme
+    },
+    tailwind: {
+        name: 'css/tailwind',
+        formatter: buildTailwind
     }
-});
+}
 
-function getStyleDictionaryConfig(themeName, semanticSourceFile, cssSelector) {
-    return {
-        include: [
-            'tokens/base/colors.json'
-        ],
-        source: [
-            `tokens/${semanticSourceFile}`
-        ],
+StyleDictionary.registerFormat(FORMATS.theme);
+StyleDictionary.registerFormat(FORMATS.tailwind);
 
-        platforms: {
-            scss: {
-                transformGroup: 'scss',
+function getStyleDictionaryConfig(themeName, source, selector) {
+    const platforms = {}
+    platforms.css = {
+        transformGroup: 'css',
+        buildPath: `dist/css/`,
+        files: [
+            {
+                destination: `tokens.${themeName}.css`,
+                format: themeName === 'tailwind' ? FORMATS.tailwind.name : FORMATS.theme.name,
+                options: {
+                    selector,
+                },
+            },
+        ],
+    }
+
+    if(themeName !== 'tailwind') {
+        platforms.scss = {
+            transformGroup: 'scss',
                 buildPath: `dist/scss/`,
                 files: [
-                    {
-                        destination: `_variables_${themeName}.scss`,
-                        format: 'scss/variables',
-                    }
-                ]
-            },
-
-            css: {
-                transformGroup: 'css',
-                buildPath: `dist/css/`,
-                files: [
-                    {
-                        destination: `tokens.${themeName}.css`,
-                        format: 'css/tailwind-theme',
-                        options: {
-                            selector: cssSelector,
-                        },
-                    },
-                ],
-            },
+                {
+                    destination: `_variables_${themeName}.scss`,
+                    format: 'scss/variables',
+                }
+            ]
         }
+    }
+
+    return {
+        include: ['tokens/base/colors.json'],
+        source: [`tokens/${source}`],
+        platforms
     };
 }
 
@@ -61,15 +104,18 @@ const sdBase = StyleDictionary.extend({
             files: [{
                 destination: 'tokens.css',
                 format: 'css/variables',
-                options: {selector: '@theme', outputReferences: false},
+                options: {selector: ':root', outputReferences: false},
             }],
         },
     },
 });
+sdBase.buildAllPlatforms();
+
 
 const themes = [
-    {name: 'light', source: ['light.json'], selector: '@theme'},
-    {name: 'dark', source: ['dark.json'], selector: '.dark'},
+    {name: 'tailwind', source: ['light.json'], selector: '@theme'},
+    {name: 'dark', source: ['dark.json'], selector: ':root[data-theme="dark"]'},
+    {name: 'light', source: ['light.json'], selector: ':root'},
 ];
 
 themes.forEach(theme => {
@@ -80,4 +126,3 @@ themes.forEach(theme => {
     const sd = StyleDictionary.extend(config);
     sd.buildAllPlatforms();
 });
-sdBase.buildAllPlatforms();

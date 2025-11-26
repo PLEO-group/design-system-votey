@@ -1,9 +1,9 @@
 /**
  * Do not edit directly
- * Generated on Fri, 21 Nov 2025 16:58:29 GMT
+ * Generated on Wed, 26 Nov 2025 09:26:08 GMT
  */
 
-@theme {
+:root {
   --color-gray-100: #f6f6f6;
   --color-mint-green-100: #cafdee;
   --color-gray-400: #ececec;
@@ -26,9 +26,8 @@
   --color-orange-70: #ffe7d4;
   --color-mint-green-600: #02c295;
   --color-navy-blue-600: #26256b;
-  --color-mint-green-1300: #1e795f;
-  --color-mint-green-1200: #1b5846;
-  --color-mint-green-1400: #22a680;
-  --color-mint-green-1500: #27d3a1;
-  --color-mint-green-1700: #78f3c8;
+  --color-mint-green-500: #0ad69c;
+  --color-mint-green-800: #86a89e;
+  --color-navy-blue-900: #010027;
+  --color-orange-400: #ea7b20;
 }

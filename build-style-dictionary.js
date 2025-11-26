@@ -23,9 +23,8 @@ function getSemanticTokens(dictionary) {
 
 function buildTailwind({dictionary, options}) {
     const { selector = ':root' } = options;
-    const semanticTokens = getSemanticTokens(dictionary)
 
-    const lines = semanticTokens.map((token) => {
+    const lines = dictionary.allProperties.map((token) => {
         const name = `--${token.name}`;
         return `${name}: var(${name});`;
     });

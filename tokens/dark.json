@@ -149,6 +149,14 @@
           }
         }
       }
+    },
+    "input": {
+      "text": {
+        "dark": {
+          "value": "{color.active-green-400}",
+          "type": "color"
+        }
+      }
     }
   }
 }

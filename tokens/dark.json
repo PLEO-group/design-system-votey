@@ -20,6 +20,10 @@
       "inactive": {
         "value": "{color.navy-blue-400}",
         "type": "color"
+      },
+      "dynamic": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
       }
     },
     "alert": {
@@ -52,6 +56,10 @@
       "active": {
         "value": "{color.mint-green-500}",
         "type": "color"
+      },
+      "contrast": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
       }
     },
     "border": {
@@ -64,11 +72,19 @@
         "type": "color"
       },
       "active": {
-        "value": "{color.mint-green-400}",
+        "value": "{color.mint-green-500}",
         "type": "color"
       },
       "info": {
         "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "contrast": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "primary": {
+        "value": "{color.navy-blue-400}",
         "type": "color"
       }
     },

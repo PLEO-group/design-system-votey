@@ -165,18 +165,6 @@
           }
         }
       }
-    },
-    "input": {
-      "text": {
-        "dark": {
-          "value": "{color.navy-blue-800}",
-          "type": "color"
-        },
-        "test": {
-          "value": "{color.alert.strong}",
-          "type": "color"
-        }
-      }
     }
   }
 }

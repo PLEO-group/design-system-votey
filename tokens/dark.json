@@ -165,18 +165,6 @@
           }
         }
       }
-    },
-    "input": {
-      "text": {
-        "dark": {
-          "value": "{color.active-green-400}",
-          "type": "color"
-        },
-        "test": {
-          "value": "{color.blue-400}",
-          "type": "color"
-        }
-      }
     }
   }
 }

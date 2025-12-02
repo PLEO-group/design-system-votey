@@ -60,6 +60,14 @@
       "contrast": {
         "value": "{color.gray-700}",
         "type": "color"
+      },
+      "dim": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "inactive-dark": {
+        "value": "{color.gray-700}",
+        "type": "color"
       }
     },
     "border": {

@@ -24,6 +24,10 @@
       "dynamic": {
         "value": "{color.gray-100}",
         "type": "color"
+      },
+      "subtle": {
+        "value": "{color.gray-100}",
+        "type": "color"
       }
     },
     "alert": {

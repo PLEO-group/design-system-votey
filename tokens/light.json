@@ -32,6 +32,10 @@
       "brand": {
         "value": "{color.mint-green-400}",
         "type": "color"
+      },
+      "highlight": {
+        "value": "{color.mint-green-100}",
+        "type": "color"
       }
     },
     "alert": {

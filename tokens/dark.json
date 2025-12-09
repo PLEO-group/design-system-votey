@@ -28,6 +28,10 @@
       "subtle": {
         "value": "{color.navy-blue-400}",
         "type": "color"
+      },
+      "brand": {
+        "value": "{color.mint-green-500}",
+        "type": "color"
       }
     },
     "alert": {

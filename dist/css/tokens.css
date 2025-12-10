@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Wed, 26 Nov 2025 12:28:25 GMT
+ * Generated on Wed, 10 Dec 2025 14:08:21 GMT
  */
 
 :root {
@@ -30,4 +30,7 @@
   --color-mint-green-800: #86a89e;
   --color-navy-blue-900: #010027;
   --color-orange-400: #ea7b20;
+  --color-navy-blue-700: #13125d;
+  --color-orange-800: #9a4601;
+  --color-orange-300: #f19a58;
 }

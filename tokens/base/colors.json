@@ -119,6 +119,14 @@
     "orange-300": {
       "value": "#f19a58",
       "type": "color"
+    },
+    "navy-blue-25": {
+      "value": "#e9eaff",
+      "type": "color"
+    },
+    "yellow-400": {
+      "value": "#ffd52f",
+      "type": "color"
     }
   }
 }

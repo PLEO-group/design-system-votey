@@ -32,3 +32,4 @@ export const getIllustrationList = () => loadAssets(
     '../../dist/assets/react/illustrations/',
     'illustration'
 )
+

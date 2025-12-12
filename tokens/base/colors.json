@@ -127,6 +127,10 @@
     "yellow-400": {
       "value": "#ffd52f",
       "type": "color"
+    },
+    "mint-green-70": {
+      "value": "#E1FFF6",
+      "type": "color"
     }
   }
 }

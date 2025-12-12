@@ -185,6 +185,16 @@
           }
         }
       }
+    },
+    "gradient": {
+      "light": {
+        "value": "{color.navy-blue-600}",
+        "type": "color"
+      },
+      "dark": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
+      }
     }
   }
 }

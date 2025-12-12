@@ -92,36 +92,40 @@
       "value": "#26256b",
       "type": "color"
     },
+    "mint-green-800": {
+      "value": "#86a89e",
+      "type": "color"
+    },
     "mint-green-500": {
       "value": "#0ad69c",
       "type": "color"
     },
-    "mint-green-800": {
-      "value": "#86a89e",
+    "mint-green-70": {
+      "value": "#e1fff6",
       "type": "color"
     },
     "navy-blue-900": {
       "value": "#010027",
       "type": "color"
     },
-    "orange-400": {
-      "value": "#ea7b20",
-      "type": "color"
-    },
     "navy-blue-700": {
       "value": "#13125d",
+      "type": "color"
+    },
+    "navy-blue-25": {
+      "value": "#e9eaff",
       "type": "color"
     },
     "orange-800": {
       "value": "#9a4601",
       "type": "color"
     },
-    "orange-300": {
-      "value": "#f19a58",
+    "orange-400": {
+      "value": "#ea7b20",
       "type": "color"
     },
-    "navy-blue-25": {
-      "value": "#e9eaff",
+    "orange-300": {
+      "value": "#f19a58",
       "type": "color"
     },
     "yellow-400": {

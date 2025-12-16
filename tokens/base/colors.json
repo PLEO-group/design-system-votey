@@ -129,7 +129,11 @@
       "type": "color"
     },
     "mint-green-70": {
-      "value": "#E1FFF6",
+      "value": "#e1fff6",
+      "type": "color"
+    },
+    "active-green-300": {
+      "value": "#88ea7d",
       "type": "color"
     }
   }

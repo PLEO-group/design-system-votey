@@ -44,6 +44,10 @@
       "notificationIndicator": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "tile": {
+        "value": "{color.gray-100}",
+        "type": "color"
       }
     },
     "alert": {

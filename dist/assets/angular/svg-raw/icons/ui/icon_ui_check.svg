@@ -1,0 +1,16 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon_ui_check" clip-path="url(#clip0_634_121)">
+<g id="icon_ui_check_2">
+<g id="color_stroke">
+<path id="Vector" d="M8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15Z" fill="#77DC6C"></path>
+<path id="Vector_2" d="M6.82 11.0601C6.56 11.0601 6.29999 10.9601 6.09999 10.7601L4.25 8.86006C3.86 8.46006 3.87 7.83006 4.27 7.45006C4.67 7.07006 5.29999 7.07006 5.67999 7.47006L6.82999 8.65006L10.33 5.23006C10.73 4.85006 11.36 4.85006 11.74 5.25006C12.13 5.65006 12.12 6.28006 11.72 6.66006L7.49999 10.7701C7.30999 10.9601 7.05 11.0501 6.8 11.0501L6.82 11.0601Z" fill="white"></path>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_634_121">
+<rect width="16" height="16" fill="white"></rect>
+</clipPath>
+    
+</defs>
+</svg>

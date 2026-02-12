@@ -135,6 +135,38 @@
     "active-green-300": {
       "value": "#88ea7d",
       "type": "color"
+    },
+    "blue-300": {
+      "value": "#a3cfff",
+      "type": "color"
+    },
+    "blue-100": {
+      "value": "#cdf4fd",
+      "type": "color"
+    },
+    "blue-70": {
+      "value": "#e1efff",
+      "type": "color"
+    },
+    "blue-25": {
+      "value": "#eefbfe",
+      "type": "color"
+    },
+    "navy-blue-200": {
+      "value": "#5250df",
+      "type": "color"
+    },
+    "navy-blue-70": {
+      "value": "#b7bcfa",
+      "type": "color"
+    },
+    "red-200": {
+      "value": "#fbb1aa",
+      "type": "color"
+    },
+    "red-50": {
+      "value": "#fee5e3",
+      "type": "color"
     }
   }
 }

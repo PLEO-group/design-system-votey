@@ -179,7 +179,8 @@
         "edit": {
           "value": "{color.orange-800}",
           "type": "color"
-        },"notificationIndicator": {
+        },
+        "notificationIndicator": {
           "value": "{color.white}",
           "type": "color"
         }

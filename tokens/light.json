@@ -46,7 +46,7 @@
         "type": "color"
       },
       "tile": {
-        "value": "{color.navy-gray-100}",
+        "value": "{color.gray-100}",
         "type": "color"
       }
     },

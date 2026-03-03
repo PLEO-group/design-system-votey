@@ -32,6 +32,14 @@
   --color-yellow-400: var(--color-yellow-400);
   --color-mint-green-70: var(--color-mint-green-70);
   --color-active-green-300: var(--color-active-green-300);
+  --color-blue-300: var(--color-blue-300);
+  --color-blue-100: var(--color-blue-100);
+  --color-blue-70: var(--color-blue-70);
+  --color-blue-25: var(--color-blue-25);
+  --color-navy-blue-200: var(--color-navy-blue-200);
+  --color-navy-blue-70: var(--color-navy-blue-70);
+  --color-red-200: var(--color-red-200);
+  --color-red-50: var(--color-red-50);
   --color-surface-bright: var(--color-surface-bright);
   --color-surface-mild: var(--color-surface-mild);
   --color-surface-active: var(--color-surface-active);

@@ -23,6 +23,8 @@ export { default as IlluBgRegularVoter } from "./IlluBgRegularVoter";
 export { default as IlluBgResultsPreviewUnavailableV1 } from "./IlluBgResultsPreviewUnavailableV1";
 export { default as IlluBgSurvey } from "./IlluBgSurvey";
 export { default as IlluBgTestEvent } from "./IlluBgTestEvent";
+export { default as IlluBgVoteAsProxy } from "./IlluBgVoteAsProxy";
+export { default as IlluBgVoteYourself } from "./IlluBgVoteYourself";
 export { default as IlluBgVotingEndedV3 } from "./IlluBgVotingEndedV3";
 export { default as IlluBgVotingStarted } from "./IlluBgVotingStarted";
 export { default as IlluBgVotingTypeYesNo } from "./IlluBgVotingTypeYesNo";

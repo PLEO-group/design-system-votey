@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Wed, 31 Dec 2025 10:24:30 GMT
+ * Generated on Tue, 03 Mar 2026 11:16:04 GMT
  */
 
 :root {
@@ -37,4 +37,12 @@
   --color-yellow-400: #ffd52f;
   --color-mint-green-70: #e1fff6;
   --color-active-green-300: #88ea7d;
+  --color-blue-300: #a3cfff;
+  --color-blue-100: #cdf4fd;
+  --color-blue-70: #e1efff;
+  --color-blue-25: #eefbfe;
+  --color-navy-blue-200: #5250df;
+  --color-navy-blue-70: #b7bcfa;
+  --color-red-200: #fbb1aa;
+  --color-red-50: #fee5e3;
 }

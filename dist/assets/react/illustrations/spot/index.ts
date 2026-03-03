@@ -1,6 +1,6 @@
+export { default as IlluSpotAddParticipantsSms } from "./IlluSpotAddParticipantsSms";
 export { default as IlluSpotAddParticipantsEmail } from "./IlluSpotAddParticipantsEmail";
 export { default as IlluSpotAddParticipantsPublicAccess } from "./IlluSpotAddParticipantsPublicAccess";
-export { default as IlluSpotAddParticipantsSms } from "./IlluSpotAddParticipantsSms";
 export { default as IlluSpotAddParticipantsUniqueCodes } from "./IlluSpotAddParticipantsUniqueCodes";
 export { default as IlluSpotAgendaNoVisibleV2 } from "./IlluSpotAgendaNoVisibleV2";
 export { default as IlluSpotAgendaNoVisible } from "./IlluSpotAgendaNoVisible";

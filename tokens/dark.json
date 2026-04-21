@@ -36,18 +36,6 @@
       "highlight": {
         "value": "{color.navy-blue-400}",
         "type": "color"
-      },
-      "notification": {
-        "value": "{color.navy-blue-50}",
-        "type": "color"
-      },
-      "notificationIndicator": {
-        "value": "{color.navy-blue-400}",
-        "type": "color"
-      },
-      "tile": {
-        "value": "{color.navy-blue-700}",
-        "type": "color"
       }
     },
     "alert": {
@@ -178,10 +166,6 @@
         },
         "edit": {
           "value": "{color.orange-800}",
-          "type": "color"
-        },
-        "notificationIndicator": {
-          "value": "{color.white}",
           "type": "color"
         }
       },

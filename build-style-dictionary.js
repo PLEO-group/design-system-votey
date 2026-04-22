@@ -1,7 +1,6 @@
 const StyleDictionary = require('style-dictionary');
 const fs = require('fs');
 
-
 function output(lines, selector){
     const joined = lines.map(line => `  ${line}`).join('\n')
 

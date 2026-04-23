@@ -1,47 +1,18 @@
 {
   "color": {
+    "white": {
+      "value": "#ffffff",
+      "type": "color",
+      "description": "bg"
+    },
     "gray-100": {
       "value": "#f6f6f6",
-      "type": "color"
-    },
-    "mint-green-100": {
-      "value": "#cafdee",
       "type": "color"
     },
     "gray-400": {
       "value": "#ececec",
       "type": "color",
       "description": "app BG"
-    },
-    "navy-blue-100": {
-      "value": "#7d81bf",
-      "type": "color"
-    },
-    "orange-500": {
-      "value": "#df6705",
-      "type": "color"
-    },
-    "orange-100": {
-      "value": "#fcd5b5",
-      "type": "color"
-    },
-    "white": {
-      "value": "#ffffff",
-      "type": "color",
-      "description": "bg"
-    },
-    "mint-green-400": {
-      "value": "#2af5ba",
-      "type": "color",
-      "description": "active element"
-    },
-    "mint-green-300": {
-      "value": "#62ffd1",
-      "type": "color"
-    },
-    "blue-400": {
-      "value": "#62a9ff",
-      "type": "color"
     },
     "gray-500": {
       "value": "#c6c6c6",
@@ -51,10 +22,34 @@
       "value": "#939393",
       "type": "color"
     },
+    "navy-blue-900": {
+      "value": "#010027",
+      "type": "color"
+    },
     "navy-blue-800": {
       "value": "#07064e",
       "type": "color",
       "description": "text"
+    },
+    "navy-blue-100": {
+      "value": "#7d81bf",
+      "type": "color"
+    },
+    "navy-blue-700": {
+      "value": "#13125d",
+      "type": "color"
+    },
+    "navy-blue-200": {
+      "value": "#5250DF",
+      "type": "color"
+    },
+    "navy-blue-600": {
+      "value": "#26256b",
+      "type": "color"
+    },
+    "navy-blue-70": {
+      "value": "#B7BCFA",
+      "type": "color"
     },
     "navy-blue-400": {
       "value": "#3b3a76",
@@ -62,14 +57,6 @@
     },
     "navy-blue-50": {
       "value": "#cdd0fd",
-      "type": "color"
-    },
-    "red-400": {
-      "value": "#f56161",
-      "type": "color"
-    },
-    "orange-50": {
-      "value": "#fff3e8",
       "type": "color"
     },
     "active-green-400": {
@@ -80,16 +67,21 @@
       "value": "#5fbe54",
       "type": "color"
     },
-    "orange-70": {
-      "value": "#ffe7d4",
+    "mint-green-100": {
+      "value": "#cafdee",
       "type": "color"
+    },
+    "mint-green-300": {
+      "value": "#62ffd1",
+      "type": "color"
+    },
+    "mint-green-400": {
+      "value": "#2af5ba",
+      "type": "color",
+      "description": "active element"
     },
     "mint-green-600": {
       "value": "#02c295",
-      "type": "color"
-    },
-    "navy-blue-600": {
-      "value": "#26256b",
       "type": "color"
     },
     "mint-green-500": {
@@ -100,20 +92,48 @@
       "value": "#86a89e",
       "type": "color"
     },
-    "navy-blue-900": {
-      "value": "#010027",
+    "mint-green-50": {
+      "value": "#EDFFFA",
+      "type": "color"
+    },
+    "mint-green-70": {
+      "value": "#e1fff6",
+      "type": "color"
+    },
+    "red-200": {
+      "value": "#FBB1AA",
+      "type": "color"
+    },
+    "red-50": {
+      "value": "#FEE5E3",
+      "type": "color"
+    },
+    "red-400": {
+      "value": "#f56161",
       "type": "color"
     },
     "orange-400": {
       "value": "#ea7b20",
       "type": "color"
     },
-    "navy-blue-700": {
-      "value": "#13125d",
+    "orange-50": {
+      "value": "#fff3e8",
+      "type": "color"
+    },
+    "orange-70": {
+      "value": "#ffe7d4",
+      "type": "color"
+    },
+    "orange-100": {
+      "value": "#fcd5b5",
       "type": "color"
     },
     "orange-800": {
       "value": "#9a4601",
+      "type": "color"
+    },
+    "orange-500": {
+      "value": "#df6705",
       "type": "color"
     },
     "orange-300": {
@@ -128,16 +148,16 @@
       "value": "#ffd52f",
       "type": "color"
     },
-    "mint-green-70": {
-      "value": "#e1fff6",
-      "type": "color"
-    },
     "active-green-300": {
       "value": "#88ea7d",
       "type": "color"
     },
     "active-green-25": {
       "value": "#E6FFE3",
+      "type": "color"
+    },
+    "blue-400": {
+      "value": "#62a9ff",
       "type": "color"
     },
     "blue-300": {
@@ -154,22 +174,6 @@
     },
     "blue-25": {
       "value": "#EEFBFE",
-      "type": "color"
-    },
-    "navy-blue-200": {
-      "value": "#5250DF",
-      "type": "color"
-    },
-    "navy-blue-70": {
-      "value": "#B7BCFA",
-      "type": "color"
-    },
-    "red-200": {
-      "value": "#FBB1AA",
-      "type": "color"
-    },
-    "red-50": {
-      "value": "#FEE5E3",
       "type": "color"
     }
   }

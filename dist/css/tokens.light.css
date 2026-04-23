@@ -8,9 +8,6 @@
   --color-surface-subtle: var(--color-gray-100);
   --color-surface-brand: var(--color-mint-green-400);
   --color-surface-highlight: var(--color-mint-green-100);
-  --color-surface-notification: var(--color-navy-blue-25);
-  --color-surface-notification-indicator: var(--color-navy-blue-100);
-  --color-surface-tile: var(--color-gray-100);
   --color-alert-weak: var(--color-orange-100);
   --color-alert-strong: var(--color-orange-500);
   --color-text-dark: var(--color-navy-blue-800);
@@ -40,7 +37,6 @@
   --color-button-text-dark: var(--color-navy-blue-800);
   --color-button-text-inactive: var(--color-gray-700);
   --color-button-text-edit: var(--color-orange-500);
-  --color-button-text-notification-indicator: var(--color-navy-blue-800);
   --color-button-border-hover-active: var(--color-mint-green-100);
   --color-button-border-hover-dark: var(--color-navy-blue-400);
   --color-button-border-hover-edit: var(--color-orange-50);

@@ -54,6 +54,7 @@ export { default as IconUiReportProblem } from "./IconUiReportProblem";
 export { default as IconUiRtf } from "./IconUiRtf";
 export { default as IconUiSendAgainV1 } from "./IconUiSendAgainV1";
 export { default as IconUiSettings } from "./IconUiSettings";
+export { default as IconUiStatusEdit } from "./IconUiStatusEdit";
 export { default as IconUiTif } from "./IconUiTif";
 export { default as IconUiTimeV1 } from "./IconUiTimeV1";
 export { default as IconUiTimeV2 } from "./IconUiTimeV2";

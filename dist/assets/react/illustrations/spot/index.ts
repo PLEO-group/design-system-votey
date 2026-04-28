@@ -6,6 +6,7 @@ export { default as IlluSpotAgendaNoVisibleV2 } from "./IlluSpotAgendaNoVisibleV
 export { default as IlluSpotAgendaNoVisible } from "./IlluSpotAgendaNoVisible";
 export { default as IlluSpotAgenda } from "./IlluSpotAgenda";
 export { default as IlluSpotAnswerMethodOpenEndedQuestions } from "./IlluSpotAnswerMethodOpenEndedQuestions";
+export { default as IlluSpotAutomaticVotingStartV2 } from "./IlluSpotAutomaticVotingStartV2";
 export { default as IlluSpotAutomaticVotingStart } from "./IlluSpotAutomaticVotingStart";
 export { default as IlluSpotCanVoteV2 } from "./IlluSpotCanVoteV2";
 export { default as IlluSpotChatNone } from "./IlluSpotChatNone";

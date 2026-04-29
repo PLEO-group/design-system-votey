@@ -13,6 +13,9 @@ on:
       - 'tokens/**/*.json' # Uruchom dla PR
       - 'assets/**'        # Uruchom też jeśli zmienione są assety
       - 'storybook/**'     # Uruchom też jeśli zmieniony jest kod Storybooka
+      - 'dist/**'          # Uruchom też jeśli zmienione są wygenerowane tokeny
+      - 'storybook-static/**' # Uruchom też jeśli zmieniony jest zbudowany Storybook
+      - '.github/workflows/tokens-ci.yml' # Uruchom przy zmianie samego workflowa
 
 permissions:
   contents: write # Nadaj uprawnienia do zapisu (pushowania)

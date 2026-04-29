@@ -11,6 +11,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'tokens/**/*.json' # Uruchom dla PR
+      - 'assets/**'        # Uruchom też jeśli zmienione są assety
       - 'storybook/**'     # Uruchom też jeśli zmieniony jest kod Storybooka
 
 permissions:

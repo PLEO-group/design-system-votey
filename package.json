@@ -39,8 +39,5 @@
     "react-dom": "^18.2.0",
     "storybook": "^8.0.0",
     "style-dictionary": "^3.9.2"
-  },
-  "dependencies": {
-    "vercel": "^52.0.0"
   }
 }

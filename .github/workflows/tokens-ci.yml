@@ -75,9 +75,21 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: 📦 Prepare Vercel Prebuilt Output
+        if: github.event_name == 'pull_request'
+        run: |
+          rm -rf .vercel/output
+          mkdir -p .vercel/output/static
+          cp -R storybook-static/. .vercel/output/static/
+          cat <<'EOF' > .vercel/output/config.json
+          {
+            "version": 3
+          }
+          EOF
+
       - name: 🚀 Deploy Storybook Preview (Vercel)
         if: github.event_name == 'pull_request'
-        run: vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }} ./storybook-static
+        run: vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

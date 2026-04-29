@@ -2,15 +2,11 @@ name: 🎨 Tokens CI & Preview Deploy
 
 on:
   push:
-    # Uruchom na push do gałęzi feature oraz po merge do main
-    branches: ['feature/**', 'main']
+    # Uruchom na push do gałęzi feature (np. z Tokens Studio)
+    branches: ['feature/**']
     paths:
       - 'tokens/**/*.json' # Tylko jeśli zmieniony jest JSON tokenów
       - 'assets/**'
-      - 'storybook/**'
-      - 'dist/**'
-      - 'storybook-static/**'
-      - '.github/workflows/tokens-ci.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:

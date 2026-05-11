@@ -40,6 +40,10 @@
       "accent": {
         "value": "{color.mint-green-300}",
         "type": "color"
+      },
+      "badge": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
       }
     },
     "alert": {

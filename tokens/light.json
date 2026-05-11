@@ -36,6 +36,10 @@
       "highlight": {
         "value": "{color.mint-green-100}",
         "type": "color"
+      },
+      "accent": {
+        "value": "{color.mint-green-100}",
+        "type": "color"
       }
     },
     "alert": {

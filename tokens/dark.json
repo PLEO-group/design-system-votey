@@ -44,6 +44,108 @@
       "badge": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "action": {
+        "danger": {
+          "default": {
+            "value": "{color.red-500}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.red-500}",
+            "type": "color"
+          }
+        },
+        "camera": {
+          "default": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-200}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.orange-300}",
+            "type": "color"
+          }
+        },
+        "microphone": {
+          "default": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-200}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.red-200}",
+            "type": "color"
+          }
+        },
+        "presence": {
+          "default": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.mint-green-900}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.mint-green-900}",
+            "type": "color"
+          }
+        },
+        "sharing": {
+          "default": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.blue-400}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.blue-400}",
+            "type": "color"
+          }
+        },
+        "utility": {
+          "default": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.navy-blue-70}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.navy-blue-70}",
+            "type": "color"
+          }
+        }
       }
     },
     "alert": {
@@ -114,6 +216,108 @@
       "primary": {
         "value": "{color.navy-blue-400}",
         "type": "color"
+      },
+      "action": {
+        "danger": {
+          "default": {
+            "value": "{color.red-500}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.red-600}",
+            "type": "color"
+          }
+        },
+        "camera": {
+          "default": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.red-400}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-200}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.orange-500}",
+            "type": "color"
+          }
+        },
+        "microphone": {
+          "default": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.red-400}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-200}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.red-500}",
+            "type": "color"
+          }
+        },
+        "presence": {
+          "default": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.mint-green-500}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.mint-green-900}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.mint-green-600}",
+            "type": "color"
+          }
+        },
+        "sharing": {
+          "default": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.blue-600}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.blue-400}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.blue-600}",
+            "type": "color"
+          }
+        },
+        "utility": {
+          "default": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-100}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.navy-blue-70}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.navy-blue-100}",
+            "type": "color"
+          }
+        }
       }
     },
     "icon": {
@@ -124,6 +328,108 @@
       "inactive": {
         "value": "{color.navy-blue-50}",
         "type": "color"
+      },
+      "action": {
+        "danger": {
+          "default": {
+            "value": "{color.white}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.white}",
+            "type": "color"
+          }
+        },
+        "camera": {
+          "default": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-500}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.orange-500}",
+            "type": "color"
+          }
+        },
+        "microphone": {
+          "default": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.red-500}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.red-500}",
+            "type": "color"
+          }
+        },
+        "presence": {
+          "default": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.mint-green-500}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.mint-green-500}",
+            "type": "color"
+          }
+        },
+        "sharing": {
+          "default": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.white}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.white}",
+            "type": "color"
+          }
+        },
+        "utility": {
+          "default": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "hover": {
+            "value": "{color.navy-blue-50}",
+            "type": "color"
+          },
+          "active": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          },
+          "active-hover": {
+            "value": "{color.navy-blue-800}",
+            "type": "color"
+          }
+        }
       }
     },
     "button": {

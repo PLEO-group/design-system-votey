@@ -356,7 +356,7 @@
         },
         "icon": {
           "default": {
-            "value": "{color.gray-600}",
+            "value": "{color.navy-blue-800}",
             "type": "color"
           },
           "active": {

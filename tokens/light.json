@@ -72,6 +72,10 @@
       "info-subtle": {
         "value": "{color.navy-blue-25}",
         "type": "color"
+      },
+      "ashy-gray": {
+        "value": "{color.gray-400}",
+        "type": "color"
       }
     },
     "alert": {

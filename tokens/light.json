@@ -56,6 +56,18 @@
       "lavenda": {
         "value": "{color.navy-blue-50}",
         "type": "color"
+      },
+      "contrast-green": {
+        "value": "{color.mint-green-70}",
+        "type": "color"
+      },
+      "mild-mint": {
+        "value": "{color.mint-green-100}",
+        "type": "color"
+      },
+      "light-navy": {
+        "value": "{color.white}",
+        "type": "color"
       }
     },
     "alert": {
@@ -107,6 +119,10 @@
       },
       "bright-strong": {
         "value": "{color.white}",
+        "type": "color"
+      },
+      "navy": {
+        "value": "{color.navy-blue-800}",
         "type": "color"
       }
     },

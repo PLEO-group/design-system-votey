@@ -132,6 +132,10 @@
       "navy": {
         "value": "{color.navy-blue-25}",
         "type": "color"
+      },
+      "lighter-navy": {
+        "value": "{color.navy-blue-50}",
+        "type": "color"
       }
     },
     "border": {

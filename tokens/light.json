@@ -68,6 +68,10 @@
       "light-navy": {
         "value": "{color.white}",
         "type": "color"
+      },
+      "info-subtle": {
+        "value": "{color.navy-blue-25}",
+        "type": "color"
       }
     },
     "alert": {

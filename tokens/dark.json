@@ -44,6 +44,18 @@
       "badge": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "ashy": {
+        "value": "{color.navy-blue-600}",
+        "type": "color"
+      },
+      "active-mild": {
+        "value": "{color.mint-green-900}",
+        "type": "color"
+      },
+      "lavenda": {
+        "value": "{color.navy-blue-200}",
+        "type": "color"
       }
     },
     "alert": {
@@ -52,6 +64,10 @@
         "type": "color"
       },
       "strong": {
+        "value": "{color.orange-400}",
+        "type": "color"
+      },
+      "decent": {
         "value": "{color.orange-400}",
         "type": "color"
       }
@@ -86,6 +102,10 @@
         "type": "color"
       },
       "inactive-dark": {
+        "value": "{color.navy-blue-50}",
+        "type": "color"
+      },
+      "bright-strong": {
         "value": "{color.navy-blue-50}",
         "type": "color"
       }
@@ -356,7 +376,7 @@
         },
         "icon": {
           "default": {
-            "value": "{color.navy-blue-100}",
+            "value": "{color.navy-blue-50}",
             "type": "color"
           },
           "active": {

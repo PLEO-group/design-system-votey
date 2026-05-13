@@ -44,6 +44,18 @@
       "badge": {
         "value": "{color.navy-blue-25}",
         "type": "color"
+      },
+      "ashy": {
+        "value": "{color.gray-400}",
+        "type": "color"
+      },
+      "active-mild": {
+        "value": "{color.mint-green-50}",
+        "type": "color"
+      },
+      "lavenda": {
+        "value": "{color.navy-blue-50}",
+        "type": "color"
       }
     },
     "alert": {
@@ -53,6 +65,10 @@
       },
       "strong": {
         "value": "{color.orange-500}",
+        "type": "color"
+      },
+      "decent": {
+        "value": "{color.orange-300}",
         "type": "color"
       }
     },
@@ -87,6 +103,10 @@
       },
       "inactive-dark": {
         "value": "{color.gray-700}",
+        "type": "color"
+      },
+      "bright-strong": {
+        "value": "{color.white}",
         "type": "color"
       }
     },

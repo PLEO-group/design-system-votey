@@ -31,54 +31,45 @@
       "type": "color",
       "description": "text"
     },
-    "navy-blue-100": {
-      "value": "#7d81bf",
-      "type": "color"
-    },
     "navy-blue-700": {
       "value": "#13125d",
-      "type": "color"
-    },
-    "navy-blue-200": {
-      "value": "#5250DF",
       "type": "color"
     },
     "navy-blue-600": {
       "value": "#26256b",
       "type": "color"
     },
-    "navy-blue-70": {
-      "value": "#B7BCFA",
-      "type": "color"
-    },
     "navy-blue-400": {
       "value": "#3b3a76",
+      "type": "color"
+    },
+    "navy-blue-200": {
+      "value": "#5250DF",
+      "type": "color"
+    },
+    "navy-blue-100": {
+      "value": "#7d81bf",
+      "type": "color"
+    },
+    "navy-blue-70": {
+      "value": "#B7BCFA",
       "type": "color"
     },
     "navy-blue-50": {
       "value": "#cdd0fd",
       "type": "color"
     },
-    "active-green-400": {
-      "value": "#77dc6c",
+    "navy-blue-25": {
+      "value": "#e9eaff",
       "type": "color"
     },
-    "active-green-500": {
-      "value": "#5fbe54",
+    "mint-green-900": {
+      "value": "#05516B",
       "type": "color"
     },
-    "mint-green-100": {
-      "value": "#cafdee",
+    "mint-green-800": {
+      "value": "#86a89e",
       "type": "color"
-    },
-    "mint-green-300": {
-      "value": "#62ffd1",
-      "type": "color"
-    },
-    "mint-green-400": {
-      "value": "#2af5ba",
-      "type": "color",
-      "description": "active element"
     },
     "mint-green-600": {
       "value": "#02c295",
@@ -88,28 +79,45 @@
       "value": "#0ad69c",
       "type": "color"
     },
-    "mint-green-800": {
-      "value": "#86a89e",
+    "mint-green-400": {
+      "value": "#2af5ba",
+      "type": "color",
+      "description": "active element"
+    },
+    "mint-green-300": {
+      "value": "#62ffd1",
+      "type": "color"
+    },
+    "mint-green-100": {
+      "value": "#cafdee",
       "type": "color"
     },
     "mint-green-70": {
       "value": "#e1fff6",
       "type": "color"
     },
-    "red-200": {
-      "value": "#FBB1AA",
+    "mint-green-50": {
+      "value": "#EDFFFA",
       "type": "color"
     },
     "red-50": {
       "value": "#FEE5E3",
       "type": "color"
     },
+    "red-200": {
+      "value": "#FBB1AA",
+      "type": "color"
+    },
     "red-400": {
       "value": "#f56161",
       "type": "color"
     },
-    "orange-400": {
-      "value": "#ea7b20",
+    "red-500": {
+      "value": "#B93F3F",
+      "type": "color"
+    },
+    "red-600": {
+      "value": "#750D0D",
       "type": "color"
     },
     "orange-50": {
@@ -124,20 +132,20 @@
       "value": "#fcd5b5",
       "type": "color"
     },
-    "orange-800": {
-      "value": "#9a4601",
+    "orange-300": {
+      "value": "#f19a58",
+      "type": "color"
+    },
+    "orange-400": {
+      "value": "#ea7b20",
       "type": "color"
     },
     "orange-500": {
       "value": "#df6705",
       "type": "color"
     },
-    "orange-300": {
-      "value": "#f19a58",
-      "type": "color"
-    },
-    "navy-blue-25": {
-      "value": "#e9eaff",
+    "orange-800": {
+      "value": "#9a4601",
       "type": "color"
     },
     "yellow-100": {
@@ -148,12 +156,36 @@
       "value": "#ffd52f",
       "type": "color"
     },
+    "yellow-600": {
+      "value": "#E8BB08",
+      "type": "color"
+    },
+    "active-green-500": {
+      "value": "#5fbe54",
+      "type": "color"
+    },
+    "active-green-400": {
+      "value": "#77dc6c",
+      "type": "color"
+    },
     "active-green-300": {
       "value": "#88ea7d",
       "type": "color"
     },
+    "active-green-100": {
+      "value": "#ADFFA1",
+      "type": "color"
+    },
     "active-green-25": {
       "value": "#E6FFE3",
+      "type": "color"
+    },
+    "blue-900": {
+      "value": "#1C3283",
+      "type": "color"
+    },
+    "blue-600": {
+      "value": "#2E7EE0",
       "type": "color"
     },
     "blue-400": {
@@ -174,10 +206,6 @@
     },
     "blue-25": {
       "value": "#EEFBFE",
-      "type": "color"
-    },
-    "mint-green-50": {
-      "value": "#EDFFFA",
       "type": "color"
     }
   }

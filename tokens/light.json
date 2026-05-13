@@ -76,6 +76,18 @@
       "ashy-gray": {
         "value": "{color.gray-400}",
         "type": "color"
+      },
+      "warning": {
+        "value": "{color.yellow-100}",
+        "type": "color"
+      },
+      "highlight-soft": {
+        "value": "{color.mint-green-70}",
+        "type": "color"
+      },
+      "info-gentle": {
+        "value": "{color.navy-blue-25}",
+        "type": "color"
       }
     },
     "alert": {
@@ -162,6 +174,14 @@
       "primary": {
         "value": "{color.gray-400}",
         "type": "color"
+      },
+      "soft": {
+        "value": "{color.navy-blue-25}",
+        "type": "color"
+      },
+      "warning": {
+        "value": "{color.yellow-400}",
+        "type": "color"
       }
     },
     "icon": {
@@ -171,6 +191,10 @@
       },
       "inactive": {
         "value": "{color.gray-500}",
+        "type": "color"
+      },
+      "highlight": {
+        "value": "{color.mint-green-500}",
         "type": "color"
       }
     },

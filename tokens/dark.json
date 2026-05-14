@@ -170,6 +170,10 @@
       "decent": {
         "value": "{color.orange-400}",
         "type": "color"
+      },
+      "contrast-strong": {
+        "value": "{color.navy-blue-900}",
+        "type": "color"
       }
     },
     "text": {
@@ -256,6 +260,14 @@
       "subtle-on-neutral-emphasis": {
         "value": "{color.navy-blue-600}",
         "type": "color"
+      },
+      "on-contrast-subtle": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "emphasis": {
+        "value": "{color.navy-blue-50}",
+        "type": "color"
       }
     },
     "border": {
@@ -304,6 +316,10 @@
         "type": "color"
       },
       "subtle-contrast": {
+        "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "on-contrast": {
         "value": "{color.navy-blue-100}",
         "type": "color"
       }

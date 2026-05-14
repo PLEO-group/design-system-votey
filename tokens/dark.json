@@ -160,6 +160,14 @@
       "contrast-strong": {
         "value": "{color.navy-blue-900}",
         "type": "color"
+      },
+      "accent-strong": {
+        "value": "{color.mint-green-400}",
+        "type": "color"
+      },
+      "on-contrast": {
+        "value": "{color.white}",
+        "type": "color"
       }
     },
     "alert": {
@@ -268,6 +276,10 @@
       "emphasis": {
         "value": "{color.navy-blue-50}",
         "type": "color"
+      },
+      "brand": {
+        "value": "{color.mint-green-600}",
+        "type": "color"
       }
     },
     "border": {
@@ -322,6 +334,10 @@
       "on-contrast": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "emphasis": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "icon": {
@@ -344,6 +360,10 @@
       "subtle-contrast": {
         "value": "{color.navy-blue-50}",
         "type": "color"
+      },
+      "on-contrast": {
+        "value": "{color.navy-blue-600}",
+        "type": "color"
       }
     },
     "button": {
@@ -361,7 +381,11 @@
           "type": "color"
         },
         "inactive": {
-          "value": "{color.navy-blue-800}",
+          "value": "{color.navy-blue-400}",
+          "type": "color"
+        },
+        "bright": {
+          "value": "{color.navy-blue-600}",
           "type": "color"
         },
         "hover": {
@@ -395,6 +419,16 @@
         "edit": {
           "value": "{color.orange-800}",
           "type": "color"
+        },
+        "soft-dark": {
+          "value": "{color.mint-green-800}",
+          "type": "color"
+        },
+        "hover": {
+          "soft-dark": {
+            "value": "{color.mint-green-600}",
+            "type": "color"
+          }
         }
       },
       "border": {
@@ -410,7 +444,15 @@
           "edit": {
             "value": "{color.orange-70}",
             "type": "color"
+          },
+          "active-strong": {
+            "value": "{color.navy-blue-100}",
+            "type": "color"
           }
+        },
+        "soft": {
+          "value": "{color.navy-blue-200}",
+          "type": "color"
         }
       }
     },

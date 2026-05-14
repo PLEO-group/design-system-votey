@@ -21,6 +21,7 @@ export { default as IlluSpotNotProxyV2 } from "./IlluSpotNotProxyV2";
 export { default as IlluSpotNotVisible } from "./IlluSpotNotVisible";
 export { default as IlluSpotOneAnswerMethod } from "./IlluSpotOneAnswerMethod";
 export { default as IlluSpotProxyV2 } from "./IlluSpotProxyV2";
+export { default as IlluSpotProxy } from "./IlluSpotProxy";
 export { default as IlluSpotReportPdfNoneV2 } from "./IlluSpotReportPdfNoneV2";
 export { default as IlluSpotReportPdfNone } from "./IlluSpotReportPdfNone";
 export { default as IlluSpotReportPdfV2 } from "./IlluSpotReportPdfV2";

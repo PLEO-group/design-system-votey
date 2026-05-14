@@ -356,6 +356,10 @@
       "subtle-contrast": {
         "value": "{color.navy-blue-400}",
         "type": "color"
+      },
+      "on-contrast": {
+        "value": "{color.navy-blue-600}",
+        "type": "color"
       }
     },
     "button": {

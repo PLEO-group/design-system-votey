@@ -154,7 +154,7 @@
         "type": "color"
       },
       "neutral-emphasis": {
-        "value": "{color.navy-blue-400}",
+        "value": "{color.navy-blue-800}",
         "type": "color"
       }
     },

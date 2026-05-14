@@ -152,6 +152,10 @@
       "high-contrast": {
         "value": "{color.mint-green-400}",
         "type": "color"
+      },
+      "neutral-emphasis": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "alert": {

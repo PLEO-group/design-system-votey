@@ -228,6 +228,10 @@
       "contrast-main": {
         "value": "{color.white}",
         "type": "color"
+      },
+      "mention": {
+        "value": "{color.blue-100}",
+        "type": "color"
       }
     },
     "border": {

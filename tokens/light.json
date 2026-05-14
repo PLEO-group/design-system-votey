@@ -160,6 +160,14 @@
       "contrast-strong": {
         "value": "{color.navy-blue-900}",
         "type": "color"
+      },
+      "accent-strong": {
+        "value": "{color.mint-green-400}",
+        "type": "color"
+      },
+      "on-contrast": {
+        "value": "{color.white}",
+        "type": "color"
       }
     },
     "alert": {
@@ -268,6 +276,10 @@
       "emphasis": {
         "value": "{color.navy-blue-900}",
         "type": "color"
+      },
+      "brand": {
+        "value": "{color.mint-green-600}",
+        "type": "color"
       }
     },
     "border": {
@@ -314,6 +326,14 @@
       "on-contrast": {
         "value": "{color.white}",
         "type": "color"
+      },
+      "emphasis": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
+      },
+      "subtle-accent": {
+        "value": "{color.navy-blue-70}",
+        "type": "color"
       }
     },
     "icon": {
@@ -353,7 +373,11 @@
           "type": "color"
         },
         "inactive": {
-          "value": "{color.gray-100}",
+          "value": "{color.gray-400}",
+          "type": "color"
+        },
+        "bright": {
+          "value": "{color.white}",
           "type": "color"
         },
         "hover": {
@@ -387,6 +411,16 @@
         "edit": {
           "value": "{color.orange-500}",
           "type": "color"
+        },
+        "soft-dark": {
+          "value": "{color.navy-blue-400}",
+          "type": "color"
+        },
+        "hover": {
+          "soft-dark": {
+            "value": "{color.navy-blue-100}",
+            "type": "color"
+          }
         }
       },
       "border": {
@@ -402,7 +436,15 @@
           "edit": {
             "value": "{color.orange-50}",
             "type": "color"
+          },
+          "active-strong": {
+            "value": "{color.mint-green-400}",
+            "type": "color"
           }
+        },
+        "soft": {
+          "value": "{color.mint-green-100}",
+          "type": "color"
         }
       }
     },

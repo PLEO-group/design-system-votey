@@ -176,6 +176,26 @@
       "positive-emphasis": {
         "value": "{color.active-green-500}",
         "type": "color"
+      },
+      "info-selected": {
+        "value": "{color.blue-900}",
+        "type": "color"
+      },
+      "info-emphasis": {
+        "value": "{color.blue-400}",
+        "type": "color"
+      },
+      "success-emphasis": {
+        "value": "{color.active-green-500}",
+        "type": "color"
+      },
+      "warning-emphasis": {
+        "value": "{color.yellow-600}",
+        "type": "color"
+      },
+      "alert-subtle": {
+        "value": "{color.orange-300}",
+        "type": "color"
       }
     },
     "alert": {
@@ -288,6 +308,10 @@
       "brand": {
         "value": "{color.mint-green-600}",
         "type": "color"
+      },
+      "alert-emphasis": {
+        "value": "{color.orange-800}",
+        "type": "color"
       }
     },
     "border": {
@@ -345,6 +369,14 @@
       },
       "emphasis": {
         "value": "{color.navy-blue-400}",
+        "type": "color"
+      },
+      "info-selected": {
+        "value": "{color.blue-600}",
+        "type": "color"
+      },
+      "neutral-strong": {
+        "value": "{color.navy-blue-800}",
         "type": "color"
       }
     },

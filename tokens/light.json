@@ -120,6 +120,10 @@
       "danger": {
         "value": "{color.red-400}",
         "type": "color"
+      },
+      "base-strong": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
       }
     },
     "alert": {

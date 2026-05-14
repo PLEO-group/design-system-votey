@@ -152,6 +152,10 @@
       "high-contrast": {
         "value": "{color.navy-blue-800}",
         "type": "color"
+      },
+      "neutral-emphasis": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "alert": {
@@ -243,6 +247,14 @@
       },
       "mention": {
         "value": "{color.blue-100}",
+        "type": "color"
+      },
+      "muted-on-neutral-emphasis": {
+        "value": "{color.navy-blue-70}",
+        "type": "color"
+      },
+      "subtle-on-neutral-emphasis": {
+        "value": "{color.navy-blue-600}",
         "type": "color"
       }
     },

@@ -244,6 +244,14 @@
       "mention": {
         "value": "{color.blue-400}",
         "type": "color"
+      },
+      "muted-on-neutral-emphasis": {
+        "value": "{color.gray-700}",
+        "type": "color"
+      },
+      "subtle-on-neutral-emphasis": {
+        "value": "{color.white}",
+        "type": "color"
       }
     },
     "border": {

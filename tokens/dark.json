@@ -132,6 +132,10 @@
       "active-contrast": {
         "value": "{color.mint-green-900}",
         "type": "color"
+      },
+      "blueish": {
+        "value": "{color.navy-blue-200}",
+        "type": "color"
       }
     },
     "alert": {
@@ -211,6 +215,10 @@
       },
       "action-subtle": {
         "value": "{color.navy-blue-200}",
+        "type": "color"
+      },
+      "purple": {
+        "value": "{color.blue-25}",
         "type": "color"
       }
     },

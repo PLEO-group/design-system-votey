@@ -254,6 +254,10 @@
       "subtle-accent": {
         "value": "{color.navy-blue-70}",
         "type": "color"
+      },
+      "subtle": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "icon": {

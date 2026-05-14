@@ -246,6 +246,10 @@
       "warning": {
         "value": "{color.yellow-400}",
         "type": "color"
+      },
+      "subtle": {
+        "value": "{color.gray-500}",
+        "type": "color"
       }
     },
     "icon": {

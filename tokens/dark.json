@@ -156,6 +156,10 @@
       "neutral-emphasis": {
         "value": "{color.navy-blue-800}",
         "type": "color"
+      },
+      "contrast-strong": {
+        "value": "{color.navy-blue-900}",
+        "type": "color"
       }
     },
     "alert": {
@@ -169,10 +173,6 @@
       },
       "decent": {
         "value": "{color.orange-400}",
-        "type": "color"
-      },
-      "contrast-strong": {
-        "value": "{color.navy-blue-900}",
         "type": "color"
       }
     },

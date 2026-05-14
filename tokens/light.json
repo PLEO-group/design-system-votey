@@ -148,6 +148,10 @@
       "selected-subtle": {
         "value": "{color.mint-green-100}",
         "type": "color"
+      },
+      "high-contrast": {
+        "value": "{color.mint-green-400}",
+        "type": "color"
       }
     },
     "alert": {

@@ -168,6 +168,14 @@
       "on-contrast": {
         "value": "{color.white}",
         "type": "color"
+      },
+      "accent-emphasis": {
+        "value": "{color.mint-green-500}",
+        "type": "color"
+      },
+      "positive-emphasis": {
+        "value": "{color.active-green-500}",
+        "type": "color"
       }
     },
     "alert": {

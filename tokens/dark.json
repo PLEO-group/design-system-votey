@@ -148,6 +148,10 @@
       "selected-subtle": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "high-contrast": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
       }
     },
     "alert": {

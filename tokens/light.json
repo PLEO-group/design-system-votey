@@ -144,6 +144,10 @@
       "selected-strong": {
         "value": "{color.mint-green-300}",
         "type": "color"
+      },
+      "selected-subtle": {
+        "value": "{color.mint-green-100}",
+        "type": "color"
       }
     },
     "alert": {

@@ -136,6 +136,10 @@
       "blueish": {
         "value": "{color.navy-blue-25}",
         "type": "color"
+      },
+      "active-selected": {
+        "value": "{color.mint-green-100}",
+        "type": "color"
       }
     },
     "alert": {

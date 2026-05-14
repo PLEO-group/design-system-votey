@@ -188,6 +188,10 @@
       "on-accent": {
         "value": "{color.navy-blue-800}",
         "type": "color"
+      },
+      "info-soft": {
+        "value": "{color.mint-green-400}",
+        "type": "color"
       }
     },
     "border": {

@@ -128,6 +128,10 @@
       "action-subtle": {
         "value": "{color.navy-blue-70}",
         "type": "color"
+      },
+      "active-contrast": {
+        "value": "{color.mint-green-900}",
+        "type": "color"
       }
     },
     "alert": {

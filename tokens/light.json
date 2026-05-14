@@ -424,6 +424,10 @@
           "soft-dark": {
             "value": "{color.navy-blue-100}",
             "type": "color"
+          },
+          "edit": {
+            "value": "{color.orange-500}",
+            "type": "color"
           }
         }
       },

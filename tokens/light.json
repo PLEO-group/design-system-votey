@@ -224,6 +224,10 @@
       "purple": {
         "value": "{color.navy-blue-200}",
         "type": "color"
+      },
+      "contrast-main": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
       }
     },
     "border": {

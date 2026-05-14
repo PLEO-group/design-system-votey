@@ -268,6 +268,10 @@
       "action-subtle": {
         "value": "{color.mint-green-500}",
         "type": "color"
+      },
+      "subtle-contrast": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "button": {

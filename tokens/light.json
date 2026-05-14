@@ -196,6 +196,10 @@
       "info-soft": {
         "value": "{color.mint-green-400}",
         "type": "color"
+      },
+      "muted": {
+        "value": "{color.gray-500}",
+        "type": "color"
       }
     },
     "border": {

@@ -196,6 +196,10 @@
       "alert-subtle": {
         "value": "{color.orange-50}",
         "type": "color"
+      },
+      "plain-navy": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
       }
     },
     "alert": {

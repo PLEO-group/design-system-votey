@@ -200,6 +200,10 @@
       "plain-navy": {
         "value": "{color.navy-blue-800}",
         "type": "color"
+      },
+      "active-strong": {
+        "value": "{color.mint-green-400}",
+        "type": "color"
       }
     },
     "alert": {

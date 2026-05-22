@@ -3,6 +3,10 @@
   "version": "1.0.119",
   "description": "Centralny system tokenów projektowych generowany przez Style Dictionary.",
   "main": "dist/js/tailwind-preset.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "files": [
     "dist"
   ],

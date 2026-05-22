@@ -59,7 +59,7 @@ export const AssetCard = ({asset}) => {
             </div>
             <p style={{
                 color: '#000',
-                textShadow: '0 0 3px #fff',
+                textShadow: '0 0 4px #fff',
                 fontStyle: 'italic',
                 wordBreak: 'break-all'
             }}>{asset.name}</p>

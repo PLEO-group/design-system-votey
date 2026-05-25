@@ -367,6 +367,10 @@
         "value": "{color.navy-blue-400}",
         "type": "color"
       },
+      "strong": {
+        "value": "{color.navy-blue-800}",
+        "type": "color"
+      },
       "interactive-subtle": {
         "value": "{color.navy-blue-100}",
         "type": "color"
@@ -502,6 +506,10 @@
       "text": {
         "active": {
           "value": "{color.mint-green-400}",
+          "type": "color"
+        },
+        "strong": {
+          "value": "{color.navy-blue-800}",
           "type": "color"
         },
         "dark": {

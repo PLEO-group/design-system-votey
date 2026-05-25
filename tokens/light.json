@@ -379,6 +379,14 @@
         "value": "{color.gray-400}",
         "type": "color"
       },
+      "interactive-emphasis": {
+        "value": "{color.navy-blue-200}",
+        "type": "color"
+      },
+      "interactive-active": {
+        "value": "{color.navy-blue-200}",
+        "type": "color"
+      },
       "bright": {
         "value": "{color.white}",
         "type": "color"
@@ -543,14 +551,6 @@
         "hover": {
           "active": {
             "value": "{color.mint-green-100}",
-            "type": "color"
-          },
-          "interactive-emphasis": {
-            "value": "{color.navy-blue-200}",
-            "type": "color"
-          },
-          "interactive-active": {
-            "value": "{color.navy-blue-200}",
             "type": "color"
           },
           "dark": {

@@ -5,6 +5,10 @@
         "value": "{color.navy-blue-600}",
         "type": "color"
       },
+      "subtle-accent": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
+      },
       "mild": {
         "value": "{color.navy-blue-800}",
         "type": "color"

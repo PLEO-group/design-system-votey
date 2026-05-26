@@ -5,6 +5,10 @@
         "value": "{color.white}",
         "type": "color"
       },
+      "danger-subtle": {
+        "value": "{color.red-50}",
+        "type": "color"
+      },
       "subtle-accent": {
         "value": "{color.navy-blue-70}",
         "type": "color"
@@ -263,6 +267,10 @@
     "text": {
       "dark": {
         "value": "{color.navy-blue-800}",
+        "type": "color"
+      },
+      "subtle": {
+        "value": "{color.navy-blue-400}",
         "type": "color"
       },
       "inactive": {

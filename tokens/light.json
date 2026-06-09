@@ -256,6 +256,10 @@
       "thumb-inactive": {
         "value": "{color.white}",
         "type": "color"
+      },
+      "thumb-active-green": {
+        "value": "{color.mint-green-300}",
+        "type": "color"
       }
     },
     "alert": {

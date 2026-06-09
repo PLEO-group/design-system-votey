@@ -248,6 +248,14 @@
       "neutral-muted": {
         "value": "{color.gray-500}",
         "type": "color"
+      },
+      "thumb-active": {
+        "value": "{color.mint-green-900}",
+        "type": "color"
+      },
+      "thumb-inactive": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "alert": {
@@ -469,6 +477,14 @@
       },
       "neutral-strong": {
         "value": "{color.navy-blue-800}",
+        "type": "color"
+      },
+      "switch-active": {
+        "value": "{color.mint-green-70}",
+        "type": "color"
+      },
+      "thumb-inactive": {
+        "value": "{color.navy-blue-100}",
         "type": "color"
       }
     },

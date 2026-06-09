@@ -248,6 +248,14 @@
       "neutral-muted": {
         "value": "{color.gray-100}",
         "type": "color"
+      },
+      "thumb-active": {
+        "value": "{color.white}",
+        "type": "color"
+      },
+      "thumb-inactive": {
+        "value": "{color.white}",
+        "type": "color"
       }
     },
     "alert": {
@@ -461,6 +469,14 @@
       },
       "interactive-hover": {
         "value": "{color.navy-blue-100}",
+        "type": "color"
+      },
+      "switch-active": {
+        "value": "{color.mint-green-900}",
+        "type": "color"
+      },
+      "thumb-inactive": {
+        "value": "{color.gray-700}",
         "type": "color"
       }
     },

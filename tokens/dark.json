@@ -490,6 +490,10 @@
       "thumb-inactive": {
         "value": "{color.navy-blue-100}",
         "type": "color"
+      },
+      "thumb-disabled": {
+        "value": "{color.navy-blue-400}",
+        "type": "color"
       }
     },
     "icon": {

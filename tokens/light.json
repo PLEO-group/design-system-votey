@@ -482,6 +482,10 @@
       "thumb-inactive": {
         "value": "{color.gray-700}",
         "type": "color"
+      },
+      "thumb-disabled": {
+        "value": "{color.gray-500}",
+        "type": "color"
       }
     },
     "icon": {

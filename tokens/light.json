@@ -281,6 +281,10 @@
         "value": "{color.navy-blue-800}",
         "type": "color"
       },
+      "alert-emphasis-strong": {
+        "value": "{color.orange-500}",
+        "type": "color"
+      },
       "subtle": {
         "value": "{color.navy-blue-400}",
         "type": "color"

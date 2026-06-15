@@ -285,6 +285,10 @@
         "value": "{color.navy-blue-50}",
         "type": "color"
       },
+      "alert-emphasis-strong": {
+        "value": "{color.orange-800}",
+        "type": "color"
+      },
       "on-neutral-contrast": {
         "value": "{color.navy-blue-25}",
         "type": "color"

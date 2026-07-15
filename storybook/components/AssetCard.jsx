@@ -37,7 +37,7 @@ export const AssetCard = ({asset}) => {
             height: '26px',
             color: '#333',
             flexShrink: 0,
-            marginBottom: '10px'
+            marginBottom: '12px'
         }
         : {
             width: '20vw',

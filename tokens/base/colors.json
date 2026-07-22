@@ -209,10 +209,8 @@
       "type": "color"
     }
   },
-  "test": {
-    "opacity": {
-      "value": "0.08",
-      "type": "opacity"
-    }
+  "test-opacity-8": {
+    "value": "0.08",
+    "type": "opacity"
   }
 }

@@ -3,6 +3,13 @@
   "version": "1.0.136",
   "description": "Centralny system tokenów projektowych generowany przez Style Dictionary.",
   "main": "dist/js/tailwind-preset.js",
+  "exports": {
+    "./angular": {
+      "types": "./dist/angular/types/pleodigital-design-system-votey-angular.d.ts",
+      "default": "./dist/angular/fesm2022/pleodigital-design-system-votey-angular.mjs"
+    },
+    "./dist/*": "./dist/*"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -17,10 +24,13 @@
     "validate:tokens": "node scripts/validate-core-colors.js",
     "test:tokens": "node --test tests/**/*.test.js",
     "build:tokens": "npm run validate:tokens && node build-style-dictionary.mjs",
+    "build:tokens:angular": "npm run validate:tokens && node build-style-dictionary.mjs --target=angular",
+    "build:tokens:legacy": "npm run validate:tokens && node build-style-dictionary.mjs --target=legacy",
+    "build:angular": "ng-packagr -p angular/ng-package.json",
     "transform:icons": "npx @svgr/cli assets/icons --out-dir dist/assets/react/icons --jsx-runtime classic --typescript --config-file .svgrrc-icons.json",
     "transform:illustrations": "npx @svgr/cli assets/illustrations --out-dir dist/assets/react/illustrations --jsx-runtime classic --typescript --config-file .svgrrc-illustrations.json",
     "copy:angular-svg": "cpx \"assets/{icons,illustrations}/**/*.svg\" dist/assets/angular/svg-raw",
-    "build": "npm run build:tokens && npm run transform:icons && npm run transform:illustrations && npm run copy:angular-svg",
+    "build": "npm run build:tokens && npm run transform:icons && npm run transform:illustrations && npm run copy:angular-svg && npm run build:angular",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "npm run build && storybook build"
   },
@@ -33,7 +43,31 @@
   ],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "node-device-detector": "^2.2.6",
+    "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=21 <22",
+    "@angular/core": ">=21 <22",
+    "rxjs": "^7.8.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/common": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "rxjs": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@angular/common": "21.2.17",
+    "@angular/compiler": "21.2.17",
+    "@angular/compiler-cli": "21.2.17",
+    "@angular/core": "21.2.17",
     "@chromatic-com/storybook": "^1.2.0",
     "@storybook/addon-essentials": "^8.0.0",
     "@storybook/addon-interactions": "^8.0.0",
@@ -45,9 +79,13 @@
     "@svgr/cli": "^8.1.0",
     "@tokens-studio/sd-transforms": "2.0.3",
     "cpx": "^1.5.0",
+    "ng-packagr": "21.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "rxjs": "7.8.2",
+    "sass": "^1.101.3",
     "storybook": "^8.0.0",
-    "style-dictionary": "5.5.0"
+    "style-dictionary": "5.5.0",
+    "typescript": "5.9.3"
   }
 }

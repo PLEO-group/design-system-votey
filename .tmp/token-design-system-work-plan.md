@@ -50,6 +50,75 @@ Jedyny konsument spacingu, typografii i scalingu w tej iteracji: `wyborek-crm`
 
 ---
 
+## Priorytet wykonawczy — najpierw działający pipeline Design System → CRM
+
+Ta ścieżka jest bieżącym priorytetem i ma pierwszeństwo przed dodatkami z dalszych etapów. Szczegółowe etapy poniżej pozostają rejestrem całego projektu, ale nie blokują pierwszego używalnego przepływu.
+
+### Definicja pierwszego używalnego pipeline’u
+
+```text
+Tokens Studio / zmergowane JSON-y
+  → build target Angular w Design Systemie
+  → dist/css/tokens.angular.css
+  → paczka @pleodigital/design-system-votey
+  → angular.json w wyborek-crm
+  → build CRM
+  → pilotażowe użycie tokenu w CRM
+```
+
+### Checklista ścieżki krytycznej
+
+- [x] Zaimportowane JSON-y są zmergowane; istniejące źródła i artefakty PWA nie zostały zmienione przez import ani przez target Angular.
+- [x] Dodać izolowany target `npm run build:tokens:angular`, który nie regeneruje artefaktów PWA.
+- [x] Generować `dist/css/tokens.angular.css` ze wspólnych core colors i `tokens/color/semantic-CRM/Light.json`.
+- [x] Dodać do tego samego pliku bezpieczne tokeny niewymagające responsive runtime: fixed spacing oraz core/semantic radius.
+- [x] Zachować aliasy semantic color/radius jako referencje `var(--core-token)`, a wartości fizyczne publikować z jednostką `px`.
+- [x] Dodać test deterministyczności targetu Angular i izolacji od semantic PWA; 19/19 testów tokenów przechodzi.
+- [x] Potwierdzić przez `npm pack`, że `tokens.angular.css` trafia do publikowanej paczki.
+- [x] Dodać import paczki w obu tablicach `styles` w `wyborek-crm/angular.json`, przed `src/styles.scss`.
+- [x] Zainstalować lokalnie spakowaną paczkę i potwierdzić, że Angular rozwiązuje ścieżkę `tokens.angular.css`.
+- [ ] Doprowadzić build development i production CRM do stanu PASS. Obecnie integracja CSS jest rozwiązywana poprawnie, ale build development zatrzymują zastane błędy typów/template type-checkingu niezwiązane z tokenami.
+- [x] Znormalizować importowane tokeny typography i responsive spacing do zatwierdzonego kontraktu CSS (`px`, numeryczne font weights, `--typo-*`, `--space-*`).
+- [x] Przenieść mechanikę responsive scalingu z `angular-design-system` 1:1 i zasilić ją sześcioma trybami zaimportowanymi do repo.
+- [x] Dołączyć wynik responsive spacing/typography do tego samego `tokens.angular.css` i rozszerzyć test deterministyczności.
+- [x] Dodać w warstwie Angular runtime ustawiający `body[data-device="mobile|tablet|desktop"]`: `VoteyDeviceService` jest publikowany z izolowanego wejścia `@pleodigital/design-system-votey/angular`, ustawia również orientację i `--vh` oraz reaguje na resize. Pozostaje podłączyć provider w CRM.
+- [ ] Wybrać jedno małe użycie CRM i zastąpić lokalny token docelowym semantic/fixed tokenem z paczki jako proof of consumption.
+- [ ] Po przejściu buildów i pilotażu uznać podstawowy pipeline za zamknięty.
+
+### Dodatki realizowane dopiero po ścieżce krytycznej
+
+- CRM dark mode;
+- pełny adapter deprecated `--app-color-*` i masowa migracja;
+- manifesty, dalsza rozbudowa dokumentacji Storybooka (podstawowe widoki tokenów i assetów są już gotowe);
+- porządki nazw/rename w PWA;
+- pełny audyt Figmy niewymagany przez zmergowane źródła;
+- kompletne schema validation i pozostałe hardening checks wykraczające poza test pierwszego artefaktu.
+
+### Stan po pierwszym vertical slice — 2026-07-22
+
+- `tokens.angular.css` zawiera 193 unikalne custom properties: wcześniejsze 111 oraz 11 semantic responsive spacing, 70 właściwości 14 grup typografii i `--font-family-open-sans`. Wartości responsive są powtarzane w regułach dla 6 breakpointów × 3 device contexts.
+- `npm run build:tokens:angular` i `npm run test:tokens` przechodzą.
+- Lokalny tarball zawiera nowy CSS; Angular przestał zgłaszać błąd rozwiązania importu po instalacji tarballa.
+- Silnik responsive jest kompilowany przez Sass z mechaniki skopiowanej z `angular-design-system`; mapy wartości powstają automatycznie z sześciu plików `tokens/space/semantic/*` oraz `tokens/type/semantic/*`.
+- Design System zawiera już Angular runtime ustawiający `data-device`; następnym krokiem ścieżki krytycznej jest podłączenie `provideVoteyDeviceDetection()` w CRM przed pilotażowym użyciem `--space-*` i `--typo-*`.
+- Build CRM nie jest jeszcze zielony z powodów niezależnych od tokenów. Przykładowe zastane błędy: niezgodne typy eventów w `add-event-view`, `agenda-logo-cropper` i uploadach CSV oraz niezgodne modele wejściowe komponentów wyników/selectów.
+- Lokalne `src/styles/colors.scss` pozostaje bez zmian i nadal zabezpiecza istniejący CRM; na tym kroku niczego nie usuwamy.
+
+### Podsumowanie prac wykonanych dzisiaj — 2026-07-22
+
+- Build tokenów CRM jest działający: `build:tokens:angular` generuje jeden `dist/css/tokens.angular.css` zawierający wspólne core colors, CRM semantic light, fixed/responsive spacing, radius i responsive typography. Output ma 193 unikalne custom properties.
+- Mechanika `ds-responsive-tokens.scss` została przeniesiona 1:1 z `angular-design-system`; wartości pochodzą z sześciu trybów Votey, a mnożniki urządzeń pozostają utrzymywane w SCSS.
+- Dodano izolowane, opcjonalne wejście Angular Package Format `@pleodigital/design-system-votey/angular`, aby kod Angulara nie trafiał do aplikacji React. Publikuje ono `VoteyDeviceService` i `provideVoteyDeviceDetection()`.
+- Runtime biblioteki rozpoznaje mobile/tablet/desktop, orientację, aktualizuje `body[data-device]`, `body[data-orientation]` i `--vh` oraz reaguje na resize. Provider nie został jeszcze podłączony w `wyborek-crm`.
+- Storybook uporządkowano w grupy `CRM Tokens`, `PWA Tokens` i `Assets`. Powstały spójne karty dla wspólnych core colors, semantic CRM light, semantic PWA light/dark, core/semantic radius, responsive spacing i typografii oraz bibliotek ikon i ilustracji.
+- Widok responsive pokazuje sześć viewportów, ręczny wybór urządzenia, bieżący kontrakt DOM, formułę `calc(...)`, rozwiązaną wartość w `px` i aktualne mnożniki mobile/tablet/desktop odczytywane bezpośrednio z pliku SCSS.
+- PWA semantic colors mają działający przełącznik light/dark. CRM dark nie jest jeszcze częścią outputu Angular ani dokumentacji Storybooka.
+- Ujednolicono nagłówki i typografię kart Storybooka wspólnym komponentem prezentacyjnym; sekcja kolorów została usunięta z karty responsive, ponieważ ma osobne stories.
+- Weryfikacja: `npm run build:angular` PASS, `npm run test:tokens` 19/19 PASS, produkcyjny build Storybooka PASS, a `npm pack --dry-run` potwierdza obecność CSS i wejścia Angular w paczce.
+- Najbliższa ścieżka krytyczna: zainstalować aktualny tarball w CRM, zarejestrować `provideVoteyDeviceDetection()`, sprawdzić computed styles na reprezentatywnych szerokościach, wykonać mały pilotaż migracji i dopiero po zielonych buildach opublikować wersję.
+
+---
+
 ## Etap 0 — zamrożenie stanu wyjściowego i decyzje
 
 Cel: zapisać obecny kontrakt, aby późniejsze zmiany były mierzalne i bezpieczne.
@@ -151,7 +220,7 @@ Panel decyzji etapu: [stage-1-token-contract-decisions.md](./stage-1-token-contr
   - [x] tokeny spacingu, typografii i scalingu tylko dla CRM;
   - [x] osobne artefakty konsumenckie PWA i CRM.
 - [ ] Zaktualizować panel [stage-1-token-contract-decisions.md](./stage-1-token-contract-decisions.md), ponieważ decyzje zakładające wspólną semantic identity zostały zastąpione wynikiem warsztatu.
-- [ ] Ustalić docelowe nazwy plików źródłowych i selektory/outputy dla `PWA-*` oraz `CRM-*`, zachowując kompatybilność obecnych importów Reacta.
+- [x] Ustalić docelowe nazwy plików źródłowych i selektory/outputy dla PWA oraz CRM, zachowując kompatybilność obecnych importów Reacta: PWA pozostaje w `tokens/light.json` i `tokens/dark.json`, CRM używa `tokens/color/semantic-CRM/Light.json`, a pierwszym outputem CRM jest light-only `dist/css/tokens.angular.css` pod `:root`.
 - [x] Zatwierdzić konwencję nazw niezależną od Angulara, Reacta i konkretnych wartości.
 - [x] Zatwierdzić typy oraz jednostki dla color, dimension, font family, font weight, font size, line height i letter spacing.
 - [x] Zdefiniować foundation opacity i sposób składania semantic colors z opaque core + opacity.
@@ -171,14 +240,18 @@ Panel decyzji etapu: [stage-1-token-contract-decisions.md](./stage-1-token-contr
 - [ ] Zdefiniować zasady referencji i zakaz cykli.
   - [ ] Zatwierdzić propozycje 8A–8H z pliku decyzji etapu 1.
 - [ ] Uogólnić filtry Style Dictionary, które obecnie rozpoznają głównie `color.*`.
-- [ ] Rozdzielić generowanie źródeł od adapterów konsumenckich.
+- [x] Rozdzielić generowanie źródeł od adapterów konsumenckich: builder ma izolowane targety `angular` i `legacy`; target Angular nie regeneruje PWA.
 - [ ] Zapewnić deterministyczny build source → dist.
+  - [x] Target Angular jest deterministyczny w dwóch kolejnych buildach.
+  - [ ] Domknąć deterministyczność oraz source → dist dla legacy PWA bez zmiany chronionego kontraktu.
 - [ ] Dodać walidację schema tokenów.
 - [ ] Dodać test brakujących i cyklicznych referencji.
 - [ ] Dodać osobne testy identycznego zestawu ścieżek w parach `PWA-light` ↔ `PWA-dark` oraz `CRM-light` ↔ `CRM-dark`; nie porównywać kontraktu PWA z CRM.
 - [ ] Dodać osobne manifesty publicznego API PWA i CRM oraz wspólny manifest core colors.
 - [ ] Sprawdzić i poprawić publikowanie wszystkich wymaganych plików w `package.json`.
-- [ ] Udokumentować lokalne komendy build/test dla tokenów.
+  - [x] `npm pack` zawiera `dist/css/tokens.angular.css` dzięki istniejącemu wpisowi `files: ["dist"]`.
+  - [ ] Naprawić niezależny, zastany `package.json#main` wskazujący nieistniejący plik.
+- [x] Udokumentować lokalne komendy build/test dla tokenów w `README.md`.
 
 ### Jak zamknąć punkt 6 — round-trip Tokens Studio krok po kroku
 
@@ -382,6 +455,11 @@ Cel: zbudować jedną, współdzieloną paletę core colors oraz dwa niezależne
 - [ ] Dodać test zakazujący referencji `PWA semantic → CRM semantic` i `CRM semantic → PWA semantic`.
 - [ ] Dodać test parytetu nazw osobno dla PWA light/dark i CRM light/dark.
 - [ ] Dodać/uzupełnić dokumentację kolorów w Storybooku.
+  - [x] Wspólne core colors.
+  - [x] Semantic colors PWA light/dark z przełącznikiem trybu.
+  - [x] Semantic colors CRM light.
+  - [ ] Semantic colors CRM dark po dołączeniu ich do artefaktu Angular.
+  - [ ] Semantic shadow/overlay colors po zaprojektowaniu kontraktu.
 - [ ] Uruchomić regresję kolorów w React.
 
 ### Bramka zakończenia
@@ -396,12 +474,12 @@ Cel: zbudować jedną, współdzieloną paletę core colors oraz dwa niezależne
 
 ### Notatki po etapie
 
-- Data: 2026-07-22 — zaktualizowano zakres po warsztacie React + Angular + Design; implementacja etapu nie została jeszcze rozpoczęta.
-- Wynik: etap przepisano z „wspólnej semantyki” na wspólny color core oraz niezależne kontrakty semantic PWA i CRM.
+- Data: 2026-07-22 — zaktualizowano zakres po warsztacie React + Angular + Design i uruchomiono pierwszy produkcyjny vertical slice dla CRM.
+- Wynik: źródła są rozdzielone na wspólny color core, istniejące `tokens/light.json`/`tokens/dark.json` dla PWA oraz `tokens/color/semantic-CRM/Light.json` i `Dark.json` dla CRM. Target Angular wykorzystuje obecnie CRM Light; PWA pozostaje bez zmian.
 - Podjęte decyzje: token sety docelowe to `PWA-light`, `PWA-dark`, `CRM-light`, `CRM-dark`; wszystkie zmiany przechodzą przez Tokens Studio i MR; tokeny niekolorystyczne pozostają CRM-only.
 - Dowody / raporty / linki:
-- Otwarte problemy: ustalić fizyczne nazwy plików, selektory CSS, migrację istniejących `light.json`/`dark.json` do PWA oraz bezkolizyjne outputy obu produktów.
-- Zadania przeniesione dalej: przed implementacją zaktualizować decyzje etapu 1, zaprojektować manifesty PWA/CRM i zatwierdzić strukturę token setów w Tokens Studio.
+- Otwarte problemy: dołączyć CRM Dark dopiero w iteracji dark mode, zaprojektować manifesty PWA/CRM, testy kompletności par light/dark i zakaz cross-product references. Brakujące dwa odcienie żółtego nadal oczekują na dodanie przez workflow Tokens Studio.
+- Zadania przeniesione dalej: zaktualizować przestarzałe założenia w panelu decyzji etapu 1, domknąć reguły referencji 8A–8H, manifesty i pełne testy rozdzielenia kontraktów.
 
 ---
 
@@ -411,16 +489,23 @@ Cel: podłączyć Design System jako jedyne zewnętrzne źródło zmiennych toke
 
 ### Checklista
 
-- [ ] Wygenerować jeden CSS entry point dla CRM/Angulara.
+- [x] Wygenerować jeden CSS entry point dla CRM/Angulara: `dist/css/tokens.angular.css`.
 - [ ] Umieścić w nim w wymaganej kolejności:
-  - [ ] wspólne core colors;
-  - [ ] `CRM-light` jako domyślny semantic color set;
+  - [x] wspólne core colors;
+  - [x] `CRM-light` jako domyślny semantic color set;
   - [ ] selektor `CRM-dark`;
-  - [ ] spacing, typografię i scaling przeznaczone wyłącznie dla CRM;
+  - [x] spacing, typografię i buildową część scalingu przeznaczone wyłącznie dla CRM;
+    - [x] fixed spacing;
+    - [x] core i semantic radius;
+    - [x] responsive semantic spacing;
+    - [x] responsive typography;
+    - [x] scaling CSS dla 6 breakpointów × 3 device contexts;
   - [ ] przejściowe aliasy CRM, jeżeli zostały zatwierdzone.
-- [ ] Nie dołączać semantic colors z `PWA-light` ani `PWA-dark` do entry pointu CRM.
+- [x] Nie dołączać semantic colors PWA do entry pointu CRM.
 - [ ] Opublikować plik w paczce i zabezpieczyć jego ścieżkę testem eksportów.
-- [ ] Dodać CSS w `wyborek-crm/angular.json` w sekcji `styles` przed `src/styles.scss`.
+  - [x] Potwierdzić obecność pliku w lokalnym `npm pack`.
+  - [ ] Opublikować nową wersję paczki i dodać test publicznej ścieżki po instalacji z registry.
+- [x] Dodać CSS w `wyborek-crm/angular.json` w sekcji `styles` przed `src/styles.scss` (build aplikacji i konfiguracja testowa).
 - [ ] Usunąć import lokalnego `styles/colors` dopiero po potwierdzeniu, że wszystkie potrzebne zmienne dostarcza paczka lub warstwa przejściowa.
 - [ ] Zbudować CRM w konfiguracji development.
 - [ ] Zbudować CRM w konfiguracji production.
@@ -436,13 +521,13 @@ Cel: podłączyć Design System jako jedyne zewnętrzne źródło zmiennych toke
 
 ### Notatki po etapie
 
-- Data:
-- Wynik:
-- Nazwa i ścieżka CSS:
-- Podjęte decyzje:
-- Dowody / raporty / linki:
-- Otwarte problemy:
-- Zadania przeniesione dalej:
+- Data: 2026-07-22 — wykonano pierwszy vertical slice builda i integracji CRM.
+- Wynik: target Angular generuje deterministyczny plik zawierający color core, CRM light, fixed spacing, radius oraz responsive spacing i typografię; plik trafia do tarballa i jest rozwiązywany przez Angular CLI po lokalnej instalacji paczki.
+- Nazwa i ścieżka CSS: `dist/css/tokens.angular.css`; import konsumenta: `./node_modules/@pleodigital/design-system-votey/dist/css/tokens.angular.css`.
+- Podjęte decyzje: target Angular jest odseparowany od legacy PWA; responsive spacing i typografia są generowane razem ze scalingiem 1:1, a wartości pochodzą bezpośrednio z sześciu trybów Votey.
+- Dowody / raporty / linki: `npm run build:tokens:angular` PASS, `npm run build:angular` PASS, `npm run test:tokens` 19/19 PASS, `npm pack --dry-run` zawiera CSS i wejście Angular, Angular CLI po instalacji tarballa nie zgłasza błędu resolution CSS.
+- Otwarte problemy: runtime `VoteyDeviceService` istnieje już w bibliotece, ale CRM nie rejestruje jeszcze `provideVoteyDeviceDetection()`. Build CRM zatrzymują też zastane błędy TypeScript/template type-checkingu niezwiązane z tokenami. Nie wykonano production builda, ponieważ development kończy się na tym samym wcześniejszym blockerze aplikacji.
+- Zadania przeniesione dalej: zainstalować aktualny tarball zawierający wejście Angular, podłączyć provider w CRM, sprawdzić computed styles, wykonać pilotażowe użycie, naprawić lub potwierdzić baseline błędów CRM i opublikować nową wersję paczki.
 
 ---
 
@@ -452,17 +537,19 @@ Cel: dodać skalę spacingu i rozpocząć migrację wartości CRM bez zmian w Re
 
 ### Checklista
 
-- [ ] Na podstawie Figmy i audytu CRM zatwierdzić skalę primitives `spacing.*`.
-- [ ] Użyć `angular-design-system` jako wzorca struktury skali i mechaniki; wartości spacingu ustalić wyłącznie na podstawie Figmy Votey i audytu CRM, bez kopiowania tokenów z drugiego Design Systemu.
-- [ ] Zdefiniować fixed spacing do konstrukcji komponentów.
-- [ ] Zdefiniować semantic/responsive spacing wyłącznie tam, gdzie istnieje potwierdzona rola.
-- [ ] Ustalić nazwy CSS custom properties.
-- [ ] Dodać tokeny do źródeł Design Systemu.
-- [ ] Wygenerować je do tego samego CSS entry pointu używanego przez CRM.
-- [ ] Nie generować ani nie wdrażać teraz Tailwind/`rv-*` dla nowego spacingu.
-- [ ] Nie dodawać spacingu do artefaktów ani kontraktu PWA.
-- [ ] Dodać testy wartości fixed i responsive.
+- [x] Na podstawie importu z Figmy/Tokens Studio i audytu CRM zatwierdzić skalę primitives `spacing.*`.
+- [x] Użyć `angular-design-system` jako wzorca struktury skali i mechaniki; wartości spacingu ustalić wyłącznie na podstawie Figmy Votey i audytu CRM, bez kopiowania tokenów z drugiego Design Systemu.
+- [x] Zdefiniować fixed spacing do konstrukcji komponentów: 14 wartości źródłowych.
+- [x] Zdefiniować semantic/responsive spacing wyłącznie tam, gdzie istnieje potwierdzona rola: 11 ról w sześciu trybach.
+- [x] Ustalić nazwy CSS custom properties `--space-*`.
+- [x] Dodać tokeny do źródeł Design Systemu w `tokens/space/core` i `tokens/space/semantic`.
+- [x] Wygenerować je do tego samego CSS entry pointu używanego przez CRM.
+- [x] Nie generować ani nie wdrażać teraz Tailwind/`rv-*` dla nowego spacingu.
+- [x] Nie dodawać spacingu do artefaktów ani kontraktu PWA.
+- [x] Dodać testy wartości fixed i responsive na poziomie deterministycznego outputu i reprezentatywnych formuł dla 3 device contexts.
 - [ ] Dodać dokumentację spacingu w Storybooku.
+  - [x] Responsive spacing z formułą i rozwiązaną wartością `px`.
+  - [ ] Pełna plansza 14 fixed spacing primitives.
 - [ ] Wybrać pierwszy, mały obszar CRM do migracji pilotażowej.
 - [ ] Zmigrować pilotaż bez zmiany wyglądu.
 - [ ] Zweryfikować pilotaż w obsługiwanych szerokościach.
@@ -477,13 +564,13 @@ Cel: dodać skalę spacingu i rozpocząć migrację wartości CRM bez zmian w Re
 
 ### Notatki po etapie
 
-- Data:
-- Wynik:
+- Data: 2026-07-22 — fixed i semantic responsive spacing podłączono do targetu Angular.
+- Wynik: 14 fixed spacing tokens jest publikowanych jako `--spacing-*`; 11 ról semantic z sześciu trybów jest publikowanych jako `--space-*` w regułach `body[data-device]`.
 - Wybrany obszar pilotażowy:
 - Podjęte decyzje:
-- Dowody / raporty / linki:
-- Otwarte problemy:
-- Zadania przeniesione dalej:
+- Dowody / raporty / linki: `npm run build:tokens:angular` PASS; test deterministyczności i reprezentatywnych formuł responsive PASS.
+- Otwarte problemy: runtime jest gotowy w bibliotece, ale provider nie jest jeszcze podłączony w CRM; brak pilotażowego użycia.
+- Zadania przeniesione dalej: podłączenie providera Angular w CRM, pilotaż i test computed style.
 
 ---
 
@@ -493,22 +580,22 @@ Cel: przenieść wartości typograficzne CRM do pełnych, semantycznych ról Des
 
 ### Checklista
 
-- [ ] Na podstawie Figmy i audytu CRM zatwierdzić primitives typografii.
-- [ ] Potwierdzić font family CRM; podłączenie tokenów samo w sobie nie zmienia fontu.
-- [ ] Zdefiniować role, np. display, heading, body, label i caption.
-- [ ] Dla każdej roli zdefiniować komplet:
-  - [ ] font family;
-  - [ ] font size;
-  - [ ] font weight;
-  - [ ] line height;
-  - [ ] letter spacing.
-- [ ] Zdefiniować warianty responsywne tylko dla ról potwierdzonych przez Figmę/produkt.
-- [ ] Dodać tokeny do źródeł Design Systemu.
-- [ ] Wygenerować CSS custom properties do tego samego entry pointu CRM.
-- [ ] Nie dodawać teraz mapowania typografii do Reacta ani Tailwinda.
-- [ ] Nie dodawać typografii do artefaktów ani kontraktu PWA.
-- [ ] Dodać testy kompletu właściwości każdej roli.
-- [ ] Dodać specimen i macierz responsywną w Storybooku.
+- [x] Na podstawie importu z Figmy/Tokens Studio i audytu CRM zatwierdzić primitives typografii.
+- [x] Potwierdzić font family CRM; pozostaje Open Sans, publikowane przez adapter jako `--font-family-open-sans`.
+- [x] Zdefiniować 14 ról typograficznych zgodnie z zaimportowanym kontraktem Votey.
+- [x] Dla każdej z 14 zaimportowanych ról wygenerować komplet:
+  - [x] font family;
+  - [x] font size;
+  - [x] font weight;
+  - [x] line height;
+  - [x] letter spacing.
+- [x] Zdefiniować warianty responsywne na podstawie sześciu zaimportowanych trybów.
+- [x] Dodać tokeny do źródeł Design Systemu — źródłami są zmergowane pliki `tokens/type/core` i `tokens/type/semantic`.
+- [x] Wygenerować CSS custom properties do tego samego entry pointu CRM.
+- [x] Nie dodawać teraz mapowania typografii do Reacta ani Tailwinda.
+- [x] Nie dodawać typografii do artefaktów ani kontraktu PWA.
+- [x] Dodać test kompletu 5 właściwości każdej roli oraz normalizacji font weight i jednostek w outputcie.
+- [x] Dodać specimen i macierz responsywną w Storybooku, wraz z formułą i rozwiązaną wartością `px`.
 - [ ] Wybrać pierwszy obszar CRM do migracji pilotażowej.
 - [ ] Zmigrować tokenowe wartości z odpowiedniej części `texts.scss` i komponentów.
 - [ ] Oddzielić nietokenowe utility od definicji wartości.
@@ -524,13 +611,13 @@ Cel: przenieść wartości typograficzne CRM do pełnych, semantycznych ról Des
 
 ### Notatki po etapie
 
-- Data:
-- Wynik:
+- Data: 2026-07-22 — 14 responsive grup typografii podłączono do targetu Angular.
+- Wynik: każda grupa publikuje `--typo-<rola>-font-family`, `font-size`, `font-weight`, `line-height` i `letter-spacing`; tekstowe wagi z importu są mapowane na 300/400/600/700/800.
 - Wybrany obszar pilotażowy:
 - Podjęte decyzje:
-- Dowody / raporty / linki:
-- Otwarte problemy:
-- Zadania przeniesione dalej:
+- Dowody / raporty / linki: build i 19/19 testów tokenów PASS; wszystkie sześć trybów ma zgodny zestaw 56 właściwości źródłowych; specimen i macierz responsive działają w produkcyjnym buildzie Storybooka.
+- Otwarte problemy: runtime istnieje w bibliotece, ale provider nie jest jeszcze podłączony w CRM; nie powstała jeszcze dyrektywa `voteyText` ani pilotażowa migracja.
+- Zadania przeniesione dalej: podłączenie providera w CRM, decyzja i implementacja dyrektywy tekstowej oraz pilotaż.
 
 ---
 
@@ -546,15 +633,17 @@ Cel: przenieść mechanizm skalowania z `angular-design-system` w formie dopasow
   - [x] rozdzielenie breakpoint/device;
   - [x] responsive spacing;
   - [x] responsive typography.
-- [ ] Spisać obecne breakpointy i zachowanie CRM.
-- [ ] Udokumentować różnice i wpływ na ekrany CRM.
-- [ ] Zaprojektować parametry scalingu jako tokeny/primitives Design Systemu.
-- [ ] Wygenerować wynikowe custom properties/reguły do tego samego CSS-a CRM.
-- [ ] Nie uzależniać podstawowej semantyki layoutu wyłącznie od user agenta.
-- [ ] Nie zmieniać mechanizmu `rv-*` w React.
-- [ ] Nie publikować nowego scalingu jako API PWA.
-- [ ] Zbudować kalkulator/podgląd scalingu w Storybooku.
+- [x] Spisać obecne breakpointy i zachowanie CRM.
+- [x] Udokumentować różnice i wpływ na ekrany CRM.
+- [x] Utrzymać parametry scalingu w skopiowanej 1:1 warstwie SCSS Design Systemu; sześć szerokości referencyjnych pochodzi z trybów Votey, a mnożniki device z map SCSS.
+- [x] Wygenerować wynikowe custom properties/reguły do tego samego CSS-a CRM.
+- [ ] Nie uzależniać podstawowej semantyki layoutu wyłącznie od user agenta. Obecny port 1:1 klasyfikuje device przez `node-device-detector`; resize aktualizuje wymiary, orientację i `--vh`, ale nie wprowadza niezależnego fallbacku klasyfikującego device po szerokości.
+- [x] Nie zmieniać mechanizmu `rv-*` w React.
+- [x] Nie publikować nowego scalingu jako API PWA.
+- [x] Zbudować kalkulator/podgląd scalingu w Storybooku: story `CRM Tokens/Foundations/Responsive tokens` pokazuje computed typography/spacing, sześć viewportów referencyjnych, formuły i rozwiązane wartości `px`, mnożniki odczytane z SCSS oraz ręczny podgląd kontraktu `data-device`/orientacji/`--vh`.
 - [ ] Dodać testy computed style dla reprezentatywnych spacingów i ról typograficznych.
+  - [x] Dodać testy statycznego outputu dla granic, mnożników i reprezentatywnych formuł wszystkich 3 device contexts.
+  - [ ] Dodać testy computed style po wdrożeniu runtime `data-device`.
 - [ ] Wybrać ekran CRM do proof of concept.
 - [ ] Porównać ekran przed/po na wszystkich obsługiwanych szerokościach.
 - [ ] Uzyskać akceptację różnic wizualnych albo doprowadzić do zgodności.
@@ -563,20 +652,20 @@ Cel: przenieść mechanizm skalowania z `angular-design-system` w formie dopasow
 ### Bramka zakończenia
 
 - [ ] Scaling działa w proof of concept CRM i pochodzi z CSS Design Systemu.
-- [ ] Mechanika `ds-responsive-tokens.scss` została przeniesiona 1:1 i ma udokumentowane pochodzenie; wartości tokenów pochodzą z Figmy Votey, a nie z map BoxEs.
+- [x] Mechanika `ds-responsive-tokens.scss` została przeniesiona 1:1 i ma udokumentowane pochodzenie; wartości tokenów są pobierane z sześciu zmergowanych trybów Votey, a nie z map BoxEs.
 - [ ] Testy computed style i zaakceptowana regresja wizualna przechodzą.
 - [ ] React nadal korzysta z niezmienionego `rv-*`.
 
 ### Notatki po etapie
 
-- Data: 2026-07-22 — wykonano wyprzedzająco analizę systemu wzorcowego; etap implementacyjny nie został rozpoczęty.
-- Wynik: opisano dwuwymiarowy model viewport + device, interpolację odcinkami, mnożniki, sześć breakpointów, warstwy `--spacing-*`/`--space-*`/`--typo-*`, runtime `data-device` oraz rolę `ds-text`. Zatwierdzono przeniesienie mechaniki `ds-responsive-tokens.scss` 1:1 przy zachowaniu Votey-specific wartości z Figmy. Dla typografii wybrano typowaną dyrektywę Angular z odpowiednikiem mechaniki `overwrite` dla kolorów tekstu i italic.
+- Data: 2026-07-22 — wykonano analizę, build, angularowy runtime i dokumentacyjny podgląd portu scalingu.
+- Wynik: skopiowano funkcje, breakpointy, interpolację odcinkami, mnożniki i selektory `body[data-device]` do `styles/angular/_responsive-token-engine.scss`. Builder tworzy mapy z 6 trybów spacingu i typografii Votey, kompiluje je przez Sass i dołącza do `tokens.angular.css`. Osobny entry point Angular dostarcza runtime kontraktu DOM, a Storybook pokazuje computed values, surowe formuły, wartości `px`, mnożniki i sześć viewportów odpowiadających trybom Figmy.
 - Wybrany ekran proof of concept:
 - Zaakceptowane różnice:
 - Podjęte decyzje:
-- Dowody / raporty / linki: [angular-design-system-responsive-scaling-audit.md](./angular-design-system-responsive-scaling-audit.md).
-- Otwarte problemy: publiczna nazwa i semantic color mapping inputu overwrite, fallback przed inicjalizacją JS, wybór detectora oraz forma osobnej warstwy Angular. Znane zachowania brzegowe formuły nie są poprawiane podczas portu 1:1; ewentualne zmiany wymagają osobnego, równoległego zadania w obu systemach.
-- Zadania przeniesione dalej: przed implementacją zatwierdzić decyzje z końca raportu; następnie zinwentaryzować breakpointy i zachowanie CRM, zaprojektować źródłowy format responsive tokenów i wybrać ekran proof of concept.
+- Dowody / raporty / linki: [angular-design-system-responsive-scaling-audit.md](./angular-design-system-responsive-scaling-audit.md), `npm run build:angular` PASS, `npm run test:tokens` 19/19 PASS i produkcyjny build Storybooka PASS.
+- Otwarte problemy: runtime jest gotowy w paczce, ale CRM nie rejestruje jeszcze `provideVoteyDeviceDetection()`; pozostają fallback przed inicjalizacją JS, semantic color mapping inputu overwrite oraz testy computed style. Znane zachowania brzegowe formuły nie są poprawiane podczas portu 1:1.
+- Zadania przeniesione dalej: podłączyć provider runtime w CRM, potem wykonać test computed style i proof of concept; dyrektywę `voteyText` realizować po aktywacji tokenów runtime.
 
 ---
 
@@ -630,18 +719,21 @@ Cel: zamknąć pierwsze wdrożenie udokumentowanym i bezpiecznie opublikowanym k
 ### Checklista
 
 - [ ] Uzupełnić Storybook o:
-  - [ ] wspólne core colors;
-  - [ ] osobne sekcje semantic colors `PWA-light`/`PWA-dark` i `CRM-light`/`CRM-dark`;
+  - [x] wspólne core colors w sekcjach CRM i PWA;
+  - [x] osobne semantic colors `PWA-light`/`PWA-dark` z działającym przełącznikiem;
+  - [x] semantic colors `CRM-light`;
+  - [ ] semantic colors `CRM-dark` po włączeniu tego trybu do artefaktu Angular;
   - [ ] CRM opacity foundations oraz produktowo przypisane semantic shadow/overlay colors;
   - [ ] przykłady elewacji, jeśli zostaną wprowadzone jako composite tokens;
-  - [ ] light/dark osobno dla PWA i CRM;
-  - [ ] fixed i responsive spacing;
-  - [ ] specimen typografii;
-  - [ ] breakpointy i kalkulator scalingu;
+  - [ ] light/dark osobno dla PWA i CRM (PWA gotowe, CRM dark odłożony);
+  - [ ] fixed i responsive spacing (responsive gotowe, pełna plansza fixed pozostaje);
+  - [x] core radius i semantic radius na osobnej karcie `CRM Tokens/Foundations/Radius`, wraz z wizualnym preview oraz wartościami `px`;
+  - [x] specimen typografii;
+  - [x] breakpointy i kalkulator scalingu;
   - [ ] przykłady użycia CSS w Angularze;
   - [ ] status deprecated aliases;
   - [ ] raport pokrycia Figma ↔ tokeny.
-- [ ] Potwierdzić, że Storybook czyta wygenerowane artefakty i nie jest drugim źródłem wartości.
+- [x] Potwierdzić, że Storybook czyta wygenerowane artefakty i nie jest drugim źródłem wartości: wartości CSS pochodzą z `tokens.angular.css`, aliasy z JSON-ów źródłowych, a mnożniki scalingu są odczytywane bezpośrednio z SCSS przez `?raw`.
 - [ ] Uruchomić walidację schema, referencji, rozdzielenia semantic PWA/CRM, obu par light/dark i publicznego API każdego konsumenta.
 - [ ] Uruchomić pełny build paczki.
 - [ ] Uruchomić build/testy CRM w wymaganych konfiguracjach.
@@ -666,13 +758,13 @@ Cel: zamknąć pierwsze wdrożenie udokumentowanym i bezpiecznie opublikowanym k
 
 ### Notatki po etapie
 
-- Data:
+- Data: 2026-07-22 — wykonano pierwszą dużą iterację dokumentacji Storybooka; etap publikacyjny pozostaje otwarty.
 - Wersja paczki:
-- Wynik:
-- Podjęte decyzje:
-- Dowody / raporty / linki:
-- Otwarte problemy:
-- Zadania do kolejnej iteracji:
+- Wynik: nawigacja ma trzy spójne grupy `CRM Tokens`, `PWA Tokens` i `Assets`; udokumentowano core/semantic colors, core/semantic radius, responsive spacing, typography i scaling oraz odświeżono galerie ikon i ilustracji.
+- Podjęte decyzje: wspólny header zapewnia identyczną typografię kart; wybór device w Storybooku emuluje kontrakt DOM tylko dla preview, natomiast produkcyjny CRM będzie używać angularowego providera.
+- Dowody / raporty / linki: produkcyjny build Storybooka PASS; ręcznie sprawdzono karty i przełącznik PWA light/dark; responsive story pokazuje również przeliczone wartości `px` i aktualne mnożniki device.
+- Otwarte problemy: brak CRM dark, shadow/overlay, planszy fixed spacing, przykładu integracji Angular i raportu pokrycia Figma; nie wykonano jeszcze pełnego builda wszystkich konsumentów ani publikacji.
+- Zadania do kolejnej iteracji: najpierw zamknąć pipeline w CRM (provider, computed styles, pilotaż, build), potem uzupełniać dodatki dokumentacyjne.
 
 ---
 
@@ -689,17 +781,21 @@ Cel: zamknąć pierwsze wdrożenie udokumentowanym i bezpiecznie opublikowanym k
 | 2026-07-22 | Przejściowe aliasy `--app-color-*` będą żyły w adapterze CRM/Angular publikowanym przez paczkę Design Systemu. | CRM może być migrowany etapami bez zachowywania lokalnego źródła tokenów i bez zanieczyszczania wspólnego core ani źródeł semantic PWA/CRM nazwami migracyjnymi. | W każdym migrowanym miejscu alias jest od razu zastępowany docelowym CRM semantic tokenem; alias zabezpiecza tylko jeszcze niezmigrowany kod. | Angular + Design System |
 | 2026-07-22 | Publiczny entry point tokenów CRM będzie publikowany jako `dist/css/tokens.angular.css`. | Jedna stabilna ścieżka upraszcza konfigurację buildu Angulara i pozwala testować kompletność eksportu paczki. | CRM zaimportuje ten plik przed `src/styles.scss`; zmiana ścieżki będzie zmianą publicznego API. | Angular + Design System |
 | 2026-07-22 | Przyjmujemy politykę SemVer, deprecacji i wygaszania aliasów. | Konsumenci muszą móc rozpoznać kompatybilne rozszerzenie i zmianę łamiącą kontrakt oraz mieć kontrolowany czas na migrację. | Patch nie zmienia publicznego kontraktu; minor dodaje kompatybilne API; major usuwa lub łamie API. Deprecated alias pozostaje do zera użyć w CRM oraz przez jedno kolejne wydanie minor, a następnie może zostać usunięty w majorze. | React + Angular + Design System |
+| 2026-07-22 | Kod runtime Angular jest publikowany przez osobne wejście `@pleodigital/design-system-votey/angular`. | React nie może ładować zależności Angulara, a CRM potrzebuje wspólnego serwisu urządzenia dla responsive tokens. | `VoteyDeviceService` i provider są opcjonalne dla PWA, a CRM musi jawnie zarejestrować provider. | Angular + Design System |
+| 2026-07-22 | Storybook może emulować wybór urządzenia w preview, ale produkcyjny kontrakt DOM ustawia `VoteyDeviceService`. | Pozwala testować sześć trybów bez udawania, że toolbar Storybooka jest runtime aplikacji. | Dokumentacja i runtime korzystają z tych samych custom properties, lecz odpowiedzialność za `data-device`, orientację i `--vh` w CRM należy do providera. | Angular + Design System |
 
 ## Rejestr ryzyk i blockerów
 
 | Status | Ryzyko / blocker | Właściciel | Plan działania | Etap |
 |---|---|---|---|---|
-| Otwarte | `dist` jest obecnie niespójny ze źródłami tokenów | Design System | Naprawić i zabezpieczyć testem w etapie 1 | 1 |
+| Częściowo zamknięte | `dist` może być niespójny ze źródłami tokenów | Design System | Target Angular jest deterministyczny i testowany; pozostaje domknąć source → dist oraz parytet dla legacy PWA | 1 |
 | Otwarte | React intensywnie używa obecnego kontraktu kolorów i `rv-*` | React + Design System | Zamrozić API i wykonywać regresję; nie migrować spacingu/typografii/scalingu | 0, 3, 9 |
-| Otwarte | Obecne źródła `light.json`/`dark.json` nie są jeszcze formalnie rozdzielone na PWA i CRM | Design System + Design | Najpierw zachować istniejący kontrakt jako PWA, następnie dodać osobne CRM-light/CRM-dark; zabezpieczyć manifestami i testami par | 1, 3 |
+| Częściowo zamknięte | Źródła semantic wymagają formalnego rozdzielenia PWA i CRM | Design System + Design | Fizyczny podział już istnieje: `light.json`/`dark.json` pozostają PWA, a CRM ma `semantic-CRM/Light.json` i `Dark.json`; pozostają manifesty, testy par i cross-product references | 1, 3 |
 | Otwarte | Podobne nazwy semantic PWA i CRM mogą kolidować w outputach | Design System | Ustalić osobne entry pointy/selektory i test zakazujący cross-product references przed implementacją | 1, 3, 4 |
 | Otwarte | CRM ma dużą liczbę lokalnych użyć `--app-color-*` | Angular + Design System | Tabela mapowania, przejściowe aliasy i migracja obszarami | 0, 3, 8 |
 | Zamknięte | Font CRM dla pierwszej iteracji | Design + Angular | Pozostawić Open Sans; ewentualną zmianę fontu prowadzić jako osobną decyzję i migrację | 0, 6 |
+| Otwarte | Runtime responsive z paczki nie jest jeszcze aktywny w CRM | Angular | Zainstalować aktualny tarball, zarejestrować `provideVoteyDeviceDetection()` i sprawdzić computed styles na reprezentatywnych szerokościach | 4, 7 |
+| Otwarte | `package.json#main` wskazuje nieistniejący legacy plik | Design System | Naprawić niezależnie od nowego eksportu `/angular` i zabezpieczyć testem publicznego API | 1, 9 |
 
 ## Kryteria zakończenia całej pierwszej iteracji
 

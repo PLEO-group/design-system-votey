@@ -1,52 +1,82 @@
 import React from 'react';
 import {AssetCard} from '../components/AssetCard';
+import {StoryPageHeader} from '../components/StoryPageHeader';
 import {getIconList, getIllustrationList} from '../utils/assetLoader';
+import './Assets.stories.css';
 
 export default {
-    title: 'Assets/Icons and Illustrations',
+    title: 'Assets/Library',
     component: AssetCard,
+    parameters: {
+        layout: 'fullscreen',
+    },
 };
 
-const allIcons = getIconList();
-const allIllustrations = getIllustrationList();
-
-const groupAssetsByCategory = (assets) => {
-    return assets.reduce((acc, asset) => {
+function groupAssetsByCategory(assets) {
+    return assets.reduce((groups, asset) => {
         const category = asset.category || 'Root';
-        if (!acc[category]) {
-            acc[category] = [];
-        }
-        acc[category].push(asset);
-        return acc;
+        groups[category] ??= [];
+        groups[category].push(asset);
+        groups[category].sort((first, second) => first.name.localeCompare(second.name));
+        return groups;
     }, {});
-};
+}
 
-const groupedIcons = groupAssetsByCategory(allIcons);
-const groupedIllustrations = groupAssetsByCategory(allIllustrations);
+const icons = getIconList();
+const illustrations = getIllustrationList();
 
-const AssetGallery = ({groupedAssets}) => (
-    <div>
-        {Object.keys(groupedAssets).sort().map(category => (
-            <div key={category} style={{marginBottom: '40px'}}>
-                <h2 style={{fontStyle: "italic"}}>{category.toUpperCase()}</h2>
-                <div
-                    style={{display: 'flex', flexWrap: 'wrap', gap: '10px', padding: '15px'}}>
-                    {groupedAssets[category].map(asset => (
-                        <AssetCard key={asset.name} asset={asset}/>
-                    ))}
-                </div>
+function AssetGallery({assets, description, eyebrow, title, type}) {
+    const groupedAssets = groupAssetsByCategory(assets);
+
+    return (
+        <main className="asset-library">
+            <StoryPageHeader
+                description={<>{description} <strong>{assets.length} assets</strong> in the current build.</>}
+                eyebrow={eyebrow}
+                title={title}
+            />
+
+            <div className="asset-library__categories">
+                {Object.keys(groupedAssets).sort().map((category) => (
+                    <section className="asset-library__category" key={category}>
+                        <header>
+                            <h2>{category.replaceAll('/', ' / ')}</h2>
+                            <span>{groupedAssets[category].length}</span>
+                        </header>
+                        <div className={`asset-library__grid asset-library__grid--${type}`}>
+                            {groupedAssets[category].map((asset) => (
+                                <AssetCard asset={asset} key={asset.name}/>
+                            ))}
+                        </div>
+                    </section>
+                ))}
             </div>
-        ))}
-    </div>
-);
-
+        </main>
+    );
+}
 
 export const IconsGallery = {
-    render: () => <AssetGallery groupedAssets={groupedIcons}/>,
-    name: 'Icons',
+    name: 'Icon library',
+    render: () => (
+        <AssetGallery
+            assets={icons}
+            description="Production SVG icons generated for React consumers."
+            eyebrow="Assets / React"
+            title="Icon library"
+            type="icon"
+        />
+    ),
 };
 
 export const IllustrationsGallery = {
-    render: () => <AssetGallery groupedAssets={groupedIllustrations}/>,
-    name: 'Illustrations',
+    name: 'Illustration library',
+    render: () => (
+        <AssetGallery
+            assets={illustrations}
+            description="Production illustrations grouped by their source category."
+            eyebrow="Assets / React"
+            title="Illustration library"
+            type="illustration"
+        />
+    ),
 };

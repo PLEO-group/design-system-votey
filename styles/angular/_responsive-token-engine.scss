@@ -1,0 +1,187 @@
+@use "sass:map";
+@use "sass:math";
+@use "sass:list";
+
+// Mechanika skopiowana z angular-design-system/ds-responsive-tokens.scss.
+// Wartości tokenów są przekazywane przez builder z sześciu trybów Votey.
+$breakpoints: (
+  "mobile-small": 360,
+  "mobile": 375,
+  "tablet-small": 768,
+  "tablet": 1024,
+  "laptop": 1280,
+  "desktop": 1920,
+);
+
+$multiplier-desktop: 1;
+$multiplier-tablet: 1.2;
+$multiplier-mobile: 0.8;
+
+$breakpoint-order: (
+  "mobile-small",
+  "mobile",
+  "tablet-small",
+  "tablet",
+  "laptop",
+  "desktop"
+);
+
+@function responsive-token-size($sizes-map, $breakpoint) {
+  $size: map.get($sizes-map, $breakpoint);
+
+  @if $size == null and $breakpoint == "mobile-small" {
+    $size: map.get($sizes-map, "mobile");
+  }
+
+  @if $size == null and $breakpoint == "tablet-small" {
+    $size: map.get($sizes-map, "tablet");
+  }
+
+  @if $size == null and $breakpoint == "laptop" {
+    $size: map.get($sizes-map, "desktop");
+  }
+
+  @if $size == null {
+    @error "Missing responsive size for breakpoint #{$breakpoint}.";
+  }
+
+  @return $size;
+}
+
+@function responsive-token-breakpoints($sizes-map) {
+  $token-breakpoints: ();
+
+  @each $breakpoint in $breakpoint-order {
+    @if map.has-key($sizes-map, $breakpoint) {
+      $token-breakpoints: list.append($token-breakpoints, $breakpoint);
+    }
+  }
+
+  @if list.length($token-breakpoints) < 2 {
+    @error "Responsive size token requires at least two explicit breakpoints.";
+  }
+
+  @return $token-breakpoints;
+}
+
+@function scaled-responsive-token-size($size, $breakpoint, $mplier) {
+  @if $breakpoint == "mobile" {
+    @return math.div($size, $multiplier-mobile) * $mplier;
+  }
+
+  @if $breakpoint == "tablet-small" or $breakpoint == "tablet" {
+    @return math.div($size, $multiplier-tablet) * $mplier;
+  }
+
+  @return $size * $mplier;
+}
+
+@mixin responsive-size-token($name, $mplier, $sizes-map) {
+  $token-breakpoints: responsive-token-breakpoints($sizes-map);
+  $first-breakpoint: list.nth($token-breakpoints, 1);
+  $last-breakpoint: list.nth(
+    $token-breakpoints,
+    list.length($token-breakpoints)
+  );
+  $first-br: map.get($breakpoints, $first-breakpoint);
+  $last-br: map.get($breakpoints, $last-breakpoint);
+  $first-size: responsive-token-size($sizes-map, $first-breakpoint);
+  $last-size: responsive-token-size($sizes-map, $last-breakpoint);
+
+  @media (max-width: #{$first-br}px) {
+    --#{$name}: #{$first-size}px;
+  }
+
+  @for $index from 1 through list.length($token-breakpoints) - 1 {
+    $min-breakpoint: list.nth($token-breakpoints, $index);
+    $max-breakpoint: list.nth($token-breakpoints, $index + 1);
+    $min-br: map.get($breakpoints, $min-breakpoint);
+    $max-br: map.get($breakpoints, $max-breakpoint);
+    $min-size: responsive-token-size($sizes-map, $min-breakpoint);
+    $max-size: responsive-token-size($sizes-map, $max-breakpoint);
+
+    @if $index != 1 {
+      $min-size: scaled-responsive-token-size(
+        $min-size,
+        $min-breakpoint,
+        $mplier
+      );
+    }
+
+    $max-size: scaled-responsive-token-size(
+      $max-size,
+      $max-breakpoint,
+      $mplier
+    );
+
+    @media (min-width: #{$min-br}px) and (max-width: #{$max-br - 1}px) {
+      $slope: math.div(($max-size - $min-size), ($max-br - $min-br));
+      $slope-vw: $slope * 100;
+      $y-intercept: $min-size - ($slope * $min-br);
+      $y-intercept-px: $y-intercept * 1px;
+
+      --#{$name}: calc(#{$slope-vw}vw + #{$y-intercept-px});
+    }
+  }
+
+  @media (min-width: #{$last-br}px) {
+    --#{$name}: #{$last-size}px;
+  }
+}
+
+@mixin semantic-typography-token($name, $config, $mplier) {
+  & {
+    --typo-#{$name}-font-family: var(--font-family-open-sans);
+    --typo-#{$name}-font-weight: #{map.get($config, "font-weight")};
+    --typo-#{$name}-letter-spacing: #{map.get($config, "letter-spacing")}px;
+  }
+
+  @include responsive-size-token(
+    "typo-#{$name}-font-size",
+    $mplier,
+    map.get($config, "font-size")
+  );
+  @include responsive-size-token(
+    "typo-#{$name}-line-height",
+    $mplier,
+    map.get($config, "line-height")
+  );
+}
+
+@mixin semantic-typography-tokens($tokens, $mplier) {
+  @each $name, $config in $tokens {
+    @include semantic-typography-token($name, $config, $mplier);
+  }
+}
+
+@mixin semantic-spacing-tokens($tokens, $mplier) {
+  @each $name, $sizes-map in $tokens {
+    @include responsive-size-token("space-#{$name}", $mplier, $sizes-map);
+  }
+}
+
+@mixin responsive-token-bundle($spacing-tokens, $typography-tokens) {
+  body[data-device="desktop"] {
+    @include semantic-typography-tokens(
+      $typography-tokens,
+      $multiplier-desktop
+    );
+    @include semantic-spacing-tokens($spacing-tokens, $multiplier-desktop);
+  }
+
+  body[data-device="tablet"] {
+    @include semantic-typography-tokens(
+      $typography-tokens,
+      $multiplier-tablet
+    );
+    @include semantic-spacing-tokens($spacing-tokens, $multiplier-tablet);
+  }
+
+  body[data-device="mobile"] {
+    @include semantic-typography-tokens(
+      $typography-tokens,
+      $multiplier-mobile
+    );
+    @include semantic-spacing-tokens($spacing-tokens, $multiplier-mobile);
+  }
+}

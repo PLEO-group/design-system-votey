@@ -1,0 +1,66 @@
+.core-color-palette {
+    display: grid;
+    gap: 24px;
+}
+
+.core-color-palette__group {
+    padding: 24px;
+    border: 1px solid #d8d8d8;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.core-color-palette__group h2 {
+    margin: 0 0 16px;
+    color: #07064e;
+    font-size: 18px;
+    text-transform: capitalize;
+}
+
+.core-color-palette__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.core-color-palette__card {
+    display: grid;
+    min-width: 0;
+    gap: 7px;
+}
+
+.core-color-palette__swatch {
+    height: 88px;
+    border: 1px solid #d8d8d8;
+    border-radius: 12px;
+}
+
+.core-color-palette__card--empty {
+    opacity: .55;
+}
+
+.core-color-palette__card--empty .core-color-palette__swatch {
+    border-style: dashed;
+    background: #f6f6f6;
+}
+
+.core-color-palette__card strong,
+.core-color-palette__card code {
+    overflow-wrap: anywhere;
+}
+
+.core-color-palette__card strong {
+    color: #07064e;
+    font-size: 12px;
+}
+
+.core-color-palette__card code {
+    color: #737373;
+    font-size: 11px;
+}
+
+@media (max-width: 600px) {
+    .core-color-palette__group {
+        padding: 16px;
+    }
+}

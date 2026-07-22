@@ -1,0 +1,14 @@
+{
+  "name": "@pleodigital/design-system-votey-angular",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "@angular/common": ">=21 <22",
+    "@angular/core": ">=21 <22",
+    "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "node-device-detector": "^2.2.6",
+    "tslib": "^2.8.1"
+  },
+  "sideEffects": false
+}

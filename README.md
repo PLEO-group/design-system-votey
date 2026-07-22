@@ -17,3 +17,23 @@ npm run build:tokens
 ```
 
 `npm run build:tokens` uruchamia walidację automatycznie przed zapisem plików do `dist`. Te same testy działają w CI dla zmian tokenów, skryptów walidacyjnych oraz merge requestów tworzonych przez workflow Tokens Studio.
+
+## Runtime Angulara
+
+Kod Angulara jest publikowany przez osobne wejście, dzięki czemu nie trafia do aplikacji Reactowej:
+
+```ts
+import { provideVoteyDeviceDetection } from "@pleodigital/design-system-votey/angular";
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideVoteyDeviceDetection()],
+};
+```
+
+Provider inicjalizuje `VoteyDeviceService`, reaguje na zmianę rozmiaru okna i ustawia na `body` atrybuty `data-device` oraz `data-orientation`. Ustawia również zmienną `--vh`. Atrybut `data-device` aktywuje reguły responsive z `dist/css/tokens.angular.css`.
+
+Build wejścia Angulara:
+
+```bash
+npm run build:angular
+```

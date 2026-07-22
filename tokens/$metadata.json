@@ -2,6 +2,13 @@
   "tokenSetOrder": [
     "base/colors",
     "light",
-    "dark"
+    "dark",
+    "space/semantic/Desktop 1920",
+    "space/semantic/Laptop 1280",
+    "space/semantic/Tablet 1024",
+    "space/semantic/Tablet 768",
+    "space/semantic/Mobile 375",
+    "space/semantic/Mobile 360",
+    "space/core/value"
   ]
 }

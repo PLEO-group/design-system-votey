@@ -7,11 +7,16 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build:tokens": "node build-style-dictionary.js",
+    "validate:tokens": "node scripts/validate-core-colors.js",
+    "test:tokens": "node --test tests/**/*.test.js",
+    "build:tokens": "npm run validate:tokens && node build-style-dictionary.mjs",
     "transform:icons": "npx @svgr/cli assets/icons --out-dir dist/assets/react/icons --jsx-runtime classic --typescript --config-file .svgrrc-icons.json",
     "transform:illustrations": "npx @svgr/cli assets/illustrations --out-dir dist/assets/react/illustrations --jsx-runtime classic --typescript --config-file .svgrrc-illustrations.json",
     "copy:angular-svg": "cpx \"assets/{icons,illustrations}/**/*.svg\" dist/assets/angular/svg-raw",
@@ -38,10 +43,11 @@
     "@storybook/react-vite": "^8.0.0",
     "@storybook/test": "^8.0.0",
     "@svgr/cli": "^8.1.0",
+    "@tokens-studio/sd-transforms": "2.0.3",
     "cpx": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "storybook": "^8.0.0",
-    "style-dictionary": "^3.9.2"
+    "style-dictionary": "5.5.0"
   }
 }

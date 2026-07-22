@@ -843,6 +843,12 @@
           }
         }
       }
+    },
+    "_test": {
+      "nazwa": {
+        "value": "{color.blue-70}",
+        "type": "color"
+      }
     }
   }
 }

@@ -208,5 +208,11 @@
       "value": "#EEFBFE",
       "type": "color"
     }
+  },
+  "test": {
+    "opacity": {
+      "value": "0.08",
+      "type": "opacity"
+    }
   }
 }

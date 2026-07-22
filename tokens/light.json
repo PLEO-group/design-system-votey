@@ -839,6 +839,12 @@
           }
         }
       }
+    },
+    "_test": {
+      "nazwa": {
+        "value": "{color.active-green-25}",
+        "type": "color"
+      }
     }
   }
 }

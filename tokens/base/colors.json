@@ -208,9 +208,5 @@
       "value": "#EEFBFE",
       "type": "color"
     }
-  },
-  "test-opacity-8": {
-    "value": "0.08",
-    "type": "number"
   }
 }

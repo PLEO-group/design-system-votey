@@ -1,5 +1,11 @@
 {
   "color": {
+    "seethrough": {
+      "navy": {
+        "value": "rgba({color.mint-green-600}, {test-opacity-8}",
+        "type": "color"
+      }
+    },
     "surface": {
       "bright": {
         "value": "{color.navy-blue-600}",

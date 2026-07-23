@@ -1,23 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,200..900&display=swap');
-
-
-html{
-    height: 100%;
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../storybook/assets/fonts/Satoshi-Variable.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 300 900;
+    font-display: swap;
 }
 
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../storybook/assets/fonts/Satoshi-VariableItalic.woff2') format('woff2');
+    font-style: italic;
+    font-weight: 300 900;
+    font-display: swap;
+}
+
+:root {
+    --storybook-font-family: var(
+        --font-family-satoshi,
+        'Satoshi',
+        system-ui,
+        Arial,
+        sans-serif
+    );
+}
+
+html,
+body,
+#storybook-root {
+    min-height: 100%;
+}
 
 body {
-    height: inherit;
-    font-family: 'Nunito Sans', sans-serif;
-    #storybook-root {
-        height: inherit;
-        > div {
-            height: inherit;
-        }
-    }
-    .asset-card {
-        svg, g, path, line {
-            fill: #06064D;
-        }
-    }
+    margin: 0;
+    font-family: var(--storybook-font-family);
+    color: var(--color-text-primary, #07064e);
+    background: var(--color-bg-page, #f6f6f6);
+}
+
+#storybook-root > div {
+    min-height: 100%;
 }

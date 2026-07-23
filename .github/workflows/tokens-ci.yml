@@ -7,6 +7,12 @@ on:
     paths:
       - 'tokens/**/*.json' # Tylko jeśli zmieniony jest JSON tokenów
       - 'assets/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'build-style-dictionary.mjs'
+      - '.github/workflows/tokens-ci.yml'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -15,6 +21,11 @@ on:
       - 'storybook/**'     # Uruchom też jeśli zmieniony jest kod Storybooka
       - 'dist/**'          # Uruchom też jeśli zmienione są wygenerowane tokeny
       - 'storybook-static/**' # Uruchom też jeśli zmieniony jest zbudowany Storybook
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'build-style-dictionary.mjs'
       - '.github/workflows/tokens-ci.yml' # Uruchom przy zmianie samego workflowa
 
 permissions:
@@ -38,6 +49,9 @@ jobs:
 
       - name: 🔧 Install dependencies
         run: npm install
+
+      - name: ✅ Validate Token Sources
+        run: npm run validate:tokens && npm run test:tokens
 
       # Krok A: Generowanie Tokenów
       - name: 🎨 Build Design Tokens (Style Dictionary)

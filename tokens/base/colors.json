@@ -22,6 +22,10 @@
       "value": "#939393",
       "type": "color"
     },
+    "gray-900": {
+      "value": "#444d5f",
+      "type": "color"
+    },
     "navy-blue-900": {
       "value": "#010027",
       "type": "color"
@@ -41,6 +45,10 @@
     },
     "navy-blue-400": {
       "value": "#3b3a76",
+      "type": "color"
+    },
+    "navy-blue-300": {
+      "value": "#606489",
       "type": "color"
     },
     "navy-blue-200": {
@@ -150,6 +158,14 @@
     },
     "yellow-100": {
       "value": "#FFEDA3",
+      "type": "color"
+    },
+    "yellow-25": {
+      "value": "#fffcf1",
+      "type": "color"
+    },
+    "yellow-50": {
+      "value": "#fff5e1",
       "type": "color"
     },
     "yellow-400": {

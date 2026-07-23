@@ -34,6 +34,9 @@ jobs:
       - name: 🔧 Install dependencies
         run: npm install
 
+      - name: ✅ Validate Token Sources
+        run: npm run validate:tokens && npm run test:tokens
+
       # 1. Buduj tokeny (upewnij się, że folder dist/ jest świeży)
       # Ten krok jest opcjonalny, jeśli ufasz, że folder dist/ jest zawsze zmergowany
       # ale jest dobrym zabezpieczeniem.

@@ -1,7 +1,7 @@
 import React from 'react';
 import sourceTokens from '../../tokens/base/colors.json';
 import {ALL_SHADES, createShade, mapTokens} from '../utils';
-import './CoreColorPalette.css';
+import './CoreColorPalette.scss';
 
 function flattenTokens(object, prefix = '') {
     let tokens = [];
@@ -52,16 +52,16 @@ function ColorRow({groupName, tokens}) {
         : tokens.map((token) => ({...token, shade: token.name.replace(/^--color-/, '')}));
 
     return (
-        <section className="core-color-palette__group">
+        <section className="group">
             <h2>{groupName.replaceAll('-', ' ')}</h2>
-            <div className="core-color-palette__grid">
+            <div className="grid">
                 {shades.map((token) => (
                     <article
-                        className={`core-color-palette__card${token.isPlaceholder ? ' core-color-palette__card--empty' : ''}`}
+                        className={`card${token.isPlaceholder ? ' empty' : ''}`}
                         key={token.name}
                     >
                         <div
-                            className="core-color-palette__swatch"
+                            className="swatch"
                             style={token.isPlaceholder ? undefined : {backgroundColor: token.value}}
                         />
                         <strong>{token.name}</strong>

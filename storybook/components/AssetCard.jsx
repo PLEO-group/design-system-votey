@@ -1,12 +1,12 @@
 import React from 'react';
-import './AssetCard.css';
+import './AssetCard.scss';
 
 export const AssetCard = ({asset}) => {
     const isIcon = asset.type === 'icon';
 
     return (
-        <article className={`asset-card asset-card--${asset.type}`}>
-            <div className="asset-card__preview">
+        <article className={`asset-card ${asset.type}`}>
+            <div className="preview">
                 {asset.Component && (
                     <asset.Component aria-hidden="true" focusable="false"/>
                 )}

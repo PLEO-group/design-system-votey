@@ -1,9 +1,14 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
 type VoteyDevice = "mobile" | "tablet" | "desktop";
 type VoteyDeviceOrientation = "vertical" | "horizontal";
+interface VoteyGridConfig {
+    readonly desktop: number;
+    readonly tablet: number;
+    readonly mobile: number;
+}
 interface VoteyDeviceDimensions {
     width: number;
     height: number;
@@ -12,16 +17,22 @@ interface VoteyDeviceDimensions {
     laptopBreakpoint: 1280;
     desktopBreakpoint: 1920;
 }
+declare const VOTEY_DEFAULT_GRID_CONFIG: Readonly<VoteyGridConfig>;
+declare const VOTEY_GRID_CONFIG: InjectionToken<VoteyGridConfig>;
 declare class VoteyDeviceService implements OnDestroy {
     private readonly document;
+    private readonly gridConfig;
     private readonly platformId;
     private readonly deviceTypeSubject;
     private readonly dimensionsSubject;
     private readonly initializedSubject;
+    private readonly columnsAmountSubject;
     private listeningForResize;
     readonly deviceType$: Observable<VoteyDevice | null>;
     readonly deviceDimensions$: Observable<VoteyDeviceDimensions>;
     readonly initialized$: Observable<boolean>;
+    readonly columnsAmount$: Observable<number>;
+    columnsAmount: number;
     currentDevice: VoteyDevice | null;
     deviceOrientation: VoteyDeviceOrientation;
     isMobileDevice: boolean;
@@ -36,7 +47,7 @@ declare class VoteyDeviceService implements OnDestroy {
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyDeviceService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<VoteyDeviceService>;
 }
-declare function provideVoteyDeviceDetection(): EnvironmentProviders;
+declare function provideVoteyDeviceDetection(gridConfig?: VoteyGridConfig): EnvironmentProviders;
 
-export { VoteyDeviceService, provideVoteyDeviceDetection };
-export type { VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VoteyDeviceService, provideVoteyDeviceDetection };
+export type { VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig };

@@ -1,0 +1,73 @@
+.asset-card {
+    display: grid;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-card-s);
+    background: var(--color-bg-surface);
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+
+    &:hover {
+        border-color: var(--color-border-strong);
+        box-shadow: 0 8px 24px var(--color-shadow-soft);
+        transform: translateY(-1px);
+    }
+
+    .preview {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        background: var(--color-bg-page);
+    }
+
+    &.icon {
+        .preview {
+            min-height: 104px;
+            padding: 24px;
+
+            svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            svg,
+            g,
+            path,
+            line {
+                fill: var(--color-navy-blue-800);
+            }
+        }
+    }
+
+    &.illustration {
+        .preview {
+            aspect-ratio: 4 / 3;
+            padding: 20px;
+
+            svg {
+                display: block;
+                width: 100%;
+                max-width: 280px;
+                height: 100%;
+                max-height: 220px;
+            }
+        }
+    }
+
+    > strong {
+        min-width: 0;
+        padding: 14px 14px 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--color-text-primary);
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    > span {
+        padding: 0 14px 14px;
+        color: var(--color-text-secondary);
+        font-size: 11px;
+    }
+}

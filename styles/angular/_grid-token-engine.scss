@@ -1,0 +1,57 @@
+@use "sass:map";
+@use "sass:math";
+
+@function required-grid-value($config, $name) {
+  $value: map.get($config, $name);
+
+  @if $value == null {
+    @error "Missing grid token #{$name}.";
+  }
+
+  @return $value;
+}
+
+@function required-breakpoint-width($breakpoints, $device) {
+  $value: map.get($breakpoints, $device);
+
+  @if $value == null {
+    @error "Missing breakpoint token: #{$device}.";
+  }
+
+  @return $value;
+}
+
+@mixin grid-device-tokens($device, $config, $breakpoints) {
+  $reference-width: required-breakpoint-width($breakpoints, $device);
+  $margin: required-grid-value($config, "margin");
+  $margin-extra: required-grid-value($config, "margin-extra");
+  $gutter: required-grid-value($config, "gutter");
+  $columns: required-grid-value($config, "columns");
+
+  @if $reference-width <= 0 or $columns <= 0 {
+    @error "Grid reference width and columns must be greater than zero.";
+  }
+
+  $responsive-margin: math.div($margin, $reference-width) * 100vw;
+  $responsive-margin-extra:
+    math.div($margin-extra, $reference-width) * 100vw;
+  $responsive-gutter: math.div($gutter, $reference-width) * 100vw;
+  $total-margins: $responsive-margin * 2;
+  $total-gutters: $responsive-gutter * ($columns - 1);
+
+  body[data-device="#{$device}"] {
+    --grid-columns: #{$columns};
+    --grid-margin: #{$responsive-margin};
+    --grid-margin-extra: #{$responsive-margin-extra};
+    --grid-column-gap: #{$responsive-gutter};
+    --grid-column-width: calc(
+      (100vw - #{$total-margins} - #{$total-gutters}) / #{$columns}
+    );
+  }
+}
+
+@mixin grid-token-bundle($grid-tokens, $breakpoints) {
+  @each $device, $config in $grid-tokens {
+    @include grid-device-tokens($device, $config, $breakpoints);
+  }
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import {AssetCard} from '../components/AssetCard';
 import {StoryPageHeader} from '../components/StoryPageHeader';
 import {getIconList, getIllustrationList} from '../utils/assetLoader';
-import './Assets.stories.css';
+import './Assets.stories.scss';
 
 export default {
     title: 'Assets/Library',
@@ -36,14 +36,14 @@ function AssetGallery({assets, description, eyebrow, title, type}) {
                 title={title}
             />
 
-            <div className="asset-library__categories">
+            <div className="categories">
                 {Object.keys(groupedAssets).sort().map((category) => (
-                    <section className="asset-library__category" key={category}>
+                    <section className="category" key={category}>
                         <header>
                             <h2>{category.replaceAll('/', ' / ')}</h2>
                             <span>{groupedAssets[category].length}</span>
                         </header>
-                        <div className={`asset-library__grid asset-library__grid--${type}`}>
+                        <div className={`grid ${type}`}>
                             {groupedAssets[category].map((asset) => (
                                 <AssetCard asset={asset} key={asset.name}/>
                             ))}

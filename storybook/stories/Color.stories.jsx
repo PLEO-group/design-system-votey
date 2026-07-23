@@ -1,7 +1,7 @@
 import React from 'react';
 import {CoreColorPalette} from '../components/CoreColorPalette';
 import {StoryPageHeader} from '../components/StoryPageHeader';
-import './PwaColors.stories.css';
+import './PwaColors.stories.scss';
 
 export default {
     title: 'PWA Tokens/Colors',
@@ -14,7 +14,7 @@ export default {
 export const Palette = {
     name: 'Core colors',
     render: () => (
-        <main className="pwa-color-tokens pwa-color-tokens--core">
+        <main className="pwa-color-tokens core">
             <StoryPageHeader
                 description="This palette is shared by PWA and CRM semantic color layers."
                 eyebrow="Shared foundation"

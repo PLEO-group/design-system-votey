@@ -1,6 +1,6 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import * as i0 from '@angular/core';
-import { inject, PLATFORM_ID, Injectable, provideEnvironmentInitializer } from '@angular/core';
+import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
 import { BehaviorSubject } from 'rxjs';
 
@@ -12,16 +12,27 @@ const DEFAULT_DIMENSIONS = {
     laptopBreakpoint: 1280,
     desktopBreakpoint: 1920,
 };
+const VOTEY_DEFAULT_GRID_CONFIG = Object.freeze({
+    desktop: 12,
+    tablet: 8,
+    mobile: 4,
+});
+const VOTEY_GRID_CONFIG = new InjectionToken("VoteyGridConfig");
 class VoteyDeviceService {
     document = inject(DOCUMENT);
+    gridConfig = inject(VOTEY_GRID_CONFIG, { optional: true }) ??
+        VOTEY_DEFAULT_GRID_CONFIG;
     platformId = inject(PLATFORM_ID);
     deviceTypeSubject = new BehaviorSubject(null);
     dimensionsSubject = new BehaviorSubject(DEFAULT_DIMENSIONS);
     initializedSubject = new BehaviorSubject(false);
+    columnsAmountSubject = new BehaviorSubject(0);
     listeningForResize = false;
     deviceType$ = this.deviceTypeSubject.asObservable();
     deviceDimensions$ = this.dimensionsSubject.asObservable();
     initialized$ = this.initializedSubject.asObservable();
+    columnsAmount$ = this.columnsAmountSubject.asObservable();
+    columnsAmount = 0;
     currentDevice = null;
     deviceOrientation = "vertical";
     isMobileDevice = false;
@@ -97,6 +108,8 @@ class VoteyDeviceService {
             : this.isTabletDevice
                 ? "tablet"
                 : "desktop";
+        this.columnsAmount = this.gridConfig[this.currentDevice];
+        this.columnsAmountSubject.next(this.columnsAmount);
     }
     applyDocumentState(innerHeight) {
         if (!this.currentDevice) {
@@ -116,13 +129,19 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
                     providedIn: "root",
                 }]
         }] });
-function provideVoteyDeviceDetection() {
-    return provideEnvironmentInitializer(() => inject(VoteyDeviceService).initialize());
+function provideVoteyDeviceDetection(gridConfig = VOTEY_DEFAULT_GRID_CONFIG) {
+    return makeEnvironmentProviders([
+        {
+            provide: VOTEY_GRID_CONFIG,
+            useValue: gridConfig,
+        },
+        provideEnvironmentInitializer(() => inject(VoteyDeviceService).initialize()),
+    ]);
 }
 
 /**
  * Generated bundle index. Do not edit.
  */
 
-export { VoteyDeviceService, provideVoteyDeviceDetection };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VoteyDeviceService, provideVoteyDeviceDetection };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

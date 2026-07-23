@@ -1,6 +1,6 @@
 /**
  * Generated file. Do not edit directly.
- * CRM/Angular token entry point: shared color core, CRM light semantics,
+ * CRM/Angular token entry point: shared color core, CRM light/dark semantics,
  * fixed spacing, radius and responsive spacing/typography.
  */
 :root {
@@ -119,6 +119,43 @@
   --color-state-success: var(--color-active-green-400);
   --color-state-warning: var(--color-yellow-600);
   --color-state-info: var(--color-blue-400);
+  --color-shadow-soft: rgba(1, 0, 39, 0.08);
+  --color-shadow-event-filter: rgba(19, 18, 93, 0.3);
+  --color-overlay-loader: rgba(255, 255, 255, 0.78);
+  --color-overlay-loader-soft: rgba(255, 255, 255, 0.68);
+  --color-overlay-accent-start: rgba(136, 234, 125, 0.3);
+  --color-overlay-accent-end: rgba(2, 194, 149, 0);
+}
+
+/* CRM dark semantic colors. */
+:root[data-theme="dark"],
+[data-votey-theme="dark"] {
+  --color-bg-page: var(--color-navy-blue-900);
+  --color-bg-surface: var(--color-navy-blue-800);
+  --color-bg-surface-raised: var(--color-navy-blue-700);
+  --color-bg-surface-tint: var(--color-navy-blue-700);
+  --color-bg-sidebar: var(--color-navy-blue-900);
+  --color-bg-hero: var(--color-orange-800);
+  --color-bg-inverse: var(--color-white);
+  --color-text-primary: var(--color-white);
+  --color-text-secondary: var(--color-navy-blue-70);
+  --color-text-muted: var(--color-navy-blue-100);
+  --color-text-inverse: var(--color-navy-blue-800);
+  --color-text-accent: var(--color-mint-green-400);
+  --color-text-on-sidebar: var(--color-white);
+  --color-accent-primary: var(--color-mint-green-400);
+  --color-accent-strong: var(--color-mint-green-500);
+  --color-accent-on-accent: var(--color-navy-blue-800);
+  --color-accent-hover: var(--color-mint-green-500);
+  --color-accent-soft: var(--color-mint-green-900);
+  --color-border-subtle: var(--color-navy-blue-600);
+  --color-border-strong: var(--color-navy-blue-400);
+  --color-border-focus: var(--color-blue-300);
+  --color-state-error: var(--color-red-200);
+  --color-state-error-bg: var(--color-red-600);
+  --color-state-success: var(--color-active-green-300);
+  --color-state-warning: var(--color-yellow-400);
+  --color-state-info: var(--color-blue-300);
   --color-shadow-soft: rgba(1, 0, 39, 0.08);
   --color-shadow-event-filter: rgba(19, 18, 93, 0.3);
   --color-overlay-loader: rgba(255, 255, 255, 0.78);

@@ -90,15 +90,23 @@ function buildTheme({dictionary, options}) {
 }
 
 function buildAngularTokens({dictionary, options}) {
-    const {selector = ':root'} = options;
+    const {
+        selector = ':root',
+        semanticColorsOnly = false,
+        includeHeader = true,
+    } = options;
     const lines = dictionary.allTokens.map((token) => {
         const isCoreColor = token.filePath.endsWith('tokens/base/colors.json');
         const isCoreOpacity = token.filePath.endsWith(
             'tokens/opacity/core/value.json',
         );
-        const isSemanticColor = token.filePath.endsWith(
-            'tokens/color/semantic-CRM/Light.json',
-        );
+        const isSemanticColor =
+            token.filePath.endsWith(
+                'tokens/color/semantic-CRM/Light.json',
+            ) ||
+            token.filePath.endsWith(
+                'tokens/color/semantic-CRM/Dark.json',
+            );
         const isCoreSpacing = token.filePath.endsWith(
             'tokens/space/core/value.json',
         );
@@ -125,6 +133,10 @@ function buildAngularTokens({dictionary, options}) {
             const coreName = originalValue.slice(1, -1).replaceAll('.', '-');
 
             return `--color-${token.name}: var(--${coreName});`;
+        }
+
+        if (semanticColorsOnly) {
+            return null;
         }
 
         if (
@@ -158,12 +170,18 @@ function buildAngularTokens({dictionary, options}) {
         );
     }).filter(Boolean);
 
+    const css = output(lines, selector);
+
+    if (!includeHeader) {
+        return css;
+    }
+
     return `/**
  * Generated file. Do not edit directly.
- * CRM/Angular token entry point: shared color core, CRM light semantics,
+ * CRM/Angular token entry point: shared color core, CRM light/dark semantics,
  * fixed spacing, radius and responsive spacing/typography.
  */
-${output(lines, selector)}
+${css}
 `;
 }
 
@@ -713,7 +731,7 @@ async function buildLegacyTokens() {
 async function buildCrmAngularTokens() {
     const responsiveCss = await buildResponsiveAngularCss();
     const gridCss = buildGridAngularCss();
-    const styleDictionary = new StyleDictionary({
+    const lightStyleDictionary = new StyleDictionary({
         include: [
             'tokens/base/colors.json',
             'tokens/opacity/core/value.json',
@@ -740,13 +758,39 @@ async function buildCrmAngularTokens() {
         },
     });
 
-    await styleDictionary.buildAllPlatforms();
+    await lightStyleDictionary.buildAllPlatforms();
+
+    const darkStyleDictionary = new StyleDictionary({
+        include: [
+            'tokens/base/colors.json',
+            'tokens/opacity/core/value.json',
+        ],
+        source: ['tokens/color/semantic-CRM/Dark.json'],
+        platforms: {
+            css: {
+                transformGroup: 'css',
+                transforms: ['ts/color/css/hexrgba'],
+                files: [],
+            },
+        },
+    });
+    const darkDictionary =
+        await darkStyleDictionary.getPlatformTokens('css');
+    const darkCss = buildAngularTokens({
+        dictionary: darkDictionary,
+        options: {
+            selector:
+                ':root[data-theme="dark"],\n[data-votey-theme="dark"]',
+            semanticColorsOnly: true,
+            includeHeader: false,
+        },
+    });
 
     const outputPath = 'dist/css/tokens.angular.css';
     const baseCss = fs.readFileSync(outputPath, 'utf8').trimEnd();
     fs.writeFileSync(
         outputPath,
-        `${baseCss}\n\n${responsiveCss}\n${gridCss}`,
+        `${baseCss}\n\n/* CRM dark semantic colors. */\n${darkCss}\n\n${responsiveCss}\n${gridCss}`,
         'utf8',
     );
 }

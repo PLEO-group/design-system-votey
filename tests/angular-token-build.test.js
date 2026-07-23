@@ -17,6 +17,34 @@ const legacyOutputPaths = [
     'tokens.light.css',
     'tokens.tailwind.css',
 ].map((fileName) => path.join(projectRoot, 'dist', 'css', fileName));
+const crmLightTokens = require(path.join(
+    projectRoot,
+    'tokens',
+    'color',
+    'semantic-CRM',
+    'Light.json',
+));
+const crmDarkTokens = require(path.join(
+    projectRoot,
+    'tokens',
+    'color',
+    'semantic-CRM',
+    'Dark.json',
+));
+
+function getTokenPaths(object, currentPath = []) {
+    return Object.entries(object).flatMap(([key, value]) => {
+        const tokenPath = [...currentPath, key];
+
+        if (value && value.type === 'color' && 'value' in value) {
+            return [tokenPath.join('.')];
+        }
+
+        return value && typeof value === 'object'
+            ? getTokenPaths(value, tokenPath)
+            : [];
+    });
+}
 
 function buildAngularTokens() {
     execFileSync(
@@ -27,6 +55,13 @@ function buildAngularTokens() {
 
     return fs.readFileSync(outputPath, 'utf8');
 }
+
+test('CRM light and dark semantic colors expose the same contract', () => {
+    assert.deepEqual(
+        getTokenPaths(crmDarkTokens).sort(),
+        getTokenPaths(crmLightTokens).sort(),
+    );
+});
 
 test('Angular build is deterministic and isolated from PWA semantics', () => {
     const legacyBeforeBuild = legacyOutputPaths.map((filePath) =>
@@ -157,5 +192,24 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);
-    assert.doesNotMatch(firstBuild, /data-theme="dark"/);
+    assert.equal(
+        [...firstBuild.matchAll(/:root\[data-theme="dark"\]/g)].length,
+        1,
+    );
+    assert.equal(
+        [...firstBuild.matchAll(/\[data-votey-theme="dark"\]/g)].length,
+        1,
+    );
+    assert.match(
+        firstBuild,
+        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-bg-page: var\(--color-navy-blue-900\);/,
+    );
+    assert.match(
+        firstBuild,
+        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-text-primary: var\(--color-white\);/,
+    );
+    assert.match(
+        firstBuild,
+        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-border-subtle: var\(--color-navy-blue-600\);/,
+    );
 });

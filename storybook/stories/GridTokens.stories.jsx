@@ -4,6 +4,56 @@ import gridTokenSource from '../../tokens/grid/angular.json';
 import './GridTokens.stories.scss';
 
 const devices = ['mobile', 'tablet', 'desktop'];
+const breakpointPreviews = {
+    mobile: [
+        {
+            label: 'Mobile 360',
+            width: 360,
+            height: 800,
+            type: 'phone',
+            previewWidth: 120,
+        },
+        {
+            label: 'Mobile 375',
+            width: 375,
+            height: 812,
+            type: 'phone',
+            previewWidth: 123,
+        },
+    ],
+    tablet: [
+        {
+            label: 'Tablet 768',
+            width: 768,
+            height: 1024,
+            type: 'tablet',
+            previewWidth: 200,
+        },
+        {
+            label: 'Tablet 1024',
+            width: 1024,
+            height: 768,
+            type: 'tablet',
+            previewWidth: 340,
+        },
+    ],
+    desktop: [
+        {
+            label: 'Laptop 1280',
+            width: 1280,
+            height: 800,
+            type: 'laptop',
+            previewWidth: 400,
+        },
+        {
+            label: 'Desktop 1920',
+            width: 1920,
+            height: 1080,
+            type: 'desktop',
+            previewWidth: 444,
+        },
+    ],
+};
 
 function formatNumber(value) {
     return Number(value.toFixed(2));
@@ -11,6 +61,10 @@ function formatNumber(value) {
 
 function toViewportWidth(value, referenceWidth) {
     return `${formatNumber(value / referenceWidth * 100)}vw`;
+}
+
+function toPercentageValue(value, referenceWidth) {
+    return formatNumber(value / referenceWidth * 100);
 }
 
 function toPixels(value, referenceWidth, viewportWidth) {
@@ -39,6 +93,76 @@ function GridMetric({label, property, resolved, value}) {
             <code>{property}</code>
             <strong>{resolved}</strong>
             <small>{value}</small>
+        </article>
+    );
+}
+
+function BreakpointDevice({config, preview, referenceWidth}) {
+    const columns = config.columns.value;
+    const margin = config.margin.value / referenceWidth * preview.width;
+    const marginExtra =
+        config['margin-extra'].value / referenceWidth * preview.width;
+    const columnGap = config.gutter.value / referenceWidth * preview.width;
+    const previewStyle = {
+        '--device-width': `${preview.previewWidth}px`,
+        '--preview-columns': columns,
+        '--preview-margin': toPercentageValue(
+            config.margin.value,
+            referenceWidth,
+        ),
+        '--preview-margin-extra': toPercentageValue(
+            config['margin-extra'].value,
+            referenceWidth,
+        ),
+        '--preview-column-gap': toPercentageValue(
+            config.gutter.value,
+            referenceWidth,
+        ),
+    };
+
+    return (
+        <article className="device-card">
+            <header>
+                <div>
+                    <strong>{preview.label}</strong>
+                    <span>{preview.width} × {preview.height}px</span>
+                </div>
+                <code>{columns} columns</code>
+            </header>
+
+            <div className="device-stage">
+                <div
+                    className={`device ${preview.type}`}
+                    style={previewStyle}
+                >
+                    <div
+                        className="screen"
+                        style={{
+                            aspectRatio:
+                                `${preview.width} / ${preview.height}`,
+                        }}
+                    >
+                        <i className="extra-guide start" aria-hidden="true"/>
+                        <i className="extra-guide end" aria-hidden="true"/>
+                        <div className="mini-grid" aria-hidden="true">
+                            {Array.from({length: columns}, (_, index) => (
+                                <i key={`${preview.label}-column-${index + 1}`}/>
+                            ))}
+                        </div>
+                    </div>
+                    <i className="hardware" aria-hidden="true"/>
+                </div>
+            </div>
+
+            <dl className="device-values">
+                <div><dt>Margin</dt><dd>{formatNumber(margin)}px</dd></div>
+                <div>
+                    <dt>Margin extra</dt>
+                    <dd>{formatNumber(marginExtra)}px</dd>
+                </div>
+                <div><dt>Column gap</dt><dd>{formatNumber(columnGap)}px</dd></div>
+                <div><dt>Columns</dt><dd>{columns}</dd></div>
+            </dl>
         </article>
     );
 }
@@ -190,6 +314,31 @@ function GridFoundations({device}) {
                             </React.Fragment>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            <section className="section breakpoint-preview">
+                <div className="section-heading">
+                    <div>
+                        <span>Breakpoint preview</span>
+                        <h2>{device} reference screens</h2>
+                    </div>
+                    <p>
+                        Device frames preserve screen aspect ratios. Grid
+                        margins and column gaps are scaled from the same source
+                        tokens as the live preview.
+                    </p>
+                </div>
+
+                <div className="device-pair">
+                    {breakpointPreviews[device].map((preview) => (
+                        <BreakpointDevice
+                            config={config}
+                            key={preview.label}
+                            preview={preview}
+                            referenceWidth={referenceWidth}
+                        />
+                    ))}
                 </div>
             </section>
 

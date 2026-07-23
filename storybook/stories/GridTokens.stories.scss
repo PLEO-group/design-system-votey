@@ -336,6 +336,243 @@
             }
         }
 
+        &.breakpoint-preview {
+            .section-heading {
+                p {
+                    max-width: 620px;
+                }
+            }
+
+            .device-pair {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+
+                .device-card {
+                    display: grid;
+                    grid-template-rows: auto 1fr auto;
+                    min-width: 0;
+                    padding: 16px;
+                    border: 1px solid var(--color-border-subtle);
+                    border-radius: var(--radius-12);
+                    background: var(--color-bg-page);
+
+                    > header {
+                        display: flex;
+                        align-items: start;
+                        justify-content: space-between;
+                        gap: 12px;
+
+                        div {
+                            display: grid;
+                            gap: 2px;
+
+                            strong {
+                                font-size: 14px;
+                            }
+
+                            span {
+                                color: var(--color-text-secondary);
+                                font-size: 11px;
+                            }
+                        }
+
+                        code {
+                            padding: 5px 8px;
+                            border-radius: var(--radius-pill);
+                            color: var(--color-text-accent);
+                            background: var(--color-accent-soft);
+                            white-space: nowrap;
+                        }
+                    }
+
+                    .device-stage {
+                        display: grid;
+                        min-height: 320px;
+                        padding: 24px 0 36px;
+                        place-items: center;
+
+                        .device {
+                            position: relative;
+                            width: min(var(--device-width), 92%);
+                            padding: 8px;
+                            border-radius: var(--radius-12);
+                            background: var(--color-bg-sidebar);
+
+                            &.phone {
+                                padding: 14px 6px 10px;
+                                border-radius: var(--radius-24);
+
+                                &::before {
+                                    position: absolute;
+                                    z-index: 2;
+                                    top: 5px;
+                                    left: 50%;
+                                    width: 28%;
+                                    height: 4px;
+                                    border-radius: var(--radius-pill);
+                                    transform: translateX(-50%);
+                                    background: var(--color-bg-page);
+                                    content: '';
+                                }
+                            }
+
+                            &.tablet {
+                                padding: 10px;
+                                border-radius: var(--radius-16);
+
+                                &::before {
+                                    position: absolute;
+                                    z-index: 2;
+                                    top: 3px;
+                                    left: 50%;
+                                    width: 4px;
+                                    height: 4px;
+                                    border-radius: var(--radius-pill);
+                                    transform: translateX(-50%);
+                                    background: var(--color-bg-page);
+                                    content: '';
+                                }
+                            }
+
+                            &.laptop {
+                                border-radius: var(--radius-8);
+
+                                .hardware {
+                                    position: absolute;
+                                    right: -7%;
+                                    bottom: -12px;
+                                    left: -7%;
+                                    display: block;
+                                    height: 12px;
+                                    border-radius: 0 0 var(--radius-8) var(--radius-8);
+                                    background: var(--color-bg-sidebar);
+                                }
+                            }
+
+                            &.desktop {
+                                border-radius: var(--radius-8);
+
+                                .hardware {
+                                    position: absolute;
+                                    bottom: -28px;
+                                    left: 50%;
+                                    display: block;
+                                    width: 12%;
+                                    height: 28px;
+                                    transform: translateX(-50%);
+                                    background: var(--color-bg-sidebar);
+
+                                    &::after {
+                                        position: absolute;
+                                        right: -100%;
+                                        bottom: 0;
+                                        left: -100%;
+                                        height: 6px;
+                                        border-radius: var(--radius-pill);
+                                        background: var(--color-bg-sidebar);
+                                        content: '';
+                                    }
+                                }
+                            }
+
+                            .screen {
+                                position: relative;
+                                container-type: inline-size;
+                                overflow: hidden;
+                                width: 100%;
+                                border-radius: var(--radius-6);
+                                background: var(--color-accent-soft);
+
+                                .extra-guide {
+                                    position: absolute;
+                                    z-index: 2;
+                                    top: 0;
+                                    bottom: 0;
+                                    width: 0;
+                                    border-left: 1px dashed
+                                        var(--color-text-accent);
+
+                                    &.start {
+                                        left:
+                                            calc(
+                                                var(--preview-margin-extra) *
+                                                1cqw
+                                            );
+                                    }
+
+                                    &.end {
+                                        right:
+                                            calc(
+                                                var(--preview-margin-extra) *
+                                                1cqw
+                                            );
+                                    }
+                                }
+
+                                .mini-grid {
+                                    display: grid;
+                                    grid-template-columns:
+                                        repeat(
+                                            var(--preview-columns),
+                                            minmax(0, 1fr)
+                                        );
+                                    gap:
+                                        calc(
+                                            var(--preview-column-gap) * 1cqw
+                                        );
+                                    height: 100%;
+                                    padding-inline:
+                                        calc(var(--preview-margin) * 1cqw);
+
+                                    i {
+                                        min-width: 0;
+                                        background: var(--color-bg-sidebar);
+                                    }
+                                }
+                            }
+
+                            > .hardware {
+                                display: none;
+                            }
+
+                            &.laptop,
+                            &.desktop {
+                                > .hardware {
+                                    display: block;
+                                }
+                            }
+                        }
+                    }
+
+                    .device-values {
+                        display: grid;
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        gap: 8px;
+                        margin: 0;
+
+                        div {
+                            min-width: 0;
+                            padding: 8px 10px;
+                            border-radius: var(--radius-8);
+                            background: var(--color-bg-surface);
+
+                            dt {
+                                color: var(--color-text-secondary);
+                                font-size: 10px;
+                            }
+
+                            dd {
+                                margin: 3px 0 0;
+                                font-size: 12px;
+                                font-weight: 800;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         .metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -458,6 +695,33 @@
 
                 .columns {
                     min-height: 232px;
+                }
+            }
+
+            &.breakpoint-preview {
+                .device-pair {
+                    gap: 8px;
+
+                    .device-card {
+                        padding: 10px;
+
+                        > header {
+                            display: grid;
+
+                            code {
+                                justify-self: start;
+                            }
+                        }
+
+                        .device-stage {
+                            min-height: 290px;
+                            padding: 16px 0 32px;
+                        }
+
+                        .device-values {
+                            grid-template-columns: 1fr;
+                        }
+                    }
                 }
             }
         }

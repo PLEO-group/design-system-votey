@@ -1,5 +1,7 @@
 import React from 'react';
+import {useArgs} from '@storybook/preview-api';
 import crmLightTokens from '../../tokens/color/semantic-CRM/Light.json';
+import crmDarkTokens from '../../tokens/color/semantic-CRM/Dark.json';
 import {CoreColorPalette} from '../components/CoreColorPalette';
 import {StoryPageHeader} from '../components/StoryPageHeader';
 import './CrmColors.stories.scss';
@@ -22,13 +24,6 @@ function flattenSemanticTokens(object, path = []) {
     });
 }
 
-const semanticTokens = flattenSemanticTokens(crmLightTokens);
-const semanticGroups = semanticTokens.reduce((groups, token) => {
-    groups[token.group] ??= [];
-    groups[token.group].push(token);
-    return groups;
-}, {});
-
 function SharedCoreColors() {
     return (
         <main className="crm-color-tokens">
@@ -42,12 +37,34 @@ function SharedCoreColors() {
     );
 }
 
-function CrmSemanticColors() {
+function CrmSemanticColors({theme, onThemeChange}) {
+    const source = theme === 'dark' ? crmDarkTokens : crmLightTokens;
+    const semanticGroups = flattenSemanticTokens(source).reduce(
+        (groups, token) => {
+            groups[token.group] ??= [];
+            groups[token.group].push(token);
+            return groups;
+        },
+        {},
+    );
+
     return (
-        <main className="crm-color-tokens">
+        <main className="crm-color-tokens" data-votey-theme={theme}>
             <StoryPageHeader
-                description={<>Product-specific color roles from <code>color/semantic-CRM/Light</code>.</>}
-                eyebrow="CRM light"
+                actions={<div className="theme-switch" aria-label="Theme">
+                    {['light', 'dark'].map((option) => (
+                        <button
+                            aria-pressed={theme === option}
+                            key={option}
+                            onClick={() => onThemeChange(option)}
+                            type="button"
+                        >
+                            {option}
+                        </button>
+                    ))}
+                </div>}
+                description={<>Product-specific color roles from <code>color/semantic-CRM/{theme === 'dark' ? 'Dark' : 'Light'}</code>.</>}
+                eyebrow={`CRM ${theme}`}
                 title="Semantic colors"
             />
             <div className="groups">
@@ -75,8 +92,18 @@ function CrmSemanticColors() {
 
 export default {
     title: 'CRM Tokens/Colors',
+    component: CrmSemanticColors,
     parameters: {
         layout: 'fullscreen',
+    },
+    argTypes: {
+        theme: {
+            options: ['light', 'dark'],
+            control: {type: 'inline-radio'},
+        },
+    },
+    args: {
+        theme: 'light',
     },
 };
 
@@ -87,5 +114,13 @@ export const CoreColors = {
 
 export const SemanticColors = {
     name: 'Semantic colors',
-    render: () => <CrmSemanticColors/>,
+    render: function Render() {
+        const [{theme}, updateArgs] = useArgs();
+        return (
+            <CrmSemanticColors
+                theme={theme}
+                onThemeChange={(nextTheme) => updateArgs({theme: nextTheme})}
+            />
+        );
+    },
 };

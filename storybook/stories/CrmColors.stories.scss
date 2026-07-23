@@ -3,9 +3,40 @@
     padding: 32px;
     color: var(--color-text-primary);
     background: var(--color-bg-page);
+    transition: color .2s ease, background-color .2s ease;
 
     * {
         box-sizing: border-box;
+    }
+
+    .story-page-header {
+        .actions {
+            .theme-switch {
+                display: flex;
+                padding: 4px;
+                border: 1px solid var(--color-border-subtle);
+                border-radius: var(--radius-pill);
+                background: var(--color-bg-surface);
+
+                button {
+                    padding: 8px 16px;
+                    border: 0;
+                    border-radius: var(--radius-pill);
+                    color: var(--color-text-secondary);
+                    background: transparent;
+                    font: inherit;
+                    font-size: 12px;
+                    font-weight: 700;
+                    text-transform: capitalize;
+                    cursor: pointer;
+
+                    &[aria-pressed='true'] {
+                        color: var(--color-accent-on-accent);
+                        background: var(--color-accent-primary);
+                    }
+                }
+            }
+        }
     }
 
     .groups {
@@ -17,6 +48,7 @@
             border: 1px solid var(--color-border-subtle);
             border-radius: var(--radius-card-s);
             background: var(--color-bg-surface);
+            transition: background-color .2s ease, border-color .2s ease;
 
             h2 {
                 margin: 0 0 16px;
@@ -38,6 +70,9 @@
                         height: 88px;
                         border: 1px solid var(--color-border-subtle);
                         border-radius: var(--radius-12);
+                        transition:
+                            background-color .2s ease,
+                            border-color .2s ease;
                     }
 
                     strong,

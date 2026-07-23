@@ -4,7 +4,7 @@
 
 Komponenty typu `ButtonCommon` mają w Figmie **component set** z wieloma property (np. `Color`, `Size`, `State`). Zadanie "zmień hover dla color-quaternary" dotyczy konkretnej komórki tej macierzy — ale bez kontekstu pozostałych komórek łatwo wprowadzić niespójność (hover łamie konwencję innych colorów, disabled nie pasuje do reszty itp.).
 
-Ten dokument opisuje workflow, w którym **zawsze budujesz pełną macierz wariantów przed kodowaniem**, nawet jeśli zmieniasz tylko jedną komórkę.
+Ten dokument opisuje workflow, w którym najpierw identyfikujesz pełne **wymiary** macierzy, a następnie odczytujesz i tabelaryzujesz tylko komórki potrzebne do żądanego zakresu. Pełną macierz wartości budujesz wyłącznie przy audycie całego component setu albo zmianie obejmującej wiele stanów i wariantów.
 
 ## Kiedy używać
 
@@ -61,19 +61,42 @@ ButtonCommon:
 - Variant: (none) | ghost
 ```
 
-### Krok 2 — doprecyzuj zakres zadania z userem
+### Krok 2 — wybierz tryb zakresu
 
-Z userem ustal dokładnie **którą komórkę** macierzy modyfikujesz. Nie zakładaj — zapytaj jeśli nie wynika jednoznacznie z promptu.
+Ustal zakres z promptu i podanych nodeId. Pytaj tylko wtedy, gdy nie wynika jednoznacznie:
 
-### Krok 3 — odczytaj TYLKO zmienianą komórkę + sąsiedztwo
+- `CELL` — jedna komórka, np. `color-quaternary / hover`,
+- `ROW_OR_COLUMN` — kilka jawnie wskazanych stanów albo wariantów,
+- `NEW_VARIANT` — nowy wariant i wszystkie stany, które ma faktycznie obsługiwać,
+- `FULL_AUDIT` — pełna spójność component setu na jawne żądanie usera.
 
-Nie czytaj całego component setu (jest zbyt duży i zużywa tokeny). Odczytaj:
+### Krok 3 — odczytaj tylko komórki wynikające z trybu
 
-1. **Target** — dokładnie komórkę, którą zmieniasz (nodeId z URL).
-2. **Baseline** — default state tej samej kolumny (np. `color-quaternary / default`) dla porównania.
-3. **Peer** — analogiczny stan w innym kolorze (np. `color-primary / hover`) jeśli musisz zweryfikować wzorzec.
+Nie czytaj całego component setu, jeśli zadanie ma węższy zakres.
 
-Wywołuj `get_design_context` **równolegle** dla tych 2–3 nodeIds.
+Dla `CELL` odczytaj:
+
+1. **Target** — dokładnie zmienianą komórkę (nodeId z URL).
+2. **Baseline** — default state tej samej kolumny, jeśli target nie jest defaultem.
+3. **Peer** — analogiczny stan w innym wariancie tylko wtedy, gdy trzeba zweryfikować wzorzec.
+
+Jeśli user podał tylko nodeId targetu:
+
+1. Wywołaj `get_metadata` dla targetu i najbliższego parenta typu `COMPONENT_SET`.
+2. W indeksie siblingów znajdź komponent z tymi samymi wartościami pozostałych properties i `State=Default`.
+3. Analogicznie znajdź peer tylko wtedy, gdy wymaga go kontrola konwencji.
+4. Wywołaj `get_design_context` równolegle wyłącznie dla targetu oraz odnalezionego baseline'u i peer'a.
+5. Jeśli metadata nie ujawnia parenta, sibling nodeId albo wartości properties, poproś usera o link do baseline'u lub component setu. Nie zgaduj nodeId i nie blokuj targetu danymi spoza żądanego zakresu.
+
+Jeśli user podał target i baseline, pomiń discovery i wywołaj `get_design_context` **równolegle** dla podanych nodeIds.
+
+Dla `ROW_OR_COLUMN` i `NEW_VARIANT` odczytaj wszystkie i tylko komórki należące do wskazanego wiersza/kolumny oraz potrzebne baseline'y.
+
+Dla `FULL_AUDIT`:
+
+1. Użyj `get_metadata` do zbudowania indeksu wymiarów i nodeId bez pobierania całego ciężkiego design contextu.
+2. Odczytuj komórki przez `get_design_context` w ograniczonych partiach.
+3. Oznacz komórki nieodczytane jako `partial` albo `blocked`; nigdy nie uzupełniaj ich z intuicji.
 
 ### Krok 4 — zbuduj tabelę przed kodowaniem
 
@@ -89,11 +112,11 @@ icon-bg   | navy-blue-800     | navy-blue-800 (bez zmian)
 icon-color| mint-green-400    | mint-green-400 (bez zmian)
 ```
 
-**Tabela musi być pełna** — jeśli z Figmy nie wynika jakaś wartość, zapytaj usera zamiast zgadywać.
+**Tabela musi być pełna dla wybranego trybu i żądanego zakresu.** Nie dodawaj komórek spoza zakresu jako `?`. Jeśli brakuje wartości potrzebnej do implementacji targetu, zapytaj usera zamiast zgadywać.
 
 ### Krok 5 — weryfikacja spójności z resztą macierzy
 
-Zanim napiszesz CSS, sprawdź istniejące hovery dla innych colorów (szybki Grep w `.css`). **Pytanie:** czy zmiana pasuje do konwencji? Jeśli nie — potwierdź z userem że to celowe.
+Zanim napiszesz CSS, sprawdź istniejące odpowiedniki dla innych wariantów w kodzie (szybki Grep w `.css`). Traktuj je jako kontrolę konwencji, nie jako źródło wartości z Figmy. **Pytanie:** czy zmiana pasuje do konwencji? Jeśli nie — potwierdź z userem, że to celowe.
 
 ### Krok 6 — edytuj tylko właściwy blok CSS
 

@@ -1,6 +1,6 @@
 # Angular Votey / CRM Implementation From Figma
 
-Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w `design-system-votey`, `wyborek-crm` albo konsumencie `@pleodigital/design-system-votey`.
+Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w Angularowym API `design-system-votey`, `wyborek-crm` albo innym konsumencie Angular używającym `@pleodigital/design-system-votey`.
 Nie stosuj tej referencji do `angular-design-system`/Boxes ani do Reactowego `votey-user-app`.
 
 ## Obowiązujące instrukcje projektu
@@ -20,11 +20,12 @@ Nie stosuj tej referencji do `angular-design-system`/Boxes ani do Reactowego `vo
 
 ## Rzeczywisty zakres Design Systemu Votey
 
-- Design System publikuje tokeny, assety SVG oraz Angular responsive runtime.
+- Design System publikuje tokeny, surowe assety SVG dla Angulara, wygenerowane komponenty SVG dla Reacta oraz osobny Angular responsive runtime.
 - Nie zakładaj, że publikuje gotowy komponent radio, input, button, tooltip, table albo modal. Najpierw sprawdź publiczne API paczki i kod CRM.
 - Nie importuj komponentów ani tokenów z Boxes.
 - Angular runtime importuj wyłącznie z `@pleodigital/design-system-votey/angular`.
 - CSS tokenów CRM pochodzi z `@pleodigital/design-system-votey/dist/css/tokens.angular.css` i jest dołączany przez konfigurację buildu aplikacji.
+- Dla Angulara używaj surowych SVG z `dist/assets/angular/svg-raw` zgodnie z istniejącym mechanizmem aplikacji. Nie importuj wygenerowanych komponentów React z `dist/assets/react`.
 
 ## Kolory
 
@@ -32,7 +33,7 @@ Nie stosuj tej referencji do `angular-design-system`/Boxes ani do Reactowego `vo
 - Nowe widoki i redesigny CRM mapuj przede wszystkim na semantic colors CRM z `tokens/color/semantic-CRM`.
 - Nie używaj semantic colors PWA w CRM.
 - Nie dodawaj surowych HEX, `rgb()` ani lokalnych `--app-color-*`.
-- Core color w kodzie produktu stosuj tylko jako świadomy wyjątek albo etap zaakceptowanej migracji.
+- Istniejący CRM nadal zawiera legacy core colors. Nie rozszerzaj tego wzorca: core color w nowym kodzie stosuj tylko jako świadomy wyjątek albo etap zaakceptowanej migracji.
 - Jeśli nie istnieje właściwa rola semantic, zgłoś brak tokenu. Nie zgaduj nazwy i nie pożyczaj podobnej roli PWA.
 - Shadow i overlay mają być semantic colors z alpha złożoną w tokenie; core pozostaje opaque.
 
@@ -49,7 +50,7 @@ Nie stosuj tej referencji do `angular-design-system`/Boxes ani do Reactowego `vo
 - Votey używa sześciu szerokości referencyjnych: `360`, `375`, `768`, `1024`, `1280`, `1920`.
 - Wartości pomiędzy punktami są interpolowane przez wygenerowane `calc(...)`; nie zastępuj ich ręcznymi media queries w komponencie.
 - Kontekst urządzenia jest niezależny od szerokości viewportu i pochodzi z `body[data-device="mobile|tablet|desktop"]`.
-- W CRM zarejestruj `provideVoteyDeviceDetection()` przed użyciem responsive tokenów. Nie ustawiaj `data-device`, `data-orientation` ani `--vh` równolegle w kodzie feature.
+- Przed użyciem responsive tokenów sprawdź root `ApplicationConfig`. Jeśli `provideVoteyDeviceDetection()` nie jest zarejestrowany, nie zakładaj, że tokeny responsive działają: dodaj provider w root config w zakresie zadania i zweryfikuj bootstrap. Nie ustawiaj `data-device`, `data-orientation` ani `--vh` równolegle w kodzie feature.
 - Nie kopiuj wygenerowanych reguł z `dist/css/tokens.angular.css` do SCSS komponentu.
 - Gdy Figma podaje wartości dla kilku szerokości, porównaj wszystkie wskazane tryby i sprawdź wynik również pomiędzy breakpointami.
 

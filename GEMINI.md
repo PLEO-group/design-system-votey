@@ -1,6 +1,6 @@
 # WERSJA 1.0.0
 
-# Instrukcje AGENTS.md dla design-system-votey
+# Instrukcje GEMINI.md dla design-system-votey
 ## Skills
 
 ### Available skills

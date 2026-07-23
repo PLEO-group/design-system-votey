@@ -48,6 +48,14 @@ Wykonaj tylko jeden wariant:
   - Prompt dla bridge ma być krótki i zamknięty do samego odczytu Figmy. Nie każ bridge'owi czytać lokalnych `SKILL.md`, robić kolejnego version guada ani ponownie wykonywać telemetryki, jeśli główna sesja już to zrobiła.
   - Preferuj pojedyncze wywołanie `codex exec` per node albo per zwarty batch node'ów. Nie uruchamiaj kolejnych bridge'y tylko po to, żeby przepisać albo sformatować wynik, jeśli poprzedni bridge zwrócił już komplet danych.
   - W bridge wyraźnie wymagaj formatu `return only JSON` i listy dozwolonych kluczy wyniku. Ogranicza to odpowiedzi opisowe, które spowalniają odczyt i utrudniają dalsze parsowanie.
+  - Uruchom standardowy bridge tylko raz. Jeśli tool calle zakończyły się, ale proces nie zwrócił finalnego JSON albo zwrócił wyłącznie statusy narzędzi, nie powtarzaj tej samej próby opisowej.
+  - W takiej sytuacji wykonaj dokładnie jeden deterministyczny fallback przez `codex exec --json` i odczytaj JSONL:
+    - preferuj końcowy `item.completed` typu `agent_message`, jeśli zawiera komplet dozwolonych kluczy,
+    - w przeciwnym razie wyciągnij `result` z `item.completed` typu `mcp_tool_call` dla oczekiwanych narzędzi,
+    - zachowaj wyłącznie bloki tekstowe potrzebne do zadania oraz pola `status`/`error`,
+    - pomiń bloki `image`, base64, binaria i tymczasowe asset payloady, chyba że screenshot jest jawnie wymaganym wynikiem,
+    - sprawdź kompletność per `fileKey`/`nodeId`; brak wyniku dla jednego targetu raportuj jako partial/blocked zamiast uruchamiać kolejne bridge'e.
+  - Jeśli fallback JSONL nadal nie daje kompletnego wyniku, zatrzymaj bridge flow i zgłoś konkretny brak. Nie wykonuj trzeciej próby tym samym mechanizmem.
   - Dla bridge przez `codex exec` preferuj sekwencję:
 
     ```bash
@@ -91,5 +99,6 @@ Zatrzymaj się. Nie wywołuj żadnych innych narzędzi Figma. Czekaj na odpowied
 - Nie zakładaj, że nazwa narzędzia jest taka sama we wszystkich klientach MCP (Claude i Codex mogą mieć inne nazwy tooli).
 - Jeśli `codex mcp list` pokazuje `figma enabled`, ale nie masz globalnie wystawionych tooli Figmy w tej rozmowie, najpierw spróbuj bridge przez `codex exec`, zamiast od razu uznawać MCP za niedostępne.
 - Jeśli bridge przez `codex exec` został już skutecznie użyty w tej sesji i środowisko MCP się nie zmieniło, nie powtarzaj całego flow inicjalizacyjnego dla każdego kolejnego node'a; przejdź od razu do odczytu kolejnych wskazanych node'ów.
+- Dla fallbacku `--json` nie przekazuj dalej całego JSONL ani obrazów base64; zredukuj wynik do oczekiwanych pól tekstowych i błędów.
 - Jeśli check dla klienta kończy się błędem, nie próbuj „na siłę" kontynuować pracy z Figmą.
 - Komunikat błędu wypisuj w języku polskim (język projektu).

@@ -1,6 +1,6 @@
 # WERSJA 1.0.0
 
-# Instrukcje AGENTS.md dla design-system-votey
+# Instrukcje CLAUDE.md dla design-system-votey
 ## Skills
 
 ### Available skills

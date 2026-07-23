@@ -101,7 +101,6 @@ function TypographySpecimen({label, role, viewportWidth}) {
     const fontSize = getLengthValue(`${prefix}-font-size`, viewportWidth);
     const lineHeight = getLengthValue(`${prefix}-line-height`, viewportWidth);
     const style = {
-        fontFamily: `var(${prefix}-font-family)`,
         fontSize: `var(${prefix}-font-size)`,
         fontWeight: `var(${prefix}-font-weight)`,
         letterSpacing: `var(${prefix}-letter-spacing)`,
@@ -179,8 +178,8 @@ function ResponsiveFoundations({device}) {
 
             <section className="responsive-tokens__section">
                 <div className="responsive-tokens__section-heading">
-                    <div><span>Typography</span><h2>Open Sans roles</h2></div>
-                    <p>Computed font size and line height update with the viewport.</p>
+                    <div><span>Typography</span><h2>CRM typography roles</h2></div>
+                    <p>CRM font-family token is Open Sans; the Storybook interface remains Satoshi.</p>
                 </div>
                 <div className="responsive-tokens__type-list">
                     {typographyRoles.map(([role, label]) => (

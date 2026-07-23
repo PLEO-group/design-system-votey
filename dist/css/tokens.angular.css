@@ -130,6 +130,7 @@
 /* Responsive spacing and typography. */
 :root {
   --font-family-open-sans: "Open Sans", Arial, sans-serif;
+  --font-family-satoshi: "Satoshi", system-ui, Arial, sans-serif;
   --space-page-margin: 0px;
   --space-section-gap: 0px;
   --space-card-padding: 0px;

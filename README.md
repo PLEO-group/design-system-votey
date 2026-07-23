@@ -18,6 +18,15 @@ npm run build:tokens
 
 `npm run build:tokens` uruchamia walidację automatycznie przed zapisem plików do `dist`. Te same testy działają w CI dla zmian tokenów, skryptów walidacyjnych oraz merge requestów tworzonych przez workflow Tokens Studio.
 
+## Font families
+
+Foundation font families są zdefiniowane w `tokens/type/core/value.json`:
+
+- `font-family.open-sans` — font produktu CRM;
+- `font-family.satoshi` — font produktu PWA oraz interfejsu Storybooka.
+
+Build Angular publikuje je jako `--font-family-open-sans` i `--font-family-satoshi`. Responsywne role `--typo-*` CRM wskazują na `--font-family-open-sans`. Storybook używa `--font-family-satoshi` globalnie. Istniejąca zmienna `--font-satoshi` w `votey-user-app` pozostaje bez zmian.
+
 ## Runtime Angulara
 
 Kod Angulara jest publikowany przez osobne wejście, dzięki czemu nie trafia do aplikacji Reactowej:

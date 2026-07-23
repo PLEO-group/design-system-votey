@@ -1,4 +1,26 @@
 {
+  "font-family": {
+    "open-sans": {
+      "value": "Open Sans",
+      "type": "text",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "satoshi": {
+      "value": "Satoshi",
+      "type": "text",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
   "font-weight": {
     "light": {
       "value": "Light",

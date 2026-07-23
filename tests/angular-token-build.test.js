@@ -48,7 +48,7 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
 
     assert.equal(secondBuild, firstBuild);
     assert.deepEqual(legacyAfterBuild, legacyBeforeBuild);
-    assert.equal(declarations.size, 203);
+    assert.equal(declarations.size, 204);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
     assert.match(firstBuild, /--color-gray-900: #444d5f;/);
@@ -68,6 +68,14 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assert.match(
         firstBuild,
         /--font-family-open-sans: "Open Sans", Arial, sans-serif;/,
+    );
+    assert.match(
+        firstBuild,
+        /--font-family-satoshi: "Satoshi", system-ui, Arial, sans-serif;/,
+    );
+    assert.match(
+        firstBuild,
+        /--typo-h1-font-family: var\(--font-family-open-sans\);/,
     );
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);

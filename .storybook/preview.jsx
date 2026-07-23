@@ -85,7 +85,7 @@ const preview = {
     decorators: [
         (Story, context) => (
             <DeviceContext device={context.globals.device || 'desktop'}>
-                <div style={{fontFamily: 'var(--font-family-open-sans)'}}>
+                <div style={{fontFamily: 'var(--storybook-font-family)'}}>
                     <Story/>
                 </div>
             </DeviceContext>

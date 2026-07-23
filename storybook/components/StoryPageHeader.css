@@ -2,7 +2,7 @@
     width: 100%;
     max-width: 760px;
     margin-bottom: 32px;
-    font-family: var(--font-family-open-sans, 'Open Sans', Arial, sans-serif);
+    font-family: var(--storybook-font-family, 'Satoshi', Arial, sans-serif);
 }
 
 .story-page-header--with-actions {

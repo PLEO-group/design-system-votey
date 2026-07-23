@@ -194,6 +194,27 @@ function normalizeFilePath(filePath) {
     return filePath.replaceAll('\\', '/');
 }
 
+function loadFontFamilies() {
+    const typeCore = JSON.parse(
+        fs.readFileSync('tokens/type/core/value.json', 'utf8'),
+    );
+    const openSans = typeCore['font-family']?.['open-sans']?.value;
+    const satoshi = typeCore['font-family']?.satoshi?.value;
+
+    if (
+        typeof openSans !== 'string' ||
+        openSans.length === 0 ||
+        typeof satoshi !== 'string' ||
+        satoshi.length === 0
+    ) {
+        throw new Error(
+            'Font family foundations must define non-empty open-sans and satoshi values.',
+        );
+    }
+
+    return {openSans, satoshi};
+}
+
 async function getResponsiveModeTokens(group, fileName) {
     const corePath = `tokens/${group}/core/value.json`;
     const semanticPath = `tokens/${group}/semantic/${fileName}`;
@@ -431,6 +452,7 @@ async function loadResponsiveTokenMaps() {
 async function buildResponsiveAngularCss() {
     const {spacingTokens, typographyTokens} =
         await loadResponsiveTokenMaps();
+    const {openSans, satoshi} = loadFontFamilies();
     const spacingDefaults = [...spacingTokens.keys()]
         .map((role) => `  --space-${role}: 0px;`)
         .join('\n');
@@ -441,7 +463,8 @@ ${serializeSpacingMap(spacingTokens)}
 ${serializeTypographyMap(typographyTokens)}
 
 :root {
-  --font-family-open-sans: "Open Sans", Arial, sans-serif;
+  --font-family-open-sans: ${JSON.stringify(openSans)}, Arial, sans-serif;
+  --font-family-satoshi: ${JSON.stringify(satoshi)}, system-ui, Arial, sans-serif;
 ${spacingDefaults}
 }
 

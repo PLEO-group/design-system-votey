@@ -29,7 +29,7 @@
 .responsive-tokens__section-heading p {
     margin: 0;
     color: var(--color-text-secondary);
-    font-family: var(--typo-body-font-family);
+    font-family: var(--storybook-font-family, 'Satoshi', Arial, sans-serif);
     font-size: var(--typo-body-font-size);
     font-weight: var(--typo-body-font-weight);
     letter-spacing: var(--typo-body-letter-spacing);
@@ -94,7 +94,7 @@
 
 .responsive-tokens__section-heading h2 {
     margin: 4px 0 0;
-    font-family: var(--typo-h3-font-family);
+    font-family: var(--storybook-font-family, 'Satoshi', Arial, sans-serif);
     font-size: var(--typo-h3-font-size);
     font-weight: var(--typo-h3-font-weight);
     line-height: var(--typo-h3-line-height);

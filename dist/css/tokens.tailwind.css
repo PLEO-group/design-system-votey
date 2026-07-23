@@ -4,11 +4,13 @@
   --color-gray-400: var(--color-gray-400);
   --color-gray-500: var(--color-gray-500);
   --color-gray-700: var(--color-gray-700);
+  --color-gray-900: var(--color-gray-900);
   --color-navy-blue-900: var(--color-navy-blue-900);
   --color-navy-blue-800: var(--color-navy-blue-800);
   --color-navy-blue-700: var(--color-navy-blue-700);
   --color-navy-blue-600: var(--color-navy-blue-600);
   --color-navy-blue-400: var(--color-navy-blue-400);
+  --color-navy-blue-300: var(--color-navy-blue-300);
   --color-navy-blue-200: var(--color-navy-blue-200);
   --color-navy-blue-100: var(--color-navy-blue-100);
   --color-navy-blue-70: var(--color-navy-blue-70);
@@ -36,6 +38,8 @@
   --color-orange-500: var(--color-orange-500);
   --color-orange-800: var(--color-orange-800);
   --color-yellow-100: var(--color-yellow-100);
+  --color-yellow-25: var(--color-yellow-25);
+  --color-yellow-50: var(--color-yellow-50);
   --color-yellow-400: var(--color-yellow-400);
   --color-yellow-600: var(--color-yellow-600);
   --color-active-green-500: var(--color-active-green-500);

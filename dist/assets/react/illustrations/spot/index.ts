@@ -1,6 +1,6 @@
-export { default as IlluSpotAddParticipantsSms } from "./IlluSpotAddParticipantsSms";
 export { default as IlluSpotAddParticipantsEmail } from "./IlluSpotAddParticipantsEmail";
 export { default as IlluSpotAddParticipantsPublicAccess } from "./IlluSpotAddParticipantsPublicAccess";
+export { default as IlluSpotAddParticipantsSms } from "./IlluSpotAddParticipantsSms";
 export { default as IlluSpotAddParticipantsUniqueCodes } from "./IlluSpotAddParticipantsUniqueCodes";
 export { default as IlluSpotAgendaNoVisibleV2 } from "./IlluSpotAgendaNoVisibleV2";
 export { default as IlluSpotAgendaNoVisible } from "./IlluSpotAgendaNoVisible";
@@ -14,6 +14,7 @@ export { default as IlluSpotChat } from "./IlluSpotChat";
 export { default as IlluSpotForumNone } from "./IlluSpotForumNone";
 export { default as IlluSpotForum } from "./IlluSpotForum";
 export { default as IlluSpotInteractiveVideoConference } from "./IlluSpotInteractiveVideoConference";
+export { default as IlluSpotLoginOnAnotherDevice } from "./IlluSpotLoginOnAnotherDevice";
 export { default as IlluSpotMultipleResponseMethod } from "./IlluSpotMultipleResponseMethod";
 export { default as IlluSpotNoResult } from "./IlluSpotNoResult";
 export { default as IlluSpotNoVoteV2 } from "./IlluSpotNoVoteV2";

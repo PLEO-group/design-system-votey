@@ -2,7 +2,9 @@ import { DOCUMENT, isPlatformBrowser } from "@angular/common";
 import {
   EnvironmentProviders,
   inject,
+  InjectionToken,
   Injectable,
+  makeEnvironmentProviders,
   OnDestroy,
   PLATFORM_ID,
   provideEnvironmentInitializer,
@@ -12,6 +14,12 @@ import { BehaviorSubject, Observable } from "rxjs";
 
 export type VoteyDevice = "mobile" | "tablet" | "desktop";
 export type VoteyDeviceOrientation = "vertical" | "horizontal";
+
+export interface VoteyGridConfig {
+  readonly desktop: number;
+  readonly tablet: number;
+  readonly mobile: number;
+}
 
 export interface VoteyDeviceDimensions {
   width: number;
@@ -31,11 +39,25 @@ const DEFAULT_DIMENSIONS: VoteyDeviceDimensions = {
   desktopBreakpoint: 1920,
 };
 
+export const VOTEY_DEFAULT_GRID_CONFIG: Readonly<VoteyGridConfig> =
+  Object.freeze({
+    desktop: 12,
+    tablet: 8,
+    mobile: 4,
+  });
+
+export const VOTEY_GRID_CONFIG = new InjectionToken<VoteyGridConfig>(
+  "VoteyGridConfig",
+);
+
 @Injectable({
   providedIn: "root",
 })
 export class VoteyDeviceService implements OnDestroy {
   private readonly document: Document = inject(DOCUMENT);
+  private readonly gridConfig: VoteyGridConfig =
+    inject(VOTEY_GRID_CONFIG, { optional: true }) ??
+    VOTEY_DEFAULT_GRID_CONFIG;
   private readonly platformId: object = inject(PLATFORM_ID);
   private readonly deviceTypeSubject = new BehaviorSubject<VoteyDevice | null>(
     null,
@@ -43,6 +65,7 @@ export class VoteyDeviceService implements OnDestroy {
   private readonly dimensionsSubject =
     new BehaviorSubject<VoteyDeviceDimensions>(DEFAULT_DIMENSIONS);
   private readonly initializedSubject = new BehaviorSubject<boolean>(false);
+  private readonly columnsAmountSubject = new BehaviorSubject<number>(0);
   private listeningForResize = false;
 
   public readonly deviceType$: Observable<VoteyDevice | null> =
@@ -51,7 +74,10 @@ export class VoteyDeviceService implements OnDestroy {
     this.dimensionsSubject.asObservable();
   public readonly initialized$: Observable<boolean> =
     this.initializedSubject.asObservable();
+  public readonly columnsAmount$: Observable<number> =
+    this.columnsAmountSubject.asObservable();
 
+  public columnsAmount = 0;
   public currentDevice: VoteyDevice | null = null;
   public deviceOrientation: VoteyDeviceOrientation = "vertical";
   public isMobileDevice = false;
@@ -143,6 +169,8 @@ export class VoteyDeviceService implements OnDestroy {
       : this.isTabletDevice
         ? "tablet"
         : "desktop";
+    this.columnsAmount = this.gridConfig[this.currentDevice];
+    this.columnsAmountSubject.next(this.columnsAmount);
   }
 
   private applyDocumentState(innerHeight: number): void {
@@ -163,8 +191,16 @@ export class VoteyDeviceService implements OnDestroy {
   }
 }
 
-export function provideVoteyDeviceDetection(): EnvironmentProviders {
-  return provideEnvironmentInitializer((): void =>
-    inject(VoteyDeviceService).initialize(),
-  );
+export function provideVoteyDeviceDetection(
+  gridConfig: VoteyGridConfig = VOTEY_DEFAULT_GRID_CONFIG,
+): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: VOTEY_GRID_CONFIG,
+      useValue: gridConfig,
+    },
+    provideEnvironmentInitializer((): void =>
+      inject(VoteyDeviceService).initialize(),
+    ),
+  ]);
 }

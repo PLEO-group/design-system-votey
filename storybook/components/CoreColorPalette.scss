@@ -1,0 +1,68 @@
+.core-color-palette {
+    display: grid;
+    gap: 24px;
+
+    .group {
+        padding: 24px;
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-card-s);
+        background: var(--color-bg-surface);
+
+        h2 {
+            margin: 0 0 16px;
+            color: var(--color-text-primary);
+            font-size: 18px;
+            text-transform: capitalize;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 12px;
+
+            .card {
+                display: grid;
+                min-width: 0;
+                gap: 7px;
+
+                .swatch {
+                    height: 88px;
+                    border: 1px solid var(--color-border-subtle);
+                    border-radius: var(--radius-12);
+                }
+
+                &.empty {
+                    opacity: .55;
+
+                    .swatch {
+                        border-style: dashed;
+                        background: var(--color-bg-page);
+                    }
+                }
+
+                strong,
+                code {
+                    overflow-wrap: anywhere;
+                }
+
+                strong {
+                    color: var(--color-text-primary);
+                    font-size: 12px;
+                }
+
+                code {
+                    color: var(--color-text-secondary);
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .core-color-palette {
+        .group {
+            padding: 16px;
+        }
+    }
+}

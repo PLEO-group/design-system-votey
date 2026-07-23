@@ -4451,3 +4451,34 @@ body[data-device=mobile] {
     --space-icon-gap: 12px;
   }
 }
+
+/* CRM grid tokens. */
+body[data-device=mobile] {
+  --grid-columns: 4;
+  --grid-margin: 3.7333333333vw;
+  --grid-margin-extra: 6.4vw;
+  --grid-column-gap: 3.2vw;
+  --grid-column-width: calc(
+    (100vw - 7.4666666667vw - 9.6vw) / 4
+  );
+}
+
+body[data-device=tablet] {
+  --grid-columns: 8;
+  --grid-margin: 1.5625vw;
+  --grid-margin-extra: 3.125vw;
+  --grid-column-gap: 1.5625vw;
+  --grid-column-width: calc(
+    (100vw - 3.125vw - 10.9375vw) / 8
+  );
+}
+
+body[data-device=desktop] {
+  --grid-columns: 12;
+  --grid-margin: 1.0416666667vw;
+  --grid-margin-extra: 2.0833333333vw;
+  --grid-column-gap: 0.8333333333vw;
+  --grid-column-width: calc(
+    (100vw - 2.0833333333vw - 9.1666666667vw) / 12
+  );
+}

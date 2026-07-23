@@ -481,6 +481,126 @@ ${spacingDefaults}
     return `/* Responsive spacing and typography. */\n${result.css.trim()}\n`;
 }
 
+const GRID_DEVICES = ['mobile', 'tablet', 'desktop'];
+const GRID_TOKEN_PROPERTIES = [
+    'margin',
+    'margin-extra',
+    'gutter',
+    'columns',
+];
+
+function serializeGridMap(gridTokens) {
+    const lines = ['$grid-tokens: ('];
+
+    for (const device of GRID_DEVICES) {
+        const config = gridTokens[device];
+
+        lines.push(`  "${device}": (`);
+        for (const property of GRID_TOKEN_PROPERTIES) {
+            lines.push(`    "${property}": ${config[property]},`);
+        }
+        lines.push('  ),');
+    }
+
+    lines.push(');');
+
+    return lines.join('\n');
+}
+
+function serializeBreakpointMap(breakpoints) {
+    const lines = ['$breakpoints: ('];
+
+    for (const device of GRID_DEVICES) {
+        lines.push(`  "${device}": ${breakpoints[device]},`);
+    }
+
+    lines.push(');');
+
+    return lines.join('\n');
+}
+
+function loadGridTokens() {
+    const source = JSON.parse(
+        fs.readFileSync('tokens/grid/angular.json', 'utf8'),
+    );
+    const gridTokens = source.grid?.admin;
+    const breakpoints = source.breakpoint;
+
+    if (
+        !gridTokens ||
+        typeof gridTokens !== 'object' ||
+        !breakpoints ||
+        typeof breakpoints !== 'object'
+    ) {
+        throw new Error(
+            'Angular grid tokens must define grid.admin and breakpoint objects.',
+        );
+    }
+
+    const normalizedGridTokens = {};
+    const normalizedBreakpoints = {};
+
+    for (const device of GRID_DEVICES) {
+        const deviceTokens = gridTokens[device];
+        const breakpoint = breakpoints[device]?.value;
+
+        if (
+            !deviceTokens ||
+            typeof deviceTokens !== 'object' ||
+            !Number.isFinite(breakpoint) ||
+            breakpoint <= 0
+        ) {
+            throw new Error(
+                `Angular grid or breakpoint tokens are missing ${device}.`,
+            );
+        }
+
+        normalizedGridTokens[device] = {};
+        normalizedBreakpoints[device] = breakpoint;
+
+        for (const property of GRID_TOKEN_PROPERTIES) {
+            const value = deviceTokens[property]?.value;
+
+            if (!Number.isFinite(value) || value <= 0) {
+                throw new Error(
+                    `Angular grid token ${device}.${property} must be a positive number.`,
+                );
+            }
+
+            normalizedGridTokens[device][property] = value;
+        }
+
+        if (!Number.isInteger(normalizedGridTokens[device].columns)) {
+            throw new Error(
+                `Angular grid token ${device}.columns must be an integer.`,
+            );
+        }
+    }
+
+    return {
+        breakpoints: normalizedBreakpoints,
+        gridTokens: normalizedGridTokens,
+    };
+}
+
+function buildGridAngularCss() {
+    const {breakpoints, gridTokens} = loadGridTokens();
+    const scss = `@use "styles/angular/grid-token-engine" as engine;
+
+${serializeGridMap(gridTokens)}
+
+${serializeBreakpointMap(breakpoints)}
+
+@include engine.grid-token-bundle($grid-tokens, $breakpoints);
+`;
+    const result = compileString(scss, {
+        loadPaths: [process.cwd()],
+        style: 'expanded',
+    });
+
+    return `/* CRM grid tokens. */\n${result.css.trim()}\n`;
+}
+
 const FORMATS = {
     theme: {
         name: 'css/theme',
@@ -592,6 +712,7 @@ async function buildLegacyTokens() {
 
 async function buildCrmAngularTokens() {
     const responsiveCss = await buildResponsiveAngularCss();
+    const gridCss = buildGridAngularCss();
     const styleDictionary = new StyleDictionary({
         include: [
             'tokens/base/colors.json',
@@ -623,7 +744,11 @@ async function buildCrmAngularTokens() {
 
     const outputPath = 'dist/css/tokens.angular.css';
     const baseCss = fs.readFileSync(outputPath, 'utf8').trimEnd();
-    fs.writeFileSync(outputPath, `${baseCss}\n\n${responsiveCss}`, 'utf8');
+    fs.writeFileSync(
+        outputPath,
+        `${baseCss}\n\n${responsiveCss}\n${gridCss}`,
+        'utf8',
+    );
 }
 
 const targetArgument = process.argv.find((argument) =>

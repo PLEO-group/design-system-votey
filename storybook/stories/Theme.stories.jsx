@@ -6,7 +6,7 @@ import {StoryPageHeader} from '../components/StoryPageHeader';
 import '../../dist/css/tokens.css';
 import '../../dist/css/tokens.light.css';
 import '../../dist/css/tokens.dark.css';
-import './PwaColors.stories.css';
+import './PwaColors.stories.scss';
 
 function flattenSemanticTokens(object, path = []) {
     return Object.entries(object).flatMap(([key, token]) => {
@@ -46,7 +46,7 @@ function PwaSemanticColors({theme, onThemeChange}) {
     return (
         <main className="pwa-color-tokens">
             <StoryPageHeader
-                actions={<div className="pwa-color-tokens__theme-switch" aria-label="Theme">
+                actions={<div className="theme-switch" aria-label="Theme">
                     {['light', 'dark'].map((option) => (
                         <button
                             aria-pressed={theme === option}
@@ -63,15 +63,15 @@ function PwaSemanticColors({theme, onThemeChange}) {
                 title="Semantic colors"
             />
 
-            <div className="pwa-color-tokens__groups">
+            <div className="groups">
                 {Object.entries(groups).map(([group, tokens]) => (
-                    <section className="pwa-color-tokens__group" key={group}>
+                    <section className="group" key={group}>
                         <h2>{group}</h2>
-                        <div className="pwa-color-tokens__grid">
+                        <div className="grid">
                             {tokens.map((token) => (
-                                <article className="pwa-color-tokens__card" key={token.name}>
+                                <article className="card" key={token.name}>
                                     <div
-                                        className="pwa-color-tokens__swatch"
+                                        className="swatch"
                                         style={{backgroundColor: `var(${token.name})`}}
                                     />
                                     <strong>{token.name}</strong>

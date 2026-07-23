@@ -1,3 +1,4 @@
+export { default as IllluSpotNotificationSimple } from "./IllluSpotNotificationSimple";
 export { default as IlluSpotAnswersOpenSecretQuestionSimple } from "./IlluSpotAnswersOpenSecretQuestionSimple";
 export { default as IlluSpotAnswersQuestionPublicSimple } from "./IlluSpotAnswersQuestionPublicSimple";
 export { default as IlluSpotArrowSimple } from "./IlluSpotArrowSimple";

@@ -2,7 +2,7 @@ import React from 'react';
 import crmLightTokens from '../../tokens/color/semantic-CRM/Light.json';
 import {CoreColorPalette} from '../components/CoreColorPalette';
 import {StoryPageHeader} from '../components/StoryPageHeader';
-import './CrmColors.stories.css';
+import './CrmColors.stories.scss';
 
 function flattenSemanticTokens(object, path = []) {
     return Object.entries(object).flatMap(([key, token]) => {
@@ -50,15 +50,15 @@ function CrmSemanticColors() {
                 eyebrow="CRM light"
                 title="Semantic colors"
             />
-            <div className="crm-color-tokens__groups">
+            <div className="groups">
                 {Object.entries(semanticGroups).map(([group, tokens]) => (
-                    <section className="crm-color-tokens__group" key={group}>
+                    <section className="group" key={group}>
                         <h2>{group}</h2>
-                        <div className="crm-color-tokens__grid">
+                        <div className="grid">
                             {tokens.map((token) => (
-                                <article className="crm-color-tokens__card" key={token.name}>
+                                <article className="card" key={token.name}>
                                     <div
-                                        className="crm-color-tokens__swatch"
+                                        className="swatch"
                                         style={{backgroundColor: `var(${token.name})`}}
                                     />
                                     <strong>{token.name}</strong>

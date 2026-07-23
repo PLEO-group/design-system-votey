@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StoryPageHeader} from '../components/StoryPageHeader';
 import responsiveEngineSource from '../../styles/angular/_responsive-token-engine.scss?raw';
-import './ResponsiveTokens.stories.css';
+import './ResponsiveTokens.stories.scss';
 
 const typographyRoles = [
     ['h1', 'Heading 1'],
@@ -108,13 +108,13 @@ function TypographySpecimen({label, role, viewportWidth}) {
     };
 
     return (
-        <div className="responsive-tokens__type-row">
+        <div className="type-row">
             <div>
                 <strong>{label}</strong>
                 <code>{prefix}-*</code>
             </div>
             <p style={style}>Zażółć gęślą jaźń — Design System Votey</p>
-            <dl className="responsive-tokens__computed-values">
+            <dl className="computed-values">
                 <div>
                     <dt>font-size</dt>
                     <dd><code>{fontSize.raw}</code><strong>{fontSize.resolved}</strong></dd>
@@ -134,35 +134,35 @@ function ResponsiveFoundations({device}) {
     return (
         <main className="responsive-tokens">
             <StoryPageHeader
-                actions={<dl className="responsive-tokens__runtime">
+                actions={<dl className="runtime">
                     <div><dt>data-device</dt><dd>{device}</dd></div>
                     <div><dt>viewport</dt><dd>{snapshot.width}px</dd></div>
                     <div><dt>orientation</dt><dd>{snapshot.orientation}</dd></div>
                     <div><dt>multiplier</dt><dd>{deviceMultipliers[device]}×</dd></div>
                     <div><dt>--vh</dt><dd>{readToken('--vh')}</dd></div>
                 </dl>}
-                className="responsive-tokens__hero"
+                className="hero"
                 description="Change the device context in the Storybook toolbar and use the viewport toolbar to inspect interpolation between the six Figma reference widths."
                 eyebrow="CRM / Angular"
                 title="Responsive token preview"
             />
 
-            <aside className="responsive-tokens__notice">
+            <aside className="notice">
                 Storybook manually mirrors the DOM contract. In CRM the same attributes are managed by
                 <code> provideVoteyDeviceDetection()</code> from
                 <code> @pleodigital/design-system-votey/angular</code>.
             </aside>
 
-            <section className="responsive-tokens__section">
-                <div className="responsive-tokens__section-heading">
+            <section className="section">
+                <div className="section-heading">
                     <div><span>Scaling inputs</span><h2>Figma reference widths</h2></div>
                     <p>Values between points are calculated by the responsive scaling engine.</p>
                 </div>
-                <div className="responsive-tokens__breakpoints">
+                <div className="breakpoints">
                     {referenceWidths.map((width) => <code key={width}>{width}px</code>)}
                 </div>
-                <h3 className="responsive-tokens__subheading">Device multipliers</h3>
-                <div className="responsive-tokens__multipliers">
+                <h3 className="subheading">Device multipliers</h3>
+                <div className="multipliers">
                     {Object.entries(deviceMultipliers).map(([multiplierDevice, value]) => (
                         <article
                             className={multiplierDevice === device ? 'is-active' : ''}
@@ -176,12 +176,12 @@ function ResponsiveFoundations({device}) {
                 </div>
             </section>
 
-            <section className="responsive-tokens__section">
-                <div className="responsive-tokens__section-heading">
+            <section className="section">
+                <div className="section-heading">
                     <div><span>Typography</span><h2>CRM typography roles</h2></div>
                     <p>CRM font-family token is Open Sans; the Storybook interface remains Satoshi.</p>
                 </div>
-                <div className="responsive-tokens__type-list">
+                <div className="type-list">
                     {typographyRoles.map(([role, label]) => (
                         <TypographySpecimen
                             key={role}
@@ -193,22 +193,22 @@ function ResponsiveFoundations({device}) {
                 </div>
             </section>
 
-            <section className="responsive-tokens__section">
-                <div className="responsive-tokens__section-heading">
+            <section className="section">
+                <div className="section-heading">
                     <div><span>Spacing</span><h2>Semantic layout spacing</h2></div>
                     <p>Bars show the currently computed CSS value.</p>
                 </div>
-                <div className="responsive-tokens__spacing-grid">
+                <div className="spacing-grid">
                     {spacingTokens.map((token) => (
-                        <div className="responsive-tokens__space" key={token}>
-                            <div className="responsive-tokens__space-heading">
+                        <div className="space" key={token}>
+                            <div className="space-heading">
                                 <code>--space-{token}</code>
                                 <strong>{getLengthValue(`--space-${token}`, snapshot.width).resolved}</strong>
                             </div>
-                            <div className="responsive-tokens__space-bar">
+                            <div className="space-bar">
                                 <i style={{width: `var(--space-${token})`}}/>
                             </div>
-                            <code className="responsive-tokens__formula">
+                            <code className="formula">
                                 {getLengthValue(`--space-${token}`, snapshot.width).raw}
                             </code>
                         </div>

@@ -48,7 +48,10 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
 
     assert.equal(secondBuild, firstBuild);
     assert.deepEqual(legacyAfterBuild, legacyBeforeBuild);
-    assert.equal(declarations.size, 204);
+    for (const legacyOutput of legacyAfterBuild) {
+        assert.doesNotMatch(legacyOutput, /--grid-/);
+    }
+    assert.equal(declarations.size, 209);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
     assert.match(firstBuild, /--color-gray-900: #444d5f;/);
@@ -80,6 +83,25 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);
     assert.match(firstBuild, /--space-page-margin: 0px;/);
+    assert.match(
+        firstBuild,
+        /body\[data-device=mobile\] \{\n  --grid-columns: 4;/,
+    );
+    assert.match(
+        firstBuild,
+        /body\[data-device=tablet\] \{\n  --grid-columns: 8;/,
+    );
+    assert.match(
+        firstBuild,
+        /body\[data-device=desktop\] \{\n  --grid-columns: 12;/,
+    );
+    assert.match(firstBuild, /--grid-margin: 3\.7333333333vw;/);
+    assert.match(firstBuild, /--grid-margin-extra: 6\.4vw;/);
+    assert.match(firstBuild, /--grid-column-gap: 3\.2vw;/);
+    assert.match(
+        firstBuild,
+        /--grid-column-width: calc\(\n    \(100vw - 7\.4666666667vw - 9\.6vw\) \/ 4\n  \);/,
+    );
     assert.match(
         firstBuild,
         /--color-shadow-soft: rgba\(1, 0, 39, 0\.08\);/,

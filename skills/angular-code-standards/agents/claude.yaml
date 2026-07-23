@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Angular Code Standards'
+  short_description: 'Standardy kodu Angular dla tego projektu'
+  default_prompt: 'Użyj angular-code-standards przed edycją Angular TypeScript, HTML albo SCSS w tym projekcie, także dla próśb typu dodaj komponent, zmień styl, napraw modal, popraw template, uzupełnij typy albo refaktor UI. Stosuj zasady od razu: najpierw lokalne wzorce i kontrakt danych, hierarchiczny SCSS, tokeny kolorów bez hex/rgb, publiczne API Design System, brak metod w szablonie, bez jednorazowych helperów dla krótkich warunków, stabilny track w @for, jawne typy TypeScript, typed forms w nowych modalach, parent/container jako właściciel view modelu, signalowe API tam gdzie pasuje, sprzątanie martwego API po refaktorze oraz minimalną weryfikację zmian.'

@@ -116,11 +116,21 @@ icon-color| mint-green-400    | mint-green-400 (bez zmian)
 
 ### Krok 5 — weryfikacja spójności z resztą macierzy
 
-Zanim napiszesz CSS, sprawdź istniejące odpowiedniki dla innych wariantów w kodzie (szybki Grep w `.css`). Traktuj je jako kontrolę konwencji, nie jako źródło wartości z Figmy. **Pytanie:** czy zmiana pasuje do konwencji? Jeśli nie — potwierdź z userem, że to celowe.
+Przed handoffem sprawdź istniejące odpowiedniki dla innych wariantów w kodzie. Traktuj je jako kontrolę konwencji, nie jako źródło wartości z Figmy. **Pytanie:** czy zmiana pasuje do konwencji? Jeśli nie — potwierdź z userem, że to celowe.
 
-### Krok 6 — edytuj tylko właściwy blok CSS
+### Krok 6 — przekaż neutralny handoff
 
-Używaj wzorca per-variant custom properties opisanego w `styling-guide`. Edytuj tylko blok odpowiadający zmienianej komórce — nie ruszaj reszty.
+Przekaż skillowi implementacyjnemu dostępnemu w bieżącym repo:
+
+- wybrany tryb zakresu,
+- tabelę zweryfikowanych komórek,
+- target i baseline,
+- zastaną konwencję kodu,
+- jawne braki albo decyzje użytkownika.
+
+To skill implementacyjny wybiera właściwy mechanizm kodu, np. CSS, SCSS, Tailwind,
+CSS-in-JS, propsy albo tokeny. Nie narzucaj `styling-guide`, custom properties ani
+struktury selektorów, jeżeli nie wynikają z instrukcji bieżącego repo.
 
 ## Zasady
 
@@ -131,4 +141,6 @@ Używaj wzorca per-variant custom properties opisanego w `styling-guide`. Edytuj
 
 ## Integracja z innymi skillami
 
-- **Po tym skillu**: `styling-guide` (tokeny kolorów, pattern custom properties), `engineering-rules` (jakość kodu).
+- **Po tym skillu**: użyj lokalnego skilla implementacyjnego lub standardów kodu
+  wskazanych przez bieżące repo. Jeśli repo nie udostępnia takiego skilla,
+  zakończ neutralnym handoffem zamiast wymyślać projektowy wzorzec stylowania.

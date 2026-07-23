@@ -14,6 +14,44 @@ ${joined}
 }`;
 }
 
+function resolveAlphaColor(dictionary, originalValue, tokenName) {
+    const match = originalValue.match(
+        /^rgba\(\{(color\.[^}]+)\},\s*\{(opacity\.[^}]+)\}\)$/,
+    );
+
+    if (!match) return null;
+
+    const coreToken = dictionary.allTokens.find(
+        (token) => token.path.join('.') === match[1],
+    );
+    const opacityToken = dictionary.allTokens.find(
+        (token) => token.path.join('.') === match[2],
+    );
+
+    if (!coreToken || !opacityToken) {
+        throw new Error(
+            `Unresolved alpha color references for ${tokenName}: ${originalValue}`,
+        );
+    }
+
+    const hexMatch = String(coreToken.value).match(
+        /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i,
+    );
+    const alpha = Number(opacityToken.value);
+
+    if (!hexMatch || !Number.isFinite(alpha) || alpha < 0 || alpha > 1) {
+        throw new Error(
+            `Invalid alpha color recipe for ${tokenName}: ${originalValue}`,
+        );
+    }
+
+    const channels = hexMatch
+        .slice(1)
+        .map((channel) => Number.parseInt(channel, 16));
+
+    return `rgba(${channels.join(', ')}, ${alpha})`;
+}
+
 function getSemanticTokens(dictionary) {
     return dictionary.allTokens.filter((token) => {
         const originalValue = token.original && token.original.value;
@@ -55,6 +93,9 @@ function buildAngularTokens({dictionary, options}) {
     const {selector = ':root'} = options;
     const lines = dictionary.allTokens.map((token) => {
         const isCoreColor = token.filePath.endsWith('tokens/base/colors.json');
+        const isCoreOpacity = token.filePath.endsWith(
+            'tokens/opacity/core/value.json',
+        );
         const isSemanticColor = token.filePath.endsWith(
             'tokens/color/semantic-CRM/Light.json',
         );
@@ -63,6 +104,18 @@ function buildAngularTokens({dictionary, options}) {
         );
         const isRadius = token.filePath.includes('tokens/radius/');
         const originalValue = token.original && token.original.value;
+
+        if (isSemanticColor && typeof originalValue === 'string') {
+            const alphaColor = resolveAlphaColor(
+                dictionary,
+                originalValue,
+                token.name,
+            );
+
+            if (alphaColor) {
+                return `--color-${token.name}: ${alphaColor};`;
+            }
+        }
 
         if (
             isSemanticColor &&
@@ -88,6 +141,10 @@ function buildAngularTokens({dictionary, options}) {
             return `--${token.name}: ${token.value};`;
         }
 
+        if (isCoreOpacity) {
+            return null;
+        }
+
         if (isCoreSpacing) {
             return `--spacing-${token.path.at(-1)}: ${token.value}px;`;
         }
@@ -99,7 +156,7 @@ function buildAngularTokens({dictionary, options}) {
         throw new Error(
             `Unsupported token in the Angular output: ${token.filePath}#${token.name}`,
         );
-    });
+    }).filter(Boolean);
 
     return `/**
  * Generated file. Do not edit directly.
@@ -515,6 +572,7 @@ async function buildCrmAngularTokens() {
     const styleDictionary = new StyleDictionary({
         include: [
             'tokens/base/colors.json',
+            'tokens/opacity/core/value.json',
             'tokens/space/core/value.json',
             'tokens/radius/core/value.json',
         ],

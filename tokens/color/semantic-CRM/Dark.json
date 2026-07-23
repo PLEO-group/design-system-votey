@@ -268,5 +268,33 @@
         "com.figma.hiddenFromPublishing": false
       }
     }
+  },
+  "shadow": {
+    "soft": {
+      "value": "rgba({color.navy-blue-900}, {opacity.8})",
+      "type": "color"
+    },
+    "event-filter": {
+      "value": "rgba({color.navy-blue-700}, {opacity.30})",
+      "type": "color"
+    }
+  },
+  "overlay": {
+    "loader": {
+      "value": "rgba({color.white}, {opacity.78})",
+      "type": "color"
+    },
+    "loader-soft": {
+      "value": "rgba({color.white}, {opacity.68})",
+      "type": "color"
+    },
+    "accent-start": {
+      "value": "rgba({color.active-green-300}, {opacity.30})",
+      "type": "color"
+    },
+    "accent-end": {
+      "value": "rgba({color.mint-green-600}, {opacity.0})",
+      "type": "color"
+    }
   }
 }

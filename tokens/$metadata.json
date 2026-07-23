@@ -1,6 +1,7 @@
 {
   "tokenSetOrder": [
     "base/colors",
+    "opacity/core/value",
     "light",
     "dark",
     "color/semantic-CRM/Light",

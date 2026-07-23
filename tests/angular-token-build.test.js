@@ -48,9 +48,13 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
 
     assert.equal(secondBuild, firstBuild);
     assert.deepEqual(legacyAfterBuild, legacyBeforeBuild);
-    assert.equal(declarations.size, 193);
+    assert.equal(declarations.size, 203);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
+    assert.match(firstBuild, /--color-gray-900: #444d5f;/);
+    assert.match(firstBuild, /--color-navy-blue-300: #606489;/);
+    assert.match(firstBuild, /--color-yellow-25: #fffcf1;/);
+    assert.match(firstBuild, /--color-yellow-50: #fff5e1;/);
     assert.match(
         firstBuild,
         /--color-bg-page: var\(--color-gray-100\);/,
@@ -68,6 +72,31 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);
     assert.match(firstBuild, /--space-page-margin: 0px;/);
+    assert.match(
+        firstBuild,
+        /--color-shadow-soft: rgba\(1, 0, 39, 0\.08\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-shadow-event-filter: rgba\(19, 18, 93, 0\.3\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-overlay-loader: rgba\(255, 255, 255, 0\.78\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-overlay-loader-soft: rgba\(255, 255, 255, 0\.68\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-overlay-accent-start: rgba\(136, 234, 125, 0\.3\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-overlay-accent-end: rgba\(2, 194, 149, 0\);/,
+    );
+    assert.doesNotMatch(firstBuild, /--opacity-/);
     assert.match(
         firstBuild,
         /@media \(min-width: 360px\) and \(max-width: 374px\)/,

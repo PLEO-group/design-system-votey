@@ -2,7 +2,8 @@
 name: figma
 description: >
   Kompletny pipeline pracy z Figmą: sprawdzenie połączenia MCP, odczyt makiet pixel-perfect,
-  praca z macierzą wariantów komponentów i orkiestracja tworzenia wpisów CMS na podstawie Figmy.
+  projektowy routing implementacji Angular/SCSS dla Boxes i Votey, praca z macierzą wariantów
+  komponentów i orkiestracja tworzenia wpisów CMS na podstawie Figmy.
   Używaj ZAWSZE gdy zaczynasz pracę nad nowym modułem lub komponentem i masz linki do Figmy,
   przed napisaniem jakichkolwiek klas CSS/Tailwind, przy pracy z wariantami komponentów
   (color/size/state) lub gdy chcesz stworzyć wpis CMS na podstawie makiety.
@@ -11,7 +12,7 @@ description: >
   get_design_context, get_screenshot, get_metadata.
 ---
 
-# WERSJA 1.7.0
+# WERSJA 1.8.0
 # AUTOR s.stawowy@pleodigital.com
 
 # Figma — wyborek-strapi
@@ -19,6 +20,7 @@ description: >
 Skill obejmuje cały pipeline pracy z Figmą: od sprawdzenia połączenia, przez odczyt makiet, po tworzenie wpisów CMS.
 
 # CHANGELOG
+# 1.8.0 — Rozdzielono Angular reference na wariant Boxes i Votey oraz dodano routing po repo/kontrakcie paczki.
 # 1.7.0 — Dodano obowiązkowy kontrakt struktury layoutu przed kodowaniem.
 # 1.6.0 — Dodano zbiorczy status odczytu Figmy i fallback dla częściowo niedostępnych danych.
 # 1.5.1 — Doprecyzowano Angular/Design System reference i obowiązek walidacji runtime dla implementacji UI z Figmy.
@@ -40,7 +42,13 @@ Odczyt makiety → implementacja CSS/komponentu (pixel-perfect)
   → Instrukcje są w tym SKILL.md (poniżej)
 
 Odczyt makiety → implementacja Angular / SCSS / Design System
-  → Wczytaj references/angular-implementation.md po MCP Guardzie i przed edycją kodu
+  → Najpierw rozpoznaj rodzinę projektu:
+    - angular-design-system / Boxes / @design-system/design-system
+      → Wczytaj references/angular-boxes-implementation.md
+    - design-system-votey / wyborek-crm / @pleodigital/design-system-votey
+      → Wczytaj references/angular-votey-implementation.md
+    - inny albo niejednoznaczny projekt Angular
+      → Odczytaj AGENTS.md i package.json; nie stosuj reference Boxes ani Votey na ślepo
 
 Komponent z macierzą wariantów (color × size × state)
   → Wczytaj references/component-variants.md
@@ -58,7 +66,8 @@ Nie ładuj wszystkich referencji naraz.
 Nigdy nie zgaduj wartości paddingów, marginów, gapów ani rozmiarów. Każda wartość musi pochodzić z makiety.
 Jeśli nie możesz odczytać danych — powiedz o tym użytkownikowi i poczekaj na instrukcje.
 
-Jeśli repo jest Angularowe, po odczycie danych z Figmy wczytaj `references/angular-implementation.md`.
+Jeśli repo jest Angularowe, po odczycie danych z Figmy rozpoznaj projekt po ścieżce repo, `package.json`, importowanej paczce Design Systemu i `AGENTS.md`, a następnie wczytaj dokładnie jeden reference: `references/angular-boxes-implementation.md` albo `references/angular-votey-implementation.md`.
+Nie przenoś nazw tokenów, breakpointów, komponentów ani ścieżek importu pomiędzy Boxes i Votey.
 Nie implementuj layoutu Angular/SCSS z użyciem domyślnych założeń React/Next ani klas Tailwind, jeśli projekt używa SCSS i Design Systemu.
 
 ## Twarda zasada jakości danych

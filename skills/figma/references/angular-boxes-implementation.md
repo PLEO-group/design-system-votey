@@ -1,6 +1,7 @@
-# Angular / Design System Implementation From Figma
+# Angular Boxes / Design System Implementation From Figma
 
-Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w projekcie Angular, SCSS albo Design System.
+Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w `angular-design-system`, projekcie Boxes albo konsumencie `@design-system/design-system`.
+Nie stosuj wartości, tokenów ani ścieżek z tego pliku w `design-system-votey` ani `wyborek-crm`.
 Nie używaj tej referencji do React/Next.
 
 ## Pipeline

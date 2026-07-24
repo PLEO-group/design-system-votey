@@ -41,6 +41,24 @@ export const appConfig: ApplicationConfig = {
 
 Provider inicjalizuje `VoteyDeviceService`, reaguje na zmianę rozmiaru okna i ustawia na `body` atrybuty `data-device` oraz `data-orientation`. Ustawia również zmienną `--vh`. Atrybut `data-device` aktywuje reguły responsive z `dist/css/tokens.angular.css`.
 
+Mixiny Sass mają taki sam kontrakt jak w `angular-design-system`:
+
+```scss
+@use "@pleodigital/design-system-votey/ds-device-mixins" as device-mixins;
+
+.example {
+  @include device-mixins.device("mobile") {
+    display: block;
+  }
+
+  @include device-mixins.orientation("vertical") {
+    flex-direction: column;
+  }
+}
+```
+
+Dostępne są `device`, `orientation` i `theme`.
+
 Build wejścia Angulara:
 
 ```bash

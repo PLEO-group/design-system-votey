@@ -8,6 +8,10 @@
       "types": "./dist/angular/types/pleodigital-design-system-votey-angular.d.ts",
       "default": "./dist/angular/fesm2022/pleodigital-design-system-votey-angular.mjs"
     },
+    "./ds-device-mixins": {
+      "sass": "./dist/scss/_ds-device-mixins.scss",
+      "default": "./dist/scss/_ds-device-mixins.scss"
+    },
     "./dist/*": "./dist/*"
   },
   "publishConfig": {

@@ -3,6 +3,7 @@ const {execFileSync} = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const {compileString} = require('sass');
 
 const projectRoot = path.resolve(__dirname, '..');
 const outputPath = path.join(
@@ -212,4 +213,33 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         firstBuild,
         /\[data-votey-theme="dark"\] \{[\s\S]*?--color-border-subtle: var\(--color-navy-blue-600\);/,
     );
+});
+
+test('Angular build publishes mixins compatible with angular-design-system', () => {
+    buildAngularTokens();
+
+    const result = compileString(
+        `@use "ds-device-mixins" as device-mixins;
+
+.example {
+  @include device-mixins.device("mobile") {
+    display: block;
+  }
+
+  @include device-mixins.orientation("vertical") {
+    flex-direction: column;
+  }
+
+  @include device-mixins.theme("dark") {
+    color: var(--text-primary);
+  }
+}`,
+        {
+            loadPaths: [path.join(projectRoot, 'dist', 'scss')],
+        },
+    );
+
+    assert.match(result.css, /data-device=(?:"mobile"|mobile)/);
+    assert.match(result.css, /data-orientation=(?:"vertical"|vertical)/);
+    assert.match(result.css, /data-theme=(?:"dark"|dark)/);
 });

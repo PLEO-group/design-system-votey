@@ -87,6 +87,17 @@ test("Angular subpath exports the device runtime without changing deep imports",
     ),
     /dist[\\/]css[\\/]tokens\.angular\.css$/,
   );
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"),
+  );
+  assert.equal(
+    packageJson.exports["./ds-device-mixins"].sass,
+    "./dist/scss/_ds-device-mixins.scss",
+  );
+  assert.match(
+    require.resolve("@pleodigital/design-system-votey/ds-device-mixins"),
+    /dist[\\/]scss[\\/]_ds-device-mixins\.scss$/,
+  );
 });
 
 test("device service initializes responsive document attributes and viewport unit", async () => {

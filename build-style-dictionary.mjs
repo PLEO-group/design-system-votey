@@ -619,6 +619,16 @@ ${serializeBreakpointMap(breakpoints)}
     return `/* CRM grid tokens. */\n${result.css.trim()}\n`;
 }
 
+function copyAngularSassEntryPoints() {
+    const outputDirectory = 'dist/scss';
+
+    fs.mkdirSync(outputDirectory, {recursive: true});
+    fs.copyFileSync(
+        'styles/angular/_ds-device-mixins.scss',
+        `${outputDirectory}/_ds-device-mixins.scss`,
+    );
+}
+
 const FORMATS = {
     theme: {
         name: 'css/theme',
@@ -793,6 +803,7 @@ async function buildCrmAngularTokens() {
         `${baseCss}\n\n/* CRM dark semantic colors. */\n${darkCss}\n\n${responsiveCss}\n${gridCss}`,
         'utf8',
     );
+    copyAngularSassEntryPoints();
 }
 
 const targetArgument = process.argv.find((argument) =>

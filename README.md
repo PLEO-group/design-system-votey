@@ -64,3 +64,22 @@ Build wejścia Angulara:
 ```bash
 npm run build:angular
 ```
+
+### Typowane nazwy assetów
+
+Entry point Angulara eksportuje generowane typy nazw ikon i ilustracji:
+
+```ts
+import type {
+  VoteyIcon,
+  VoteyIllustration,
+} from "@pleodigital/design-system-votey/angular";
+
+const icon: VoteyIcon = "ui-agenda";
+const illustration: VoteyIllustration = "spot-chat";
+```
+
+Tablice dostępne w runtime są eksportowane jako `VoteyIconNames` i
+`VoteyIllustrationNames`. `npm run build:angular` odświeża je na podstawie
+`assets/icons` i `assets/illustrations`. Generator nie modyfikuje plików SVG,
+konfiguracji SVGR ani artefaktów React.

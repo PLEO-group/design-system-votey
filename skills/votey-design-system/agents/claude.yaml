@@ -1,4 +1,4 @@
 interface:
   display_name: "Votey Design System"
-  short_description: "Implementuj UI zgodnie z Votey DS"
-  default_prompt: "Użyj $votey-design-system, aby zaimplementować ten widok zgodnie z kontraktem Votey dla właściwego frameworka."
+  short_description: "Implementuj UI i assety zgodnie z Votey DS"
+  default_prompt: "Użyj $votey-design-system, aby zaimplementować UI albo przygotować asset zgodnie z kontraktem Votey dla właściwego frameworka."

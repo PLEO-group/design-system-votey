@@ -34,6 +34,12 @@ const assetGroups = [
     stripPrefix: /^icon_(?:menu_)?/,
   },
   {
+    directory: path.join(projectRoot, "assets", "icons", "special"),
+    kind: "icon",
+    namespace: "sp",
+    stripPrefix: /^icon_(?:sp_)?/,
+  },
+  {
     directory: path.join(projectRoot, "assets", "icons", "ui"),
     kind: "icon",
     namespace: "ui",

@@ -22,8 +22,47 @@ function groupAssetsByCategory(assets) {
     }, {});
 }
 
-const icons = getIconList();
+function groupUiThickVariants(assets) {
+    const assetsByRegistryName = new Map(
+        assets.map((asset) => [asset.angularRegistryName, asset])
+    );
+
+    return assets.flatMap((asset) => {
+        if (asset.category !== 'ui') {
+            return asset;
+        }
+
+        if (asset.angularRegistryName.endsWith('-thick')) {
+            const baseName = asset.angularRegistryName.replace(/-thick$/, '');
+            return assetsByRegistryName.has(baseName) ? [] : asset;
+        }
+
+        const thickVariant = assetsByRegistryName.get(
+            `${asset.angularRegistryName}-thick`
+        );
+
+        return thickVariant
+            ? {...asset, variants: [asset, thickVariant]}
+            : asset;
+    });
+}
+
+function countAssets(assets) {
+    return assets.reduce(
+        (count, asset) => count + (asset.variants?.length ?? 1),
+        0
+    );
+}
+
+const icons = groupUiThickVariants(getIconList());
 const illustrations = getIllustrationList();
+
+const contextLabels = {
+    logotypes: 'Logotypes',
+    menu: 'Menu',
+    special: 'Special',
+    ui: 'UI',
+};
 
 function AssetGallery({assets, description, eyebrow, title, type}) {
     const groupedAssets = groupAssetsByCategory(assets);
@@ -31,7 +70,7 @@ function AssetGallery({assets, description, eyebrow, title, type}) {
     return (
         <main className="asset-library">
             <StoryPageHeader
-                description={<>{description} <strong>{assets.length} assets</strong> in the current build.</>}
+                description={<>{description} <strong>{countAssets(assets)} assets</strong> in the current build.</>}
                 eyebrow={eyebrow}
                 title={title}
             />
@@ -40,8 +79,13 @@ function AssetGallery({assets, description, eyebrow, title, type}) {
                 {Object.keys(groupedAssets).sort().map((category) => (
                     <section className="category" key={category}>
                         <header>
-                            <h2>{category.replaceAll('/', ' / ')}</h2>
-                            <span>{groupedAssets[category].length}</span>
+                            <div>
+                                {type === 'icon' && <span>Context</span>}
+                                <h2>
+                                    {contextLabels[category] ?? category.replaceAll('/', ' / ')}
+                                </h2>
+                            </div>
+                            <strong>{countAssets(groupedAssets[category])}</strong>
                         </header>
                         <div className={`grid ${type}`}>
                             {groupedAssets[category].map((asset) => (
@@ -60,8 +104,8 @@ export const IconsGallery = {
     render: () => (
         <AssetGallery
             assets={icons}
-            description="Production SVG icons generated for React consumers."
-            eyebrow="Assets / React"
+            description="Source SVG previews with names for React and Angular consumers."
+            eyebrow="Assets / Icons"
             title="Icon library"
             type="icon"
         />

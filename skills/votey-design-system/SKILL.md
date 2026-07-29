@@ -4,11 +4,13 @@ description: >
   Implementuj i reviewuj UI korzystające z `@pleodigital/design-system-votey`
   w `design-system-votey`, `wyborek-crm`, `votey-user-app` oraz innych potwierdzonych
   konsumentach paczki. Używaj przy przekładaniu handoffu z Figmy na kod, doborze tokenów,
-  responsywności, assetów SVG, publicznego API paczki i lokalnych prymitywów Votey.
+  responsywności, assetów SVG, nazewnictwa ikon, publicznego API paczki i lokalnych
+  prymitywów Votey.
   Triggeruj dla zmian Angular/SCSS w CRM, React/Next/Tailwind w PWA, tokenów Votey,
   importów `@pleodigital/design-system-votey`, `@votey/*`, `tokens.angular.css`,
   `tokens.light.css`, `tokens.dark.css`, `tokens.tailwind.css`, klas `rv-*`,
-  `provideVoteyDeviceDetection()` oraz implementacji z makiet Figmy w ekosystemie Votey.
+  `provideVoteyDeviceDetection()`, audytów i zmian nazw `icon_*` oraz implementacji
+  z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
 version: 1.0.2
@@ -22,7 +24,7 @@ tags: [FE]
 
 # CHANGELOG
 
-# 1.0.2 — Poprawiono autora skilla i przygotowano ponowną publikację po zamkniętym review wersji 1.0.1.
+# 1.0.2 — Poprawiono autora skilla oraz dodano system nazewnictwa ikon Votey z mapowaniem nazw plików na Angular Registry i eksporty React.
 
 # 1.0.1 — Dodano wybór między mixinami SCSS a `VoteyDeviceService` dla różnic urządzeniowych w Angularze.
 
@@ -47,12 +49,15 @@ Rozpoznaj repo, framework i faktycznie zainstalowaną paczkę przed wczytaniem r
 
 | Kontekst | Referencja |
 |---|---|
+| Dodawanie, przenoszenie, zmiana nazwy albo audyt ikon | `references/icon-naming-system.md`, a następnie właściwa referencja frameworkowa, jeżeli zmiana dotyka konsumenta |
 | `design-system-votey`, `wyborek-crm`, Angular + `@pleodigital/design-system-votey` | `references/angular.md` |
 | `votey-user-app`, React/Next + `@pleodigital/design-system-votey` | `references/react.md` |
 | Inny konsument paczki | wybierz referencję frameworka, ale użyj tylko publicznego kontraktu potwierdzonego w tym repo |
 | Brak paczki albo projekt BoxEs | zatrzymaj routing; ten skill nie ma zastosowania |
 
-Nie ładuj obu referencji, jeżeli zmiana dotyczy tylko jednego frameworka.
+Nie ładuj obu referencji frameworkowych, jeżeli zmiana dotyczy tylko jednego
+frameworka. Referencję nazewnictwa ikon ładuj niezależnie od frameworka zawsze,
+gdy zadanie zmienia albo ocenia nazwę ikony.
 
 ## Workflow
 
@@ -60,16 +65,18 @@ Nie ładuj obu referencji, jeżeli zmiana dotyczy tylko jednego frameworka.
    przykład w repo.
 2. Jeżeli źródłem jest Figma, odbierz handoff z targetem, layout-driving scope,
    stanami, breakpointami oraz listą wartości potwierdzonych i brakujących.
-3. Wczytaj jedną referencję frameworkową.
-4. Potwierdź publiczne API zainstalowanej wersji paczki. Nie zakładaj eksportu na
+3. Dla dodawania, zmiany nazwy, przenoszenia albo audytu ikon wczytaj
+   `references/icon-naming-system.md`.
+4. Wczytaj jedną właściwą referencję frameworkową, jeżeli zadanie dotyka konsumenta.
+5. Potwierdź publiczne API zainstalowanej wersji paczki. Nie zakładaj eksportu na
    podstawie samej nazwy pliku w repo Design Systemu.
-5. Rozdziel odpowiedzialność:
+6. Rozdziel odpowiedzialność:
    - paczka Votey: tokeny, eksportowane assety i Angular responsive runtime,
    - aplikacja: lokalne komponenty, grid, integracja frameworka i zachowanie domenowe.
-6. Zmapuj role z handoffu na istniejące tokeny i prymitywy. Brakujący kontrakt
+7. Zmapuj role z handoffu na istniejące tokeny i prymitywy. Brakujący kontrakt
    zgłoś jako gap; nie kopiuj podobnej roli z innego frameworka ani produktu.
-7. Zaimplementuj zgodnie z lokalnymi skillami frameworka.
-8. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
+8. Zaimplementuj zgodnie z lokalnymi skillami frameworka.
+9. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
 
 ## Wspólne reguły Votey
 

@@ -24,17 +24,37 @@
         .preview {
             min-height: 104px;
             padding: 24px;
+            color: var(--color-navy-blue-800);
 
-            svg {
-                width: 32px;
-                height: 32px;
+            &.variants {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 24px;
             }
 
-            svg,
-            g,
-            path,
-            line {
-                fill: var(--color-navy-blue-800);
+            .icon-preview {
+                display: grid;
+                min-width: 0;
+                gap: 8px;
+                place-items: center;
+
+                > span:first-child:not(.raw-svg) {
+                    color: var(--color-text-secondary);
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: .04em;
+                    text-transform: uppercase;
+                }
+            }
+
+            .raw-svg {
+                display: grid;
+                place-items: center;
+
+                svg {
+                    display: block;
+                    width: 32px;
+                    height: 32px;
+                }
             }
         }
     }
@@ -54,20 +74,83 @@
         }
     }
 
-    > strong {
+    .details {
+        display: grid;
         min-width: 0;
-        padding: 14px 14px 3px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: var(--color-text-primary);
-        font-size: 12px;
-        line-height: 1.45;
-    }
+        gap: 10px;
+        padding: 14px;
 
-    > span {
-        padding: 0 14px 14px;
-        color: var(--color-text-secondary);
-        font-size: 11px;
+        > strong {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--color-text-primary);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        > span {
+            color: var(--color-text-secondary);
+            font-size: 11px;
+        }
+
+        .asset-name {
+            display: grid;
+            min-width: 0;
+            gap: 2px;
+
+            span {
+                color: var(--color-text-secondary);
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: .04em;
+                line-height: 1.4;
+                text-transform: uppercase;
+            }
+
+            strong {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: var(--color-text-primary);
+                font-size: 12px;
+                line-height: 1.45;
+            }
+        }
+
+        small {
+            min-width: 0;
+            padding-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--color-text-secondary);
+            font-family: monospace;
+            font-size: 9px;
+            line-height: 1.4;
+        }
+
+        &.variants {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .variant-details {
+            display: grid;
+            min-width: 0;
+            gap: 10px;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .asset-card {
+        .details {
+            &.variants {
+                grid-template-columns: 1fr;
+            }
+        }
     }
 }

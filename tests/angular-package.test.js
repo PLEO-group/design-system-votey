@@ -54,9 +54,23 @@ function createDocumentFixture(userAgent) {
   return { attributes, customProperties, document, listeners };
 }
 
+function countSvgFiles(entryPath) {
+  return fs.readdirSync(entryPath, { withFileTypes: true }).reduce(
+    (count, entry) => {
+      const childPath = path.join(entryPath, entry.name);
+
+      if (entry.isDirectory()) return count + countSvgFiles(childPath);
+      return count + (path.extname(entry.name).toLowerCase() === ".svg" ? 1 : 0);
+    },
+    0,
+  );
+}
+
 test("Angular subpath exports the device runtime without changing deep imports", async () => {
   const {
     provideVoteyDeviceDetection,
+    VoteyIconNames,
+    VoteyIllustrationNames,
     VOTEY_DEFAULT_GRID_CONFIG,
     VOTEY_GRID_CONFIG,
     VoteyDeviceService,
@@ -65,6 +79,16 @@ test("Angular subpath exports the device runtime without changing deep imports",
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VOTEY_GRID_CONFIG, "object");
+  assert.equal(
+    VoteyIconNames.length,
+    countSvgFiles(path.join(projectRoot, "assets", "icons")),
+  );
+  assert.equal(
+    VoteyIllustrationNames.length,
+    countSvgFiles(path.join(projectRoot, "assets", "illustrations")),
+  );
+  assert.ok(VoteyIconNames.includes("ui-agenda"));
+  assert.ok(VoteyIllustrationNames.includes("spot-chat"));
   const gridTokens = JSON.parse(
     fs.readFileSync(
       path.join(projectRoot, "tokens", "grid", "angular.json"),

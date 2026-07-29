@@ -10,3 +10,11 @@ export type {
   VoteyDeviceOrientation,
   VoteyGridConfig,
 } from "./lib/votey-device.service";
+export {
+  VoteyIconNames,
+  VoteyIllustrationNames,
+} from "./lib/votey-assets";
+export type {
+  VoteyIcon,
+  VoteyIllustration,
+} from "./lib/votey-assets";

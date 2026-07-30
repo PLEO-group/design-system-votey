@@ -1,6 +1,27 @@
 # design-system-votey
 Repository for handling tokens (Votey app)
 
+## Pełny build paczki
+
+Cały Design System można zbudować jedną komendą:
+
+```bash
+npm run build
+```
+
+Komenda najpierw czyści `dist`, a następnie generuje:
+
+- tokeny CSS i SCSS dla PWA oraz Angulara,
+- komponenty React dla ikon i ilustracji,
+- surowe SVG dla Angulara,
+- typowane nazwy assetów i paczkę Angulara,
+- publiczne entry pointy Sass.
+
+Po zakończeniu `dist` zawiera wyłącznie artefakty odtworzone z aktualnych źródeł.
+Węższe komendy `build:tokens`, `build:angular`, `transform:icons`,
+`transform:illustrations` i `copy:angular-svg` pozostają dostępne do pracy nad
+pojedynczym obszarem.
+
 ## Walidacja tokenów
 
 ```bash

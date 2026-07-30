@@ -12,7 +12,7 @@ const SvgIconSpCheck = (props: SVGProps<SVGSVGElement>) => (
         <g id="color_stroke">
           <path
             id="Vector"
-            fill="currentColor"
+            fill="#77DC6C"
             d="M5.856 10.113c-.26 0-.52-.1-.72-.3l-1.85-1.9a.987.987 0 0 1 .02-1.41.996.996 0 0 1 1.41.02l1.15 1.18 3.5-3.42a.996.996 0 0 1 1.41.02c.39.4.38 1.03-.02 1.41l-4.22 4.11a1 1 0 0 1-.7.28z"
           />
         </g>

@@ -13,7 +13,9 @@ Nie stosuj jej do BoxEs ani Reactowego `votey-user-app`.
 | standardy Angular/SCSS | `AGENTS.md` i `angular-code-standards` konsumenta |
 | zachowanie domenowe, requesty i formularze | istniejący kod najbliższego flow |
 
-W `design-system-votey` zmieniaj źródła i uruchamiaj build. Nie edytuj `dist`.
+W `design-system-votey` zmieniaj źródła tokenów i uruchamiaj właściwy build.
+Nie edytuj `dist`. Jeżeli zakres obejmuje źródłowe SVG, przerwij ten workflow
+i użyj `votey-svg-assets`; wróć tutaj dopiero po jego buildzie i walidacji.
 
 ## Publiczny kontrakt
 

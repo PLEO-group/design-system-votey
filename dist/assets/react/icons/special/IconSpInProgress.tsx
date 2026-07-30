@@ -7,7 +7,7 @@ const SvgIconSpInProgress = (props: SVGProps<SVGSVGElement>) => (
     viewBox="0 0 14 14"
     {...props}
   >
-    <g id="icon_ui_in-progress" clipPath="url(#a)">
+    <g id="icon_ui_in-progress" clipPath="url(#clip0_1109_56)">
       <g id="color_stroke">
         <path
           id="Vector"
@@ -17,8 +17,8 @@ const SvgIconSpInProgress = (props: SVGProps<SVGSVGElement>) => (
       </g>
     </g>
     <defs>
-      <clipPath id="a">
-        <path fill="currentColor" d="M0 0h14v14H0z" />
+      <clipPath id="clip0_1109_56">
+        <path fill="#fff" d="M0 0h14v14H0z" />
       </clipPath>
     </defs>
   </svg>

@@ -96,8 +96,10 @@ Zachowaj kolejność globalnych importów w `votey-user-app`:
   wszystkich kolorów na `currentColor`.
 - Reużyj `IllustrationWrapper`, gdy feature opiera się na stanach lub
   selektorach grup SVG.
-- Nie edytuj wygenerowanych plików w paczce. Zmień źródłowy SVG w DS, przebuduj
-  paczkę i zweryfikuj konsumenta.
+- Nie edytuj wygenerowanych plików w paczce. Jeżeli asset wymaga dodania,
+  przeniesienia, zmiany nazwy, usunięcia, audytu albo zmiany źródłowego SVG,
+  przerwij ten workflow i użyj `votey-svg-assets`. Wróć tutaj dopiero po jego
+  buildzie i walidacji, aby zweryfikować integrację w konsumencie.
 - Nie wymyślaj assetu z nazwy warstwy Figmy.
 
 ## Walidacja

@@ -7,6 +7,7 @@ const test = require("node:test");
 const projectRoot = path.resolve(__dirname, "..");
 const reactInputs = [
   path.join(projectRoot, ".svgrrc-icons.json"),
+  path.join(projectRoot, ".svgrrc-icons-preserve-colors.json"),
   path.join(projectRoot, ".svgrrc-illustrations.json"),
   path.join(projectRoot, "assets", "icons"),
   path.join(projectRoot, "assets", "illustrations"),

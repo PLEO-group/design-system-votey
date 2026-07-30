@@ -39,8 +39,10 @@ Angular Registry oraz React.
 
 1. Odczytaj `AGENTS.md`, `package.json`, konfiguracje `.svgrrc-*.json`,
    `scripts/generate-asset-types.mjs` i najbliższe istniejące assety.
-2. Użyj plików załączonych w rozmowie albo ścieżek wskazanych przez użytkownika.
-   Jeżeli nie ma dostępnych SVG, poproś o ich załączenie i zatrzymaj zapis.
+2. Dla dodawania użyj plików załączonych w rozmowie albo ścieżek wskazanych
+   przez użytkownika. Jeżeli nie ma dostępnych SVG, poproś o ich załączenie
+   i zatrzymaj zapis. Dla audytu, przeniesienia, rename albo usunięcia rozwiąż
+   dokładne istniejące ścieżki źródłowe i nie wymagaj nowego pliku wejściowego.
 3. Wczytaj `references/icon-naming-system.md` zawsze dla ikon, logotypów,
    rename, audytu nazw albo niejednoznacznego contextu.
 4. Sprawdź stan worktree. Zachowaj wszystkie niezwiązane zmiany użytkownika.
@@ -130,6 +132,85 @@ bazowego — Votey jawnie dopuszcza taki kontrakt.
    instancji obok siebie.
 10. Sprawdź `git diff` i potwierdź, że zmieniły się tylko źródła oraz oczekiwane
     artefakty generowane.
+
+## Workflow audytu
+
+Audyt jest domyślnie read-only. Nie poprawiaj wykrytych problemów bez jawnej
+prośby użytkownika.
+
+1. Ustal i wypisz zakres kontroli: foldery, contexty, wskazane nazwy publiczne
+   oraz dostarczone instrukcje migracyjne. Nie rozszerzaj audytu na inne repo.
+2. Zbuduj inwentarz `plik źródłowy -> folder -> Angular Registry -> React export
+   -> karta/grupa Storybooka`. Porównaj liczbę źródeł z publicznymi listami
+   `VoteyIconNames` i `VoteyIllustrationNames`.
+3. Sprawdź kolejno:
+   - zgodność nazwy, prefixu i folderu z `references/icon-naming-system.md`,
+   - unikalność nazw Angular i React,
+   - duplikaty treści i znaczenia,
+   - bezpieczeństwo SVG, `viewBox`, kolory i kolizje używanych identyfikatorów,
+   - zgodność źródeł z wygenerowanym `dist` i konfiguracją grup Storybooka,
+   - pozostałości starych nazw w dokumentacji i potwierdzonych konsumentach.
+4. Uruchom read-only `npm run check:asset-types` oraz `npm run test:tokens`.
+5. Jeżeli użytkownik oczekuje potwierdzenia aktualnego outputu lub audyt łączy się
+   z naprawą, po autoryzowanych zmianach uruchom pełny zestaw:
+   `npm run build`, `npm run check:asset-types`, `npm run test:tokens`,
+   `npm run build-storybook`.
+6. Zgłoś osobno błędy, ryzyka i decyzje wymagające potwierdzenia. Dla każdego
+   problemu podaj dokładny plik, obecną i oczekiwaną nazwę oraz wpływ na Angular,
+   React i Storybook.
+7. Sprawdź `git diff`; audyt read-only nie może pozostawić zmian źródłowych.
+
+## Workflow przeniesienia lub zmiany nazwy
+
+Traktuj przeniesienie między contextami i każdy rename publicznego assetu jako
+breaking change.
+
+1. Rozwiąż dokładne źródła i przygotuj tabelę:
+   `stary plik/folder/nazwa Angular/eksport React -> nowy odpowiednik`.
+2. Zweryfikuj docelowy context i nazwę z
+   `references/icon-naming-system.md`. Sprawdź kolizje pliku, nazw publicznych,
+   treści oraz znaczenia. Bez zatwierdzonego targetu zastosuj `STOP & ASK`.
+3. Wyszukaj starą nazwę i ścieżkę w generatorze, Storybooku, testach,
+   dokumentacji migracyjnej oraz potwierdzonych lokalnych konsumentach. Nie
+   modyfikuj zewnętrznego repo bez zakresu użytkownika.
+4. Przenieś lub zmień nazwę wyłącznie źródłowego SVG. Zachowaj treść, geometrię,
+   kolory i `viewBox`; nie edytuj ręcznie wygenerowanych odpowiedników.
+5. Zaktualizuj jawne grupy Storybooka, testy kontraktu i instrukcje migracyjne,
+   jeśli używają starej nazwy. Zapisz pełne mapowanie Angular i React.
+6. Uruchom obowiązkowo, w tej kolejności:
+   `npm run build`, `npm run check:asset-types`, `npm run test:tokens`,
+   `npm run build-storybook`.
+7. Potwierdź, że nowy plik, nazwa Angular, eksport React i karta Storybooka
+   istnieją, a stare odpowiedniki nie istnieją w źródłach ani wygenerowanym API.
+8. Sprawdź kolory, `viewBox`, aktywne referencje `id` i kilka instancji React
+   dla assetów wielokolorowych lub używających `clipPath`, mask i gradientów.
+9. Sprawdź `git diff` pod kątem niezamierzonych zmian i wypisz breaking change
+   dla CRM/PWA.
+
+## Workflow usunięcia
+
+Nie usuwaj assetu na podstawie samego audytu ani domysłu o braku użyć.
+
+1. Rozwiąż dokładny plik źródłowy i jego nazwy Angular/React. Wymagaj jawnego
+   polecenia usunięcia; brak potwierdzenia oznacza `STOP & ASK`.
+2. Wyszukaj użycia pliku, nazwy registry i eksportu React w generatorze,
+   Storybooku, testach, dokumentacji oraz potwierdzonych lokalnych konsumentach.
+   Wyniki podziel na aktywne użycia, dokumentację migracyjną i artefakty
+   wygenerowane.
+3. Jeżeli istnieje aktywne użycie, zatrzymaj usunięcie i przedstaw wpływ albo
+   wymagany zamiennik. Nie wybieraj zamiennika bez decyzji użytkownika.
+4. Usuń wyłącznie zatwierdzony źródłowy SVG. Usuń również jawne odwołania do
+   niego z grup Storybooka i testów kontraktu; zachowaj historyczne mapowanie
+   w instrukcji migracyjnej, jeżeli jest potrzebne konsumentom.
+5. Uruchom obowiązkowo, w tej kolejności:
+   `npm run build`, `npm run check:asset-types`, `npm run test:tokens`,
+   `npm run build-storybook`.
+6. Potwierdź brak usuniętego pliku, nazwy Angular, eksportu React i karty
+   Storybooka oraz zgodność liczby pozostałych źródeł z publicznymi listami.
+7. Sprawdź, czy żadna grupa Storybooka nie stała się niekompletna i czy build
+   nie pozostawił osieroconych plików w `dist` lub `storybook-static`.
+8. Sprawdź `git diff`, wypisz breaking change i wskaż, że plik można odzyskać
+   z historii Git, o ile zmiana nie została jeszcze trwale usunięta z historii.
 
 ## Storybook
 

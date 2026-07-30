@@ -77,6 +77,16 @@ repo i Storybooku nie zawsze jest identyczna z technicznym prefixem pliku.
 | `special` | `assets/icons/special/` | `sp` | Statusy, flagi i ikony specjalne | `icon_sp_incorrect.svg` |
 | `ui` | `assets/icons/ui/` | `ui` | Ogólne akcje i elementy interfejsu | `icon_ui_close.svg` |
 
+Contexty ilustracji mają analogiczny kontrakt folderu, prefixu i publicznego
+namespace'u:
+
+| Context | Folder | Prefix pliku | Angular Registry | Przykład React |
+| --- | --- | --- | --- | --- |
+| `background` | `assets/illustrations/background/` | `illu_bg_` | `bg-*` | `IlluBgVotingResults` |
+| `logotypes` | `assets/illustrations/logotypes/` | `logo_` | `logo-*` | `LogoVotey` |
+| `spot` | `assets/illustrations/spot/` | `illu_spot_` | `spot-*` | `IlluSpotResultsOn` |
+| `simple` | `assets/illustrations/simple/` | `illu_simple_` | `simple-*` | `IlluSimpleNotification` |
+
 Nie przenoś słownictwa domenowego BoxEs, np. `couriers`, `suppliers`, `fleet`,
 do Votey bez potwierdzonego znaczenia w produkcie Votey.
 
@@ -199,8 +209,10 @@ icon_ui_turn-on_thick.svg
 
 Nie twórz sztucznego wariantu bazowego i nie usuwaj `thick` z nazwy.
 
-`simple` nie jest modifierem ikon Votey. Należy do systemu contextów ilustracji
-(`spot-simple`), nie ikon. Nie nazywaj ikon `icon_ui_*_simple.svg`.
+`simple` nie jest modifierem ikon Votey. Jest osobnym contextem ilustracji,
+z folderem `assets/illustrations/simple/`, prefiksem `illu_simple_` i publicznym
+namespace'em `simple-*`. Nie nazywaj ikon `icon_ui_*_simple.svg` ani ilustracji
+`illu_spot_*_simple.svg`.
 
 ## Mapowanie na Angular Registry
 
@@ -228,6 +240,18 @@ logo_wyborek_sygnet.svg       -> logo-wyborek-sygnet
 
 Publiczna nazwa musi być unikalna w `VoteyIconNames`.
 
+Dla ilustracji stosuj namespace wynikający z folderu i usuń odpowiadający mu
+prefix pliku:
+
+```text
+illu_bg_voting-results.svg       -> bg-voting-results
+illu_spot_results-on.svg         -> spot-results-on
+illu_simple_notification.svg     -> simple-notification
+logo_votey.svg                   -> logo-votey
+```
+
+Publiczna nazwa ilustracji musi być unikalna w `VoteyIllustrationNames`.
+
 ## Mapowanie na React
 
 Reguła:
@@ -249,6 +273,15 @@ logo_wyborek_sygnet.svg       -> IconLogoWyborekSygnet
 Nie poprawiaj ręcznie nazw w `dist`. Generator React i
 `scripts/normalize-react-icon-names.mjs` muszą odtworzyć nazwę z pliku źródłowego.
 
+Dla ilustracji React zachowaj prefix wynikający z nazwy pliku:
+
+```text
+illu_bg_voting-results.svg       -> IlluBgVotingResults
+illu_spot_results-on.svg         -> IlluSpotResultsOn
+illu_simple_notification.svg     -> IlluSimpleNotification
+logo_votey.svg                   -> LogoVotey
+```
+
 ## Duplikaty i zmiana znaczenia
 
 Przed dodaniem albo rename:
@@ -267,6 +300,10 @@ PWA i CRM. Nie usuwaj starego kontraktu bez planu migracji konsumentów.
 - Źródłem nazwy jest plik w `assets/icons/**`.
 - Angular publikuje raw SVG z `dist/assets/angular/svg-raw/icons/**`.
 - React publikuje komponenty z `dist/assets/react/icons/**`.
+- Źródłem ilustracji jest plik w `assets/illustrations/**`.
+- Angular publikuje raw ilustracje z
+  `dist/assets/angular/svg-raw/illustrations/**`.
+- React publikuje ilustracje z `dist/assets/react/illustrations/**`.
 - Storybook pokazuje źródłowy raw SVG, ale opisuje także wynikowe nazwy Angular i React.
 - Poprawny podgląd raw SVG nie gwarantuje poprawnego wyniku SVGR. Dla ikon
   `special` osobno sprawdź kolory w wygenerowanym komponencie React.
@@ -286,6 +323,7 @@ aplikacji.
 | `icon_ui_pdf.svg` | `icon_ui_file-pdf.svg` | Wspólna rodzina `file-*` |
 | `icon_ui_proxy_simple.svg` | `icon_ui_proxy_thick.svg` | `simple` nie jest wariantem ikon |
 | `icon_ui_show-graph.svg` | `icon_ui_show-graph_thick.svg` | Nie usuwaj jawnego wariantu |
+| `illu_spot_notification_simple.svg` | `illu_simple_notification.svg` | `simple` jest contextem ilustracji |
 
 ## Kiedy zatrzymać się i zapytać
 

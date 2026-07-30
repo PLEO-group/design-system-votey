@@ -11,7 +11,7 @@ description: >
   testy assetów i build Storybooka. Nie używaj go tylko do importowania już
   opublikowanego assetu w CRM lub PWA — ten zakres należy do
   `votey-design-system`.
-version: 1.0.0
+version: 1.1.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -83,11 +83,12 @@ użytkownika i aktualizacji generatora, Storybooka oraz referencji nazewnictwa.
 |---|---|
 | `illu_bg_*.svg` | `assets/illustrations/background/` |
 | `logo_*.svg` | `assets/illustrations/logotypes/` |
-| `illu_spot_*_simple.svg` | `assets/illustrations/spotSimple/` |
+| `illu_simple_*.svg` | `assets/illustrations/simple/` |
 | `illu_spot_*.svg` | `assets/illustrations/spot/` |
 
 Nie rozszerzaj wyjątków legacy, takich jak literówki prefixu albo
-`panel_avatar.svg`. Dla nazwy niepasującej jednoznacznie do tabeli zatrzymaj się
+`panel_avatar.svg`, ani nie dodawaj nowych plików do usuniętego contextu
+`spotSimple`. Dla nazwy niepasującej jednoznacznie do tabeli zatrzymaj się
 i zapytaj o klasyfikację.
 
 ## STOP & ASK

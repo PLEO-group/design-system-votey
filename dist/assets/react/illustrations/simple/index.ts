@@ -1,0 +1,13 @@
+export { default as IlluSimpleAnonymityOff } from "./IlluSimpleAnonymityOff";
+export { default as IlluSimpleAnonymityOn } from "./IlluSimpleAnonymityOn";
+export { default as IlluSimpleAvatar } from "./IlluSimpleAvatar";
+export { default as IlluSimpleChat } from "./IlluSimpleChat";
+export { default as IlluSimpleClick } from "./IlluSimpleClick";
+export { default as IlluSimpleDelivered } from "./IlluSimpleDelivered";
+export { default as IlluSimpleNotification } from "./IlluSimpleNotification";
+export { default as IlluSimpleOpen } from "./IlluSimpleOpen";
+export { default as IlluSimplePointerHand } from "./IlluSimplePointerHand";
+export { default as IlluSimpleProxy } from "./IlluSimpleProxy";
+export { default as IlluSimpleThemeDark } from "./IlluSimpleThemeDark";
+export { default as IlluSimpleThemeLight } from "./IlluSimpleThemeLight";
+export { default as IlluSimpleVotingStartAutomatic } from "./IlluSimpleVotingStartAutomatic";

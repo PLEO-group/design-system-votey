@@ -108,7 +108,7 @@ test("Angular subpath exports the device and SVG registry runtimes without chang
     countSvgFiles(path.join(projectRoot, "assets", "illustrations")),
   );
   assert.ok(VoteyIconNames.includes("ui-agenda"));
-  assert.ok(VoteyIllustrationNames.includes("spot-chat"));
+  assert.ok(VoteyIllustrationNames.includes("spot-chat-on"));
   const gridTokens = JSON.parse(
     fs.readFileSync(
       path.join(projectRoot, "tokens", "grid", "angular.json"),

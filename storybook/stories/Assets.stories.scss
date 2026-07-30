@@ -81,6 +81,60 @@
                     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                 }
             }
+
+            .illustration-subsections {
+                display: grid;
+                gap: 20px;
+            }
+
+            .illustration-subsection {
+                display: grid;
+                gap: 12px;
+                padding-top: 20px;
+                border-top: 1px solid var(--color-border-subtle);
+
+                &:first-child {
+                    padding-top: 0;
+                    border-top: 0;
+                }
+
+                &.group {
+                    padding: 16px;
+                    border: 1px solid var(--color-border-subtle);
+                    border-radius: var(--radius-card-s);
+                    background: var(--color-bg-page);
+                }
+
+                > header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+
+                    > div {
+                        display: grid;
+                        gap: 2px;
+                    }
+
+                    span {
+                        color: var(--color-text-secondary);
+                        font-size: 10px;
+                        font-weight: 700;
+                        letter-spacing: .06em;
+                        text-transform: uppercase;
+                    }
+
+                    h3 {
+                        margin: 0;
+                        font-size: 15px;
+                    }
+
+                    > strong {
+                        color: var(--color-text-secondary);
+                        font-size: 12px;
+                    }
+                }
+            }
         }
     }
 }

@@ -25,6 +25,7 @@
     "dist"
   ],
   "scripts": {
+    "clean:dist": "node scripts/clean-dist.mjs",
     "validate:tokens": "node scripts/validate-core-colors.js",
     "test:tokens": "node --test tests/**/*.test.js",
     "build:tokens": "npm run validate:tokens && node build-style-dictionary.mjs",
@@ -33,10 +34,10 @@
     "generate:asset-types": "node scripts/generate-asset-types.mjs",
     "check:asset-types": "node scripts/generate-asset-types.mjs --check",
     "build:angular": "npm run generate:asset-types && ng-packagr -p angular/ng-package.json",
-    "transform:icons": "npx @svgr/cli assets/icons --out-dir dist/assets/react/icons --jsx-runtime classic --typescript --config-file .svgrrc-icons.json",
+    "transform:icons": "node scripts/clean-generated-icons.mjs react && npx @svgr/cli assets/icons/menu --out-dir dist/assets/react/icons/menu --jsx-runtime classic --typescript --config-file .svgrrc-icons.json && npx @svgr/cli assets/icons/ui --out-dir dist/assets/react/icons/ui --jsx-runtime classic --typescript --config-file .svgrrc-icons.json && npx @svgr/cli assets/icons/logotypes --out-dir dist/assets/react/icons/logotypes --jsx-runtime classic --typescript --config-file .svgrrc-icons-preserve-colors.json && npx @svgr/cli assets/icons/special --out-dir dist/assets/react/icons/special --jsx-runtime classic --typescript --config-file .svgrrc-icons-preserve-colors.json && node scripts/normalize-react-icon-names.mjs",
     "transform:illustrations": "npx @svgr/cli assets/illustrations --out-dir dist/assets/react/illustrations --jsx-runtime classic --typescript --config-file .svgrrc-illustrations.json",
-    "copy:angular-svg": "cpx \"assets/{icons,illustrations}/**/*.svg\" dist/assets/angular/svg-raw",
-    "build": "npm run build:tokens && npm run transform:icons && npm run transform:illustrations && npm run copy:angular-svg && npm run build:angular",
+    "copy:angular-svg": "node scripts/clean-generated-icons.mjs angular && cpx \"assets/{icons,illustrations}/**/*.svg\" dist/assets/angular/svg-raw",
+    "build": "npm run clean:dist && npm run build:tokens && npm run transform:icons && npm run transform:illustrations && npm run copy:angular-svg && npm run build:angular",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "npm run build && storybook build"
   },

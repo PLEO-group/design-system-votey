@@ -7,6 +7,7 @@ const test = require("node:test");
 const projectRoot = path.resolve(__dirname, "..");
 const reactInputs = [
   path.join(projectRoot, ".svgrrc-icons.json"),
+  path.join(projectRoot, ".svgrrc-icons-preserve-colors.json"),
   path.join(projectRoot, ".svgrrc-illustrations.json"),
   path.join(projectRoot, "assets", "icons"),
   path.join(projectRoot, "assets", "illustrations"),
@@ -67,15 +68,32 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.equal(new Set(iconNames).size, iconNames.length);
   assert.equal(new Set(illustrationNames).size, illustrationNames.length);
   assert.ok(iconNames.includes("ui-agenda"));
-  assert.ok(iconNames.includes("ui-iu-download"));
+  assert.ok(iconNames.includes("ui-download"));
+  assert.ok(iconNames.includes("ui-show-graph-thick"));
   assert.ok(iconNames.includes("menu-dashboard"));
+  assert.ok(iconNames.includes("menu-download"));
+  assert.ok(iconNames.includes("sp-check"));
   assert.ok(iconNames.includes("logo-wyborek-sygnet"));
+  assert.ok(!iconNames.includes("ui-iu-download"));
+  assert.ok(!iconNames.includes("ui-video"));
   assert.ok(illustrationNames.includes("background-agenda"));
   assert.ok(illustrationNames.includes("spot-automatic-voting-start"));
   assert.ok(
     illustrationNames.includes("spot-simple-automatic-voting-start"),
   );
   assert.ok(illustrationNames.includes("spot-simple-notification"));
+});
+
+test("React icon names use the Icon prefix", async () => {
+  const { getReactIconName } = await import(
+    "../scripts/normalize-react-icon-names.mjs"
+  );
+
+  assert.equal(getReactIconName("IconMenuBurger.tsx"), "IconMenuBurger");
+  assert.equal(
+    getReactIconName("LogoWyborekSygnet.tsx"),
+    "IconLogoWyborekSygnet",
+  );
 });
 
 test("generated asset types are current", async () => {

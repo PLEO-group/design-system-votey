@@ -1,0 +1,4 @@
+interface:
+  display_name: "Votey SVG Assets"
+  short_description: "Dodawaj i publikuj assety SVG Votey"
+  default_prompt: "Użyj $votey-svg-assets, aby dodać załączone SVG do Votey Design System, przebudować paczkę i zweryfikować Storybook."

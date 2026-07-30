@@ -1,1 +1,1 @@
-export { default as LogoWyborekSygnet } from "./LogoWyborekSygnet";
+export { default as IconLogoWyborekSygnet } from "./IconLogoWyborekSygnet";

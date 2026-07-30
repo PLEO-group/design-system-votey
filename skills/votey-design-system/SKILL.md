@@ -4,11 +4,15 @@ description: >
   Implementuj i reviewuj UI korzystające z `@pleodigital/design-system-votey`
   w `design-system-votey`, `wyborek-crm`, `votey-user-app` oraz innych potwierdzonych
   konsumentach paczki. Używaj przy przekładaniu handoffu z Figmy na kod, doborze tokenów,
-  responsywności, assetów SVG, publicznego API paczki i lokalnych prymitywów Votey.
+  responsywności, użyciu opublikowanych assetów SVG, publicznego API paczki i lokalnych
+  prymitywów Votey. Gdy zadanie polega na dodaniu, przeniesieniu, zmianie nazwy,
+  usunięciu albo audycie źródłowych SVG w design-system-votey, użyj najpierw
+  `votey-svg-assets`, a do tego skilla wróć dopiero dla integracji w konsumencie.
   Triggeruj dla zmian Angular/SCSS w CRM, React/Next/Tailwind w PWA, tokenów Votey,
   importów `@pleodigital/design-system-votey`, `@votey/*`, `tokens.angular.css`,
   `tokens.light.css`, `tokens.dark.css`, `tokens.tailwind.css`, klas `rv-*`,
-  `provideVoteyDeviceDetection()` oraz implementacji z makiet Figmy w ekosystemie Votey.
+  `provideVoteyDeviceDetection()` oraz implementacji
+  z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
 version: 1.0.2
@@ -22,7 +26,7 @@ tags: [FE]
 
 # CHANGELOG
 
-# 1.0.2 — Poprawiono autora skilla i przygotowano ponowną publikację po zamkniętym review wersji 1.0.1.
+# 1.0.2 — Poprawiono autora skilla, dodano system nazewnictwa ikon Votey, a następnie wydzielono onboarding, zmiany i audyt źródłowych SVG do `votey-svg-assets`.
 
 # 1.0.1 — Dodano wybór między mixinami SCSS a `VoteyDeviceService` dla różnic urządzeniowych w Angularze.
 
@@ -35,6 +39,8 @@ Nie zastępuje:
 
 - `figma` — odpowiada za MCP, odczyt node’ów, klasyfikację `verified / partial / blocked`
   i neutralny handoff;
+- `votey-svg-assets` — odpowiada za przyjęcie źródłowych SVG, nazewnictwo,
+  klasyfikację folderu, generatory Angular/React, pełny build i Storybook;
 - lokalnych standardów Angulara albo Reacta — odpowiadają za kod frameworka;
 - lokalnych skilli prymitywów, formularzy, testów i debugowania runtime.
 
@@ -47,12 +53,15 @@ Rozpoznaj repo, framework i faktycznie zainstalowaną paczkę przed wczytaniem r
 
 | Kontekst | Referencja |
 |---|---|
+| Dodawanie, przenoszenie, zmiana nazwy, usuwanie albo audyt źródłowych SVG | przerwij ten workflow i użyj `votey-svg-assets`; wróć tutaj tylko dla integracji w konsumencie |
 | `design-system-votey`, `wyborek-crm`, Angular + `@pleodigital/design-system-votey` | `references/angular.md` |
 | `votey-user-app`, React/Next + `@pleodigital/design-system-votey` | `references/react.md` |
 | Inny konsument paczki | wybierz referencję frameworka, ale użyj tylko publicznego kontraktu potwierdzonego w tym repo |
 | Brak paczki albo projekt BoxEs | zatrzymaj routing; ten skill nie ma zastosowania |
 
-Nie ładuj obu referencji, jeżeli zmiana dotyczy tylko jednego frameworka.
+Nie ładuj obu referencji frameworkowych, jeżeli zmiana dotyczy tylko jednego
+frameworka. Nie duplikuj reguł nazewnictwa ani onboardingu SVG w tym skillu;
+ich źródłem prawdy jest `votey-svg-assets/references/icon-naming-system.md`.
 
 ## Workflow
 
@@ -60,16 +69,18 @@ Nie ładuj obu referencji, jeżeli zmiana dotyczy tylko jednego frameworka.
    przykład w repo.
 2. Jeżeli źródłem jest Figma, odbierz handoff z targetem, layout-driving scope,
    stanami, breakpointami oraz listą wartości potwierdzonych i brakujących.
-3. Wczytaj jedną referencję frameworkową.
-4. Potwierdź publiczne API zainstalowanej wersji paczki. Nie zakładaj eksportu na
+3. Jeżeli zadanie zmienia źródłowe SVG, przekaż ten zakres do `votey-svg-assets`
+   i kontynuuj dopiero po jego buildzie oraz walidacji.
+4. Wczytaj jedną właściwą referencję frameworkową, jeżeli zadanie dotyka konsumenta.
+5. Potwierdź publiczne API zainstalowanej wersji paczki. Nie zakładaj eksportu na
    podstawie samej nazwy pliku w repo Design Systemu.
-5. Rozdziel odpowiedzialność:
+6. Rozdziel odpowiedzialność:
    - paczka Votey: tokeny, eksportowane assety i Angular responsive runtime,
    - aplikacja: lokalne komponenty, grid, integracja frameworka i zachowanie domenowe.
-6. Zmapuj role z handoffu na istniejące tokeny i prymitywy. Brakujący kontrakt
+7. Zmapuj role z handoffu na istniejące tokeny i prymitywy. Brakujący kontrakt
    zgłoś jako gap; nie kopiuj podobnej roli z innego frameworka ani produktu.
-7. Zaimplementuj zgodnie z lokalnymi skillami frameworka.
-8. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
+8. Zaimplementuj zgodnie z lokalnymi skillami frameworka.
+9. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
 
 ## Wspólne reguły Votey
 
@@ -82,8 +93,9 @@ Nie ładuj obu referencji, jeżeli zmiana dotyczy tylko jednego frameworka.
   albo Text. Zawsze sprawdź publiczne API i lokalne prymitywy aplikacji.
 - Nie wpisuj surowych kolorów, jeśli istnieje odpowiednia rola semantyczna.
 - Nie zgaduj nazwy tokenu, klasy Tailwind, assetu ani breakpointu z nazwy warstwy Figmy.
-- Zmianę brakującego tokenu lub assetu wykonuj w `design-system-votey` jako osobny,
-  jawny zakres, a następnie przebuduj paczkę i zweryfikuj konsumenta.
+- Zmianę brakującego tokenu wykonuj w `design-system-votey` jako osobny, jawny
+  zakres. Dla brakującego assetu użyj `votey-svg-assets`; po jego walidacji
+  zweryfikuj konsumenta na zbudowanej paczce.
 
 ## Handoff wymagany przed implementacją z Figmy
 

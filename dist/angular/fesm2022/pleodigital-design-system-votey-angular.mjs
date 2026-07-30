@@ -3,6 +3,8 @@ import * as i0 from '@angular/core';
 import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
 import { BehaviorSubject } from 'rxjs';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 const DEFAULT_DIMENSIONS = {
     width: 0,
@@ -235,6 +237,100 @@ const VoteyIconNames = [
     "ui-voting-new",
     "ui-voting-thick",
 ];
+const VoteyIconRegistryEntries = [
+    { name: "logo-wyborek-sygnet", path: "icons/logotypes/logo_wyborek_sygnet.svg" },
+    { name: "menu-burger", path: "icons/menu/icon_menu_burger.svg" },
+    { name: "menu-dashboard", path: "icons/menu/icon_menu_dashboard.svg" },
+    { name: "menu-download", path: "icons/menu/icon_menu_download.svg" },
+    { name: "menu-participants", path: "icons/menu/icon_menu_participants.svg" },
+    { name: "menu-settings", path: "icons/menu/icon_menu_settings.svg" },
+    { name: "menu-team", path: "icons/menu/icon_menu_team.svg" },
+    { name: "menu-vote", path: "icons/menu/icon_menu_vote.svg" },
+    { name: "sp-arrow", path: "icons/special/icon_sp_arrow.svg" },
+    { name: "sp-check", path: "icons/special/icon_sp_check.svg" },
+    { name: "sp-correct", path: "icons/special/icon_sp_correct.svg" },
+    { name: "sp-flag-poland", path: "icons/special/icon_sp_flag-poland.svg" },
+    { name: "sp-flag-united-kingdom", path: "icons/special/icon_sp_flag-united-kingdom.svg" },
+    { name: "sp-in-progress", path: "icons/special/icon_sp_in-progress.svg" },
+    { name: "sp-incorrect", path: "icons/special/icon_sp_incorrect.svg" },
+    { name: "sp-new", path: "icons/special/icon_sp_new.svg" },
+    { name: "ui-agenda", path: "icons/ui/icon_ui_agenda.svg" },
+    { name: "ui-arrow-right", path: "icons/ui/icon_ui_arrow-right.svg" },
+    { name: "ui-attachment", path: "icons/ui/icon_ui_attachment.svg" },
+    { name: "ui-authorization", path: "icons/ui/icon_ui_authorization.svg" },
+    { name: "ui-calendar", path: "icons/ui/icon_ui_calendar.svg" },
+    { name: "ui-camera-change", path: "icons/ui/icon_ui_camera-change.svg" },
+    { name: "ui-camera-off", path: "icons/ui/icon_ui_camera-off.svg" },
+    { name: "ui-camera-on", path: "icons/ui/icon_ui_camera-on.svg" },
+    { name: "ui-chat", path: "icons/ui/icon_ui_chat.svg" },
+    { name: "ui-chevron", path: "icons/ui/icon_ui_chevron.svg" },
+    { name: "ui-close", path: "icons/ui/icon_ui_close.svg" },
+    { name: "ui-close-v2", path: "icons/ui/icon_ui_close_v2.svg" },
+    { name: "ui-countdown", path: "icons/ui/icon_ui_countdown.svg" },
+    { name: "ui-delete", path: "icons/ui/icon_ui_delete.svg" },
+    { name: "ui-download", path: "icons/ui/icon_ui_download.svg" },
+    { name: "ui-edit", path: "icons/ui/icon_ui_edit.svg" },
+    { name: "ui-edit-v2", path: "icons/ui/icon_ui_edit_v2.svg" },
+    { name: "ui-end", path: "icons/ui/icon_ui_end.svg" },
+    { name: "ui-event-completed", path: "icons/ui/icon_ui_event-completed.svg" },
+    { name: "ui-event-invitation", path: "icons/ui/icon_ui_event-invitation.svg" },
+    { name: "ui-event-notification", path: "icons/ui/icon_ui_event-notification.svg" },
+    { name: "ui-exclamation-mark", path: "icons/ui/icon_ui_exclamation-mark.svg" },
+    { name: "ui-expand-arrow", path: "icons/ui/icon_ui_expand_arrow.svg" },
+    { name: "ui-file-csv", path: "icons/ui/icon_ui_file-csv.svg" },
+    { name: "ui-file-doc", path: "icons/ui/icon_ui_file-doc.svg" },
+    { name: "ui-file-dwg", path: "icons/ui/icon_ui_file-dwg.svg" },
+    { name: "ui-file-eml", path: "icons/ui/icon_ui_file-eml.svg" },
+    { name: "ui-file-jpg", path: "icons/ui/icon_ui_file-jpg.svg" },
+    { name: "ui-file-mp3", path: "icons/ui/icon_ui_file-mp3.svg" },
+    { name: "ui-file-mp4", path: "icons/ui/icon_ui_file-mp4.svg" },
+    { name: "ui-file-pdf", path: "icons/ui/icon_ui_file-pdf.svg" },
+    { name: "ui-file-png", path: "icons/ui/icon_ui_file-png.svg" },
+    { name: "ui-file-ppt", path: "icons/ui/icon_ui_file-ppt.svg" },
+    { name: "ui-file-rar", path: "icons/ui/icon_ui_file-rar.svg" },
+    { name: "ui-file-rtf", path: "icons/ui/icon_ui_file-rtf.svg" },
+    { name: "ui-file-tif", path: "icons/ui/icon_ui_file-tif.svg" },
+    { name: "ui-file-txt", path: "icons/ui/icon_ui_file-txt.svg" },
+    { name: "ui-file-xls", path: "icons/ui/icon_ui_file-xls.svg" },
+    { name: "ui-file-xml", path: "icons/ui/icon_ui_file-xml.svg" },
+    { name: "ui-file-zip", path: "icons/ui/icon_ui_file-zip.svg" },
+    { name: "ui-full-screen", path: "icons/ui/icon_ui_full-screen.svg" },
+    { name: "ui-full-screen-v2", path: "icons/ui/icon_ui_full-screen_v2.svg" },
+    { name: "ui-hand", path: "icons/ui/icon_ui_hand.svg" },
+    { name: "ui-hang-up", path: "icons/ui/icon_ui_hang-up.svg" },
+    { name: "ui-microphone-off", path: "icons/ui/icon_ui_microphone-off.svg" },
+    { name: "ui-microphone-on", path: "icons/ui/icon_ui_microphone-on.svg" },
+    { name: "ui-move", path: "icons/ui/icon_ui_move.svg" },
+    { name: "ui-navigate", path: "icons/ui/icon_ui_navigate.svg" },
+    { name: "ui-participant", path: "icons/ui/icon_ui_participant.svg" },
+    { name: "ui-participants-list", path: "icons/ui/icon_ui_participants-list.svg" },
+    { name: "ui-participants-list-v2", path: "icons/ui/icon_ui_participants-list_v2.svg" },
+    { name: "ui-pending", path: "icons/ui/icon_ui_pending.svg" },
+    { name: "ui-pin", path: "icons/ui/icon_ui_pin.svg" },
+    { name: "ui-preview", path: "icons/ui/icon_ui_preview.svg" },
+    { name: "ui-problem", path: "icons/ui/icon_ui_problem.svg" },
+    { name: "ui-proxy", path: "icons/ui/icon_ui_proxy.svg" },
+    { name: "ui-proxy-thick", path: "icons/ui/icon_ui_proxy_thick.svg" },
+    { name: "ui-remind-password", path: "icons/ui/icon_ui_remind-password.svg" },
+    { name: "ui-save", path: "icons/ui/icon_ui_save.svg" },
+    { name: "ui-send-again", path: "icons/ui/icon_ui_send-again.svg" },
+    { name: "ui-send-again-v2", path: "icons/ui/icon_ui_send-again_v2.svg" },
+    { name: "ui-settings", path: "icons/ui/icon_ui_settings.svg" },
+    { name: "ui-share-screen", path: "icons/ui/icon_ui_share-screen.svg" },
+    { name: "ui-show-graph-thick", path: "icons/ui/icon_ui_show-graph_thick.svg" },
+    { name: "ui-start", path: "icons/ui/icon_ui_start.svg" },
+    { name: "ui-time", path: "icons/ui/icon_ui_time.svg" },
+    { name: "ui-time-v2", path: "icons/ui/icon_ui_time_v2.svg" },
+    { name: "ui-turn-on-thick", path: "icons/ui/icon_ui_turn-on_thick.svg" },
+    { name: "ui-unlimited", path: "icons/ui/icon_ui_unlimited.svg" },
+    { name: "ui-update", path: "icons/ui/icon_ui_update.svg" },
+    { name: "ui-videoconference", path: "icons/ui/icon_ui_videoconference.svg" },
+    { name: "ui-visibility-off", path: "icons/ui/icon_ui_visibility-off.svg" },
+    { name: "ui-visibility-on", path: "icons/ui/icon_ui_visibility-on.svg" },
+    { name: "ui-voting", path: "icons/ui/icon_ui_voting.svg" },
+    { name: "ui-voting-new", path: "icons/ui/icon_ui_voting-new.svg" },
+    { name: "ui-voting-thick", path: "icons/ui/icon_ui_voting_thick.svg" },
+];
 const VoteyIllustrationNames = [
     "background-acknowledgments",
     "background-add-participants-to-vote",
@@ -323,10 +419,141 @@ const VoteyIllustrationNames = [
     "spot-voting-uneditable-v2",
     "spot-voting-yes-no-v2",
 ];
+const VoteyIllustrationRegistryEntries = [
+    { name: "background-acknowledgments", path: "illustrations/background/illu_bg_acknowledgments.svg" },
+    { name: "background-add-participants-to-vote", path: "illustrations/background/illu_bg_add-participants-to-vote.svg" },
+    { name: "background-agenda", path: "illustrations/background/illu_bg_agenda.svg" },
+    { name: "background-choose-subscription-plan", path: "illustrations/background/illu_bg_choose-subscription-plan.svg" },
+    { name: "background-create-first-vote", path: "illustrations/background/illu_bg_create-first-vote.svg" },
+    { name: "background-even-available-everyone", path: "illustrations/background/illu_bg_even-available-everyone.svg" },
+    { name: "background-first-group-participants", path: "illustrations/background/illu_bg_first-group-participants.svg" },
+    { name: "background-first-time-participant", path: "illustrations/background/illu_bg_first-time-participant.svg" },
+    { name: "background-first-time-participant-v2", path: "illustrations/background/illu_bg_first-time-participant-v2.svg" },
+    { name: "background-forgot-password", path: "illustrations/background/illu_bg_forgot-password.svg" },
+    { name: "background-general-meeting", path: "illustrations/background/illu_bg_general-meeting.svg" },
+    { name: "background-home-screen-after-log-in", path: "illustrations/background/illu_bg_home-screen-after-log-in.svg" },
+    { name: "background-loading-screen", path: "illustrations/background/illu_bg_loading-screen.svg" },
+    { name: "background-login", path: "illustrations/background/illu_bg_login.svg" },
+    { name: "background-many-voted", path: "illustrations/background/illu_bg_many-voted.svg" },
+    { name: "background-observer", path: "illustrations/background/illu_bg_observer.svg" },
+    { name: "background-one-time-voting", path: "illustrations/background/illu_bg_one-time-voting.svg" },
+    { name: "background-participant-man", path: "illustrations/background/illu_bg_participant-man.svg" },
+    { name: "background-participant-woman", path: "illustrations/background/illu_bg_participant-woman.svg" },
+    { name: "background-point-voting", path: "illustrations/background/illu_bg_point-voting.svg" },
+    { name: "background-questionnaire-v3", path: "illustrations/background/illu_spot_questionnaire-v3.svg" },
+    { name: "background-registration", path: "illustrations/background/illu_bg_registration.svg" },
+    { name: "background-regular-voter", path: "illustrations/background/illu_bg_regular-voter.svg" },
+    { name: "background-results-preview-unavailable-v1", path: "illustrations/background/illu_bg_results-preview-unavailable-v1.svg" },
+    { name: "background-results-voting-v3", path: "illustrations/background/illu_spot_results-voting-v3.svg" },
+    { name: "background-survey", path: "illustrations/background/illu_bg_survey.svg" },
+    { name: "background-test-event", path: "illustrations/background/illu_bg_test-event.svg" },
+    { name: "background-vote-as-proxy", path: "illustrations/background/illu_bg_vote_as_proxy.svg" },
+    { name: "background-vote-yourself", path: "illustrations/background/illu_bg_vote_yourself.svg" },
+    { name: "background-voting-ended-v3", path: "illustrations/background/illu_bg_voting-ended-v3.svg" },
+    { name: "background-voting-started", path: "illustrations/background/illu_bg_voting-started.svg" },
+    { name: "background-voting-type-yes-no", path: "illustrations/background/illu_bg_voting-type-yes-no.svg" },
+    { name: "logo-votey", path: "illustrations/logotypes/logo_votey.svg" },
+    { name: "logo-wyborek", path: "illustrations/logotypes/logo_wyborek.svg" },
+    { name: "spot-add-participants-email", path: "illustrations/spot/illu_spot_add-participants-email.svg" },
+    { name: "spot-add-participants-public-access", path: "illustrations/spot/illu_spot_add-participants-public-access.svg" },
+    { name: "spot-add-participants-sms", path: "illustrations/spot/illu_spot_add-participants-SMS.svg" },
+    { name: "spot-add-participants-unique-codes", path: "illustrations/spot/illu_spot_add-participants-unique-codes.svg" },
+    { name: "spot-agenda", path: "illustrations/spot/illu_spot_agenda.svg" },
+    { name: "spot-agenda-no-visible", path: "illustrations/spot/illu_spot_agenda-no-visible.svg" },
+    { name: "spot-agenda-no-visible-v2", path: "illustrations/spot/illu_spot_agenda-no-visible-v2.svg" },
+    { name: "spot-answer-method-open-ended-questions", path: "illustrations/spot/illu_spot_answer-method-open-ended-questions.svg" },
+    { name: "spot-automatic-voting-start", path: "illustrations/spot/illu_spot_automatic-voting-start.svg" },
+    { name: "spot-automatic-voting-start-v2", path: "illustrations/spot/illu_spot_automatic-voting-start-v2.svg" },
+    { name: "spot-can-vote-v2", path: "illustrations/spot/illu_spot_can-vote-v2.svg" },
+    { name: "spot-chat", path: "illustrations/spot/illu_spot_chat.svg" },
+    { name: "spot-chat-none", path: "illustrations/spot/illu_spot_chat-none.svg" },
+    { name: "spot-forum", path: "illustrations/spot/illu_spot_forum.svg" },
+    { name: "spot-forum-none", path: "illustrations/spot/illu_spot_forum-none.svg" },
+    { name: "spot-interactive-video-conference", path: "illustrations/spot/illu_spot_interactive-video-conference.svg" },
+    { name: "spot-login-on-another-device", path: "illustrations/spot/illu_spot_login-on-another-device.svg" },
+    { name: "spot-multiple-response-method", path: "illustrations/spot/illu_spot_multiple-response-method.svg" },
+    { name: "spot-no-result", path: "illustrations/spot/illu_spot_no-result.svg" },
+    { name: "spot-no-vote-v2", path: "illustrations/spot/illu_spot_no-vote-v2.svg" },
+    { name: "spot-not-proxy-v2", path: "illustrations/spot/illu_spot_not-proxy-v2.svg" },
+    { name: "spot-not-visible", path: "illustrations/spot/illu_spot_not-visible.svg" },
+    { name: "spot-one-answer-method", path: "illustrations/spot/illu_spot_one-answer-method.svg" },
+    { name: "spot-proxy", path: "illustrations/spot/illu_spot_proxy.svg" },
+    { name: "spot-proxy-v2", path: "illustrations/spot/illu_spot_proxy-v2.svg" },
+    { name: "spot-report-pdf", path: "illustrations/spot/illu_spot_report-pdf.svg" },
+    { name: "spot-report-pdf-none", path: "illustrations/spot/illu_spot_report-pdf-none.svg" },
+    { name: "spot-report-pdf-none-v2", path: "illustrations/spot/illu_spot_report-pdf-none-v2.svg" },
+    { name: "spot-report-pdf-v2", path: "illustrations/spot/illu_spot_report-pdf-v2.svg" },
+    { name: "spot-response-method-point-system", path: "illustrations/spot/illu_spot_response-method-point-system.svg" },
+    { name: "spot-result", path: "illustrations/spot/illu_spot_result.svg" },
+    { name: "spot-simple-answers-open-secret-question", path: "illustrations/spotSimple/illu_spot_answers-open-secret-question_simple.svg" },
+    { name: "spot-simple-answers-question-public", path: "illustrations/spotSimple/illu_spot_answers-question-public_simple.svg" },
+    { name: "spot-simple-arrow", path: "illustrations/spotSimple/illu_spot_arrow_simple.svg" },
+    { name: "spot-simple-automatic-voting-start", path: "illustrations/spotSimple/illu_spot_automatic-voting-start.svg" },
+    { name: "spot-simple-chat", path: "illustrations/spotSimple/illu_spot_chat_simple.svg" },
+    { name: "spot-simple-clicked", path: "illustrations/spotSimple/illu_spot_clicked_simple.svg" },
+    { name: "spot-simple-delivered", path: "illustrations/spotSimple/illu_spot_delivered_simple.svg" },
+    { name: "spot-simple-manual-voting-start-v3", path: "illustrations/spotSimple/illu_spot_manual-voting-start-v3_simple.svg" },
+    { name: "spot-simple-mode-bright", path: "illustrations/spotSimple/illu_spot_mode-bright_simple.svg" },
+    { name: "spot-simple-mode-dark", path: "illustrations/spotSimple/illu_spot_mode-dark_simple.svg" },
+    { name: "spot-simple-notification", path: "illustrations/spotSimple/illlu_spot_notification_simple.svg" },
+    { name: "spot-simple-open", path: "illustrations/spotSimple/illu_spot_open_simple.svg" },
+    { name: "spot-simple-panel-avatar", path: "illustrations/spotSimple/panel_avatar.svg" },
+    { name: "spot-simple-proxy", path: "illustrations/spotSimple/illu_spot_proxy_simple.svg" },
+    { name: "spot-streaming", path: "illustrations/spot/illu_spot_streaming.svg" },
+    { name: "spot-videoconference", path: "illustrations/spot/illu_spot_videoconference.svg" },
+    { name: "spot-visible", path: "illustrations/spot/illu_spot_visible.svg" },
+    { name: "spot-voice-communication", path: "illustrations/spot/illu_spot_voice-communication.svg" },
+    { name: "spot-voting-uneditable", path: "illustrations/spot/illu_spot_voting-uneditable.svg" },
+    { name: "spot-voting-uneditable-v2", path: "illustrations/spot/illu_spot_voting-uneditable-v2.svg" },
+    { name: "spot-voting-yes-no-v2", path: "illustrations/spot/illu_spot_voting-yes-no-v2.svg" },
+];
+
+const VOTEY_SVG_REGISTRY_CONFIG = new InjectionToken("VOTEY_SVG_REGISTRY_CONFIG");
+const DEFAULT_ASSET_BASE_URL = "assets/votey";
+class VoteySvgRegistryService {
+    matIconRegistry = inject(MatIconRegistry);
+    domSanitizer = inject(DomSanitizer);
+    config = inject(VOTEY_SVG_REGISTRY_CONFIG, { optional: true }) ?? {};
+    registered = false;
+    register() {
+        if (this.registered)
+            return;
+        const assetBaseUrl = (this.config.assetBaseUrl ?? DEFAULT_ASSET_BASE_URL).replace(/\/+$/, "");
+        for (const asset of [
+            ...VoteyIconRegistryEntries,
+            ...VoteyIllustrationRegistryEntries,
+        ]) {
+            const assetUrl = assetBaseUrl
+                ? `${assetBaseUrl}/${asset.path}`
+                : asset.path;
+            this.matIconRegistry.addSvgIcon(asset.name, this.domSanitizer.bypassSecurityTrustResourceUrl(assetUrl));
+        }
+        this.registered = true;
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteySvgRegistryService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteySvgRegistryService, providedIn: "root" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteySvgRegistryService, decorators: [{
+            type: Injectable,
+            args: [{
+                    providedIn: "root",
+                }]
+        }] });
+function provideVoteySvgRegistry(config = {}) {
+    return makeEnvironmentProviders([
+        {
+            provide: VOTEY_SVG_REGISTRY_CONFIG,
+            useValue: config,
+        },
+        provideEnvironmentInitializer(() => {
+            inject(VoteySvgRegistryService).register();
+        }),
+    ]);
+}
 
 /**
  * Generated bundle index. Do not edit.
  */
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VoteyDeviceService, VoteyIconNames, VoteyIllustrationNames, provideVoteyDeviceDetection };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyDeviceService, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

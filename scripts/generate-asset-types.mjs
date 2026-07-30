@@ -123,6 +123,10 @@ function createAssetEntry(group, filePath) {
     filePath,
     kind: group.kind,
     name: `${group.namespace}-${normalizeName(semanticName)}`,
+    path: path
+      .relative(path.join(projectRoot, "assets"), filePath)
+      .split(path.sep)
+      .join("/"),
   };
 }
 
@@ -157,6 +161,7 @@ export function getAssetEntries() {
 
   assertUniqueNames(icons, "icon");
   assertUniqueNames(illustrations, "illustration");
+  assertUniqueNames(entries, "SVG asset");
 
   return { icons, illustrations };
 }
@@ -165,6 +170,15 @@ function renderNames(exportName, entries) {
   const names = entries.map(({ name }) => `  ${JSON.stringify(name)},`);
 
   return `export const ${exportName} = [\n${names.join("\n")}\n] as const;`;
+}
+
+function renderRegistryEntries(exportName, nameType, entries) {
+  const registryEntries = entries.map(
+    ({ name, path: assetPath }) =>
+      `  { name: ${JSON.stringify(name)}, path: ${JSON.stringify(assetPath)} },`,
+  );
+
+  return `export const ${exportName}: readonly VoteySvgRegistryEntry<${nameType}>[] = [\n${registryEntries.join("\n")}\n];`;
 }
 
 export function buildAssetTypesSource() {
@@ -177,9 +191,22 @@ ${renderNames("VoteyIconNames", icons)}
 
 export type VoteyIcon = (typeof VoteyIconNames)[number];
 
+export interface VoteySvgRegistryEntry<Name extends string> {
+  readonly name: Name;
+  readonly path: string;
+}
+
+${renderRegistryEntries("VoteyIconRegistryEntries", "VoteyIcon", icons)}
+
 ${renderNames("VoteyIllustrationNames", illustrations)}
 
 export type VoteyIllustration = (typeof VoteyIllustrationNames)[number];
+
+${renderRegistryEntries(
+  "VoteyIllustrationRegistryEntries",
+  "VoteyIllustration",
+  illustrations,
+)}
 `;
 }
 

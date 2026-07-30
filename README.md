@@ -104,3 +104,23 @@ Tablice dostępne w runtime są eksportowane jako `VoteyIconNames` i
 `VoteyIllustrationNames`. `npm run build:angular` odświeża je na podstawie
 `assets/icons` i `assets/illustrations`. Generator nie modyfikuje plików SVG,
 konfiguracji SVGR ani artefaktów React.
+
+### Angular SVG Registry
+
+Entry point Angulara eksportuje `provideVoteySvgRegistry()`, który przy
+bootstrapie rejestruje wszystkie publiczne ikony i ilustracje w
+`MatIconRegistry`:
+
+```ts
+import { ApplicationConfig } from "@angular/core";
+import { provideVoteySvgRegistry } from "@pleodigital/design-system-votey/angular";
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideVoteySvgRegistry()],
+};
+```
+
+Domyślny URL assetów to `assets/votey`. Aplikacja powinna skopiować zawartość
+`dist/assets/angular/svg-raw` z paczki do tego katalogu przez konfigurację
+`assets` w `angular.json`. Inny URL można przekazać jako
+`provideVoteySvgRegistry({ assetBaseUrl: "..." })`.

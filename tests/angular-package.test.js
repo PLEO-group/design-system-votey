@@ -8,13 +8,27 @@ const projectRoot = path.resolve(__dirname, "..");
 async function loadAngularRuntime() {
   await import("@angular/compiler");
 
-  const [{ DOCUMENT }, angularCore, voteyAngular] = await Promise.all([
+  const [
+    { DOCUMENT },
+    angularCore,
+    { MatIconRegistry },
+    { DomSanitizer },
+    voteyAngular,
+  ] = await Promise.all([
     import("@angular/common"),
     import("@angular/core"),
+    import("@angular/material/icon"),
+    import("@angular/platform-browser"),
     import("@pleodigital/design-system-votey/angular"),
   ]);
 
-  return { DOCUMENT, ...angularCore, ...voteyAngular };
+  return {
+    DOCUMENT,
+    DomSanitizer,
+    MatIconRegistry,
+    ...angularCore,
+    ...voteyAngular,
+  };
 }
 
 function createDocumentFixture(userAgent) {
@@ -66,19 +80,25 @@ function countSvgFiles(entryPath) {
   );
 }
 
-test("Angular subpath exports the device runtime without changing deep imports", async () => {
+test("Angular subpath exports the device and SVG registry runtimes without changing deep imports", async () => {
   const {
     provideVoteyDeviceDetection,
+    provideVoteySvgRegistry,
     VoteyIconNames,
     VoteyIllustrationNames,
     VOTEY_DEFAULT_GRID_CONFIG,
     VOTEY_GRID_CONFIG,
+    VOTEY_SVG_REGISTRY_CONFIG,
     VoteyDeviceService,
+    VoteySvgRegistryService,
   } = await loadAngularRuntime();
 
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
+  assert.equal(typeof VoteySvgRegistryService, "function");
+  assert.equal(typeof provideVoteySvgRegistry, "function");
   assert.equal(typeof VOTEY_GRID_CONFIG, "object");
+  assert.equal(typeof VOTEY_SVG_REGISTRY_CONFIG, "object");
   assert.equal(
     VoteyIconNames.length,
     countSvgFiles(path.join(projectRoot, "assets", "icons")),
@@ -203,4 +223,61 @@ test("device service applies an injected grid configuration", async () => {
 
   subscription.unsubscribe();
   service.ngOnDestroy();
+});
+
+test("SVG registry registers every public Votey asset exactly once", async () => {
+  const {
+    DomSanitizer,
+    Injector,
+    MatIconRegistry,
+    runInInjectionContext,
+    VoteyIconRegistryEntries,
+    VoteyIllustrationRegistryEntries,
+    VoteySvgRegistryService,
+  } = await loadAngularRuntime();
+  const registrations = [];
+  const sanitizedUrls = [];
+  const injector = Injector.create({
+    providers: [
+      {
+        provide: MatIconRegistry,
+        useValue: {
+          addSvgIcon(name, url) {
+            registrations.push({ name, url });
+          },
+        },
+      },
+      {
+        provide: DomSanitizer,
+        useValue: {
+          bypassSecurityTrustResourceUrl(url) {
+            sanitizedUrls.push(url);
+            return url;
+          },
+        },
+      },
+    ],
+  });
+  const service = runInInjectionContext(
+    injector,
+    () => new VoteySvgRegistryService(),
+  );
+
+  service.register();
+  service.register();
+
+  const publicAssets = [
+    ...VoteyIconRegistryEntries,
+    ...VoteyIllustrationRegistryEntries,
+  ];
+
+  assert.equal(registrations.length, publicAssets.length);
+  assert.equal(sanitizedUrls.length, publicAssets.length);
+  assert.deepEqual(registrations[0], {
+    name: publicAssets[0].name,
+    url: `assets/votey/${publicAssets[0].path}`,
+  });
+  assert.ok(
+    registrations.every(({ url }) => url.startsWith("assets/votey/")),
+  );
 });

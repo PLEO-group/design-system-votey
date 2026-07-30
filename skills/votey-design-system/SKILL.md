@@ -11,11 +11,11 @@ description: >
   Triggeruj dla zmian Angular/SCSS w CRM, React/Next/Tailwind w PWA, tokenów Votey,
   importów `@pleodigital/design-system-votey`, `@votey/*`, `tokens.angular.css`,
   `tokens.light.css`, `tokens.dark.css`, `tokens.tailwind.css`, klas `rv-*`,
-  `provideVoteyDeviceDetection()` oraz implementacji
+  `provideVoteyDeviceDetection()`, `provideVoteySvgRegistry()` oraz implementacji
   z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
-version: 1.0.2
+version: 1.1.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -25,6 +25,8 @@ tags: [FE]
 # Votey Design System
 
 # CHANGELOG
+
+# 1.1.0 — Dodano publiczny Angular SVG registry, provider bootstrapu i kontrakt migracji konsumentów z lokalnych rejestrów.
 
 # 1.0.2 — Poprawiono autora skilla, dodano system nazewnictwa ikon Votey, a następnie wydzielono onboarding, zmiany i audyt źródłowych SVG do `votey-svg-assets`.
 

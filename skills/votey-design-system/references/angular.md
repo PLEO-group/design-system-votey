@@ -23,8 +23,16 @@ i użyj `votey-svg-assets`; wróć tutaj dopiero po jego buildzie i walidacji.
 - CSS CRM pochodzi z
   `@pleodigital/design-system-votey/dist/css/tokens.angular.css` i powinien być
   dołączony przez konfigurację builda aplikacji.
-- Dla Angulara używaj surowych SVG z `dist/assets/angular/svg-raw` zgodnie
-  z mechanizmem konsumenta. Nie importuj komponentów React z `dist/assets/react`.
+- Publiczne ikony i ilustracje rejestruj przez `provideVoteySvgRegistry()` z
+  `@pleodigital/design-system-votey/angular`. Provider domyślnie używa bazowego
+  URL-a `assets/votey`.
+- Skonfiguruj build konsumenta tak, aby kopiował
+  `dist/assets/angular/svg-raw/**` z paczki do katalogu odpowiadającego bazowemu
+  URL-owi registry. Dla innego katalogu przekaż `assetBaseUrl`.
+- Nie odtwarzaj mapy `MatIconRegistry` w konsumencie i nie rejestruj ponownie
+  publicznych nazw z `VoteyIconNames` lub `VoteyIllustrationNames`.
+- Lokalne registry zachowaj wyłącznie dla assetów, których paczka jeszcze nie
+  publikuje. Nie importuj komponentów React z `dist/assets/react`.
 - Nie zakładaj, że paczka publikuje gotowe komponenty radio, input, button,
   tooltip, table albo modal. Sprawdź entry point i kod CRM.
 
@@ -130,10 +138,14 @@ Reactowego `votey-user-app`.
 - Nie twórz globalnego override’u dla jednego widoku.
 - Nie zakładaj istnienia komponentu lub dyrektywy typograficznej bez
   potwierdzenia w publicznym API paczki.
+- Dla integracji ikon dodaj `provideVoteySvgRegistry()` w root
+  `ApplicationConfig`; nie inicjalizuj publicznego registry w konstruktorze
+  lokalnego komponentu ikony.
 
 ## Walidacja
 
 1. Po zmianie źródeł Design Systemu uruchom jego testy tokenów i właściwy build.
+   Dla registry potwierdź zgodność liczby wpisów z publicznymi listami assetów.
 2. W `wyborek-crm` uruchom co najmniej `npm run build:dev`; dla zmiany kontraktu
    paczki także production build.
 3. Sprawdź target route i viewport, console errors, overflow oraz computed values.

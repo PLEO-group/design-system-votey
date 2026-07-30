@@ -56,6 +56,7 @@ test("generated public asset names are unique and namespaced", async () => {
   const { icons, illustrations } = getAssetEntries();
   const iconNames = icons.map(({ name }) => name);
   const illustrationNames = illustrations.map(({ name }) => name);
+  const assetPaths = [...icons, ...illustrations].map(({ path }) => path);
 
   assert.equal(
     icons.length,
@@ -67,6 +68,12 @@ test("generated public asset names are unique and namespaced", async () => {
   );
   assert.equal(new Set(iconNames).size, iconNames.length);
   assert.equal(new Set(illustrationNames).size, illustrationNames.length);
+  assert.equal(
+    new Set([...iconNames, ...illustrationNames]).size,
+    icons.length + illustrations.length,
+  );
+  assert.ok(assetPaths.every((assetPath) => assetPath.endsWith(".svg")));
+  assert.ok(assetPaths.every((assetPath) => !assetPath.includes("\\")));
   assert.ok(iconNames.includes("ui-agenda"));
   assert.ok(iconNames.includes("ui-download"));
   assert.ok(iconNames.includes("ui-show-graph-thick"));

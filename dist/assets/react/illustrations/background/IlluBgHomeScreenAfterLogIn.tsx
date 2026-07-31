@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { SVGProps } from "react";
-const SvgIlluBgHomeScreenAfterLogIn = (props: SVGProps<SVGSVGElement>) => (
+const SvgIlluBgHomeScreenAfterLogin = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -327,4 +327,4 @@ const SvgIlluBgHomeScreenAfterLogIn = (props: SVGProps<SVGSVGElement>) => (
     </defs>
   </svg>
 );
-export default SvgIlluBgHomeScreenAfterLogIn;
+export default SvgIlluBgHomeScreenAfterLogin;

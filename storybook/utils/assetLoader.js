@@ -1,3 +1,5 @@
+import {VoteyIllustrationRegistryEntries} from '../../angular/src/lib/votey-assets';
+
 const illustrationModules = import.meta.glob('../../dist/assets/react/illustrations/**/*.tsx', {eager: true});
 const iconSourceModules = import.meta.glob('../../assets/icons/**/*.svg', {
     eager: true,
@@ -25,6 +27,25 @@ const scopeSvgIds = (svg, scope) => {
     }, svg);
 };
 
+const illustrationRegistryByReactName = new Map(
+    VoteyIllustrationRegistryEntries.map((entry) => {
+        const relativePath = entry.path.replace(/^illustrations\//, '');
+        const fileName = relativePath.substring(relativePath.lastIndexOf('/') + 1);
+        const fileStem = fileName.replace('.svg', '');
+        const category = relativePath.substring(0, relativePath.lastIndexOf('/'));
+        const reactName = toPascalCase(fileStem);
+
+        return [
+            `${category}/${reactName}`,
+            {
+                angularRegistryName: entry.name,
+                fileName,
+                reactName,
+            },
+        ];
+    })
+);
+
 const loadIconAssets = () => Object.entries(iconSourceModules).map(([path, svg]) => {
     const relativePath = path
         .substring('../../assets/icons/'.length)
@@ -51,21 +72,32 @@ const loadIconAssets = () => Object.entries(iconSourceModules).map(([path, svg])
     };
 });
 
-const loadAssets = (modules, rootPath, type) => {
+const loadIllustrationAssets = () => {
     const assets = [];
+    const rootPath = '../../dist/assets/react/illustrations/';
     const startIndex = rootPath.length;
 
-    for (const path in modules) {
-        const componentModule = modules[path];
+    for (const path in illustrationModules) {
+        const componentModule = illustrationModules[path];
         const relativePath = path.substring(startIndex).replace(/\\/g, '/');
         const fileName = relativePath.substring(relativePath.lastIndexOf('/') + 1);
         const name = fileName.replace('.tsx', '');
         const categoryPath = relativePath.substring(0, relativePath.lastIndexOf('/'));
+        const publicNames = illustrationRegistryByReactName.get(
+            `${categoryPath}/${name}`
+        );
+
+        if (!publicNames) {
+            throw new Error(
+                `Missing Angular Registry entry for illustration "${relativePath}".`
+            );
+        }
 
         assets.push({
-            name: name,
+            ...publicNames,
+            name,
             category: categoryPath,
-            type: type,
+            type: 'illustration',
             Component: componentModule.default,
         });
     }
@@ -73,8 +105,4 @@ const loadAssets = (modules, rootPath, type) => {
 };
 
 export const getIconList = () => loadIconAssets();
-export const getIllustrationList = () => loadAssets(
-    illustrationModules,
-    '../../dist/assets/react/illustrations/',
-    'illustration'
-)
+export const getIllustrationList = () => loadIllustrationAssets();

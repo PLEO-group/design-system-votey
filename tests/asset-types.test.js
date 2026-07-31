@@ -83,12 +83,17 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.ok(iconNames.includes("logo-wyborek-sygnet"));
   assert.ok(!iconNames.includes("ui-iu-download"));
   assert.ok(!iconNames.includes("ui-video"));
-  assert.ok(illustrationNames.includes("background-agenda"));
-  assert.ok(illustrationNames.includes("spot-automatic-voting-start"));
+  assert.ok(illustrationNames.includes("bg-agenda"));
   assert.ok(
-    illustrationNames.includes("spot-simple-automatic-voting-start"),
+    illustrationNames.includes("bg-participant-type-observer"),
   );
-  assert.ok(illustrationNames.includes("spot-simple-notification"));
+  assert.ok(illustrationNames.includes("bg-participant-type-voter"));
+  assert.ok(!illustrationNames.some((name) => name.startsWith("background-")));
+  assert.ok(illustrationNames.includes("spot-voting-start-automatic"));
+  assert.ok(illustrationNames.includes("spot-voting-start-manual"));
+  assert.ok(illustrationNames.includes("simple-notification"));
+  assert.ok(illustrationNames.includes("simple-voting-start-automatic"));
+  assert.ok(!illustrationNames.some((name) => name.startsWith("spot-simple-")));
 });
 
 test("React icon names use the Icon prefix", async () => {

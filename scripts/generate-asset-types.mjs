@@ -53,7 +53,7 @@ const assetGroups = [
       "background",
     ),
     kind: "illustration",
-    namespace: "background",
+    namespace: "bg",
     stripPrefix: /^illu_(?:bg|spot)_/,
   },
   {
@@ -78,12 +78,11 @@ const assetGroups = [
       projectRoot,
       "assets",
       "illustrations",
-      "spotSimple",
+      "simple",
     ),
     kind: "illustration",
-    namespace: "spot-simple",
-    stripPrefix: /^(?:illu|illlu)_spot_/,
-    stripSuffix: /_simple$/,
+    namespace: "simple",
+    stripPrefix: /^illu_simple_/,
   },
 ];
 

@@ -50,8 +50,21 @@ export const AssetCard = ({asset}) => {
                 </div>
             ) : (
                 <div className="details">
-                    <strong title={asset.name}>{asset.name}</strong>
-                    <span>Illustration</span>
+                    <div className="variant-details">
+                        <div className="asset-name">
+                            <span>React</span>
+                            <strong title={asset.reactName}>
+                                {asset.reactName}
+                            </strong>
+                        </div>
+                        <div className="asset-name">
+                            <span>Angular Registry</span>
+                            <strong title={asset.angularRegistryName}>
+                                {asset.angularRegistryName}
+                            </strong>
+                        </div>
+                        <small title={asset.fileName}>{asset.fileName}</small>
+                    </div>
                 </div>
             )}
         </article>

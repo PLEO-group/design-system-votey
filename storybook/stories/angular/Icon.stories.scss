@@ -1,0 +1,17 @@
+.angular-icon-story {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 160px;
+  padding: var(--space-card-padding);
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-surface);
+
+  .preview,
+  vt-icon {
+    display: block;
+    width: 48px;
+    height: 48px;
+  }
+}

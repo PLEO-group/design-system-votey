@@ -49,7 +49,7 @@ export class VoteySvgRegistryService {
 
       this.matIconRegistry.addSvgIcon(
         asset.name,
-        this.domSanitizer.bypassSecurityTrustResourceUrl(assetUrl),
+        this.domSanitizer.bypassSecurityTrustResourceUrl(assetUrl)
       );
     }
 
@@ -58,7 +58,7 @@ export class VoteySvgRegistryService {
 }
 
 export function provideVoteySvgRegistry(
-  config: VoteySvgRegistryConfig = {},
+  config: VoteySvgRegistryConfig = {}
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {

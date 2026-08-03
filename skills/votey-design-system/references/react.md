@@ -87,6 +87,9 @@ Zachowaj kolejność globalnych importów w `votey-user-app`:
 
 ## Assety React
 
+Zastosuj również wspólną bramkę lokalnego osadzania z `references/assets.md`
+wskazaną bezpośrednio przez `SKILL.md`.
+
 - Importuj asset przez potwierdzony alias `@votey/icons/...` lub
   `@votey/illustrations/...`; w innym konsumencie użyj jego aliasu albo
   publicznej ścieżki `dist/assets/react/...`.

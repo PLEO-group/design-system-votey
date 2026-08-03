@@ -9,7 +9,13 @@ const config = {
         "@storybook/addon-essentials",
         "@storybook/addon-interactions",
     ],
-    staticDirs: ['../dist'],
+    staticDirs: [
+        '../dist',
+        {
+            from: '../dist/assets/angular/svg-raw',
+            to: '/assets/votey',
+        },
+    ],
     framework: {
         name: "@storybook/react-vite",
         options: {},

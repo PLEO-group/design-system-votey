@@ -1,0 +1,14 @@
+.angular-checkbox-story {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 160px;
+  padding: var(--space-card-padding);
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-surface);
+
+  .preview {
+    display: inline-flex;
+  }
+}

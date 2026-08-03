@@ -47,7 +47,7 @@ export const VOTEY_DEFAULT_GRID_CONFIG: Readonly<VoteyGridConfig> =
   });
 
 export const VOTEY_GRID_CONFIG = new InjectionToken<VoteyGridConfig>(
-  "VoteyGridConfig",
+  "VoteyGridConfig"
 );
 
 @Injectable({
@@ -56,11 +56,10 @@ export const VOTEY_GRID_CONFIG = new InjectionToken<VoteyGridConfig>(
 export class VoteyDeviceService implements OnDestroy {
   private readonly document: Document = inject(DOCUMENT);
   private readonly gridConfig: VoteyGridConfig =
-    inject(VOTEY_GRID_CONFIG, { optional: true }) ??
-    VOTEY_DEFAULT_GRID_CONFIG;
+    inject(VOTEY_GRID_CONFIG, { optional: true }) ?? VOTEY_DEFAULT_GRID_CONFIG;
   private readonly platformId: object = inject(PLATFORM_ID);
   private readonly deviceTypeSubject = new BehaviorSubject<VoteyDevice | null>(
-    null,
+    null
   );
   private readonly dimensionsSubject =
     new BehaviorSubject<VoteyDeviceDimensions>(DEFAULT_DIMENSIONS);
@@ -167,8 +166,8 @@ export class VoteyDeviceService implements OnDestroy {
     this.currentDevice = this.isMobileDevice
       ? "mobile"
       : this.isTabletDevice
-        ? "tablet"
-        : "desktop";
+      ? "tablet"
+      : "desktop";
     this.columnsAmount = this.gridConfig[this.currentDevice];
     this.columnsAmountSubject.next(this.columnsAmount);
   }
@@ -180,19 +179,16 @@ export class VoteyDeviceService implements OnDestroy {
 
     this.deviceTypeSubject.next(this.currentDevice);
     this.document.body.setAttribute("data-device", this.currentDevice);
-    this.document.body.setAttribute(
-      "data-orientation",
-      this.deviceOrientation,
-    );
+    this.document.body.setAttribute("data-orientation", this.deviceOrientation);
     this.document.documentElement.style.setProperty(
       "--vh",
-      `${innerHeight / 100}px`,
+      `${innerHeight / 100}px`
     );
   }
 }
 
 export function provideVoteyDeviceDetection(
-  gridConfig: VoteyGridConfig = VOTEY_DEFAULT_GRID_CONFIG,
+  gridConfig: VoteyGridConfig = VOTEY_DEFAULT_GRID_CONFIG
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
@@ -200,7 +196,7 @@ export function provideVoteyDeviceDetection(
       useValue: gridConfig,
     },
     provideEnvironmentInitializer((): void =>
-      inject(VoteyDeviceService).initialize(),
+      inject(VoteyDeviceService).initialize()
     ),
   ]);
 }

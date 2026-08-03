@@ -21,11 +21,22 @@ export type {
   VoteyIllustration,
   VoteySvgRegistryEntry,
 } from "./lib/votey-assets";
+export { VoteyIconComponent } from "./lib/icon/votey-icon.component";
 export {
   provideVoteySvgRegistry,
   VOTEY_SVG_REGISTRY_CONFIG,
   VoteySvgRegistryService,
 } from "./lib/votey-svg-registry.service";
+export type { VoteySvgRegistryConfig } from "./lib/votey-svg-registry.service";
+export {
+  VoteyButtonComponent,
+  VoteyButtonSizes,
+  VoteyButtonVariants,
+} from "./lib/button/votey-button.component";
 export type {
-  VoteySvgRegistryConfig,
-} from "./lib/votey-svg-registry.service";
+  VoteyButtonSize,
+  VoteyButtonType,
+  VoteyButtonVariant,
+} from "./lib/button/votey-button.component";
+export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
+export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";

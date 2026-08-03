@@ -14,8 +14,6 @@ const checkboxInputs = [
   "id",
   "name",
   "value",
-  "ariaLabel",
-  "ariaDescribedby",
 ];
 
 function setCheckboxInputs(componentRef, props) {
@@ -134,8 +132,6 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
-    ariaLabel: "Etykieta checkboxa",
-    ariaDescribedby: "",
     onChanged: fn(),
   },
 };
@@ -155,3 +151,4 @@ export const Playground = {
     );
   },
 };
+

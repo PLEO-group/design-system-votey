@@ -1,0 +1,38 @@
+<div
+  class="radio-group-wrapper"
+  matTooltipPosition="above"
+  [matTooltipDisabled]="!resolvedTooltip()"
+  [matTooltipShowDelay]="500"
+  [matTooltip]="resolvedTooltip()"
+>
+  <mat-radio-group
+    [class]="groupClass()"
+    [formControl]="control()"
+    [labelPosition]="groupLabelPosition()"
+    [required]="groupRequired()"
+    [attr.aria-label]="groupAccessibleLabel()"
+    (change)="handleChange($event)"
+  >
+    @for (option of options(); track option.id ?? $index) {
+    <mat-radio-button
+      [class]="option.className ?? ''"
+      [class.radio-error]="option.error ?? false"
+      [disabled]="(option.disabled ?? false) || groupDisabled()"
+      [required]="option.required ?? false"
+      [labelPosition]="option.labelPosition ?? groupLabelPosition()"
+      [id]="option.id ?? ''"
+      [value]="option.value"
+      [attr.data-cy]="option.dataCy ?? null"
+    >
+      <span class="vt-radio-option-label">
+        <span>{{ option.label }}</span>
+      </span>
+    </mat-radio-button>
+    @if (control().value === option.value) { @if (option.id; as optionId) { @if
+    (optionContentTemplates()[optionId]; as optionContent) {
+    <div class="vt-radio-option-content">
+      <ng-container [ngTemplateOutlet]="optionContent" />
+    </div>
+    } } } }
+  </mat-radio-group>
+</div>

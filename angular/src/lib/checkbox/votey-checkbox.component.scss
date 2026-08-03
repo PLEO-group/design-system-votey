@@ -2,24 +2,21 @@ vt-checkbox {
   display: inline-flex;
 
   .mat-mdc-checkbox {
-    --checkbox-label-font-family: var(
-      --typo-body-font-family,
-      var(--font-family-open-sans)
-    );
-    --checkbox-label-font-size: 15px;
-    --checkbox-label-font-weight: var(--typo-body-font-weight, 400);
-    --checkbox-label-letter-spacing: var(--typo-body-letter-spacing, 0);
-    --checkbox-label-line-height: 20px;
+    --checkbox-label-font-family: var(--typo-body-font-family);
+    --checkbox-label-font-size: var(--typo-body-font-size);
+    --checkbox-label-font-weight: var(--typo-body-font-weight);
+    --checkbox-label-letter-spacing: var(--typo-body-letter-spacing);
+    --checkbox-label-line-height: var(--typo-body-line-height);
     --mat-checkbox-touch-target-display: none;
     --mat-checkbox-state-layer-size: 20px;
     --mat-checkbox-selected-checkmark-color: var(--color-accent-on-accent);
     --mat-checkbox-disabled-selected-checkmark-color: var(--color-text-muted);
     --mat-checkbox-selected-icon-color: var(--color-accent-primary);
-    --mat-checkbox-selected-hover-icon-color: var(--color-accent-primary);
+    --mat-checkbox-selected-hover-icon-color: var(--color-accent-hover);
     --mat-checkbox-selected-focus-icon-color: var(--color-accent-primary);
     --mat-checkbox-selected-pressed-icon-color: var(--color-accent-primary);
     --mat-checkbox-unselected-icon-color: var(--color-border-strong);
-    --mat-checkbox-unselected-hover-icon-color: var(--color-border-strong);
+    --mat-checkbox-unselected-hover-icon-color: var(--color-accent-hover);
     --mat-checkbox-unselected-focus-icon-color: var(--color-border-strong);
     --mat-checkbox-unselected-pressed-icon-color: var(--color-border-strong);
     --mat-checkbox-disabled-selected-icon-color: var(--color-border-subtle);
@@ -91,6 +88,23 @@ vt-checkbox {
       ~ .mdc-checkbox__background {
       border-color: var(--color-border-strong) !important;
       background-color: var(--color-bg-surface) !important;
+    }
+
+    @media (pointer: fine) {
+      &:hover {
+        .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate)
+          ~ .mdc-checkbox__background {
+          border-color: var(--color-accent-hover) !important;
+        }
+
+        .mdc-checkbox__native-control:enabled:checked
+          ~ .mdc-checkbox__background,
+        .mdc-checkbox__native-control:enabled:indeterminate
+          ~ .mdc-checkbox__background {
+          border-color: var(--color-accent-hover) !important;
+          background-color: var(--color-accent-hover) !important;
+        }
+      }
     }
 
     .mdc-checkbox__native-control:disabled:not(:checked):not(:indeterminate)

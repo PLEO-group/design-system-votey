@@ -1,8 +1,9 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, OutputEmitterRef, Signal, ModelSignal } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, OutputEmitterRef, Signal, ModelSignal, TemplateRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatRadioChange } from '@angular/material/radio';
 
 type VoteyDevice = "mobile" | "tablet" | "desktop";
 type VoteyDeviceOrientation = "vertical" | "horizontal";
@@ -97,18 +98,14 @@ declare class VoteyButtonComponent {
     readonly text: InputSignal<string>;
     readonly ico: InputSignal<VoteyIcon | "">;
     readonly badge: InputSignal<string | number | null>;
-    readonly ariaLabel: InputSignal<string>;
-    readonly ariaExpanded: InputSignal<boolean | null>;
-    readonly ariaPressed: InputSignal<boolean | null>;
     readonly tooltipText: InputSignal<string>;
     readonly disabledNote: InputSignal<string>;
     readonly pressed: OutputEmitterRef<void>;
     protected readonly buttonClasses: Signal<string>;
     protected readonly isIconButton: Signal<boolean>;
-    protected readonly resolvedAriaLabel: Signal<string>;
     protected readonly resolvedTooltipText: Signal<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyButtonComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaExpanded": { "alias": "ariaExpanded"; "required": false; "isSignal": true; }; "ariaPressed": { "alias": "ariaPressed"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
 }
 
 type VoteyCheckboxLabelPosition = "before" | "after";
@@ -123,8 +120,6 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     readonly id: InputSignal<string>;
     readonly name: InputSignal<string>;
     readonly value: InputSignal<string>;
-    readonly ariaLabel: InputSignal<string>;
-    readonly ariaDescribedby: InputSignal<string>;
     readonly changed: OutputEmitterRef<boolean>;
     private readonly formDisabled;
     protected readonly effectiveDisabled: Signal<boolean>;
@@ -137,8 +132,46 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     protected handleChange(event: MatCheckboxChange): void;
     protected markAsTouched(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyCheckboxComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyCheckboxComponent, "vt-checkbox", never, { "checked": { "alias": "checked"; "required": false; "isSignal": true; }; "indeterminate": { "alias": "indeterminate"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "labelPosition": { "alias": "labelPosition"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "value": { "alias": "value"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; "indeterminate": "indeterminateChange"; "changed": "changed"; }, never, ["*"], true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyCheckboxComponent, "vt-checkbox", never, { "checked": { "alias": "checked"; "required": false; "isSignal": true; }; "indeterminate": { "alias": "indeterminate"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "labelPosition": { "alias": "labelPosition"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "value": { "alias": "value"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; "indeterminate": "indeterminateChange"; "changed": "changed"; }, never, ["*"], true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteySvgRegistryConfig, VoteySvgRegistryEntry };
+type VoteyRadioButtonLabelPosition = "before" | "after";
+interface VtRadioOption<T = unknown> {
+    readonly label: string;
+    readonly value: T;
+    readonly disabled?: boolean;
+    readonly required?: boolean;
+    readonly error?: boolean;
+    readonly labelPosition?: VoteyRadioButtonLabelPosition;
+    readonly id?: string;
+    readonly className?: string;
+    readonly dataCy?: string;
+}
+declare class VoteyRadioButtonComponent {
+    private readonly optionContents;
+    readonly options: InputSignal<readonly VtRadioOption[]>;
+    readonly control: InputSignal<FormControl>;
+    readonly groupLabelPosition: InputSignal<VoteyRadioButtonLabelPosition>;
+    readonly groupDisabled: InputSignal<boolean>;
+    readonly groupRequired: InputSignal<boolean>;
+    readonly groupClass: InputSignal<string>;
+    readonly tooltip: InputSignal<string>;
+    readonly disabledNote: InputSignal<string>;
+    readonly change: OutputEmitterRef<MatRadioChange>;
+    protected readonly groupAccessibleLabel: Signal<string>;
+    protected readonly resolvedTooltip: Signal<string>;
+    protected readonly optionContentTemplates: Signal<Readonly<Record<string, TemplateRef<unknown>>>>;
+    protected handleChange(event: MatRadioChange): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyRadioButtonComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyRadioButtonComponent, "vt-radio-button", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "control": { "alias": "control"; "required": true; "isSignal": true; }; "groupLabelPosition": { "alias": "groupLabelPosition"; "required": false; "isSignal": true; }; "groupDisabled": { "alias": "groupDisabled"; "required": false; "isSignal": true; }; "groupRequired": { "alias": "groupRequired"; "required": false; "isSignal": true; }; "groupClass": { "alias": "groupClass"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; }, { "change": "change"; }, ["optionContents"], never, true, never>;
+}
+
+declare class VoteyRadioOptionContentDirective {
+    readonly optionId: InputSignal<string>;
+    readonly templateRef: TemplateRef<unknown>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyRadioOptionContentDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VtRadioOption };

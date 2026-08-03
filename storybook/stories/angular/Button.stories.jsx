@@ -21,9 +21,6 @@ const buttonInputs = [
   "size",
   "text",
   "badge",
-  "ariaLabel",
-  "ariaExpanded",
-  "ariaPressed",
   "tooltipText",
   "disabledNote",
 ];
@@ -154,12 +151,6 @@ export default {
     badge: {
       control: { type: "text" },
     },
-    ariaExpanded: {
-      control: { type: "boolean" },
-    },
-    ariaPressed: {
-      control: { type: "boolean" },
-    },
     onPressed: {
       action: "pressed",
       table: { category: "Events" },
@@ -173,9 +164,6 @@ export default {
     text: "Dodaj uczestnika",
     icon: "plus",
     badge: null,
-    ariaLabel: "",
-    ariaExpanded: null,
-    ariaPressed: null,
     tooltipText: "Dodaj uczestnika",
     disabledNote: "Ta akcja jest obecnie niedostępna",
     onPressed: fn(),

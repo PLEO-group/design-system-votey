@@ -47,13 +47,6 @@ export class VoteyButtonComponent {
   public readonly badge: InputSignal<string | number | null> = input<
     string | number | null
   >(null);
-  public readonly ariaLabel: InputSignal<string> = input<string>("");
-  public readonly ariaExpanded: InputSignal<boolean | null> = input<
-    boolean | null
-  >(null);
-  public readonly ariaPressed: InputSignal<boolean | null> = input<
-    boolean | null
-  >(null);
   public readonly tooltipText: InputSignal<string> = input<string>("");
   public readonly disabledNote: InputSignal<string> = input<string>("");
 
@@ -64,11 +57,6 @@ export class VoteyButtonComponent {
   );
   protected readonly isIconButton: Signal<boolean> = computed<boolean>(
     () => Boolean(this.ico()) && !this.text()
-  );
-  protected readonly resolvedAriaLabel: Signal<string> = computed<string>(
-    () =>
-      this.ariaLabel().trim() ||
-      (this.isIconButton() ? this.tooltipText().trim() : "")
   );
   protected readonly resolvedTooltipText: Signal<string> = computed<string>(
     () => (this.disabled() ? this.disabledNote() : this.tooltipText()).trim()

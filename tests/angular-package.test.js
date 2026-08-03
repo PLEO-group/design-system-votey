@@ -91,6 +91,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
+    VoteyRadioButtonComponent,
+    VoteyRadioOptionContentDirective,
     VOTEY_DEFAULT_GRID_CONFIG,
     VOTEY_GRID_CONFIG,
     VOTEY_SVG_REGISTRY_CONFIG,
@@ -111,12 +113,54 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(typeof VoteyCheckboxComponent, "function");
   assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyRadioButtonComponent, "function");
+  assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
+    ["vt-radio-button"],
+  ]);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.options[0], "options");
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.tooltip[0], "tooltip");
+  assert.equal(
+    VoteyRadioButtonComponent.ɵcmp.inputs.disabledNote[0],
+    "disabledNote",
+  );
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupValue, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.inputId, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupColor, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabel, undefined);
+  assert.equal(
+    VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabelledby,
+    undefined,
+  );
+  assert.equal(
+    VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaDescribedby,
+    undefined,
+  );
+  assert.equal(
+    VoteyRadioButtonComponent.ɵcmp.inputs.groupDisabledInteractive,
+    undefined,
+  );
+  assert.equal(VoteyRadioButtonComponent.prototype.focus, undefined);
+  assert.equal(typeof VoteyRadioOptionContentDirective, "function");
+  assert.deepEqual(VoteyRadioOptionContentDirective.ɵdir.selectors, [
+    ["ng-template", "vtRadioOptionContent", ""],
+  ]);
+  assert.equal(
+    VoteyRadioOptionContentDirective.ɵdir.inputs.vtRadioOptionContent[0],
+    "optionId",
+  );
   assert.equal(typeof VoteyIconComponent, "function");
   assert.deepEqual(VoteyIconComponent.ɵcmp.selectors, [["vt-icon"]]);
   assert.equal(VoteyIconComponent.ɵcmp.inputs.ico[0], "ico");
   assert.equal(VoteyIconComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ico[0], "ico");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.hasIcon, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
+  assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
+  assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VoteySvgRegistryService, "function");
@@ -205,6 +249,26 @@ test("checkbox synchronizes model, forms callbacks and changed output", async ()
 
   checkbox.setDisabledState(true);
   assert.equal(checkbox.effectiveDisabled(), true);
+
+  subscription.unsubscribe();
+});
+
+test("radio button emits MatRadioChange", async () => {
+  const { Injector, runInInjectionContext, VoteyRadioButtonComponent } =
+    await loadAngularRuntime();
+  const radioButton = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyRadioButtonComponent(),
+  );
+  const changes = [];
+  const event = { source: { checked: true }, value: "yes" };
+  const subscription = radioButton.change.subscribe((change) =>
+    changes.push(change),
+  );
+
+  radioButton.handleChange(event);
+
+  assert.deepEqual(changes, [event]);
 
   subscription.unsubscribe();
 });

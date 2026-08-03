@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, OutputEmitterRef, Signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 type VoteyDevice = "mobile" | "tablet" | "desktop";
@@ -75,5 +75,32 @@ declare class VoteySvgRegistryService {
 }
 declare function provideVoteySvgRegistry(config?: VoteySvgRegistryConfig): EnvironmentProviders;
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyDeviceService, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteySvgRegistryConfig, VoteySvgRegistryEntry };
+declare const VoteyButtonVariants: readonly ["primary", "secondary", "link", "danger", "ghost", "orange"];
+declare const VoteyButtonSizes: readonly ["large", "small"];
+type VoteyButtonVariant = (typeof VoteyButtonVariants)[number];
+type VoteyButtonSize = (typeof VoteyButtonSizes)[number];
+type VoteyButtonType = "button" | "submit" | "reset";
+declare class VoteyButtonComponent {
+    readonly disabled: InputSignal<boolean>;
+    readonly type: InputSignal<VoteyButtonType>;
+    readonly variant: InputSignal<VoteyButtonVariant>;
+    readonly size: InputSignal<VoteyButtonSize>;
+    readonly text: InputSignal<string>;
+    readonly hasIcon: InputSignal<boolean>;
+    readonly badge: InputSignal<string | number | null>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly ariaExpanded: InputSignal<boolean | null>;
+    readonly ariaPressed: InputSignal<boolean | null>;
+    readonly tooltipText: InputSignal<string>;
+    readonly disabledNote: InputSignal<string>;
+    readonly pressed: OutputEmitterRef<void>;
+    protected readonly buttonClasses: Signal<string>;
+    protected readonly isIconButton: Signal<boolean>;
+    protected readonly resolvedAriaLabel: Signal<string>;
+    protected readonly resolvedTooltipText: Signal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyButtonComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "votey-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "hasIcon": { "alias": "hasIcon"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaExpanded": { "alias": "ariaExpanded"; "required": false; "isSignal": true; }; "ariaPressed": { "alias": "ariaPressed"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, ["[voteyButtonIcon]"], true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyDeviceService, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteySvgRegistryConfig, VoteySvgRegistryEntry };

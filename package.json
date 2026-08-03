@@ -38,7 +38,7 @@
     "transform:illustrations": "npx @svgr/cli assets/illustrations --out-dir dist/assets/react/illustrations --jsx-runtime classic --typescript --config-file .svgrrc-illustrations.json",
     "copy:angular-svg": "node scripts/clean-generated-icons.mjs angular && cpx \"assets/{icons,illustrations}/**/*.svg\" dist/assets/angular/svg-raw",
     "build": "npm run clean:dist && npm run build:tokens && npm run transform:icons && npm run transform:illustrations && npm run copy:angular-svg && npm run build:angular",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "npm run build:angular && storybook dev -p 6006",
     "build-storybook": "npm run build && storybook build"
   },
   "keywords": [

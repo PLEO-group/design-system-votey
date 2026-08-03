@@ -1,4 +1,5 @@
 # design-system-votey
+
 Repository for handling tokens (Votey app)
 
 ## Pełny build paczki
@@ -85,6 +86,44 @@ Build wejścia Angulara:
 ```bash
 npm run build:angular
 ```
+
+### Angular Button
+
+Entry point Angulara eksportuje standalone `VoteyButtonComponent`. Komponent
+renderuje gotowe teksty i pozostaje niezależny od mechanizmu tłumaczeń oraz
+registry ikon aplikacji. Ikonę należy przekazać przez slot
+`voteyButtonIcon` i ustawić `hasIcon`:
+
+```ts
+import { Component } from "@angular/core";
+import { MatIcon } from "@angular/material/icon";
+import { VoteyButtonComponent } from "@pleodigital/design-system-votey/angular";
+
+@Component({
+  imports: [MatIcon, VoteyButtonComponent],
+  template: `
+    <votey-button
+      variant="secondary"
+      text="Pobierz raport"
+      tooltipText="Pobierz raport PDF"
+      [hasIcon]="true"
+      (pressed)="downloadReport()"
+    >
+      <mat-icon voteyButtonIcon svgIcon="ui-download" />
+    </votey-button>
+  `,
+})
+export class ReportActionsComponent {
+  protected downloadReport(): void {
+    // akcja aplikacji
+  }
+}
+```
+
+Dostępne warianty to `primary`, `secondary`, `link`, `danger`, `ghost` i
+`orange`, a rozmiary to `large` oraz `small`. Teksty, tooltipy i etykiety ARIA
+powinny zostać przetłumaczone po stronie aplikacji przed przekazaniem ich do
+komponentu.
 
 ### Typowane nazwy assetów
 

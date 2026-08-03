@@ -1,0 +1,30 @@
+<div
+  class="button-wrapper"
+  matTooltipPosition="above"
+  [matTooltipDisabled]="!resolvedTooltipText()"
+  [matTooltipShowDelay]="500"
+  [matTooltip]="resolvedTooltipText()"
+>
+  <button
+    [class]="buttonClasses()"
+    [class.icon-button]="isIconButton()"
+    [class.disabled]="disabled()"
+    [disabled]="disabled()"
+    [attr.aria-disabled]="disabled()"
+    [attr.aria-label]="resolvedAriaLabel() || null"
+    [attr.aria-expanded]="ariaExpanded()"
+    [attr.aria-pressed]="ariaPressed()"
+    [type]="type()"
+    (click)="pressed.emit()"
+  >
+    @if (hasIcon()) {
+    <span class="icon" aria-hidden="true">
+      <ng-content select="[voteyButtonIcon]" />
+    </span>
+    } @if (text()) {
+    <span class="label">{{ text() }}</span>
+    } @if (badge() !== null && badge() !== "") {
+    <span class="badge" aria-hidden="true">{{ badge() }}</span>
+    }
+  </button>
+</div>

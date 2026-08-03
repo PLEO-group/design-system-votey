@@ -26,6 +26,14 @@ export {
   VOTEY_SVG_REGISTRY_CONFIG,
   VoteySvgRegistryService,
 } from "./lib/votey-svg-registry.service";
+export type { VoteySvgRegistryConfig } from "./lib/votey-svg-registry.service";
+export {
+  VoteyButtonComponent,
+  VoteyButtonSizes,
+  VoteyButtonVariants,
+} from "./lib/button/votey-button.component";
 export type {
-  VoteySvgRegistryConfig,
-} from "./lib/votey-svg-registry.service";
+  VoteyButtonSize,
+  VoteyButtonType,
+  VoteyButtonVariant,
+} from "./lib/button/votey-button.component";

@@ -80,10 +80,13 @@ function countSvgFiles(entryPath) {
   );
 }
 
-test("Angular subpath exports the device and SVG registry runtimes without changing deep imports", async () => {
+test("Angular subpath exports the button, device and SVG registry runtimes without changing deep imports", async () => {
   const {
     provideVoteyDeviceDetection,
     provideVoteySvgRegistry,
+    VoteyButtonComponent,
+    VoteyButtonSizes,
+    VoteyButtonVariants,
     VoteyIconNames,
     VoteyIllustrationNames,
     VOTEY_DEFAULT_GRID_CONFIG,
@@ -93,6 +96,16 @@ test("Angular subpath exports the device and SVG registry runtimes without chang
     VoteySvgRegistryService,
   } = await loadAngularRuntime();
 
+  assert.equal(typeof VoteyButtonComponent, "function");
+  assert.deepEqual(VoteyButtonSizes, ["large", "small"]);
+  assert.deepEqual(VoteyButtonVariants, [
+    "primary",
+    "secondary",
+    "link",
+    "danger",
+    "ghost",
+    "orange",
+  ]);
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VoteySvgRegistryService, "function");

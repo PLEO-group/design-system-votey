@@ -17,9 +17,9 @@
     [type]="type()"
     (click)="pressed.emit()"
   >
-    @if (hasIcon()) {
+    @if (ico()) {
     <span class="icon" aria-hidden="true">
-      <ng-content select="[voteyButtonIcon]" />
+      <vt-icon [ico]="ico()" />
     </span>
     } @if (text()) {
     <span class="label">{{ text() }}</span>

@@ -6,13 +6,12 @@ import "./Button.stories.scss";
 const publicIcons = getIconList().sort((first, second) =>
   first.angularRegistryName.localeCompare(second.angularRegistryName)
 );
-const publicIconsByName = new Map(
-  publicIcons.map((icon) => [icon.angularRegistryName, icon])
-);
 const iconOptions = [
   "none",
   "plus",
-  ...publicIcons.map((icon) => icon.angularRegistryName),
+  ...publicIcons
+    .map((icon) => icon.angularRegistryName)
+    .filter((iconName) => iconName !== "ui-plus"),
 ];
 
 const buttonInputs = [
@@ -21,7 +20,6 @@ const buttonInputs = [
   "variant",
   "size",
   "text",
-  "hasIcon",
   "badge",
   "ariaLabel",
   "ariaExpanded",
@@ -30,43 +28,15 @@ const buttonInputs = [
   "disabledNote",
 ];
 
-function updatePreviewIcon(iconHost, iconName) {
-  if (iconName === "none") {
-    iconHost.replaceChildren();
-    return;
-  }
-
-  if (iconName === "plus") {
-    iconHost.innerHTML = [
-      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">',
-      '<path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      '<path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-      "</svg>",
-    ].join("");
-  } else {
-    iconHost.innerHTML = publicIconsByName.get(iconName)?.svg ?? "";
-  }
-
-  const svg = iconHost.querySelector("svg");
-  svg?.setAttribute("aria-hidden", "true");
-  svg?.setAttribute("width", "100%");
-  svg?.setAttribute("height", "100%");
-}
-
-function createPreviewIconHost(iconName) {
-  const iconHost = document.createElement("span");
-  iconHost.setAttribute("voteyButtonIcon", "");
-  updatePreviewIcon(iconHost, iconName);
-  return iconHost;
-}
-
 function setButtonInputs(componentRef, props) {
   for (const inputName of buttonInputs) {
-    componentRef.setInput(
-      inputName,
-      inputName === "hasIcon" ? props.icon !== "none" : props[inputName]
-    );
+    componentRef.setInput(inputName, props[inputName]);
   }
+
+  componentRef.setInput(
+    "ico",
+    props.icon === "none" ? "" : props.icon === "plus" ? "ui-plus" : props.icon
+  );
 }
 
 function AngularButtonPreview(props) {
@@ -83,7 +53,7 @@ function AngularButtonPreview(props) {
       const [
         { createComponent },
         { createApplication },
-        { VoteyButtonComponent },
+        { provideVoteySvgRegistry, VoteyButtonComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
@@ -94,18 +64,21 @@ function AngularButtonPreview(props) {
         return;
       }
 
-      const applicationRef = await createApplication();
+      const applicationRef = await createApplication({
+        providers: [provideVoteySvgRegistry()],
+      });
 
       if (!isMounted || !hostRef.current) {
         applicationRef.destroy();
         return;
       }
 
-      const iconHost = createPreviewIconHost(latestPropsRef.current.icon);
+      const buttonHost = document.createElement("vt-button");
+      hostRef.current.replaceChildren(buttonHost);
+
       const componentRef = createComponent(VoteyButtonComponent, {
         environmentInjector: applicationRef.injector,
-        hostElement: hostRef.current,
-        projectableNodes: [[iconHost]],
+        hostElement: buttonHost,
       });
       const pressedSubscription = componentRef.instance.pressed.subscribe(
         () => {
@@ -114,7 +87,7 @@ function AngularButtonPreview(props) {
       );
 
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef, iconHost };
+      angularRuntimeRef.current = { applicationRef, componentRef };
 
       setButtonInputs(componentRef, latestPropsRef.current);
       applicationRef.tick();
@@ -143,7 +116,6 @@ function AngularButtonPreview(props) {
       return;
     }
 
-    updatePreviewIcon(angularRuntime.iconHost, props.icon);
     setButtonInputs(angularRuntime.componentRef, props);
     angularRuntime.applicationRef.tick();
   }, [props]);

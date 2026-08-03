@@ -19,6 +19,9 @@ i użyj `votey-svg-assets`; wróć tutaj dopiero po jego buildzie i walidacji.
 
 ## Publiczny kontrakt
 
+Dla wyboru między `vt-icon`, `url()` w SCSS i lokalnym wyjątkiem zastosuj również
+`references/assets.md` wskazaną bezpośrednio przez `SKILL.md`.
+
 - Angular runtime importuj z `@pleodigital/design-system-votey/angular`.
 - CSS CRM pochodzi z
   `@pleodigital/design-system-votey/dist/css/tokens.angular.css` i powinien być

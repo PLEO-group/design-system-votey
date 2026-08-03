@@ -1,0 +1,19 @@
+<mat-checkbox
+  [class.checkbox-error]="error()"
+  [checked]="checked()"
+  [disabled]="effectiveDisabled()"
+  [indeterminate]="indeterminate()"
+  [required]="required()"
+  [labelPosition]="labelPosition()"
+  [id]="id()"
+  [name]="name()"
+  [value]="value()"
+  [aria-label]="ariaLabel()"
+  [aria-describedby]="ariaDescribedby()"
+  [disableRipple]="true"
+  (change)="handleChange($event)"
+  (indeterminateChange)="indeterminate.set($event)"
+  (focusout)="markAsTouched()"
+>
+  <ng-content>{{ label() }}</ng-content>
+</mat-checkbox>

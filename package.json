@@ -57,6 +57,7 @@
   "peerDependencies": {
     "@angular/common": ">=21 <22",
     "@angular/core": ">=21 <22",
+    "@angular/forms": ">=21 <22",
     "@angular/material": ">=21 <22",
     "@angular/platform-browser": ">=21 <22",
     "rxjs": "^7.8.0"
@@ -66,6 +67,9 @@
       "optional": true
     },
     "@angular/core": {
+      "optional": true
+    },
+    "@angular/forms": {
       "optional": true
     },
     "@angular/material": {

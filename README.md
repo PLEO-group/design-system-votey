@@ -90,27 +90,23 @@ npm run build:angular
 ### Angular Button
 
 Entry point Angulara eksportuje standalone `VoteyButtonComponent`. Komponent
-renderuje gotowe teksty i pozostaje niezależny od mechanizmu tłumaczeń oraz
-registry ikon aplikacji. Ikonę należy przekazać przez slot
-`voteyButtonIcon` i ustawić `hasIcon`:
+renderuje gotowe teksty i pozostaje niezależny od mechanizmu tłumaczeń.
+Ikonę z publicznego rejestru SVG przekazuje się przez input `ico`:
 
 ```ts
 import { Component } from "@angular/core";
-import { MatIcon } from "@angular/material/icon";
 import { VoteyButtonComponent } from "@pleodigital/design-system-votey/angular";
 
 @Component({
-  imports: [MatIcon, VoteyButtonComponent],
+  imports: [VoteyButtonComponent],
   template: `
-    <votey-button
+    <vt-button
       variant="secondary"
       text="Pobierz raport"
+      ico="ui-download"
       tooltipText="Pobierz raport PDF"
-      [hasIcon]="true"
       (pressed)="downloadReport()"
-    >
-      <mat-icon voteyButtonIcon svgIcon="ui-download" />
-    </votey-button>
+    />
   `,
 })
 export class ReportActionsComponent {
@@ -124,6 +120,62 @@ Dostępne warianty to `primary`, `secondary`, `link`, `danger`, `ghost` i
 `orange`, a rozmiary to `large` oraz `small`. Teksty, tooltipy i etykiety ARIA
 powinny zostać przetłumaczone po stronie aplikacji przed przekazaniem ich do
 komponentu.
+
+### Angular Icon
+
+Standalone `VoteyIconComponent` publikuje selector `vt-icon` i input `ico`.
+Przyjmuje wyłącznie nazwy ikon i ilustracji eksportowane przez paczkę jako
+typy `VoteyIcon` oraz `VoteyIllustration`:
+
+```ts
+import { Component } from "@angular/core";
+import { VoteyIconComponent } from "@pleodigital/design-system-votey/angular";
+
+@Component({
+  imports: [VoteyIconComponent],
+  template: `<vt-icon ico="ui-plus" ariaLabel="Dodaj" />`,
+})
+export class AddIconComponent {}
+```
+
+Ikona znacząca powinna dostać dostępny opis przez `ariaLabel`. Ikonę wyłącznie
+dekoracyjną pozostaw bez opisu; komponent ukryje ją wtedy przed czytnikami ekranu.
+
+Zarówno `vt-icon`, jak i korzystający z niego `vt-button`, wymagają
+skonfigurowania `provideVoteySvgRegistry()` oraz skopiowania publicznych SVG do
+`assets/votey`, zgodnie z opisem rejestru SVG powyżej.
+
+Wszystkie komponenty Angular publikowane przez paczkę muszą używać selectorów
+elementowych z prefiksem `vt-`. Kontrakt jest sprawdzany automatycznie w testach.
+
+### Angular Checkbox
+
+Standalone `VoteyCheckboxComponent` opakowuje checkbox Angular Material i
+publikuje selector `vt-checkbox`. Obsługuje Angular Forms, stany `checked`,
+`indeterminate`, `disabled` i `error`, pozycję etykiety oraz projekcję bogatej
+treści etykiety.
+
+```ts
+import { Component } from "@angular/core";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { VoteyCheckboxComponent } from "@pleodigital/design-system-votey/angular";
+
+@Component({
+  imports: [ReactiveFormsModule, VoteyCheckboxComponent],
+  template: `
+    <vt-checkbox
+      label="Akceptuję regulamin"
+      [formControl]="termsControl"
+      [required]="true"
+    />
+  `,
+})
+export class TermsComponent {
+  protected readonly termsControl = new FormControl<boolean>(false, {
+    nonNullable: true,
+  });
+}
+```
 
 ### Typowane nazwy assetów
 

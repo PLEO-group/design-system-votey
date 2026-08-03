@@ -80,13 +80,15 @@ function countSvgFiles(entryPath) {
   );
 }
 
-test("Angular subpath exports the button, device and SVG registry runtimes without changing deep imports", async () => {
+test("Angular subpath exports components, device and SVG registry runtimes without changing deep imports", async () => {
   const {
     provideVoteyDeviceDetection,
     provideVoteySvgRegistry,
     VoteyButtonComponent,
     VoteyButtonSizes,
     VoteyButtonVariants,
+    VoteyCheckboxComponent,
+    VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
     VOTEY_DEFAULT_GRID_CONFIG,
@@ -97,6 +99,7 @@ test("Angular subpath exports the button, device and SVG registry runtimes witho
   } = await loadAngularRuntime();
 
   assert.equal(typeof VoteyButtonComponent, "function");
+  assert.deepEqual(VoteyButtonComponent.ɵcmp.selectors, [["vt-button"]]);
   assert.deepEqual(VoteyButtonSizes, ["large", "small"]);
   assert.deepEqual(VoteyButtonVariants, [
     "primary",
@@ -106,6 +109,14 @@ test("Angular subpath exports the button, device and SVG registry runtimes witho
     "ghost",
     "orange",
   ]);
+  assert.equal(typeof VoteyCheckboxComponent, "function");
+  assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyIconComponent, "function");
+  assert.deepEqual(VoteyIconComponent.ɵcmp.selectors, [["vt-icon"]]);
+  assert.equal(VoteyIconComponent.ɵcmp.inputs.ico[0], "ico");
+  assert.equal(VoteyIconComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ico[0], "ico");
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.hasIcon, undefined);
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VoteySvgRegistryService, "function");
@@ -121,6 +132,7 @@ test("Angular subpath exports the button, device and SVG registry runtimes witho
     countSvgFiles(path.join(projectRoot, "assets", "illustrations")),
   );
   assert.ok(VoteyIconNames.includes("ui-agenda"));
+  assert.ok(VoteyIconNames.includes("ui-plus"));
   assert.ok(VoteyIllustrationNames.includes("spot-chat-on"));
   const gridTokens = JSON.parse(
     fs.readFileSync(
@@ -147,6 +159,11 @@ test("Angular subpath exports the button, device and SVG registry runtimes witho
   const packageJson = JSON.parse(
     fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"),
   );
+  assert.equal(packageJson.peerDependencies["@angular/forms"], ">=21 <22");
+  assert.equal(
+    packageJson.peerDependenciesMeta["@angular/forms"].optional,
+    true,
+  );
   assert.equal(
     packageJson.exports["./ds-device-mixins"].sass,
     "./dist/scss/_ds-device-mixins.scss",
@@ -155,6 +172,41 @@ test("Angular subpath exports the button, device and SVG registry runtimes witho
     require.resolve("@pleodigital/design-system-votey/ds-device-mixins"),
     /dist[\\/]scss[\\/]_ds-device-mixins\.scss$/,
   );
+});
+
+test("checkbox synchronizes model, forms callbacks and changed output", async () => {
+  const { Injector, runInInjectionContext, VoteyCheckboxComponent } =
+    await loadAngularRuntime();
+  const checkbox = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyCheckboxComponent(),
+  );
+  const formValues = [];
+  const changedValues = [];
+  const subscription = checkbox.changed.subscribe((value) =>
+    changedValues.push(value),
+  );
+
+  checkbox.registerOnChange((value) => formValues.push(value));
+  checkbox.writeValue(true);
+
+  assert.equal(checkbox.checked(), true);
+
+  checkbox.indeterminate.set(true);
+  checkbox.handleChange({
+    checked: false,
+    source: { indeterminate: false },
+  });
+
+  assert.equal(checkbox.checked(), false);
+  assert.equal(checkbox.indeterminate(), false);
+  assert.deepEqual(formValues, [false]);
+  assert.deepEqual(changedValues, [false]);
+
+  checkbox.setDisabledState(true);
+  assert.equal(checkbox.effectiveDisabled(), true);
+
+  subscription.unsubscribe();
 });
 
 test("device service initializes responsive document attributes and viewport unit", async () => {

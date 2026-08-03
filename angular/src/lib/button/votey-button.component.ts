@@ -9,6 +9,8 @@ import {
   type Signal,
 } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
+import { VoteyIconComponent } from "../icon/votey-icon.component";
+import type { VoteyIcon } from "../votey-assets";
 
 export const VoteyButtonVariants = [
   "primary",
@@ -26,11 +28,11 @@ export type VoteyButtonSize = (typeof VoteyButtonSizes)[number];
 export type VoteyButtonType = "button" | "submit" | "reset";
 
 @Component({
-  selector: "votey-button",
+  selector: "vt-button",
   templateUrl: "./votey-button.component.html",
   styleUrl: "./votey-button.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTooltip],
+  imports: [MatTooltip, VoteyIconComponent],
 })
 export class VoteyButtonComponent {
   public readonly disabled: InputSignal<boolean> = input<boolean>(false);
@@ -41,7 +43,7 @@ export class VoteyButtonComponent {
   public readonly size: InputSignal<VoteyButtonSize> =
     input<VoteyButtonSize>("large");
   public readonly text: InputSignal<string> = input<string>("");
-  public readonly hasIcon: InputSignal<boolean> = input<boolean>(false);
+  public readonly ico: InputSignal<VoteyIcon | ""> = input<VoteyIcon | "">("");
   public readonly badge: InputSignal<string | number | null> = input<
     string | number | null
   >(null);
@@ -61,7 +63,7 @@ export class VoteyButtonComponent {
     () => `${this.variant()} ${this.size()}`
   );
   protected readonly isIconButton: Signal<boolean> = computed<boolean>(
-    () => this.hasIcon() && !this.text()
+    () => Boolean(this.ico()) && !this.text()
   );
   protected readonly resolvedAriaLabel: Signal<string> = computed<string>(
     () =>

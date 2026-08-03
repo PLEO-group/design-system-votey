@@ -53,6 +53,7 @@ export { default as IconUiParticipantsList } from "./IconUiParticipantsList";
 export { default as IconUiParticipantsListV2 } from "./IconUiParticipantsListV2";
 export { default as IconUiPending } from "./IconUiPending";
 export { default as IconUiPin } from "./IconUiPin";
+export { default as IconUiPlus } from "./IconUiPlus";
 export { default as IconUiPreview } from "./IconUiPreview";
 export { default as IconUiProblem } from "./IconUiProblem";
 export { default as IconUiProxy } from "./IconUiProxy";

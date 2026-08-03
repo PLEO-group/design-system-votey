@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useArgs } from "@storybook/preview-api";
-import { fn } from "@storybook/test";
+import { fn, userEvent, within } from "@storybook/test";
 import "./Checkbox.stories.scss";
 
 const checkboxInputs = [
@@ -14,8 +14,6 @@ const checkboxInputs = [
   "id",
   "name",
   "value",
-  "ariaLabel",
-  "ariaDescribedby",
 ];
 
 function setCheckboxInputs(componentRef, props) {
@@ -134,8 +132,6 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
-    ariaLabel: "Etykieta checkboxa",
-    ariaDescribedby: "",
     onChanged: fn(),
   },
 };
@@ -153,5 +149,24 @@ export const Playground = {
         }}
       />
     );
+  },
+};
+
+export const Hover = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Wskaźnik jest automatycznie ustawiany na kontrolce. Użyj checked i indeterminate w Controls, aby porównać wszystkie warianty hover.",
+      },
+    },
+  },
+  render: Playground.render,
+  play: async ({ canvasElement }) => {
+    const checkbox = await within(canvasElement).findByRole("checkbox", {
+      name: "Etykieta checkboxa",
+    });
+
+    await userEvent.hover(checkbox);
   },
 };

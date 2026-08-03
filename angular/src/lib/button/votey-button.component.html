@@ -11,20 +11,18 @@
     [class.disabled]="disabled()"
     [disabled]="disabled()"
     [attr.aria-disabled]="disabled()"
-    [attr.aria-label]="resolvedAriaLabel() || null"
-    [attr.aria-expanded]="ariaExpanded()"
-    [attr.aria-pressed]="ariaPressed()"
+    [attr.aria-label]="text() || ico() || null"
     [type]="type()"
     (click)="pressed.emit()"
   >
     @if (ico()) {
-    <span class="icon" aria-hidden="true">
+    <span class="icon">
       <vt-icon [ico]="ico()" />
     </span>
     } @if (text()) {
     <span class="label">{{ text() }}</span>
     } @if (badge() !== null && badge() !== "") {
-    <span class="badge" aria-hidden="true">{{ badge() }}</span>
+    <span class="badge">{{ badge() }}</span>
     }
   </button>
 </div>

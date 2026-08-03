@@ -49,9 +49,6 @@ export class VoteyCheckboxComponent implements ControlValueAccessor {
   public readonly id: InputSignal<string> = input<string>("");
   public readonly name: InputSignal<string> = input<string>("");
   public readonly value: InputSignal<string> = input<string>("");
-  public readonly ariaLabel: InputSignal<string> = input<string>("");
-  public readonly ariaDescribedby: InputSignal<string> = input<string>("");
-
   public readonly changed: OutputEmitterRef<boolean> = output<boolean>();
 
   private readonly formDisabled: WritableSignal<boolean> =

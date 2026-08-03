@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useArgs } from "@storybook/preview-api";
-import { fn, userEvent, within } from "@storybook/test";
+import { fn } from "@storybook/test";
 import "./RadioButton.stories.scss";
 
 const radioButtonInputs = [
@@ -268,28 +268,6 @@ export const Playground = {
         }}
       />
     );
-  },
-};
-
-export const Hover = {
-  args: {
-    tooltip: "",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Wskaźnik jest automatycznie ustawiany na pierwszej opcji. Zmień selectedValue w Controls, aby porównać hover opcji selected i unselected.",
-      },
-    },
-  },
-  render: Playground.render,
-  play: async ({ canvasElement }) => {
-    const radio = await within(canvasElement).findByRole("radio", {
-      name: "Pierwsza opcja",
-    });
-
-    await userEvent.hover(radio);
   },
 };
 

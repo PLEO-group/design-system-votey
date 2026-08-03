@@ -15,7 +15,7 @@ vt-radio-button {
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-stack-gap-s);
+    gap: var(--space-control-padding-y);
   }
 
   .mat-mdc-radio-button {
@@ -79,7 +79,7 @@ vt-radio-button {
     }
 
     @media (pointer: fine) {
-      .mdc-radio:hover {
+      &:hover {
         .mdc-radio__native-control:enabled:not(:checked)
           + .mdc-radio__background
           > .mdc-radio__outer-circle,

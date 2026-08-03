@@ -91,7 +91,7 @@ vt-checkbox {
     }
 
     @media (pointer: fine) {
-      .mdc-checkbox:hover {
+      &:hover {
         .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate)
           ~ .mdc-checkbox__background {
           border-color: var(--color-accent-hover) !important;

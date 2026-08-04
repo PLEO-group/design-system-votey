@@ -194,6 +194,11 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "accent",
     "on-sidebar",
   ]);
+  const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
+  const radioButtonDependencies =
+    VoteyRadioButtonComponent.ɵcmp.dependencies();
+  assert.ok(buttonDependencies.includes(VoteyTextComponent));
+  assert.ok(radioButtonDependencies.includes(VoteyTextComponent));
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VoteySvgRegistryService, "function");

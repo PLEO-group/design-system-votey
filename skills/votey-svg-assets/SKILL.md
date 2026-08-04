@@ -22,7 +22,7 @@ tags: [FE]
 
 # CHANGELOG
 
-# 1.1.1 — Dodano context ilustracji `info`, prefiks `illu_info_`, kontrakt powiększonych kafelków infografik w Storybooku oraz bezwyjątkową zgodność folderu z prefiksem assetu.
+# 1.1.1 — Dodano context ilustracji `info`, prefiks `illu_info_`, kontrakt powiększonych kafelków infografik w Storybooku, bezwyjątkową zgodność folderu z prefiksem assetu, warunkowe raportowanie walidacji audytu read-only oraz rozróżnienie zewnętrznych URL-i od lokalnych referencji SVG.
 
 ## Kontrakt
 
@@ -57,7 +57,13 @@ Dla każdego pliku przed skopiowaniem:
 
 - potwierdź rozszerzenie `.svg` i pojedynczy korzeń `<svg>`,
 - odrzuć aktywną zawartość: `<script>`, `<foreignObject>`, inline event handlers
-  `on*`, zewnętrzne `http(s)` w `href`, `xlink:href` albo `url(...)`,
+  `on*` i odwołania ze schematem `javascript:`,
+- odrzuć wyłącznie zewnętrzne URL-e `http://`, `https://` albo `//` użyte w
+  `href`, `xlink:href` lub `url(...)`,
+- dopuść lokalne referencje fragmentowe, np. `href="#gradient"`,
+  `url(#gradient)` i `url(#clip)`; dla każdej potwierdź, że docelowy `id`
+  istnieje, jest unikalny w pliku i nie powoduje kolizji między wieloma
+  instancjami po transformacji SVGR,
 - sprawdź `viewBox`, wymiary i znaczenie `fill` / `stroke`,
 - sprawdź kolizje `id`, `clipPath`, mask i gradientów; wiele instancji React
   nie może współdzielić globalnych identyfikatorów,
@@ -157,9 +163,11 @@ prośby użytkownika.
    - bezpieczeństwo SVG, `viewBox`, kolory i kolizje używanych identyfikatorów,
    - zgodność źródeł z wygenerowanym `dist` i konfiguracją grup Storybooka,
    - pozostałości starych nazw w dokumentacji i potwierdzonych konsumentach.
-4. Uruchom read-only `npm run check:asset-types` oraz `npm run test:tokens`.
-5. Jeżeli użytkownik oczekuje potwierdzenia aktualnego outputu lub audyt łączy się
-   z naprawą, po autoryzowanych zmianach uruchom pełny zestaw:
+4. Uruchom wyłącznie read-only `npm run check:asset-types` oraz
+   `npm run test:tokens`. Nie uruchamiaj pełnego builda ani Storybooka tylko po
+   to, żeby wypełnić raport końcowy.
+5. Jeżeli użytkownik jawnie oczekuje potwierdzenia aktualnego wygenerowanego
+   outputu albo audyt łączy się z autoryzowaną naprawą, uruchom pełny zestaw:
    `npm run build`, `npm run check:asset-types`, `npm run test:tokens`,
    `npm run build-storybook`.
 6. Zgłoś osobno błędy, ryzyka i decyzje wymagające potwierdzenia. Dla każdego
@@ -238,10 +246,22 @@ responsywnego przejścia do jednej kolumny na małym ekranie.
 
 ## Wynik dla użytkownika
 
-Podaj:
+Raportuj wyłącznie czynności faktycznie wykonane. Nie uruchamiaj dodatkowych
+komend generujących artefakty tylko po to, żeby spełnić format raportu.
+
+Dla dodania, przeniesienia, zmiany nazwy, usunięcia albo autoryzowanej naprawy
+podaj:
 
 - listę dodanych/przeniesionych/usuniętych źródeł,
 - wynikowe nazwy Angular Registry i eksporty React,
 - rezultat pełnego builda, testów i Storybooka,
 - ostrzeżenia migracyjne dla CRM/PWA,
 - każdą decyzję, której nie wolno było zgadnąć.
+
+Dla audytu read-only podaj:
+
+- zakres audytu oraz wykryte błędy, ryzyka i wymagane decyzje,
+- rezultat tylko uruchomionych kontroli read-only,
+- informację, że pełny build i Storybook nie zostały uruchomione, jeśli nie było
+  autoryzowanej naprawy ani jawnej prośby o potwierdzenie wygenerowanego outputu,
+- potwierdzenie, że audyt nie pozostawił zmian źródłowych.

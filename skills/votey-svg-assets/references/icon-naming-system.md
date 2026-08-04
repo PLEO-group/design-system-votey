@@ -10,7 +10,7 @@ zmianie nazwy i audycie ikon w `design-system-votey`.
 2. [Struktura nazwy](#struktura-nazwy)
 3. [Context](#context)
 4. [Descriptor](#descriptor)
-5. [Usunięty wyjątek legacy](#usunięty-wyjątek-legacy)
+5. [Usunięta nazwa legacy](#usunięta-nazwa-legacy)
 6. [Modifier](#modifier)
 7. [Mapowanie na Angular Registry](#mapowanie-na-angular-registry)
 8. [Mapowanie na React](#mapowanie-na-react)
@@ -67,8 +67,9 @@ logo_wyborek_sygnet.svg
 
 ## Context
 
-Context opisuje przeznaczenie ikony, nie jej wygląd. Nazwa contextu w strukturze
-repo i Storybooku nie zawsze jest identyczna z technicznym prefixem pliku.
+Context opisuje przeznaczenie ikony, nie jej wygląd. Folder, techniczny prefix
+pliku, namespace Angular Registry i entry point React muszą zawsze wskazywać ten
+sam set. Nie utrzymujemy wyjątków od tej reguły.
 
 | Context | Folder | Prefix pliku / namespace | Zastosowanie | Przykład |
 | --- | --- | --- | --- | --- |
@@ -77,10 +78,9 @@ repo i Storybooku nie zawsze jest identyczna z technicznym prefixem pliku.
 | `special` | `assets/icons/special/` | `sp` | Statusy, flagi i ikony specjalne | `icon_sp_incorrect.svg` |
 | `ui` | `assets/icons/ui/` | `ui` | Ogólne akcje i elementy interfejsu | `icon_ui_search.svg` |
 
-Utrzymywany wyjątek: `assets/icons/menu/icon_ui_close.svg` pozostaje w grupie
-`menu` z nazwą pliku `icon_ui_close.svg`. Generator publikuje go jako
-`menu-ui-close` w Angular Registry oraz `IconUiClose` z entry pointu React
-`icons/menu`. Nie przenoś go do `ui` i nie zmieniaj na `icon_menu_close.svg`.
+`icon_ui_close.svg` należy do `assets/icons/ui/`, jest publikowany jako
+`ui-close` w Angular Registry oraz `IconUiClose` z entry pointu React
+`icons/ui`.
 
 Contexty ilustracji mają analogiczny kontrakt folderu, prefixu i publicznego
 namespace'u:
@@ -88,6 +88,7 @@ namespace'u:
 | Context | Folder | Prefix pliku | Angular Registry | Przykład React |
 | --- | --- | --- | --- | --- |
 | `background` | `assets/illustrations/background/` | `illu_bg_` | `bg-*` | `IlluBgVotingResults` |
+| `info` | `assets/illustrations/info/` | `illu_info_` | `info-*` | `IlluInfoSubscriptionCalculator` |
 | `logotypes` | `assets/illustrations/logotypes/` | `logo_` | `logo-*` | `LogoVotey` |
 | `spot` | `assets/illustrations/spot/` | `illu_spot_` | `spot-*` | `IlluSpotResultsOn` |
 | `simple` | `assets/illustrations/simple/` | `illu_simple_` | `simple-*` | `IlluSimpleNotification` |
@@ -169,7 +170,7 @@ icon_ui_participants-list_v2.svg
 Nie twórz `_v2` tylko dlatego, że plik został ponownie wyeksportowany. Modifier
 oznacza utrzymywany wariant publiczny.
 
-## Usunięty wyjątek legacy
+## Usunięta nazwa legacy
 
 Plik legacy usunięty 4.08.26:
 
@@ -184,7 +185,7 @@ Angular Registry: ui-expand-arrow
 React: IconUiExpandArrow
 ```
 
-Nie przywracaj tego wyjątku ani underscore w descriptorze nowych ikon. Konsumenci
+Nie przywracaj tego pliku ani underscore w descriptorze nowych ikon. Konsumenci
 muszą przejść na kierunkowy wariant `icon_ui_expand-arrow-right.svg`:
 
 ```text
@@ -258,6 +259,7 @@ prefix pliku:
 
 ```text
 illu_bg_voting-results.svg       -> bg-voting-results
+illu_info_subscription-calculator.svg -> info-subscription-calculator
 illu_spot_results-on.svg         -> spot-results-on
 illu_simple_notification.svg     -> simple-notification
 logo_votey.svg                   -> logo-votey
@@ -290,6 +292,7 @@ Dla ilustracji React zachowaj prefix wynikający z nazwy pliku:
 
 ```text
 illu_bg_voting-results.svg       -> IlluBgVotingResults
+illu_info_subscription-calculator.svg -> IlluInfoSubscriptionCalculator
 illu_spot_results-on.svg         -> IlluSpotResultsOn
 illu_simple_notification.svg     -> IlluSimpleNotification
 logo_votey.svg                   -> LogoVotey

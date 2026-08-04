@@ -18,7 +18,6 @@ przejść na wskazane zamienniki.
 | Angular Registry | `ui-exclamation-mark` | `sp-exclamation-mark` |
 | Angular Registry | `ui-attachment` | `ui-attachment-thick` |
 | Angular Registry | `ui-edit-v2` | `ui-edit-thick` |
-| Angular Registry | `ui-close` | `menu-ui-close` |
 | React | `IconUiChevron` | `IconUiChevronDown` |
 | React | `IconUiExpandArrow` | `IconUiExpandArrowRight` |
 | React | `IconUiPreview` | `IconUiSearch` |
@@ -26,7 +25,6 @@ przejść na wskazane zamienniki.
 | React | `IconUiExclamationMark` | `IconSpExclamationMark` |
 | React | `IconUiAttachment` | `IconUiAttachmentThick` |
 | React | `IconUiEditV2` | `IconUiEditThick` |
-| React import | `IconUiClose` z `icons/ui` | `IconUiClose` z `icons/menu` |
 
 Usunięte źródła bez odpowiednika 1:1:
 
@@ -44,9 +42,10 @@ Usunięte źródła bez odpowiednika 1:1:
   `assets/icons/ui/icon_ui_attachment_thick.svg`,
 - `assets/icons/ui/icon_ui_edit_v2.svg` →
   `assets/icons/ui/icon_ui_edit_thick.svg`.
-- `assets/icons/ui/icon_ui_close.svg` →
-  `assets/icons/menu/icon_ui_close.svg` (nazwa komponentu React pozostaje
-  `IconUiClose`, zmienia się entry point).
+
+`assets/icons/ui/icon_ui_close.svg` pozostaje w secie `ui`. Jego publiczny
+kontrakt nie zmienia się: Angular Registry używa `ui-close`, a React eksportuje
+`IconUiClose` z entry pointu `icons/ui`.
 
 ## Angular
 
@@ -62,7 +61,6 @@ do Angular SVG Registry:
 <vt-icon ico="ui-exclamation-mark" />
 <vt-icon ico="ui-attachment" />
 <vt-icon ico="ui-edit-v2" />
-<vt-icon ico="ui-close" />
 
 <!-- po -->
 <vt-icon ico="ui-chevron-down" />
@@ -72,7 +70,6 @@ do Angular SVG Registry:
 <vt-icon ico="sp-exclamation-mark" />
 <vt-icon ico="ui-attachment-thick" />
 <vt-icon ico="ui-edit-thick" />
-<vt-icon ico="menu-ui-close" />
 ```
 
 Nowe warianty mają `viewBox="0 0 14 14"`. Stary `ui-chevron` miał rozmiar
@@ -98,7 +95,6 @@ import {
   IconUiExclamationMark,
   IconUiAttachment,
   IconUiEditV2,
-  IconUiClose,
 } from "@pleodigital/design-system-votey/dist/assets/react/icons/ui";
 
 // po
@@ -110,7 +106,6 @@ import {
   IconUiAttachmentThick,
   IconUiEditThick,
 } from "@pleodigital/design-system-votey/dist/assets/react/icons/ui";
-import { IconUiClose } from "@pleodigital/design-system-votey/dist/assets/react/icons/menu";
 import { IconSpExclamationMark } from "@pleodigital/design-system-votey/dist/assets/react/icons/special";
 ```
 
@@ -123,7 +118,6 @@ import { IconSpExclamationMark } from "@pleodigital/design-system-votey/dist/ass
 <IconUiExclamationMark />
 <IconUiAttachment />
 <IconUiEditV2 />
-<IconUiClose />
 
 // po
 <IconUiChevronDown />
@@ -133,7 +127,6 @@ import { IconSpExclamationMark } from "@pleodigital/design-system-votey/dist/ass
 <IconSpExclamationMark />
 <IconUiAttachmentThick />
 <IconUiEditThick />
-<IconUiClose />
 ```
 
 Warianty UI nadal używają `currentColor`. Po przeniesieniu do `special`
@@ -160,6 +153,16 @@ i wyrównanie ikon.
 | Źródło | Angular Registry | React |
 | --- | --- | --- |
 | `assets/icons/ui/icon_ui_option.svg` | `ui-option` | `IconUiOption` z `icons/ui` |
+
+## Nowe ilustracje
+
+Dodano context `info` dla większych, szczegółowych infografik. Pliki z prefiksem
+`illu_info_` są publikowane w osobnym namespace i prezentowane w Storybooku na
+powiększonych kafelkach.
+
+| Źródło | Angular Registry | React |
+| --- | --- | --- |
+| `assets/illustrations/info/illu_info_subscription-calculator.svg` | `info-subscription-calculator` | `IlluInfoSubscriptionCalculator` z `illustrations/info` |
 
 ## Zmiany wizualne bez zmiany publicznej nazwy
 

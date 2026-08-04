@@ -30,8 +30,8 @@ test("special React icons preserve source colors", () => {
   assert.match(newStatus, /fill="#07064E"/i);
 });
 
-test("the menu close React icon remains colorable", () => {
-  const close = readReactIcon("menu", "IconUiClose");
+test("the UI close React icon remains colorable", () => {
+  const close = readReactIcon("ui", "IconUiClose");
 
   assert.match(close, /fill="currentColor"/);
 });

@@ -25,25 +25,25 @@ const assetGroups = [
     directory: path.join(projectRoot, "assets", "icons", "logotypes"),
     kind: "icon",
     namespace: "logo",
-    stripPrefix: /^(?:icon_|logo_)/,
+    stripPrefix: /^logo_/,
   },
   {
     directory: path.join(projectRoot, "assets", "icons", "menu"),
     kind: "icon",
     namespace: "menu",
-    stripPrefix: /^icon_(?:menu_)?/,
+    stripPrefix: /^icon_menu_/,
   },
   {
     directory: path.join(projectRoot, "assets", "icons", "special"),
     kind: "icon",
     namespace: "sp",
-    stripPrefix: /^icon_(?:sp_)?/,
+    stripPrefix: /^icon_sp_/,
   },
   {
     directory: path.join(projectRoot, "assets", "icons", "ui"),
     kind: "icon",
     namespace: "ui",
-    stripPrefix: /^icon_(?:(?:ui|menu)_)?/,
+    stripPrefix: /^icon_ui_/,
   },
   {
     directory: path.join(
@@ -54,7 +54,7 @@ const assetGroups = [
     ),
     kind: "illustration",
     namespace: "bg",
-    stripPrefix: /^illu_(?:bg|spot)_/,
+    stripPrefix: /^illu_bg_/,
   },
   {
     directory: path.join(
@@ -66,6 +66,12 @@ const assetGroups = [
     kind: "illustration",
     namespace: "logo",
     stripPrefix: /^logo_/,
+  },
+  {
+    directory: path.join(projectRoot, "assets", "illustrations", "info"),
+    kind: "illustration",
+    namespace: "info",
+    stripPrefix: /^illu_info_/,
   },
   {
     directory: path.join(projectRoot, "assets", "illustrations", "spot"),
@@ -113,6 +119,13 @@ function getSvgFiles(directory) {
 
 function createAssetEntry(group, filePath) {
   const fileName = path.basename(filePath, path.extname(filePath));
+
+  if (!group.stripPrefix.test(fileName)) {
+    throw new Error(
+      `Asset "${filePath}" does not match the required prefix for namespace "${group.namespace}".`,
+    );
+  }
+
   const withoutPrefix = fileName.replace(group.stripPrefix, "");
   const semanticName = group.stripSuffix
     ? withoutPrefix.replace(group.stripSuffix, "")

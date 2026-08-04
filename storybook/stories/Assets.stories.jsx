@@ -59,6 +59,7 @@ const illustrations = getIllustrationList();
 
 const contextLabels = {
     background: 'Background',
+    info: 'Info',
     logotypes: 'Logotypes',
     menu: 'Menu',
     simple: 'Simple',
@@ -234,9 +235,9 @@ function groupRelatedIllustrations(assets, category) {
     };
 }
 
-function AssetGrid({assets, type}) {
+function AssetGrid({assets, category, type}) {
     return (
-        <div className={`grid ${type}`}>
+        <div className={`grid ${type}${category === 'info' ? ' info' : ''}`}>
             {assets.map((asset) => (
                 <AssetCard asset={asset} key={asset.name}/>
             ))}
@@ -248,7 +249,13 @@ function IllustrationSubsections({assets, category}) {
     const {groups, remaining} = groupRelatedIllustrations(assets, category);
 
     if (groups.length === 0) {
-        return <AssetGrid assets={assets} type="illustration"/>;
+        return (
+            <AssetGrid
+                assets={assets}
+                category={category}
+                type="illustration"
+            />
+        );
     }
 
     return (
@@ -262,7 +269,11 @@ function IllustrationSubsections({assets, category}) {
                         </div>
                         <strong>{countAssets(group.assets)}</strong>
                     </header>
-                    <AssetGrid assets={group.assets} type="illustration"/>
+                    <AssetGrid
+                        assets={group.assets}
+                        category={category}
+                        type="illustration"
+                    />
                 </section>
             ))}
             {remaining.length > 0 && (
@@ -274,7 +285,11 @@ function IllustrationSubsections({assets, category}) {
                         </div>
                         <strong>{countAssets(remaining)}</strong>
                     </header>
-                    <AssetGrid assets={remaining} type="illustration"/>
+                    <AssetGrid
+                        assets={remaining}
+                        category={category}
+                        type="illustration"
+                    />
                 </section>
             )}
         </div>
@@ -312,6 +327,7 @@ function AssetGallery({assets, description, eyebrow, title, type}) {
                         ) : (
                             <AssetGrid
                                 assets={groupedAssets[category]}
+                                category={category}
                                 type={type}
                             />
                         )}

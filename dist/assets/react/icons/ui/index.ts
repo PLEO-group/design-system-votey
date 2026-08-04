@@ -12,6 +12,7 @@ export { default as IconUiChevronDown } from "./IconUiChevronDown";
 export { default as IconUiChevronLeft } from "./IconUiChevronLeft";
 export { default as IconUiChevronRight } from "./IconUiChevronRight";
 export { default as IconUiChevronUp } from "./IconUiChevronUp";
+export { default as IconUiClose } from "./IconUiClose";
 export { default as IconUiCloseV2 } from "./IconUiCloseV2";
 export { default as IconUiDelete } from "./IconUiDelete";
 export { default as IconUiDownload } from "./IconUiDownload";

@@ -78,6 +78,19 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.ok(iconNames.includes("ui-download"));
   assert.ok(iconNames.includes("ui-show-graph-thick"));
   assert.ok(iconNames.includes("ui-close"));
+  for (const iconName of [
+    "ui-ai",
+    "ui-coin",
+    "ui-copy",
+    "ui-external",
+    "ui-filter",
+    "ui-filter-add",
+    "ui-language",
+    "ui-question",
+    "ui-registration-confirmed",
+  ]) {
+    assert.ok(iconNames.includes(iconName));
+  }
   assert.ok(iconNames.includes("menu-dashboard"));
   assert.ok(iconNames.includes("menu-download"));
   assert.ok(iconNames.includes("sp-check"));
@@ -89,6 +102,14 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.ok(
     illustrationNames.includes("info-subscription-calculator"),
   );
+  for (const illustrationName of [
+    "info-event-cost-analysis",
+    "info-event-share-types",
+    "info-set-up-event-send-invitations",
+    "info-view-voting-results",
+  ]) {
+    assert.ok(illustrationNames.includes(illustrationName));
+  }
   assert.ok(
     illustrationNames.includes("bg-participant-type-observer"),
   );

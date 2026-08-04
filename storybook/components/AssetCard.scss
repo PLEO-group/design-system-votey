@@ -72,6 +72,15 @@
                 max-height: 220px;
             }
         }
+
+        &.info {
+            .preview {
+                svg {
+                    max-width: 560px;
+                    max-height: 440px;
+                }
+            }
+        }
     }
 
     .details {

@@ -77,13 +77,18 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.ok(iconNames.includes("ui-agenda"));
   assert.ok(iconNames.includes("ui-download"));
   assert.ok(iconNames.includes("ui-show-graph-thick"));
+  assert.ok(iconNames.includes("ui-close"));
   assert.ok(iconNames.includes("menu-dashboard"));
   assert.ok(iconNames.includes("menu-download"));
   assert.ok(iconNames.includes("sp-check"));
   assert.ok(iconNames.includes("logo-wyborek-sygnet"));
   assert.ok(!iconNames.includes("ui-iu-download"));
   assert.ok(!iconNames.includes("ui-video"));
+  assert.ok(!iconNames.includes("menu-ui-close"));
   assert.ok(illustrationNames.includes("bg-agenda"));
+  assert.ok(
+    illustrationNames.includes("info-subscription-calculator"),
+  );
   assert.ok(
     illustrationNames.includes("bg-participant-type-observer"),
   );
@@ -94,6 +99,13 @@ test("generated public asset names are unique and namespaced", async () => {
   assert.ok(illustrationNames.includes("simple-notification"));
   assert.ok(illustrationNames.includes("simple-voting-start-automatic"));
   assert.ok(!illustrationNames.some((name) => name.startsWith("spot-simple-")));
+  assert.ok(
+    assetPaths.includes(
+      "illustrations/info/illu_info_subscription-calculator.svg",
+    ),
+  );
+  assert.ok(assetPaths.includes("icons/ui/icon_ui_close.svg"));
+  assert.ok(!assetPaths.includes("icons/menu/icon_ui_close.svg"));
 });
 
 test("React icon names use the Icon prefix", async () => {

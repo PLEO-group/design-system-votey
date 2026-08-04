@@ -10,6 +10,20 @@ używa ikony albo ilustracji opublikowanej przez `@pleodigital/design-system-vot
 3. Jeśli assetu brakuje, zgłoś gap i użyj `votey-svg-assets`, zamiast tworzyć lokalny
    odpowiednik o tej samej roli.
 
+### Ilustracje informacyjne
+
+Większe, szczegółowe infografiki są publikowane w contexcie `info`:
+
+- źródło: `assets/illustrations/info/illu_info_<descriptor>.svg`,
+- Angular Registry: `info-<descriptor>`,
+- React: `IlluInfo<Descriptor>` z entry pointu `illustrations/info`.
+
+Przykład: `illu_info_subscription-calculator.svg` jest dostępny jako
+`info-subscription-calculator` w Angular Registry oraz
+`IlluInfoSubscriptionCalculator` w React. Nie zastępuj contextu `info`
+ilustracją `background`, `spot` ani `simple` tylko po to, aby użyć mniejszego
+kafelka lub istniejącego namespace'u.
+
 ## Angular: wybór mechanizmu
 
 Wybierz jeden z dwóch publicznych sposobów:

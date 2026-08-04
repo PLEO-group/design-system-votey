@@ -17,7 +17,7 @@ description: >
   z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
-version: 1.3.0
+version: 1.3.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -27,6 +27,8 @@ tags: [FE]
 # Votey Design System
 
 # CHANGELOG
+
+# 1.3.1 — Udokumentowano publiczny context ilustracji `info` dla szczegółowych infografik.
 
 # 1.3.0 — Dodano obowiązkową bramkę izolacji zmian Angular ↔ React/PWA oraz walidację właściwych entry pointów i buildów.
 

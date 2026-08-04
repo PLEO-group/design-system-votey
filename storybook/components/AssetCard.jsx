@@ -7,7 +7,7 @@ export const AssetCard = ({asset}) => {
     const hasVariants = variants.length > 1;
 
     return (
-        <article className={`asset-card ${asset.type}${hasVariants ? ' has-variants' : ''}`}>
+        <article className={`asset-card ${asset.type}${asset.category === 'info' ? ' info' : ''}${hasVariants ? ' has-variants' : ''}`}>
             <div className={`preview${hasVariants ? ' variants' : ''}`}>
                 {isIcon ? variants.map((variant) => (
                     <div className="icon-preview" key={variant.name}>

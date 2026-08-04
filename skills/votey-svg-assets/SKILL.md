@@ -20,6 +20,10 @@ tags: [FE]
 
 # Votey SVG Assets
 
+# CHANGELOG
+
+# 1.1.1 — Dodano context ilustracji `info`, prefiks `illu_info_`, kontrakt powiększonych kafelków infografik w Storybooku oraz bezwyjątkową zgodność folderu z prefiksem assetu.
+
 ## Kontrakt
 
 Obsługuj źródła wyłącznie w:
@@ -76,22 +80,25 @@ znaczenie lub wygląd, zatrzymaj integrację zamiast naprawiać wynik lokalnym C
 | `icon_sp_*.svg` | `assets/icons/special/` |
 | `icon_ui_*.svg` | `assets/icons/ui/` |
 
-Nowy context lub sprzeczność między prefiksem a folderem wymaga decyzji
-użytkownika i aktualizacji generatora, Storybooka oraz referencji nazewnictwa.
+Folder, prefiks pliku i publiczny namespace muszą zawsze odpowiadać temu samemu
+setowi. Nie utrzymuj wyjątków od tej reguły. Sprzeczność między prefiksem a
+folderem jest błędem: ustal właściwy context, a następnie przenieś asset albo
+zmień jego nazwę zgodnie z decyzją użytkownika. Nowy context wymaga aktualizacji
+generatora, Storybooka oraz referencji nazewnictwa.
 
 ### Ilustracje
 
 | Wzorzec | Folder |
 |---|---|
 | `illu_bg_*.svg` | `assets/illustrations/background/` |
+| `illu_info_*.svg` | `assets/illustrations/info/` |
 | `logo_*.svg` | `assets/illustrations/logotypes/` |
 | `illu_simple_*.svg` | `assets/illustrations/simple/` |
 | `illu_spot_*.svg` | `assets/illustrations/spot/` |
 
-Nie rozszerzaj wyjątków legacy, takich jak literówki prefixu albo
-`panel_avatar.svg`, ani nie dodawaj nowych plików do usuniętego contextu
-`spotSimple`. Dla nazwy niepasującej jednoznacznie do tabeli zatrzymaj się
-i zapytaj o klasyfikację.
+Nie toleruj literówek prefixu ani nazw legacy, takich jak `panel_avatar.svg`,
+i nie dodawaj nowych plików do usuniętego contextu `spotSimple`. Dla nazwy
+niepasującej jednoznacznie do tabeli zatrzymaj się i zapytaj o klasyfikację.
 
 ## STOP & ASK
 
@@ -223,6 +230,11 @@ Istniejące contexty pojawiają się automatycznie:
 Modyfikuj kod Storybooka tylko dla nowego contextu, nowego sposobu prezentacji
 albo gdy automatyczny loader nie pokrywa poprawnego assetu. Nie twórz ręcznej
 listy pojedynczych ikon.
+
+Context `info` służy większym, szczegółowym infografikom z prefiksem
+`illu_info_`. Prezentuj go w osobnej grupie `Info`; kafelek i obszar podglądu
+powinny mieć około dwukrotny rozmiar względem zwykłej ilustracji, z zachowaniem
+responsywnego przejścia do jednej kolumny na małym ekranie.
 
 ## Wynik dla użytkownika
 

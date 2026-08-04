@@ -35,3 +35,25 @@ test("the UI close React icon remains colorable", () => {
 
   assert.match(close, /fill="currentColor"/);
 });
+
+test("new UI React icons remain colorable and self-contained", () => {
+  for (const componentName of [
+    "IconUiAi",
+    "IconUiCoin",
+    "IconUiCopy",
+    "IconUiExternal",
+    "IconUiFilter",
+    "IconUiFilterAdd",
+    "IconUiLanguage",
+    "IconUiQuestion",
+    "IconUiRegistrationConfirmed",
+  ]) {
+    const icon = readReactIcon("ui", componentName);
+
+    assert.match(icon, /fill="currentColor"/);
+    assert.doesNotMatch(
+      icon,
+      /(?:href|xlinkHref)="(?:https?:)?\/\/|url\(["']?(?:https?:)?\/\//i,
+    );
+  }
+});

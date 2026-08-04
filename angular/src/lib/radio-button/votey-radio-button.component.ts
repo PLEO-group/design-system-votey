@@ -19,6 +19,11 @@ import {
   MatRadioGroup,
 } from "@angular/material/radio";
 import { MatTooltip } from "@angular/material/tooltip";
+import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
+import {
+  injectVoteyTranslator,
+  type VoteyTranslator,
+} from "../translation/votey-translation";
 import { VoteyRadioOptionContentDirective } from "./votey-radio-option-content.directive";
 
 export type VoteyRadioButtonLabelPosition = "before" | "after";
@@ -47,9 +52,11 @@ export interface VtRadioOption<T = unknown> {
     MatTooltip,
     NgTemplateOutlet,
     ReactiveFormsModule,
+    VoteyTranslatePipe,
   ],
 })
 export class VoteyRadioButtonComponent {
+  private readonly translator: VoteyTranslator = injectVoteyTranslator();
   private readonly optionContents: Signal<
     readonly VoteyRadioOptionContentDirective[]
   > = contentChildren(VoteyRadioOptionContentDirective, {
@@ -75,7 +82,7 @@ export class VoteyRadioButtonComponent {
   protected readonly groupAccessibleLabel: Signal<string> = computed<string>(
     () =>
       this.options()
-        .map((option) => option.label)
+        .map((option) => this.translator.translate(option.label))
         .join(", ")
   );
   protected readonly resolvedTooltip: Signal<string> = computed<string>(() =>

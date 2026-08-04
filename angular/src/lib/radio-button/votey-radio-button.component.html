@@ -1,9 +1,10 @@
+@let translatedTooltip = resolvedTooltip() | vtTranslate;
 <div
   class="radio-group-wrapper"
   matTooltipPosition="above"
-  [matTooltipDisabled]="!resolvedTooltip()"
+  [matTooltipDisabled]="!translatedTooltip"
   [matTooltipShowDelay]="500"
-  [matTooltip]="resolvedTooltip()"
+  [matTooltip]="translatedTooltip"
 >
   <mat-radio-group
     [class]="groupClass()"
@@ -25,7 +26,7 @@
       [attr.data-cy]="option.dataCy ?? null"
     >
       <span class="vt-radio-option-label">
-        <span>{{ option.label }}</span>
+        <span>{{ option.label | vtTranslate }}</span>
       </span>
     </mat-radio-button>
     @if (control().value === option.value) { @if (option.id; as optionId) { @if

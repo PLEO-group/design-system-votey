@@ -11,7 +11,7 @@ description: >
   testy assetów i build Storybooka. Nie używaj go tylko do importowania już
   opublikowanego assetu w CRM lub PWA — ten zakres należy do
   `votey-design-system`.
-version: 1.1.0
+version: 1.1.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend

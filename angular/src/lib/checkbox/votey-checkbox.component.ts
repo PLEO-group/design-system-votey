@@ -19,6 +19,7 @@ import {
   MatCheckbox,
   type MatCheckboxChange,
 } from "@angular/material/checkbox";
+import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
 export type VoteyCheckboxLabelPosition = "before" | "after";
 
@@ -28,7 +29,7 @@ export type VoteyCheckboxLabelPosition = "before" | "after";
   styleUrl: "./votey-checkbox.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [MatCheckbox],
+  imports: [MatCheckbox, VoteyTranslatePipe],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

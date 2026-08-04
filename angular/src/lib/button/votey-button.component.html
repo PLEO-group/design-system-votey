@@ -1,9 +1,11 @@
+@let translatedText = text() | vtTranslate; @let translatedTooltipText =
+resolvedTooltipText() | vtTranslate;
 <div
   class="button-wrapper"
   matTooltipPosition="above"
-  [matTooltipDisabled]="!resolvedTooltipText()"
+  [matTooltipDisabled]="!translatedTooltipText"
   [matTooltipShowDelay]="500"
-  [matTooltip]="resolvedTooltipText()"
+  [matTooltip]="translatedTooltipText"
 >
   <button
     [class]="buttonClasses()"
@@ -11,7 +13,7 @@
     [class.disabled]="disabled()"
     [disabled]="disabled()"
     [attr.aria-disabled]="disabled()"
-    [attr.aria-label]="text() || ico() || null"
+    [attr.aria-label]="translatedText || ico() || null"
     [type]="type()"
     (click)="pressed.emit()"
   >
@@ -20,7 +22,7 @@
       <vt-icon [ico]="ico()" />
     </span>
     } @if (text()) {
-    <span class="label">{{ text() }}</span>
+    <span class="label">{{ translatedText }}</span>
     } @if (badge() !== null && badge() !== "") {
     <span class="badge">{{ badge() }}</span>
     }

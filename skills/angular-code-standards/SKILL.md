@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.7.0
+version: 1.8.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -46,6 +46,14 @@ tags: []
 # 1.7.0 — Wzmocniono zasadę dla nowych komponentów: domyślnie muszą używać
 
 # Angular Signals API dla kontraktu komponentu, query i lokalnego state'u.
+
+# 1.7.1 — Dodano zasadę unikania porównań do powtarzalnych stringów
+
+# kontraktowych na rzecz enumów albo typowanych stałych.
+
+# 1.8.0 — Dodano obowiązkowe discovery i ocenę reużywalności przed tworzeniem
+
+# lokalnych validatorów, checkerów i podobnych mechanizmów sprawdzających.
 
 # Standardy pisania kodu Angular — zasady zespołu
 
@@ -96,7 +104,7 @@ Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 - SCSS: hierarchia zgodna z HTML → [1.1], brak `__` → [1.3], tylko tokeny kolorów → [1.2].
 - Design System: najpierw publiczne API komponentu, override internali tylko lokalnie i z powodem → [1.4].
 - HTML: brak metod w szablonie → [2.3], statyczne inputy bez `[]` → [2.1], długie wyrażenia w `@let` → [2.4], `@for` z stabilnym `track` → [2.7], poprawna kolejność atrybutów → [2.6].
-- TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], ocena wpływu na testy → [3.11].
+- TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [3.16], nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], discovery przed lokalnymi mechanizmami sprawdzającymi → [3.17], ocena wpływu na testy → [3.11].
 - Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [3.13].
 - Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [3.15].
 - Animacje: dla nowego kodu CSS + `animate.enter` / `animate.leave`, bez nowych legacy triggerów → [4].
@@ -508,6 +516,57 @@ Po zmianie sprawdź osobno:
 - opcję aktywną pod hoverem,
 - opcję disabled,
 - opcję jednocześnie selected i disabled, jeśli taki stan jest możliwy.
+
+### [3.16] Powtarzalne stringi kontraktowe
+
+Nie porównuj w kodzie do powtarzalnych stringów opisujących kontrakt FE/BE, stan domenowy, kod języka, status, typ, rolę, tryb, permission albo wartość słownikową.
+Jeśli literal występuje w kilku miejscach albo może być częścią kontraktu z backendem, użyj istniejącego enuma, typowanej stałej `as const` albo union type z jednego źródła prawdy.
+
+Preferowana kolejność:
+
+1. użyj istniejącego enuma/modelu z `_models`, `enum`, `types` albo lokalnego kontraktu API,
+2. jeśli go nie ma, dodaj mały enum albo typowaną stałą blisko domeny, w osobnym pliku modelu, jeśli taki wzorzec istnieje,
+3. literal zostaw tylko dla jednorazowej wartości lokalnej, która nie jest kontraktem i nie powtarza się w logice.
+
+Przykład niedopuszczalny dla powtarzalnego kontraktu:
+
+```ts
+if (normalizedLanguage !== "pl") {
+  void this.loadLanguage("pl");
+}
+```
+
+Preferuj:
+
+```ts
+if (normalizedLanguage !== LanguageEnum.polish) {
+  void this.loadLanguage(LanguageEnum.polish);
+}
+```
+
+Jeśli w skrajnym przypadku porównanie do pojedynczego stringa wydaje się dopuszczalne, ale wartość wygląda na kontraktową albo może wrócić w kolejnych miejscach, dopytaj użytkownika o decyzję zamiast samodzielnie utrwalać literal.
+
+### [3.17] Discovery przed lokalnymi mechanizmami sprawdzającymi
+
+Przed dodaniem własnego mechanizmu, który waliduje, sprawdza, klasyfikuje albo ogranicza dane, najpierw wykonaj discovery w projekcie i używanych bibliotekach. Dotyczy to między innymi validatorów formularzy, checkerów, predykatów, guardów wartości, funkcji normalizujących oraz pomocniczych reguł poprawności.
+
+Szukaj po zachowaniu i regule biznesowej, nie tylko po planowanej nazwie. Sprawdź kolejno:
+
+1. publiczne API frameworka, Design Systemu albo używanej biblioteki,
+2. istniejące rozwiązania współdzielone w projekcie, takie jak validatory, utile, stałe, dyrektywy i helpery,
+3. rozwiązania w tym samym feature lub domenie, które można bezpiecznie rozszerzyć bez zmiany ich obecnej semantyki,
+4. czy reguła jest na tyle ogólna i prawdopodobna do ponownego użycia, że powinna trafić do współdzielonej lokalizacji zamiast do pojedynczego komponentu.
+
+Stosuj następującą kolejność decyzji:
+
+- użyj istniejącego rozwiązania, jeśli dokładnie pokrywa wymaganą semantykę,
+- rozszerz istniejące rozwiązanie, jeśli da się zachować kompatybilność i czytelne API,
+- utwórz rozwiązanie współdzielone, jeśli reguła jest niezależna od konkretnego widoku lub domeny i ma realny potencjał wielu konsumentów,
+- zostaw implementację lokalną tylko wtedy, gdy reguła jest rzeczywiście specyficzna dla jednego flow albo współdzielona abstrakcja byłaby sztuczna i utrudniała zrozumienie kodu.
+
+Nie twórz kilku prawie identycznych lokalnych sprawdzaczy. Nowe rozwiązanie współdzielone powinno mieć neutralną nazwę, minimalne API bez zależności od konkretnego komponentu oraz testy obejmujące wartości graniczne i niepoprawne dane.
+
+Discovery nie oznacza automatycznego uogólniania. Nie używaj istniejącego rozwiązania o podobnej nazwie, jeśli ma inną semantykę, i nie przenoś jednorazowej prostej reguły do shared bez realnej korzyści z reużycia.
 
 ---
 

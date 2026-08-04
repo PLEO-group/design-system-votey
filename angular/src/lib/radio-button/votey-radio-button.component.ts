@@ -20,6 +20,7 @@ import {
 } from "@angular/material/radio";
 import { MatTooltip } from "@angular/material/tooltip";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
+import { VoteyTextComponent } from "../text/votey-text.component";
 import {
   injectVoteyTranslator,
   type VoteyTranslator,
@@ -52,6 +53,7 @@ export interface VtRadioOption<T = unknown> {
     MatTooltip,
     NgTemplateOutlet,
     ReactiveFormsModule,
+    VoteyTextComponent,
     VoteyTranslatePipe,
   ],
 })

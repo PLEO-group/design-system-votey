@@ -93,6 +93,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIllustrationNames,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
+    VoteyTextColors,
+    VoteyTextComponent,
+    VoteyTextVariants,
     VOTEY_DEFAULT_GRID_CONFIG,
     VOTEY_GRID_CONFIG,
     VOTEY_SVG_REGISTRY_CONFIG,
@@ -161,6 +164,41 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
+  assert.equal(typeof VoteyTextComponent, "function");
+  assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
+  assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
+  assert.equal(VoteyTextComponent.ɵcmp.inputs.variant[0], "variant");
+  assert.equal(VoteyTextComponent.ɵcmp.inputs.color[0], "color");
+  assert.equal(VoteyTextComponent.ɵcmp.inputs.maxLines[0], "maxLines");
+  assert.deepEqual(VoteyTextVariants, [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "body-l",
+    "body",
+    "body-s",
+    "caption",
+    "caption-s",
+    "micro",
+    "button",
+    "table-header",
+    "label",
+  ]);
+  assert.deepEqual(VoteyTextColors, [
+    "primary",
+    "secondary",
+    "muted",
+    "inverse",
+    "accent",
+    "on-sidebar",
+  ]);
+  const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
+  const radioButtonDependencies =
+    VoteyRadioButtonComponent.ɵcmp.dependencies();
+  assert.ok(buttonDependencies.includes(VoteyTextComponent));
+  assert.ok(radioButtonDependencies.includes(VoteyTextComponent));
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
   assert.equal(typeof VoteySvgRegistryService, "function");
@@ -271,6 +309,21 @@ test("radio button emits MatRadioChange", async () => {
   assert.deepEqual(changes, [event]);
 
   subscription.unsubscribe();
+});
+
+test("text resolves its default token-backed presentation", async () => {
+  const { Injector, runInInjectionContext, VoteyTextComponent } =
+    await loadAngularRuntime();
+  const text = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyTextComponent(),
+  );
+
+  assert.equal(text.variant(), "body");
+  assert.equal(text.color(), "primary");
+  assert.equal(text.maxLines(), 0);
+  assert.equal(text.lineClampEnabled(), false);
+  assert.equal(text.textClasses(), "text body primary");
 });
 
 test("device service initializes responsive document attributes and viewport unit", async () => {

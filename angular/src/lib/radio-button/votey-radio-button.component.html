@@ -14,11 +14,12 @@
     [attr.aria-label]="groupAccessibleLabel()"
     (change)="handleChange($event)"
   >
-    @for (option of options(); track option.id ?? $index) {
+    @for (option of options(); track option.id ?? $index) { @let optionDisabled
+    = (option.disabled ?? false) || groupDisabled() || control().disabled;
     <mat-radio-button
       [class]="option.className ?? ''"
       [class.radio-error]="option.error ?? false"
-      [disabled]="(option.disabled ?? false) || groupDisabled()"
+      [disabled]="optionDisabled"
       [required]="option.required ?? false"
       [labelPosition]="option.labelPosition ?? groupLabelPosition()"
       [id]="option.id ?? ''"
@@ -26,7 +27,11 @@
       [attr.data-cy]="option.dataCy ?? null"
     >
       <span class="vt-radio-option-label">
-        <span>{{ option.label | vtTranslate }}</span>
+        <vt-text
+          variant="body"
+          [color]="optionDisabled ? 'muted' : 'primary'"
+          [content]="option.label | vtTranslate"
+        />
       </span>
     </mat-radio-button>
     @if (control().value === option.value) { @if (option.id; as optionId) { @if

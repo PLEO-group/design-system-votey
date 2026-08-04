@@ -24,7 +24,9 @@ resolvedTooltipText() | vtTranslate;
     } @if (text()) {
     <span class="label">{{ translatedText }}</span>
     } @if (badge() !== null && badge() !== "") {
-    <span class="badge">{{ badge() }}</span>
+    <span class="badge">
+      <vt-text variant="micro" color="primary" [content]="badge()" />
+    </span>
     }
   </button>
 </div>

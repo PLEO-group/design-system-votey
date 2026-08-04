@@ -65,13 +65,8 @@ button {
     height: 22px;
     padding: 0 var(--spacing-2);
     border: 2px solid var(--color-bg-surface);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background-color: var(--color-accent-primary);
-    color: var(--color-text-primary);
-    font-family: var(--typo-body-s-font-family);
-    font-size: 10px;
-    font-weight: var(--typo-button-font-weight);
-    line-height: 1;
   }
 
   &.disabled,
@@ -224,7 +219,7 @@ button {
     &:hover::before {
       right: 0;
       width: 100%;
-      border-radius: 20px;
+      border-radius: var(--radius-20);
       opacity: 0.6;
     }
 

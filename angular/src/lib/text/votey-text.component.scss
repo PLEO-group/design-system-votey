@@ -1,0 +1,82 @@
+@use "sass:map";
+
+$text-variants: (
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "body-l",
+  "body",
+  "body-s",
+  "caption",
+  "caption-s",
+  "micro",
+  "button",
+  "table-header",
+  "label"
+);
+
+$text-colors: (
+  "primary": var(--color-text-primary),
+  "secondary": var(--color-text-secondary),
+  "muted": var(--color-text-muted),
+  "inverse": var(--color-text-inverse),
+  "accent": var(--color-text-accent),
+  "on-sidebar": var(--color-text-on-sidebar),
+);
+
+@mixin text-variant($variant) {
+  font-family: var(--typo-#{$variant}-font-family);
+  font-size: var(--typo-#{$variant}-font-size);
+  font-weight: var(--typo-#{$variant}-font-weight);
+  letter-spacing: var(--typo-#{$variant}-letter-spacing);
+  line-height: var(--typo-#{$variant}-line-height);
+}
+
+:host {
+  display: contents;
+}
+
+.text {
+  color: var(--color-text-primary);
+
+  @each $variant in $text-variants {
+    &.#{$variant} {
+      @include text-variant($variant);
+    }
+  }
+
+  @each $name, $color in $text-colors {
+    &.#{$name} {
+      color: $color;
+    }
+  }
+
+  &.constrained {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &.uppercase {
+    text-transform: uppercase;
+  }
+
+  &.italic {
+    font-style: italic;
+  }
+
+  &.ellipsis {
+    display: -webkit-box;
+    width: 100%;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--vt-text-max-lines);
+  }
+
+  &.wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

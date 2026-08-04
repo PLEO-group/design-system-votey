@@ -1,0 +1,10 @@
+.angular-text-story {
+  width: min(70vw, 520px);
+  padding: var(--space-card-padding);
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-surface);
+
+  .preview {
+    min-width: 0;
+  }
+}

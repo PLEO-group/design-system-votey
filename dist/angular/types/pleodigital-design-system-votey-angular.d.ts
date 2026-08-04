@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef, InputSignalWithTransform } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -187,5 +187,23 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTranslationParams, VoteyTranslator, VtRadioOption };
+declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "body-l", "body", "body-s", "caption", "caption-s", "micro", "button", "table-header", "label"];
+declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
+type VoteyTextVariant = (typeof VoteyTextVariants)[number];
+type VoteyTextColor = (typeof VoteyTextColors)[number];
+declare class VoteyTextComponent {
+    readonly content: InputSignal<string | number | null | undefined>;
+    readonly variant: InputSignal<VoteyTextVariant>;
+    readonly color: InputSignal<VoteyTextColor>;
+    readonly uppercase: InputSignal<boolean>;
+    readonly italic: InputSignal<boolean>;
+    readonly wrap: InputSignal<boolean>;
+    readonly maxLines: InputSignalWithTransform<number, unknown>;
+    protected readonly lineClampEnabled: Signal<boolean>;
+    protected readonly textClasses: Signal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

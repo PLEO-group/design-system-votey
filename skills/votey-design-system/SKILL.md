@@ -17,7 +17,7 @@ description: >
   z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
-version: 1.2.0
+version: 1.3.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -27,6 +27,8 @@ tags: [FE]
 # Votey Design System
 
 # CHANGELOG
+
+# 1.3.0 — Dodano obowiązkową bramkę izolacji zmian Angular ↔ React/PWA oraz walidację właściwych entry pointów i buildów.
 
 # 1.2.0 — Dodano wybór sposobu użycia publicznych assetów w Angularze i React oraz obowiązkową bramkę jakościową dla lokalnego osadzania SVG.
 
@@ -57,21 +59,42 @@ dopiero od gotowego handoffu i nie odczytuje makiety ponownie bez konkretnej luk
 
 Rozpoznaj repo, framework i faktycznie zainstalowaną paczkę przed wczytaniem referencji:
 
-| Kontekst | Referencja |
-|---|---|
-| Dodawanie, przenoszenie, zmiana nazwy, usuwanie albo audyt źródłowych SVG | przerwij ten workflow i użyj `votey-svg-assets`; wróć tutaj tylko dla integracji w konsumencie |
-| Tworzenie, migracja albo review Angularowego komponentu źródłowego w `design-system-votey` | `references/angular-components.md` |
-| `wyborek-crm` albo inny konsument Angular + `@pleodigital/design-system-votey` | `references/angular.md` |
-| `votey-user-app`, React/Next + `@pleodigital/design-system-votey` | `references/react.md` |
-| Integracja opublikowanej ikony lub ilustracji w komponencie albo stylach | właściwa referencja frameworka oraz `references/assets.md` |
-| Inny konsument paczki | wybierz referencję frameworka, ale użyj tylko publicznego kontraktu potwierdzonego w tym repo |
-| Brak paczki albo projekt BoxEs | zatrzymaj routing; ten skill nie ma zastosowania |
+| Kontekst                                                                                   | Referencja                                                                                     |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Dodawanie, przenoszenie, zmiana nazwy, usuwanie albo audyt źródłowych SVG                  | przerwij ten workflow i użyj `votey-svg-assets`; wróć tutaj tylko dla integracji w konsumencie |
+| Tworzenie, migracja albo review Angularowego komponentu źródłowego w `design-system-votey` | `references/angular-components.md`                                                             |
+| `wyborek-crm` albo inny konsument Angular + `@pleodigital/design-system-votey`             | `references/angular.md`                                                                        |
+| `votey-user-app`, React/Next + `@pleodigital/design-system-votey`                          | `references/react.md`                                                                          |
+| Integracja opublikowanej ikony lub ilustracji w komponencie albo stylach                   | właściwa referencja frameworka oraz `references/assets.md`                                     |
+| Inny konsument paczki                                                                      | wybierz referencję frameworka, ale użyj tylko publicznego kontraktu potwierdzonego w tym repo  |
+| Brak paczki albo projekt BoxEs                                                             | zatrzymaj routing; ten skill nie ma zastosowania                                               |
 
 Przy przenoszeniu komponentu z CRM do paczki wczytaj najpierw `references/angular-components.md`,
 a `references/angular.md` tylko dla sprawdzenia integracji po stronie konsumenta. Nie ładuj
 obu referencji frameworkowych, jeżeli zmiana dotyczy tylko jednego frameworka. Nie duplikuj
 reguł nazewnictwa ani onboardingu SVG w tym skillu;
 ich źródłem prawdy jest `votey-svg-assets/references/icon-naming-system.md`.
+
+## ⚠️ Twarda izolacja Angular ↔ React/PWA
+
+Traktuj izolację frameworków jako obowiązkową bramkę jakościową. Zmiana przeznaczona tylko
+dla Angulara nie może zmieniać publicznego kontraktu, zależności, bundla ani sposobu pracy
+React/PWA; ta sama zasada działa w drugą stronę.
+
+- Przed edycją zaklasyfikuj zmianę jako `angular-only`, `react-only` albo świadomie `shared`
+  i wskaż właściwy entry point oraz katalog źródłowy.
+- Kod `angular-only`, Angular DI, pipe'y, komponenty, Material i typy frameworka trzymaj
+  wyłącznie w `angular/` i eksporcie `./angular`. Nie eksportuj ich przez root ani entry pointy Reacta.
+- Kod `react-only`, komponenty React/Next, klasy `rv-*`, Tailwind i providery PWA trzymaj
+  poza `angular/`. Nie wprowadzaj ich do Angularowego entry pointu ani bundle'a CRM.
+- Nie zmieniaj współdzielonego `package.json`, konfiguracji builda, generatorów, tokenów core
+  ani assetów jako skrótu dla potrzeby jednego frameworka. Jeśli zmiana naprawdę musi być
+  `shared`, nazwij wpływ na oba frameworki i zweryfikuj oba buildy.
+- Po zmianie frameworkowej sprawdź diff pod kątem przecieku do drugiego frameworka. Jeżeli
+  dotknięto wspólnego pliku lub pełnego pipeline'u paczki, uruchom walidację Angulara i Reacta/PWA.
+
+Nie zamykaj zadania, jeżeli zmiana jednego frameworka wymusza na drugim nową zależność,
+konfigurację albo migrację, której użytkownik jawnie nie objął zakresem.
 
 ## Workflow
 
@@ -93,9 +116,11 @@ ich źródłem prawdy jest `votey-svg-assets/references/icon-naming-system.md`.
 8. Zmapuj role z handoffu na istniejące tokeny i prymitywy. Brakujący kontrakt
    zgłoś jako gap; nie kopiuj podobnej roli z innego frameworka ani produktu.
 9. Zaimplementuj zgodnie z lokalnymi skillami frameworka.
-10. Dla Angularowego komponentu źródłowego wykonaj i jawnie zamknij bramkę tokenizacji
-   SCSS opisaną w `references/angular-components.md`.
-11. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
+10. Jawnie zamknij bramkę izolacji Angular ↔ React/PWA: potwierdź właściwy katalog,
+    entry point, brak nowych zależności drugiego frameworka i wymagany zakres buildów.
+11. Dla Angularowego komponentu źródłowego wykonaj i jawnie zamknij bramkę tokenizacji
+    SCSS opisaną w `references/angular-components.md`.
+12. Uruchom najwęższą właściwą walidację statyczną i runtime wskazaną w referencji.
 
 ## Wspólne reguły Votey
 

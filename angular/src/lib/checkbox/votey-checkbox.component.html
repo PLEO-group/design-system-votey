@@ -13,5 +13,5 @@
   (indeterminateChange)="indeterminate.set($event)"
   (focusout)="markAsTouched()"
 >
-  <ng-content>{{ label() }}</ng-content>
+  <ng-content>{{ label() | vtTranslate }}</ng-content>
 </mat-checkbox>

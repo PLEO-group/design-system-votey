@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, OutputEmitterRef, Signal, ModelSignal, TemplateRef } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -52,7 +52,7 @@ declare class VoteyDeviceService implements OnDestroy {
 }
 declare function provideVoteyDeviceDetection(gridConfig?: VoteyGridConfig): EnvironmentProviders;
 
-declare const VoteyIconNames: readonly ["logo-wyborek-sygnet", "menu-burger", "menu-dashboard", "menu-download", "menu-participants", "menu-settings", "menu-team", "menu-vote", "sp-arrow", "sp-check", "sp-correct", "sp-flag-poland", "sp-flag-united-kingdom", "sp-in-progress", "sp-incorrect", "sp-new", "ui-agenda", "ui-arrow-right", "ui-attachment", "ui-authorization", "ui-burger", "ui-calendar", "ui-camera-change", "ui-camera-off", "ui-camera-on", "ui-chat", "ui-chevron", "ui-close", "ui-close-v2", "ui-countdown", "ui-delete", "ui-download", "ui-edit", "ui-edit-v2", "ui-end", "ui-event-completed", "ui-event-invitation", "ui-event-notification", "ui-exclamation-mark", "ui-expand-arrow", "ui-file-csv", "ui-file-doc", "ui-file-dwg", "ui-file-eml", "ui-file-jpg", "ui-file-mp3", "ui-file-mp4", "ui-file-pdf", "ui-file-png", "ui-file-ppt", "ui-file-rar", "ui-file-rtf", "ui-file-tif", "ui-file-txt", "ui-file-xls", "ui-file-xml", "ui-file-zip", "ui-full-screen", "ui-full-screen-v2", "ui-grid", "ui-hand", "ui-hang-up", "ui-microphone-off", "ui-microphone-on", "ui-move", "ui-navigate", "ui-participant", "ui-participants-list", "ui-participants-list-v2", "ui-pending", "ui-pin", "ui-plus", "ui-preview", "ui-problem", "ui-proxy", "ui-proxy-thick", "ui-remind-password", "ui-save", "ui-send-again", "ui-send-again-v2", "ui-settings", "ui-share-screen", "ui-show-graph-thick", "ui-start", "ui-time", "ui-time-v2", "ui-turn-on-thick", "ui-unlimited", "ui-update", "ui-videoconference", "ui-visibility-off", "ui-visibility-on", "ui-voting", "ui-voting-new", "ui-voting-thick"];
+declare const VoteyIconNames: readonly ["logo-wyborek-sygnet", "menu-burger", "menu-dashboard", "menu-download", "menu-participants", "menu-settings", "menu-team", "menu-ui-close", "menu-vote", "sp-arrow", "sp-check", "sp-correct", "sp-exclamation-mark", "sp-flag-poland", "sp-flag-united-kingdom", "sp-in-progress", "sp-incorrect", "sp-new", "ui-agenda", "ui-arrow-right", "ui-attachment-thick", "ui-authorization", "ui-burger", "ui-calendar", "ui-camera-change", "ui-camera-off", "ui-camera-on", "ui-chat", "ui-chevron-down", "ui-chevron-left", "ui-chevron-right", "ui-chevron-up", "ui-close-v2", "ui-delete", "ui-download", "ui-edit", "ui-edit-thick", "ui-end", "ui-event-completed", "ui-event-invitation", "ui-event-notification", "ui-expand-arrow-down", "ui-expand-arrow-left", "ui-expand-arrow-right", "ui-expand-arrow-up", "ui-file-csv", "ui-file-doc", "ui-file-dwg", "ui-file-eml", "ui-file-jpg", "ui-file-mp3", "ui-file-mp4", "ui-file-pdf", "ui-file-png", "ui-file-ppt", "ui-file-rar", "ui-file-rtf", "ui-file-tif", "ui-file-txt", "ui-file-xls", "ui-file-xml", "ui-file-zip", "ui-full-screen", "ui-full-screen-v2", "ui-grid", "ui-hand", "ui-hang-up", "ui-microphone-off", "ui-microphone-on", "ui-move", "ui-navigate", "ui-option", "ui-participant", "ui-participants-list", "ui-participants-list-v2", "ui-pending", "ui-pin", "ui-plus", "ui-problem", "ui-proxy", "ui-proxy-thick", "ui-remind-password", "ui-save", "ui-search", "ui-send-again", "ui-send-again-v2", "ui-settings", "ui-share-screen", "ui-show-graph-thick", "ui-start", "ui-time", "ui-time-v2", "ui-turn-on-thick", "ui-unlimited", "ui-update", "ui-videoconference", "ui-visibility-off", "ui-visibility-on", "ui-voting", "ui-voting-new", "ui-voting-thick"];
 type VoteyIcon = (typeof VoteyIconNames)[number];
 interface VoteySvgRegistryEntry<Name extends string> {
     readonly name: Name;
@@ -84,6 +84,19 @@ declare class VoteySvgRegistryService {
     static ɵprov: i0.ɵɵInjectableDeclaration<VoteySvgRegistryService>;
 }
 declare function provideVoteySvgRegistry(config?: VoteySvgRegistryConfig): EnvironmentProviders;
+
+type VoteyTranslationParams = Record<string, string | number>;
+interface VoteyTranslator {
+    translate(key: string, params?: VoteyTranslationParams): string;
+}
+declare const VOTEY_TRANSLATOR: InjectionToken<VoteyTranslator>;
+
+declare class VoteyTranslatePipe implements PipeTransform {
+    private readonly translator;
+    transform(key: string | null | undefined, params?: VoteyTranslationParams): string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTranslatePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<VoteyTranslatePipe, "vtTranslate", true>;
+}
 
 declare const VoteyButtonVariants: readonly ["primary", "secondary", "link", "danger", "ghost", "orange"];
 declare const VoteyButtonSizes: readonly ["large", "small"];
@@ -148,6 +161,7 @@ interface VtRadioOption<T = unknown> {
     readonly dataCy?: string;
 }
 declare class VoteyRadioButtonComponent {
+    private readonly translator;
     private readonly optionContents;
     readonly options: InputSignal<readonly VtRadioOption[]>;
     readonly control: InputSignal<FormControl>;
@@ -173,5 +187,5 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VtRadioOption };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

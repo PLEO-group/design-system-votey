@@ -1,13 +1,13 @@
 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="icon_ui_arrow" clip-path="url(#clip0_471_88)">
-<g id="icon_ui_arrow_2">
+<g id="icon_sp_arrow" clip-path="url(#clip0_1948_89)">
+<g id="icon_sp_arrow_2">
 <g id="color_stroke">
-<path id="Vector" d="M6 10L1 3H11L6 10Z" fill="#07064E"></path>
+<path id="Vector" d="M5.76748 9.57L0.854976 2.7675C0.719976 2.58 0.854976 2.31 1.08748 2.31H10.9125C11.145 2.31 11.28 2.58 11.145 2.7675L6.23248 9.57C6.11998 9.7275 5.87998 9.7275 5.76748 9.57Z" fill="#07064E"></path>
 </g>
 </g>
 </g>
 <defs>
-<clipPath id="clip0_471_88">
+<clipPath id="clip0_1948_89">
 <rect width="12" height="12" fill="white"></rect>
 </clipPath>
 </defs>

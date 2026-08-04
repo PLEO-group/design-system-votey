@@ -11,6 +11,7 @@ import {
 import { MatTooltip } from "@angular/material/tooltip";
 import { VoteyIconComponent } from "../icon/votey-icon.component";
 import type { VoteyIcon } from "../votey-assets";
+import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
 export const VoteyButtonVariants = [
   "primary",
@@ -32,7 +33,7 @@ export type VoteyButtonType = "button" | "submit" | "reset";
   templateUrl: "./votey-button.component.html",
   styleUrl: "./votey-button.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTooltip, VoteyIconComponent],
+  imports: [MatTooltip, VoteyIconComponent, VoteyTranslatePipe],
 })
 export class VoteyButtonComponent {
   public readonly disabled: InputSignal<boolean> = input<boolean>(false);

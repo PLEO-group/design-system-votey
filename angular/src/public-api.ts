@@ -28,6 +28,12 @@ export {
   VoteySvgRegistryService,
 } from "./lib/votey-svg-registry.service";
 export type { VoteySvgRegistryConfig } from "./lib/votey-svg-registry.service";
+export { VoteyTranslatePipe } from "./lib/translation/votey-translate.pipe";
+export { VOTEY_TRANSLATOR } from "./lib/translation/votey-translation";
+export type {
+  VoteyTranslationParams,
+  VoteyTranslator,
+} from "./lib/translation/votey-translation";
 export {
   VoteyButtonComponent,
   VoteyButtonSizes,

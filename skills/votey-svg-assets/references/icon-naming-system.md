@@ -10,7 +10,7 @@ zmianie nazwy i audycie ikon w `design-system-votey`.
 2. [Struktura nazwy](#struktura-nazwy)
 3. [Context](#context)
 4. [Descriptor](#descriptor)
-5. [Zaakceptowany wyjątek legacy](#zaakceptowany-wyjątek-legacy)
+5. [Usunięty wyjątek legacy](#usunięty-wyjątek-legacy)
 6. [Modifier](#modifier)
 7. [Mapowanie na Angular Registry](#mapowanie-na-angular-registry)
 8. [Mapowanie na React](#mapowanie-na-react)
@@ -75,7 +75,12 @@ repo i Storybooku nie zawsze jest identyczna z technicznym prefixem pliku.
 | `logotypes` | `assets/icons/logotypes/` | `logo` | Znaki i logotypy | `logo_wyborek_sygnet.svg` |
 | `menu` | `assets/icons/menu/` | `menu` | Główna nawigacja i sidebar | `icon_menu_dashboard.svg` |
 | `special` | `assets/icons/special/` | `sp` | Statusy, flagi i ikony specjalne | `icon_sp_incorrect.svg` |
-| `ui` | `assets/icons/ui/` | `ui` | Ogólne akcje i elementy interfejsu | `icon_ui_close.svg` |
+| `ui` | `assets/icons/ui/` | `ui` | Ogólne akcje i elementy interfejsu | `icon_ui_search.svg` |
+
+Utrzymywany wyjątek: `assets/icons/menu/icon_ui_close.svg` pozostaje w grupie
+`menu` z nazwą pliku `icon_ui_close.svg`. Generator publikuje go jako
+`menu-ui-close` w Angular Registry oraz `IconUiClose` z entry pointu React
+`icons/menu`. Nie przenoś go do `ui` i nie zmieniaj na `icon_menu_close.svg`.
 
 Contexty ilustracji mają analogiczny kontrakt folderu, prefixu i publicznego
 namespace'u:
@@ -164,23 +169,31 @@ icon_ui_participants-list_v2.svg
 Nie twórz `_v2` tylko dlatego, że plik został ponownie wyeksportowany. Modifier
 oznacza utrzymywany wariant publiczny.
 
-## Zaakceptowany wyjątek legacy
+## Usunięty wyjątek legacy
 
-Finalna migracja nazw pozostawiła jeden wyjątek:
+Plik legacy usunięty 4.08.26:
 
 ```text
 icon_ui_expand_arrow.svg
 ```
 
-Publiczne nazwy są znormalizowane:
+Usunięte publiczne nazwy:
 
 ```text
 Angular Registry: ui-expand-arrow
 React: IconUiExpandArrow
 ```
 
-Akceptuj istniejący plik, ale nie używaj underscore w descriptorze nowych ikon.
-Nie zmieniaj tego wyjątku bez osobnej decyzji migracyjnej dla PWA i CRM.
+Nie przywracaj tego wyjątku ani underscore w descriptorze nowych ikon. Konsumenci
+muszą przejść na kierunkowy wariant `icon_ui_expand-arrow-right.svg`:
+
+```text
+Angular Registry: ui-expand-arrow-right
+React: IconUiExpandArrowRight
+```
+
+Pełne mapowanie dla Angulara i Reacta opisuje
+`docs/migrations/icons-4.08.26.md`.
 
 ## Modifier
 

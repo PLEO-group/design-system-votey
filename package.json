@@ -1,6 +1,6 @@
 {
   "name": "@pleodigital/design-system-votey",
-  "version": "1.0.150",
+  "version": "1.0.151",
   "description": "Centralny system tokenów projektowych generowany przez Style Dictionary.",
   "main": "dist/js/tailwind-preset.js",
   "exports": {

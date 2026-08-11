@@ -45,6 +45,8 @@ test("new UI React icons remain colorable and self-contained", () => {
     "IconUiFilter",
     "IconUiFilterAdd",
     "IconUiLanguage",
+    "IconUiMinus",
+    "IconUiNetwork",
     "IconUiQuestion",
     "IconUiRegistrationConfirmed",
   ]) {

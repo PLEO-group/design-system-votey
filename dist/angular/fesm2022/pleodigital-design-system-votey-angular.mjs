@@ -1,6 +1,6 @@
 import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import * as i0 from '@angular/core';
-import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, model, signal, forwardRef, ViewEncapsulation, TemplateRef, Directive, contentChildren } from '@angular/core';
+import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, model, signal, forwardRef, ViewEncapsulation, TemplateRef, Directive, contentChildren, booleanAttribute, viewChild } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
 import { BehaviorSubject } from 'rxjs';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
@@ -858,14 +858,33 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
                         }, isSignal: true }] }], options: [{ type: i0.Input, args: [{ isSignal: true, alias: "options", required: true }] }], control: [{ type: i0.Input, args: [{ isSignal: true, alias: "control", required: true }] }], groupLabelPosition: [{ type: i0.Input, args: [{ isSignal: true, alias: "groupLabelPosition", required: false }] }], groupDisabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "groupDisabled", required: false }] }], groupRequired: [{ type: i0.Input, args: [{ isSignal: true, alias: "groupRequired", required: false }] }], groupClass: [{ type: i0.Input, args: [{ isSignal: true, alias: "groupClass", required: false }] }], tooltip: [{ type: i0.Input, args: [{ isSignal: true, alias: "tooltip", required: false }] }], disabledNote: [{ type: i0.Input, args: [{ isSignal: true, alias: "disabledNote", required: false }] }], change: [{ type: i0.Output, args: ["change"] }] } });
 
 const VoteyInputVariants = ["boxed", "underline"];
+const VoteyInputTypeNames = {
+    text: "text",
+    email: "email",
+    password: "password",
+    search: "search",
+    tel: "tel",
+    url: "url",
+    number: "number",
+};
 const VoteyInputTypes = [
+    VoteyInputTypeNames.text,
+    VoteyInputTypeNames.email,
+    VoteyInputTypeNames.password,
+    VoteyInputTypeNames.search,
+    VoteyInputTypeNames.tel,
+    VoteyInputTypeNames.url,
+    VoteyInputTypeNames.number,
+];
+const VoteyInputModes = [
+    "none",
     "text",
-    "email",
-    "password",
-    "search",
+    "decimal",
+    "numeric",
     "tel",
+    "search",
+    "email",
     "url",
-    "number",
 ];
 let nextInputId = 0;
 class VoteyInputComponent {
@@ -873,25 +892,57 @@ class VoteyInputComponent {
     formDisabled = signal(false, ...(ngDevMode ? [{ debugName: "formDisabled" }] : /* istanbul ignore next */ []));
     value = model("", ...(ngDevMode ? [{ debugName: "value" }] : /* istanbul ignore next */ []));
     variant = input("boxed", ...(ngDevMode ? [{ debugName: "variant" }] : /* istanbul ignore next */ []));
-    type = input("text", ...(ngDevMode ? [{ debugName: "type" }] : /* istanbul ignore next */ []));
+    type = input(VoteyInputTypeNames.text, ...(ngDevMode ? [{ debugName: "type" }] : /* istanbul ignore next */ []));
     label = input("Etykieta", ...(ngDevMode ? [{ debugName: "label" }] : /* istanbul ignore next */ []));
     placeholder = input("Wpisz…", ...(ngDevMode ? [{ debugName: "placeholder" }] : /* istanbul ignore next */ []));
     helper = input("Tekst pomocniczy", ...(ngDevMode ? [{ debugName: "helper" }] : /* istanbul ignore next */ []));
-    showLabel = input(true, ...(ngDevMode ? [{ debugName: "showLabel" }] : /* istanbul ignore next */ []));
-    showHelper = input(false, ...(ngDevMode ? [{ debugName: "showHelper" }] : /* istanbul ignore next */ []));
+    showLabel = input(true, { ...(ngDevMode ? { debugName: "showLabel" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    showHelper = input(false, { ...(ngDevMode ? { debugName: "showHelper" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
     icon = input("", ...(ngDevMode ? [{ debugName: "icon" }] : /* istanbul ignore next */ []));
-    disabled = input(false, ...(ngDevMode ? [{ debugName: "disabled" }] : /* istanbul ignore next */ []));
-    required = input(false, ...(ngDevMode ? [{ debugName: "required" }] : /* istanbul ignore next */ []));
-    error = input(false, ...(ngDevMode ? [{ debugName: "error" }] : /* istanbul ignore next */ []));
+    disabled = input(false, { ...(ngDevMode ? { debugName: "disabled" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    required = input(false, { ...(ngDevMode ? { debugName: "required" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    readOnly = input(false, { ...(ngDevMode ? { debugName: "readOnly" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    error = input(false, { ...(ngDevMode ? { debugName: "error" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    trimOnBlur = input(false, { ...(ngDevMode ? { debugName: "trimOnBlur" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
+    autofocus = input(false, { ...(ngDevMode ? { debugName: "autofocus" } : /* istanbul ignore next */ {}), transform: booleanAttribute });
     id = input("", ...(ngDevMode ? [{ debugName: "id" }] : /* istanbul ignore next */ []));
     name = input("", ...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
     autocomplete = input("", ...(ngDevMode ? [{ debugName: "autocomplete" }] : /* istanbul ignore next */ []));
+    inputMode = input("", ...(ngDevMode ? [{ debugName: "inputMode" }] : /* istanbul ignore next */ []));
+    min = input(null, ...(ngDevMode ? [{ debugName: "min" }] : /* istanbul ignore next */ []));
+    max = input(null, ...(ngDevMode ? [{ debugName: "max" }] : /* istanbul ignore next */ []));
+    step = input(null, ...(ngDevMode ? [{ debugName: "step" }] : /* istanbul ignore next */ []));
+    minLength = input(null, ...(ngDevMode ? [{ debugName: "minLength" }] : /* istanbul ignore next */ []));
+    maxLength = input(null, ...(ngDevMode ? [{ debugName: "maxLength" }] : /* istanbul ignore next */ []));
+    pattern = input("", ...(ngDevMode ? [{ debugName: "pattern" }] : /* istanbul ignore next */ []));
+    ariaLabel = input("", ...(ngDevMode ? [{ debugName: "ariaLabel" }] : /* istanbul ignore next */ []));
+    ariaDescribedby = input("", ...(ngDevMode ? [{ debugName: "ariaDescribedby" }] : /* istanbul ignore next */ []));
+    dataCy = input("", ...(ngDevMode ? [{ debugName: "dataCy" }] : /* istanbul ignore next */ []));
     changed = output();
+    focused = output();
+    blurred = output();
+    keyDown = output();
+    inputElement = viewChild("inputElement", ...(ngDevMode ? [{ debugName: "inputElement" }] : /* istanbul ignore next */ []));
     effectiveDisabled = computed(() => this.disabled() || this.formDisabled(), ...(ngDevMode ? [{ debugName: "effectiveDisabled" }] : /* istanbul ignore next */ []));
     resolvedId = computed(() => this.id().trim() || this.fallbackId, ...(ngDevMode ? [{ debugName: "resolvedId" }] : /* istanbul ignore next */ []));
     helperId = computed(() => `${this.resolvedId()}-helper`, ...(ngDevMode ? [{ debugName: "helperId" }] : /* istanbul ignore next */ []));
+    displayValue = computed(() => this.value() ?? "", ...(ngDevMode ? [{ debugName: "displayValue" }] : /* istanbul ignore next */ []));
     helperVisible = computed(() => this.showHelper() && this.helper().trim().length > 0, ...(ngDevMode ? [{ debugName: "helperVisible" }] : /* istanbul ignore next */ []));
     labelVisible = computed(() => this.showLabel() && this.label().trim().length > 0, ...(ngDevMode ? [{ debugName: "labelVisible" }] : /* istanbul ignore next */ []));
+    resolvedAriaLabel = computed(() => {
+        const ariaLabel = this.ariaLabel().trim();
+        if (ariaLabel)
+            return ariaLabel;
+        if (!this.labelVisible())
+            return this.label().trim() || null;
+        return null;
+    }, ...(ngDevMode ? [{ debugName: "resolvedAriaLabel" }] : /* istanbul ignore next */ []));
+    resolvedAriaDescribedby = computed(() => {
+        const ids = [this.ariaDescribedby().trim()];
+        if (this.helperVisible())
+            ids.push(this.helperId());
+        return ids.filter(Boolean).join(" ") || null;
+    }, ...(ngDevMode ? [{ debugName: "resolvedAriaDescribedby" }] : /* istanbul ignore next */ []));
     inputClasses = computed(() => [
         "input",
         this.variant(),
@@ -903,7 +954,7 @@ class VoteyInputComponent {
     onChange = () => undefined;
     onTouched = () => undefined;
     writeValue(value) {
-        this.value.set(value ?? "");
+        this.value.set(value ?? null);
     }
     registerOnChange(callback) {
         this.onChange = callback;
@@ -914,23 +965,67 @@ class VoteyInputComponent {
     setDisabledState(isDisabled) {
         this.formDisabled.set(isDisabled);
     }
+    focus(options) {
+        if (this.effectiveDisabled())
+            return;
+        this.inputElement()?.nativeElement.focus(options);
+    }
+    blur() {
+        this.inputElement()?.nativeElement.blur();
+    }
+    select() {
+        if (this.effectiveDisabled())
+            return;
+        this.inputElement()?.nativeElement.select();
+    }
+    clear() {
+        if (this.effectiveDisabled() || this.readOnly())
+            return;
+        this.commitValue(this.type() === VoteyInputTypeNames.number ? null : "");
+    }
     handleInput(event) {
         const inputElement = event.target;
-        this.value.set(inputElement.value);
-        this.onChange(inputElement.value);
-        this.changed.emit(inputElement.value);
+        const numericValue = inputElement.valueAsNumber;
+        const value = this.type() === VoteyInputTypeNames.number
+            ? inputElement.value === "" || Number.isNaN(numericValue)
+                ? null
+                : numericValue
+            : inputElement.value;
+        this.commitValue(value);
     }
-    markAsTouched() {
+    handleFocus(event) {
+        this.focused.emit(event);
+    }
+    handleBlur(event) {
+        const inputElement = event.target;
+        const trimmedValue = inputElement.value.trim();
+        if (this.trimOnBlur() &&
+            this.type() !== VoteyInputTypeNames.number &&
+            inputElement.value !== trimmedValue) {
+            inputElement.value = trimmedValue;
+            this.commitValue(trimmedValue);
+        }
         this.onTouched();
+        this.blurred.emit(event);
+    }
+    handleKeyDown(event) {
+        this.keyDown.emit(event);
+    }
+    commitValue(value) {
+        if (Object.is(this.value(), value))
+            return;
+        this.value.set(value);
+        this.onChange(value);
+        this.changed.emit(value);
     }
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyInputComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyInputComponent, isStandalone: true, selector: "vt-input", inputs: { value: { classPropertyName: "value", publicName: "value", isSignal: true, isRequired: false, transformFunction: null }, variant: { classPropertyName: "variant", publicName: "variant", isSignal: true, isRequired: false, transformFunction: null }, type: { classPropertyName: "type", publicName: "type", isSignal: true, isRequired: false, transformFunction: null }, label: { classPropertyName: "label", publicName: "label", isSignal: true, isRequired: false, transformFunction: null }, placeholder: { classPropertyName: "placeholder", publicName: "placeholder", isSignal: true, isRequired: false, transformFunction: null }, helper: { classPropertyName: "helper", publicName: "helper", isSignal: true, isRequired: false, transformFunction: null }, showLabel: { classPropertyName: "showLabel", publicName: "showLabel", isSignal: true, isRequired: false, transformFunction: null }, showHelper: { classPropertyName: "showHelper", publicName: "showHelper", isSignal: true, isRequired: false, transformFunction: null }, icon: { classPropertyName: "icon", publicName: "icon", isSignal: true, isRequired: false, transformFunction: null }, disabled: { classPropertyName: "disabled", publicName: "disabled", isSignal: true, isRequired: false, transformFunction: null }, required: { classPropertyName: "required", publicName: "required", isSignal: true, isRequired: false, transformFunction: null }, error: { classPropertyName: "error", publicName: "error", isSignal: true, isRequired: false, transformFunction: null }, id: { classPropertyName: "id", publicName: "id", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: false, transformFunction: null }, autocomplete: { classPropertyName: "autocomplete", publicName: "autocomplete", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { value: "valueChange", changed: "changed" }, providers: [
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyInputComponent, isStandalone: true, selector: "vt-input", inputs: { value: { classPropertyName: "value", publicName: "value", isSignal: true, isRequired: false, transformFunction: null }, variant: { classPropertyName: "variant", publicName: "variant", isSignal: true, isRequired: false, transformFunction: null }, type: { classPropertyName: "type", publicName: "type", isSignal: true, isRequired: false, transformFunction: null }, label: { classPropertyName: "label", publicName: "label", isSignal: true, isRequired: false, transformFunction: null }, placeholder: { classPropertyName: "placeholder", publicName: "placeholder", isSignal: true, isRequired: false, transformFunction: null }, helper: { classPropertyName: "helper", publicName: "helper", isSignal: true, isRequired: false, transformFunction: null }, showLabel: { classPropertyName: "showLabel", publicName: "showLabel", isSignal: true, isRequired: false, transformFunction: null }, showHelper: { classPropertyName: "showHelper", publicName: "showHelper", isSignal: true, isRequired: false, transformFunction: null }, icon: { classPropertyName: "icon", publicName: "icon", isSignal: true, isRequired: false, transformFunction: null }, disabled: { classPropertyName: "disabled", publicName: "disabled", isSignal: true, isRequired: false, transformFunction: null }, required: { classPropertyName: "required", publicName: "required", isSignal: true, isRequired: false, transformFunction: null }, readOnly: { classPropertyName: "readOnly", publicName: "readOnly", isSignal: true, isRequired: false, transformFunction: null }, error: { classPropertyName: "error", publicName: "error", isSignal: true, isRequired: false, transformFunction: null }, trimOnBlur: { classPropertyName: "trimOnBlur", publicName: "trimOnBlur", isSignal: true, isRequired: false, transformFunction: null }, autofocus: { classPropertyName: "autofocus", publicName: "autofocus", isSignal: true, isRequired: false, transformFunction: null }, id: { classPropertyName: "id", publicName: "id", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: false, transformFunction: null }, autocomplete: { classPropertyName: "autocomplete", publicName: "autocomplete", isSignal: true, isRequired: false, transformFunction: null }, inputMode: { classPropertyName: "inputMode", publicName: "inputMode", isSignal: true, isRequired: false, transformFunction: null }, min: { classPropertyName: "min", publicName: "min", isSignal: true, isRequired: false, transformFunction: null }, max: { classPropertyName: "max", publicName: "max", isSignal: true, isRequired: false, transformFunction: null }, step: { classPropertyName: "step", publicName: "step", isSignal: true, isRequired: false, transformFunction: null }, minLength: { classPropertyName: "minLength", publicName: "minLength", isSignal: true, isRequired: false, transformFunction: null }, maxLength: { classPropertyName: "maxLength", publicName: "maxLength", isSignal: true, isRequired: false, transformFunction: null }, pattern: { classPropertyName: "pattern", publicName: "pattern", isSignal: true, isRequired: false, transformFunction: null }, ariaLabel: { classPropertyName: "ariaLabel", publicName: "ariaLabel", isSignal: true, isRequired: false, transformFunction: null }, ariaDescribedby: { classPropertyName: "ariaDescribedby", publicName: "ariaDescribedby", isSignal: true, isRequired: false, transformFunction: null }, dataCy: { classPropertyName: "dataCy", publicName: "dataCy", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { value: "valueChange", changed: "changed", focused: "focused", blurred: "blurred", keyDown: "keyDown" }, providers: [
             {
                 provide: NG_VALUE_ACCESSOR,
                 useExisting: forwardRef(() => VoteyInputComponent),
                 multi: true,
             },
-        ], ngImport: i0, template: "<div [class]=\"inputClasses()\">\n  @if (labelVisible()) {\n    <label class=\"label\" [for]=\"resolvedId()\">{{ label() }}</label>\n  }\n\n  <div class=\"field\">\n    <input\n      class=\"control\"\n      [id]=\"resolvedId()\"\n      [name]=\"name()\"\n      [type]=\"type()\"\n      [value]=\"value()\"\n      [placeholder]=\"placeholder()\"\n      [autocomplete]=\"autocomplete()\"\n      [disabled]=\"effectiveDisabled()\"\n      [required]=\"required()\"\n      [attr.aria-invalid]=\"error() ? true : null\"\n      [attr.aria-describedby]=\"helperVisible() ? helperId() : null\"\n      (input)=\"handleInput($event)\"\n      (blur)=\"markAsTouched()\"\n    />\n\n    @let currentIcon = icon();\n    @if (currentIcon) {\n      <vt-icon class=\"icon\" [ico]=\"currentIcon\" />\n    }\n  </div>\n\n  @if (helperVisible()) {\n    <span class=\"helper\" [id]=\"helperId()\">{{ helper() }}</span>\n  }\n</div>\n", styles: [":host{display:block;width:100%}.input{display:flex;flex-direction:column;align-items:stretch;gap:var(--space-stack-gap-s);width:100%}.input .label{color:var(--color-text-primary);font-family:var(--typo-input-label-font-family);font-size:var(--typo-input-label-font-size);font-weight:var(--typo-input-label-font-weight);letter-spacing:var(--typo-input-label-letter-spacing);line-height:var(--typo-input-label-line-height)}.input .field{box-sizing:border-box;display:flex;align-items:center;gap:var(--spacing-8);width:100%;height:50px;padding:0 var(--space-field-padding-x);overflow:hidden;border:1px solid var(--color-border-field);border-radius:var(--radius-input);background-color:var(--color-bg-surface)}.input .field:focus-within{border:2px solid var(--color-accent-primary)}.input .field .control{flex:1 1 auto;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:var(--color-text-primary);font-family:var(--typo-field-font-family);font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.input .field .control::placeholder{color:var(--color-text-placeholder);opacity:1}.input .field .icon{flex:0 0 18px;width:18px;height:18px;color:var(--color-text-primary)}.input .helper{color:var(--color-text-muted);font-family:var(--typo-caption-s-font-family);font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.input.underline .field{height:40px;border:0;border-bottom:1px solid var(--color-border-field);border-radius:0;background-color:transparent}.input.underline .field:focus-within{border-bottom:2px solid var(--color-accent-primary)}.input.error .field,.input.error .field:focus-within{border-color:var(--color-state-error)}.input.error .helper{color:var(--color-state-error)}.input.disabled .label,.input.disabled .helper{color:var(--color-text-muted)}.input.disabled .field{background-color:var(--color-bg-surface-tint)}.input.disabled .field .control,.input.disabled .field .icon{color:var(--color-text-muted)}.input.disabled .field .control{cursor:not-allowed}.input.disabled .field .control::placeholder{color:var(--color-text-muted)}.input.disabled.underline .field{background-color:transparent}\n"], dependencies: [{ kind: "component", type: VoteyIconComponent, selector: "vt-icon", inputs: ["ico", "ariaLabel"] }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+        ], viewQueries: [{ propertyName: "inputElement", first: true, predicate: ["inputElement"], descendants: true, isSignal: true }], ngImport: i0, template: "<div [class]=\"inputClasses()\">\n  @if (labelVisible()) {\n    <label class=\"label\" [for]=\"resolvedId()\">{{ label() }}</label>\n  }\n\n  <div class=\"field\">\n    <input\n      #inputElement\n      class=\"control\"\n      [id]=\"resolvedId()\"\n      [name]=\"name()\"\n      [type]=\"type()\"\n      [value]=\"displayValue()\"\n      [placeholder]=\"placeholder()\"\n      [autocomplete]=\"autocomplete()\"\n      [disabled]=\"effectiveDisabled()\"\n      [required]=\"required()\"\n      [readOnly]=\"readOnly()\"\n      [attr.autofocus]=\"autofocus() ? '' : null\"\n      [attr.inputmode]=\"inputMode() || null\"\n      [attr.min]=\"min()\"\n      [attr.max]=\"max()\"\n      [attr.step]=\"step()\"\n      [attr.minlength]=\"minLength()\"\n      [attr.maxlength]=\"maxLength()\"\n      [attr.pattern]=\"pattern() || null\"\n      [attr.aria-label]=\"resolvedAriaLabel()\"\n      [attr.aria-invalid]=\"error() ? true : null\"\n      [attr.aria-describedby]=\"resolvedAriaDescribedby()\"\n      [attr.aria-errormessage]=\"error() && helperVisible() ? helperId() : null\"\n      [attr.data-cy]=\"dataCy() || null\"\n      (input)=\"handleInput($event)\"\n      (focus)=\"handleFocus($event)\"\n      (blur)=\"handleBlur($event)\"\n      (keydown)=\"handleKeyDown($event)\"\n    />\n\n    @let currentIcon = icon();\n    @if (currentIcon) {\n      <vt-icon class=\"icon\" [ico]=\"currentIcon\" />\n    }\n  </div>\n\n  @if (helperVisible()) {\n    <span\n      class=\"helper\"\n      [id]=\"helperId()\"\n      [attr.role]=\"error() ? 'alert' : null\"\n      [attr.aria-live]=\"error() ? 'polite' : null\"\n    >\n      {{ helper() }}\n    </span>\n  }\n</div>\n", styles: [":host{display:block;width:100%}.input{display:flex;flex-direction:column;align-items:stretch;gap:var(--space-stack-gap-s);width:100%}.input .label{color:var(--color-text-primary);font-family:var(--typo-input-label-font-family);font-size:var(--typo-input-label-font-size);font-weight:var(--typo-input-label-font-weight);letter-spacing:var(--typo-input-label-letter-spacing);line-height:var(--typo-input-label-line-height);transition:color .18s ease}.input .field{box-sizing:border-box;display:flex;align-items:center;gap:var(--spacing-8);width:100%;height:50px;padding:0 var(--space-field-padding-x);overflow:hidden;border:1px solid var(--color-border-field);border-radius:var(--radius-input);background-color:var(--color-bg-surface);transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease}.input .field:focus-within{border-color:var(--color-accent-primary);box-shadow:inset 0 0 0 1px var(--color-accent-primary)}.input .field .control{flex:1 1 auto;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:var(--color-text-primary);font-family:var(--typo-field-font-family);font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height);transition:color .18s ease}.input .field .control::placeholder{color:var(--color-text-placeholder);opacity:1}.input .field .icon{flex:0 0 18px;width:18px;height:18px;color:var(--color-text-primary);transition:color .18s ease}.input .helper{color:var(--color-text-muted);font-family:var(--typo-caption-s-font-family);font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height);transition:color .18s ease}.input.underline .field{height:40px;border:0;border-bottom:1px solid var(--color-border-field);border-radius:0;background-color:transparent}.input.underline .field:focus-within{border-bottom-color:var(--color-accent-primary);box-shadow:inset 0 -1px 0 var(--color-accent-primary)}.input.error .field,.input.error .field:focus-within{border-color:var(--color-state-error)}.input.error .field:focus-within{box-shadow:inset 0 0 0 1px var(--color-state-error)}.input.error.underline .field:focus-within{box-shadow:inset 0 -1px 0 var(--color-state-error)}.input.error .helper{color:var(--color-state-error)}.input.disabled .label,.input.disabled .helper{color:var(--color-text-muted)}.input.disabled .field{background-color:var(--color-bg-surface-tint)}.input.disabled .field .control,.input.disabled .field .icon{color:var(--color-text-muted)}.input.disabled .field .control{cursor:not-allowed}.input.disabled .field .control::placeholder{color:var(--color-text-muted)}.input.disabled.underline .field{background-color:transparent}@media(prefers-reduced-motion:reduce){.input .label,.input .field,.input .field .control,.input .field .icon,.input .helper{transition:none}}\n"], dependencies: [{ kind: "component", type: VoteyIconComponent, selector: "vt-icon", inputs: ["ico", "ariaLabel"] }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyInputComponent, decorators: [{
             type: Component,
@@ -940,12 +1035,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
                             useExisting: forwardRef(() => VoteyInputComponent),
                             multi: true,
                         },
-                    ], template: "<div [class]=\"inputClasses()\">\n  @if (labelVisible()) {\n    <label class=\"label\" [for]=\"resolvedId()\">{{ label() }}</label>\n  }\n\n  <div class=\"field\">\n    <input\n      class=\"control\"\n      [id]=\"resolvedId()\"\n      [name]=\"name()\"\n      [type]=\"type()\"\n      [value]=\"value()\"\n      [placeholder]=\"placeholder()\"\n      [autocomplete]=\"autocomplete()\"\n      [disabled]=\"effectiveDisabled()\"\n      [required]=\"required()\"\n      [attr.aria-invalid]=\"error() ? true : null\"\n      [attr.aria-describedby]=\"helperVisible() ? helperId() : null\"\n      (input)=\"handleInput($event)\"\n      (blur)=\"markAsTouched()\"\n    />\n\n    @let currentIcon = icon();\n    @if (currentIcon) {\n      <vt-icon class=\"icon\" [ico]=\"currentIcon\" />\n    }\n  </div>\n\n  @if (helperVisible()) {\n    <span class=\"helper\" [id]=\"helperId()\">{{ helper() }}</span>\n  }\n</div>\n", styles: [":host{display:block;width:100%}.input{display:flex;flex-direction:column;align-items:stretch;gap:var(--space-stack-gap-s);width:100%}.input .label{color:var(--color-text-primary);font-family:var(--typo-input-label-font-family);font-size:var(--typo-input-label-font-size);font-weight:var(--typo-input-label-font-weight);letter-spacing:var(--typo-input-label-letter-spacing);line-height:var(--typo-input-label-line-height)}.input .field{box-sizing:border-box;display:flex;align-items:center;gap:var(--spacing-8);width:100%;height:50px;padding:0 var(--space-field-padding-x);overflow:hidden;border:1px solid var(--color-border-field);border-radius:var(--radius-input);background-color:var(--color-bg-surface)}.input .field:focus-within{border:2px solid var(--color-accent-primary)}.input .field .control{flex:1 1 auto;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:var(--color-text-primary);font-family:var(--typo-field-font-family);font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.input .field .control::placeholder{color:var(--color-text-placeholder);opacity:1}.input .field .icon{flex:0 0 18px;width:18px;height:18px;color:var(--color-text-primary)}.input .helper{color:var(--color-text-muted);font-family:var(--typo-caption-s-font-family);font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.input.underline .field{height:40px;border:0;border-bottom:1px solid var(--color-border-field);border-radius:0;background-color:transparent}.input.underline .field:focus-within{border-bottom:2px solid var(--color-accent-primary)}.input.error .field,.input.error .field:focus-within{border-color:var(--color-state-error)}.input.error .helper{color:var(--color-state-error)}.input.disabled .label,.input.disabled .helper{color:var(--color-text-muted)}.input.disabled .field{background-color:var(--color-bg-surface-tint)}.input.disabled .field .control,.input.disabled .field .icon{color:var(--color-text-muted)}.input.disabled .field .control{cursor:not-allowed}.input.disabled .field .control::placeholder{color:var(--color-text-muted)}.input.disabled.underline .field{background-color:transparent}\n"] }]
-        }], propDecorators: { value: [{ type: i0.Input, args: [{ isSignal: true, alias: "value", required: false }] }, { type: i0.Output, args: ["valueChange"] }], variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type", required: false }] }], label: [{ type: i0.Input, args: [{ isSignal: true, alias: "label", required: false }] }], placeholder: [{ type: i0.Input, args: [{ isSignal: true, alias: "placeholder", required: false }] }], helper: [{ type: i0.Input, args: [{ isSignal: true, alias: "helper", required: false }] }], showLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "showLabel", required: false }] }], showHelper: [{ type: i0.Input, args: [{ isSignal: true, alias: "showHelper", required: false }] }], icon: [{ type: i0.Input, args: [{ isSignal: true, alias: "icon", required: false }] }], disabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "disabled", required: false }] }], required: [{ type: i0.Input, args: [{ isSignal: true, alias: "required", required: false }] }], error: [{ type: i0.Input, args: [{ isSignal: true, alias: "error", required: false }] }], id: [{ type: i0.Input, args: [{ isSignal: true, alias: "id", required: false }] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false }] }], autocomplete: [{ type: i0.Input, args: [{ isSignal: true, alias: "autocomplete", required: false }] }], changed: [{ type: i0.Output, args: ["changed"] }] } });
+                    ], template: "<div [class]=\"inputClasses()\">\n  @if (labelVisible()) {\n    <label class=\"label\" [for]=\"resolvedId()\">{{ label() }}</label>\n  }\n\n  <div class=\"field\">\n    <input\n      #inputElement\n      class=\"control\"\n      [id]=\"resolvedId()\"\n      [name]=\"name()\"\n      [type]=\"type()\"\n      [value]=\"displayValue()\"\n      [placeholder]=\"placeholder()\"\n      [autocomplete]=\"autocomplete()\"\n      [disabled]=\"effectiveDisabled()\"\n      [required]=\"required()\"\n      [readOnly]=\"readOnly()\"\n      [attr.autofocus]=\"autofocus() ? '' : null\"\n      [attr.inputmode]=\"inputMode() || null\"\n      [attr.min]=\"min()\"\n      [attr.max]=\"max()\"\n      [attr.step]=\"step()\"\n      [attr.minlength]=\"minLength()\"\n      [attr.maxlength]=\"maxLength()\"\n      [attr.pattern]=\"pattern() || null\"\n      [attr.aria-label]=\"resolvedAriaLabel()\"\n      [attr.aria-invalid]=\"error() ? true : null\"\n      [attr.aria-describedby]=\"resolvedAriaDescribedby()\"\n      [attr.aria-errormessage]=\"error() && helperVisible() ? helperId() : null\"\n      [attr.data-cy]=\"dataCy() || null\"\n      (input)=\"handleInput($event)\"\n      (focus)=\"handleFocus($event)\"\n      (blur)=\"handleBlur($event)\"\n      (keydown)=\"handleKeyDown($event)\"\n    />\n\n    @let currentIcon = icon();\n    @if (currentIcon) {\n      <vt-icon class=\"icon\" [ico]=\"currentIcon\" />\n    }\n  </div>\n\n  @if (helperVisible()) {\n    <span\n      class=\"helper\"\n      [id]=\"helperId()\"\n      [attr.role]=\"error() ? 'alert' : null\"\n      [attr.aria-live]=\"error() ? 'polite' : null\"\n    >\n      {{ helper() }}\n    </span>\n  }\n</div>\n", styles: [":host{display:block;width:100%}.input{display:flex;flex-direction:column;align-items:stretch;gap:var(--space-stack-gap-s);width:100%}.input .label{color:var(--color-text-primary);font-family:var(--typo-input-label-font-family);font-size:var(--typo-input-label-font-size);font-weight:var(--typo-input-label-font-weight);letter-spacing:var(--typo-input-label-letter-spacing);line-height:var(--typo-input-label-line-height);transition:color .18s ease}.input .field{box-sizing:border-box;display:flex;align-items:center;gap:var(--spacing-8);width:100%;height:50px;padding:0 var(--space-field-padding-x);overflow:hidden;border:1px solid var(--color-border-field);border-radius:var(--radius-input);background-color:var(--color-bg-surface);transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease}.input .field:focus-within{border-color:var(--color-accent-primary);box-shadow:inset 0 0 0 1px var(--color-accent-primary)}.input .field .control{flex:1 1 auto;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:var(--color-text-primary);font-family:var(--typo-field-font-family);font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height);transition:color .18s ease}.input .field .control::placeholder{color:var(--color-text-placeholder);opacity:1}.input .field .icon{flex:0 0 18px;width:18px;height:18px;color:var(--color-text-primary);transition:color .18s ease}.input .helper{color:var(--color-text-muted);font-family:var(--typo-caption-s-font-family);font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height);transition:color .18s ease}.input.underline .field{height:40px;border:0;border-bottom:1px solid var(--color-border-field);border-radius:0;background-color:transparent}.input.underline .field:focus-within{border-bottom-color:var(--color-accent-primary);box-shadow:inset 0 -1px 0 var(--color-accent-primary)}.input.error .field,.input.error .field:focus-within{border-color:var(--color-state-error)}.input.error .field:focus-within{box-shadow:inset 0 0 0 1px var(--color-state-error)}.input.error.underline .field:focus-within{box-shadow:inset 0 -1px 0 var(--color-state-error)}.input.error .helper{color:var(--color-state-error)}.input.disabled .label,.input.disabled .helper{color:var(--color-text-muted)}.input.disabled .field{background-color:var(--color-bg-surface-tint)}.input.disabled .field .control,.input.disabled .field .icon{color:var(--color-text-muted)}.input.disabled .field .control{cursor:not-allowed}.input.disabled .field .control::placeholder{color:var(--color-text-muted)}.input.disabled.underline .field{background-color:transparent}@media(prefers-reduced-motion:reduce){.input .label,.input .field,.input .field .control,.input .field .icon,.input .helper{transition:none}}\n"] }]
+        }], propDecorators: { value: [{ type: i0.Input, args: [{ isSignal: true, alias: "value", required: false }] }, { type: i0.Output, args: ["valueChange"] }], variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type", required: false }] }], label: [{ type: i0.Input, args: [{ isSignal: true, alias: "label", required: false }] }], placeholder: [{ type: i0.Input, args: [{ isSignal: true, alias: "placeholder", required: false }] }], helper: [{ type: i0.Input, args: [{ isSignal: true, alias: "helper", required: false }] }], showLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "showLabel", required: false }] }], showHelper: [{ type: i0.Input, args: [{ isSignal: true, alias: "showHelper", required: false }] }], icon: [{ type: i0.Input, args: [{ isSignal: true, alias: "icon", required: false }] }], disabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "disabled", required: false }] }], required: [{ type: i0.Input, args: [{ isSignal: true, alias: "required", required: false }] }], readOnly: [{ type: i0.Input, args: [{ isSignal: true, alias: "readOnly", required: false }] }], error: [{ type: i0.Input, args: [{ isSignal: true, alias: "error", required: false }] }], trimOnBlur: [{ type: i0.Input, args: [{ isSignal: true, alias: "trimOnBlur", required: false }] }], autofocus: [{ type: i0.Input, args: [{ isSignal: true, alias: "autofocus", required: false }] }], id: [{ type: i0.Input, args: [{ isSignal: true, alias: "id", required: false }] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false }] }], autocomplete: [{ type: i0.Input, args: [{ isSignal: true, alias: "autocomplete", required: false }] }], inputMode: [{ type: i0.Input, args: [{ isSignal: true, alias: "inputMode", required: false }] }], min: [{ type: i0.Input, args: [{ isSignal: true, alias: "min", required: false }] }], max: [{ type: i0.Input, args: [{ isSignal: true, alias: "max", required: false }] }], step: [{ type: i0.Input, args: [{ isSignal: true, alias: "step", required: false }] }], minLength: [{ type: i0.Input, args: [{ isSignal: true, alias: "minLength", required: false }] }], maxLength: [{ type: i0.Input, args: [{ isSignal: true, alias: "maxLength", required: false }] }], pattern: [{ type: i0.Input, args: [{ isSignal: true, alias: "pattern", required: false }] }], ariaLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaLabel", required: false }] }], ariaDescribedby: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaDescribedby", required: false }] }], dataCy: [{ type: i0.Input, args: [{ isSignal: true, alias: "dataCy", required: false }] }], changed: [{ type: i0.Output, args: ["changed"] }], focused: [{ type: i0.Output, args: ["focused"] }], blurred: [{ type: i0.Output, args: ["blurred"] }], keyDown: [{ type: i0.Output, args: ["keyDown"] }], inputElement: [{ type: i0.ViewChild, args: ["inputElement", { isSignal: true }] }] } });
 
 /**
  * Generated bundle index. Do not edit.
  */
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputTypes, VoteyInputVariants, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

@@ -21,10 +21,23 @@ const inputNames = [
   "showHelper",
   "disabled",
   "required",
+  "readOnly",
   "error",
+  "trimOnBlur",
+  "autofocus",
   "id",
   "name",
   "autocomplete",
+  "inputMode",
+  "min",
+  "max",
+  "step",
+  "minLength",
+  "maxLength",
+  "pattern",
+  "ariaLabel",
+  "ariaDescribedby",
+  "dataCy",
 ];
 
 function setInputProperties(componentRef, props) {
@@ -77,6 +90,15 @@ function AngularInputPreview(props) {
       const changedSubscription = componentRef.instance.changed.subscribe(
         (value) => latestPropsRef.current.onChanged(value)
       );
+      const focusedSubscription = componentRef.instance.focused.subscribe(
+        (event) => latestPropsRef.current.onFocused(event)
+      );
+      const blurredSubscription = componentRef.instance.blurred.subscribe(
+        (event) => latestPropsRef.current.onBlurred(event)
+      );
+      const keyDownSubscription = componentRef.instance.keyDown.subscribe(
+        (event) => latestPropsRef.current.onKeyDown(event)
+      );
 
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = { applicationRef, componentRef };
@@ -85,6 +107,9 @@ function AngularInputPreview(props) {
 
       angularRuntimeRef.current.destroy = () => {
         changedSubscription.unsubscribe();
+        focusedSubscription.unsubscribe();
+        blurredSubscription.unsubscribe();
+        keyDownSubscription.unsubscribe();
         applicationRef.detachView(componentRef.hostView);
         componentRef.destroy();
         applicationRef.destroy();
@@ -134,6 +159,32 @@ export default {
       action: "changed",
       table: { category: "Events" },
     },
+    onFocused: {
+      action: "focused",
+      table: { category: "Events" },
+    },
+    onBlurred: {
+      action: "blurred",
+      table: { category: "Events" },
+    },
+    onKeyDown: {
+      action: "keyDown",
+      table: { category: "Events" },
+    },
+    inputMode: {
+      options: [
+        "",
+        "none",
+        "text",
+        "decimal",
+        "numeric",
+        "tel",
+        "search",
+        "email",
+        "url",
+      ],
+      control: { type: "select" },
+    },
   },
   args: {
     value: "",
@@ -147,11 +198,27 @@ export default {
     icon: "none",
     disabled: false,
     required: false,
+    readOnly: false,
     error: false,
+    trimOnBlur: false,
+    autofocus: false,
     id: "storybook-input",
     name: "storybook-input",
     autocomplete: "off",
+    inputMode: "",
+    min: null,
+    max: null,
+    step: null,
+    minLength: null,
+    maxLength: null,
+    pattern: "",
+    ariaLabel: "",
+    ariaDescribedby: "",
+    dataCy: "",
     onChanged: fn(),
+    onFocused: fn(),
+    onBlurred: fn(),
+    onKeyDown: fn(),
   },
 };
 
@@ -162,10 +229,13 @@ export const Playground = {
     return (
       <AngularInputPreview
         {...args}
+        onBlurred={args.onBlurred}
         onChanged={(value) => {
           args.onChanged(value);
           updateArgs({ value });
         }}
+        onFocused={args.onFocused}
+        onKeyDown={args.onKeyDown}
       />
     );
   },

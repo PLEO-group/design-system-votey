@@ -92,6 +92,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIconNames,
     VoteyIllustrationNames,
     VoteyInputComponent,
+    VoteyInputModes,
+    VoteyInputTypeNames,
     VoteyInputTypes,
     VoteyInputVariants,
     VoteyRadioButtonComponent,
@@ -179,6 +181,29 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "url",
     "number",
   ]);
+  assert.deepEqual(VoteyInputTypeNames, {
+    text: "text",
+    email: "email",
+    password: "password",
+    search: "search",
+    tel: "tel",
+    url: "url",
+    number: "number",
+  });
+  assert.deepEqual(VoteyInputModes, [
+    "none",
+    "text",
+    "decimal",
+    "numeric",
+    "tel",
+    "search",
+    "email",
+    "url",
+  ]);
+  assert.equal(typeof VoteyInputComponent.prototype.focus, "function");
+  assert.equal(typeof VoteyInputComponent.prototype.blur, "function");
+  assert.equal(typeof VoteyInputComponent.prototype.select, "function");
+  assert.equal(typeof VoteyInputComponent.prototype.clear, "function");
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
   assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
@@ -330,7 +355,7 @@ test("input synchronizes value, forms callbacks, disabled state and changed outp
   assert.equal(input.inputClasses(), "input boxed");
 
   input.handleInput({ target: { value: "Nowa wartość" } });
-  input.markAsTouched();
+  input.handleBlur({ target: { value: "Nowa wartość" } });
 
   assert.equal(input.value(), "Nowa wartość");
   assert.deepEqual(formValues, ["Nowa wartość"]);
@@ -342,6 +367,106 @@ test("input synchronizes value, forms callbacks, disabled state and changed outp
   assert.equal(input.inputClasses(), "input boxed disabled");
 
   subscription.unsubscribe();
+});
+
+test("input supports numeric values, trimming, accessibility and interaction outputs", async () => {
+  const { Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const values = [];
+  const focusEvents = [];
+  const blurEvents = [];
+  const keyEvents = [];
+
+  input.registerOnChange((value) => values.push(value));
+  input.type = () => "number";
+  input.handleInput({ target: { value: "12", valueAsNumber: 12 } });
+  input.handleInput({ target: { value: "12", valueAsNumber: 12 } });
+  input.handleInput({ target: { value: "invalid", valueAsNumber: NaN } });
+  input.handleInput({ target: { value: "", valueAsNumber: NaN } });
+
+  assert.deepEqual(values, [12, null]);
+  assert.equal(input.value(), null);
+
+  input.type = () => "text";
+  input.trimOnBlur = () => true;
+  const blurEvent = { target: { value: "  tekst  " } };
+  input.handleBlur(blurEvent);
+
+  assert.equal(blurEvent.target.value, "tekst");
+  assert.equal(input.value(), "tekst");
+
+  input.showLabel = () => false;
+  input.ariaLabel = () => "Nazwa użytkownika";
+  input.showHelper = () => true;
+  input.ariaDescribedby = () => "external-description";
+
+  assert.equal(input.resolvedAriaLabel(), "Nazwa użytkownika");
+  assert.equal(
+    input.resolvedAriaDescribedby(),
+    `external-description ${input.helperId()}`,
+  );
+
+  const focusEvent = { type: "focus" };
+  const keyEvent = { key: "Enter" };
+  const focusSubscription = input.focused.subscribe((event) =>
+    focusEvents.push(event),
+  );
+  const blurSubscription = input.blurred.subscribe((event) =>
+    blurEvents.push(event),
+  );
+  const keySubscription = input.keyDown.subscribe((event) =>
+    keyEvents.push(event),
+  );
+
+  input.handleFocus(focusEvent);
+  input.handleBlur({ target: { value: "tekst" } });
+  input.handleKeyDown(keyEvent);
+
+  assert.deepEqual(focusEvents, [focusEvent]);
+  assert.equal(blurEvents.length, 1);
+  assert.deepEqual(keyEvents, [keyEvent]);
+
+  input.readOnly = () => false;
+  input.clear();
+  assert.equal(input.value(), "");
+
+  input.writeValue("Nie zmieniaj");
+  input.readOnly = () => true;
+  input.clear();
+  assert.equal(input.value(), "Nie zmieniaj");
+
+  const elementCalls = [];
+  input.inputElement = () => ({
+    nativeElement: {
+      blur: () => elementCalls.push("blur"),
+      focus: (options) => elementCalls.push(["focus", options]),
+      select: () => elementCalls.push("select"),
+    },
+  });
+  const focusOptions = { preventScroll: true };
+
+  input.focus(focusOptions);
+  input.select();
+  input.blur();
+
+  assert.deepEqual(elementCalls, [
+    ["focus", focusOptions],
+    "select",
+    "blur",
+  ]);
+
+  input.setDisabledState(true);
+  input.focus();
+  input.select();
+  assert.equal(elementCalls.length, 3);
+
+  focusSubscription.unsubscribe();
+  blurSubscription.unsubscribe();
+  keySubscription.unsubscribe();
 });
 
 test("radio button emits MatRadioChange", async () => {

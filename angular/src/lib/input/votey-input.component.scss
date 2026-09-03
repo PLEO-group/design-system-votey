@@ -17,6 +17,7 @@
     font-weight: var(--typo-input-label-font-weight);
     letter-spacing: var(--typo-input-label-letter-spacing);
     line-height: var(--typo-input-label-line-height);
+    transition: color 180ms ease;
   }
 
   .field {
@@ -31,9 +32,14 @@
     border: 1px solid var(--color-border-field);
     border-radius: var(--radius-input);
     background-color: var(--color-bg-surface);
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
 
     &:focus-within {
-      border: 2px solid var(--color-accent-primary);
+      border-color: var(--color-accent-primary);
+      box-shadow: inset 0 0 0 1px var(--color-accent-primary);
     }
 
     .control {
@@ -50,6 +56,7 @@
       font-weight: var(--typo-field-font-weight);
       letter-spacing: var(--typo-field-letter-spacing);
       line-height: var(--typo-field-line-height);
+      transition: color 180ms ease;
 
       &::placeholder {
         color: var(--color-text-placeholder);
@@ -62,6 +69,7 @@
       width: 18px;
       height: 18px;
       color: var(--color-text-primary);
+      transition: color 180ms ease;
     }
   }
 
@@ -72,6 +80,7 @@
     font-weight: var(--typo-caption-s-font-weight);
     letter-spacing: var(--typo-caption-s-letter-spacing);
     line-height: var(--typo-caption-s-line-height);
+    transition: color 180ms ease;
   }
 
   &.underline {
@@ -83,7 +92,8 @@
       background-color: transparent;
 
       &:focus-within {
-        border-bottom: 2px solid var(--color-accent-primary);
+        border-bottom-color: var(--color-accent-primary);
+        box-shadow: inset 0 -1px 0 var(--color-accent-primary);
       }
     }
   }
@@ -92,6 +102,16 @@
     .field,
     .field:focus-within {
       border-color: var(--color-state-error);
+    }
+
+    .field:focus-within {
+      box-shadow: inset 0 0 0 1px var(--color-state-error);
+    }
+
+    &.underline {
+      .field:focus-within {
+        box-shadow: inset 0 -1px 0 var(--color-state-error);
+      }
     }
 
     .helper {
@@ -126,6 +146,18 @@
       .field {
         background-color: transparent;
       }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    .label,
+    .field,
+    .field .control,
+    .field .icon,
+    .helper {
+      transition: none;
     }
   }
 }

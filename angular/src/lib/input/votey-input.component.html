@@ -5,19 +5,34 @@
 
   <div class="field">
     <input
+      #inputElement
       class="control"
       [id]="resolvedId()"
       [name]="name()"
       [type]="type()"
-      [value]="value()"
+      [value]="displayValue()"
       [placeholder]="placeholder()"
       [autocomplete]="autocomplete()"
       [disabled]="effectiveDisabled()"
       [required]="required()"
+      [readOnly]="readOnly()"
+      [attr.autofocus]="autofocus() ? '' : null"
+      [attr.inputmode]="inputMode() || null"
+      [attr.min]="min()"
+      [attr.max]="max()"
+      [attr.step]="step()"
+      [attr.minlength]="minLength()"
+      [attr.maxlength]="maxLength()"
+      [attr.pattern]="pattern() || null"
+      [attr.aria-label]="resolvedAriaLabel()"
       [attr.aria-invalid]="error() ? true : null"
-      [attr.aria-describedby]="helperVisible() ? helperId() : null"
+      [attr.aria-describedby]="resolvedAriaDescribedby()"
+      [attr.aria-errormessage]="error() && helperVisible() ? helperId() : null"
+      [attr.data-cy]="dataCy() || null"
       (input)="handleInput($event)"
-      (blur)="markAsTouched()"
+      (focus)="handleFocus($event)"
+      (blur)="handleBlur($event)"
+      (keydown)="handleKeyDown($event)"
     />
 
     @let currentIcon = icon();
@@ -27,6 +42,13 @@
   </div>
 
   @if (helperVisible()) {
-    <span class="helper" [id]="helperId()">{{ helper() }}</span>
+    <span
+      class="helper"
+      [id]="helperId()"
+      [attr.role]="error() ? 'alert' : null"
+      [attr.aria-live]="error() ? 'polite' : null"
+    >
+      {{ helper() }}
+    </span>
   }
 </div>

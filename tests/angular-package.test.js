@@ -87,6 +87,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonComponent,
     VoteyButtonSizes,
     VoteyButtonVariants,
+    VoteyChipComponent,
     VoteyCheckboxComponent,
     VoteyIconComponent,
     VoteyIconNames,
@@ -116,6 +117,16 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(typeof VoteyCheckboxComponent, "function");
   assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyChipComponent, "function");
+  assert.deepEqual(VoteyChipComponent.ɵcmp.selectors, [["vt-chip"]]);
+  assert.equal(VoteyChipComponent.ɵcmp.inputs.label[0], "label");
+  assert.equal(
+    VoteyChipComponent.ɵcmp.inputs.removeAriaLabel[0],
+    "removeAriaLabel",
+  );
+  assert.equal(VoteyChipComponent.ɵcmp.inputs.showRemove[0], "showRemove");
+  assert.equal(VoteyChipComponent.ɵcmp.inputs.disabled[0], "disabled");
+  assert.equal(VoteyChipComponent.ɵcmp.outputs.removed, "removed");
   assert.equal(typeof VoteyRadioButtonComponent, "function");
   assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
     ["vt-radio-button"],
@@ -324,6 +335,26 @@ test("text resolves its default token-backed presentation", async () => {
   assert.equal(text.maxLines(), 0);
   assert.equal(text.lineClampEnabled(), false);
   assert.equal(text.textClasses(), "text body primary");
+});
+
+test("chip exposes removable and disabled defaults", async () => {
+  const { Injector, runInInjectionContext, VoteyChipComponent } =
+    await loadAngularRuntime();
+  const chip = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyChipComponent(),
+  );
+  const removedEvents = [];
+  const subscription = chip.removed.subscribe(() => removedEvents.push(true));
+
+  assert.equal(chip.showRemove(), true);
+  assert.equal(chip.disabled(), false);
+  assert.equal(chip.textColor(), "primary");
+
+  chip.removed.emit();
+  assert.deepEqual(removedEvents, [true]);
+
+  subscription.unsubscribe();
 });
 
 test("device service initializes responsive document attributes and viewport unit", async () => {

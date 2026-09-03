@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef, InputSignalWithTransform } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, InputSignalWithTransform, TemplateRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -148,6 +148,35 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyCheckboxComponent, "vt-checkbox", never, { "checked": { "alias": "checked"; "required": false; "isSignal": true; }; "indeterminate": { "alias": "indeterminate"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "labelPosition": { "alias": "labelPosition"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "value": { "alias": "value"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; "indeterminate": "indeterminateChange"; "changed": "changed"; }, never, ["*"], true, never>;
 }
 
+declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "body-l", "body", "body-s", "caption", "caption-s", "micro", "button", "table-header", "label"];
+declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
+type VoteyTextVariant = (typeof VoteyTextVariants)[number];
+type VoteyTextColor = (typeof VoteyTextColors)[number];
+declare class VoteyTextComponent {
+    readonly content: InputSignal<string | number | null | undefined>;
+    readonly variant: InputSignal<VoteyTextVariant>;
+    readonly color: InputSignal<VoteyTextColor>;
+    readonly uppercase: InputSignal<boolean>;
+    readonly italic: InputSignal<boolean>;
+    readonly wrap: InputSignal<boolean>;
+    readonly maxLines: InputSignalWithTransform<number, unknown>;
+    protected readonly lineClampEnabled: Signal<boolean>;
+    protected readonly textClasses: Signal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+declare class VoteyChipComponent {
+    readonly label: InputSignal<string>;
+    readonly removeAriaLabel: InputSignal<string>;
+    readonly showRemove: InputSignal<boolean>;
+    readonly disabled: InputSignal<boolean>;
+    readonly removed: OutputEmitterRef<void>;
+    protected readonly textColor: Signal<VoteyTextColor>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyChipComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyChipComponent, "vt-chip", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "removeAriaLabel": { "alias": "removeAriaLabel"; "required": true; "isSignal": true; }; "showRemove": { "alias": "showRemove"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; }, { "removed": "removed"; }, never, never, true, never>;
+}
+
 type VoteyRadioButtonLabelPosition = "before" | "after";
 interface VtRadioOption<T = unknown> {
     readonly label: string;
@@ -187,23 +216,5 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "body-l", "body", "body-s", "caption", "caption-s", "micro", "button", "table-header", "label"];
-declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
-type VoteyTextVariant = (typeof VoteyTextVariants)[number];
-type VoteyTextColor = (typeof VoteyTextColors)[number];
-declare class VoteyTextComponent {
-    readonly content: InputSignal<string | number | null | undefined>;
-    readonly variant: InputSignal<VoteyTextVariant>;
-    readonly color: InputSignal<VoteyTextColor>;
-    readonly uppercase: InputSignal<boolean>;
-    readonly italic: InputSignal<boolean>;
-    readonly wrap: InputSignal<boolean>;
-    readonly maxLines: InputSignalWithTransform<number, unknown>;
-    protected readonly lineClampEnabled: Signal<boolean>;
-    protected readonly textClasses: Signal<string>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
-}
-
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

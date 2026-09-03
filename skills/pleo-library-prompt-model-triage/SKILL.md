@@ -1,7 +1,7 @@
 ---
 name: pleo-library-prompt-model-triage
 description: Pierwszy router promptu po target-only version preflight. Szybko klasyfikuj bieżący prompt pod najlepszy poziom modelu, reasoning, koszt i dobór skilli wykonawczych. Nie raportuj tego skilla w telemetryce, bo jego nazwa zaczyna się od `pleo-library-`.
-version: 2.7.3
+version: 2.7.8
 author: d.kawula@pleodigital.com
 scope: SHARED
 category: Library
@@ -14,6 +14,15 @@ Ten plik zawiera reguły ładowane przy każdym użyciu tego skilla. Szczegóło
 Full Mode (cztery osie, Prompt Quality Check, pełny Cost Estimate, tabela pewności,
 przykłady Full Mode) jest w `extended/full-mode.md` — ładuj go tylko gdy routing
 wymaga Full Mode.
+
+## Kiedy używać / kiedy pominąć
+
+- Po target-only version preflight uruchamiaj ten routing dla każdej nowej merytorycznej tury użytkownika, zanim wybierzesz model, reasoning albo skill wykonawczy.
+- Nie uruchamiaj routingu ponownie, gdy poprzednia odpowiedź agenta zatrzymała dokładnie jedno oczekujące zadanie wyłącznie po potwierdzenie reasoningu powyżej `medium`, a bieżąca wiadomość jest jasnym potwierdzeniem bez nowego wymagania lub zmiany scope'u. Zużyj to potwierdzenie jednorazowo i kontynuuj oczekujące zadanie z wcześniej wybranym routingiem.
+- Jeśli wiadomość z potwierdzeniem dodaje wymaganie, zmienia scope albo może odnosić się do więcej niż jednego oczekującego działania, traktuj ją jako nową merytoryczną turę i wykonaj routing lub poproś o minimalne doprecyzowanie.
+- Tylko jawne `bez routingu` albo `skip routing` pomija w tej turze dobór i prezentację modelu, reasoningu, kosztu oraz skilli wykonawczych.
+- Pominięcie routingu nigdy nie pomija `execution_gate`, ustalenia brakującego scope'u, środowiska i oczekiwanego rezultatu ani wymaganej zgody na zapis lub akcję zewnętrzną. Zawsze oceń tę bramkę przed wykonaniem zadania.
+- `bez routingu` ani `skip routing` nie stanowi zgody na mutację, akcję zewnętrzną lub przyjęcie blokującego założenia.
 
 ## Cel
 
@@ -108,15 +117,17 @@ Domyślnie ufaj lokalnej mapie modeli z `references/`.
 **Uruchom browse gdy:**
 
 - użytkownik pyta o `latest`, `current`, `most recent` albo pisze `sprawdź najnowsze modele i zaktualizuj skilla`
-- zadanie dotyczy wyboru modeli, pricingu, porównania vendorów
+- właściwy cel promptu użytkownika dotyczy wyboru lub porównania modeli/providerów, ich dostępności, capability albo pricingu; wewnętrzny dobór modelu przez ten skill nie spełnia tego warunku
 - runtime pokazuje nieznany alias
 - referencja starsza niż 14 dni
 - decyzja wysokiej stawki oparta o katalog modeli
 
 **Nie uruchamiaj browse gdy:**
 
-- zwykłe zadanie developerskie
-- referencja świeża, runtime nie pokazuje nic nowego
+- zwykłe zadanie developerskie, dla którego wybór modelu jest tylko wewnętrznym krokiem routingu
+- referencja jest świeża, użytkownik nie pyta o aktualny rynek modeli/ceny, a runtime nie pokazuje nic nowego
+
+Reguły te nie są równorzędnie sprzeczne: rutynowy routing każdego promptu nie oznacza, że „zadanie dotyczy wyboru modeli”. Przy świeżej referencji i braku jawnego pytania o modele, providerów, dostępność lub ceny nie uruchamiaj browse tylko po to, żeby wybrać model do zwykłego zadania.
 
 **Fallback dla nieznanego modelu:**
 Traktuj jako odpowiednik najbliższego poznanego modelu w tym samym tier. Zakomunikuj niższą pewność.
@@ -135,7 +146,13 @@ Gdy browse prowadzi do zmiany katalogu modeli, reasoning albo cen, potraktuj akt
 2. Dla istniejącego providera zaktualizuj plik wskazany w polu `provider.reference` odpowiadającego `agents/*.yaml`, jego `doc_date`, statusy modeli i sekcję `Źródła`. Nie otwieraj literalnej ścieżki z placeholderem i nie uzupełniaj brakujących danych przez analogię; oznacz je jako nieznane.
 3. Zsynchronizuj odpowiadający `agents/*.yaml`: `catalog_verified_on`, `reference`, `default_model`, `reasoning_levels`, `tier_map`, `model_status` i `pricing_estimates`.
 4. Zsynchronizuj modele, ceny, progi i daty promocji użyte w `extended/full-mode.md`.
-5. Uruchom `node <skill-dir>/scripts/validate-model-catalog.mjs`. Publikacja lub handoff są zablokowane, jeśli validator zgłosi błąd.
+5. Z katalogu głównego repo — tego, który zawiera `.agent-library.yaml` i katalog `skills/` — uruchom dokładnie:
+
+   ```bash
+   node skills/pleo-library-prompt-model-triage/scripts/validate-model-catalog.mjs
+   ```
+
+   Nie podstawiaj własnej wartości `<skill-dir>`. Jeśli bieżący katalog jest inny, najpierw przejdź do katalogu głównego repo. Publikacja lub handoff są zablokowane, jeśli validator zgłosi błąd.
 
 Źródło runtime może potwierdzić dostępność w pickerze, ale nie zastępuje oficjalnego źródła providera dla aliasów API, reasoning i pricingu.
 
@@ -213,9 +230,11 @@ Ta bramka ma pierwszeństwo przed progiem reasoning. Reasoning `medium` albo ni�
 - Po `read_only_discovery` przelicz bramkę; nie przechodź do wykonania, dopóki jej wartość nie zmieni się na `continue`, `continue_with_assumptions` albo `blocked`.
 - Jeśli `execution_gate` to `continue` albo `continue_with_assumptions`, a rekomendowany reasoning to `medium` albo niżej (`minimal`, `low`, `medium`), kontynuuj pracę bez pytania użytkownika o potwierdzenie.
 - Jeśli `execution_gate` to `continue` albo `continue_with_assumptions`, a rekomendowany reasoning jest wyższy niż `medium` (`high`, `xhigh`, `max` albo providerowy odpowiednik), zatrzymaj się po routingu i poproś użytkownika o potwierdzenie. Wystarczy dowolne jasne potwierdzenie, np. `ok`, `tak`, `go`, `start`, `zatwierdzam`.
+- Oczekując na to potwierdzenie, zachowaj powiązanie z jednym konkretnym zadaniem i wcześniej wybranym routingiem. Jasne potwierdzenie bez nowych wymagań jest turą kontynuacyjną: nie uruchamiaj ponownie preflightu ani routingu, nie pytaj drugi raz i od razu wznów to zadanie. Po użyciu potwierdzenia usuń stan oczekiwania.
+- Potwierdzenie reasoningu nie rozszerza scope'u ani uprawnień i nie zastępuje osobnej zgody wymaganej dla mutacji lub akcji zewnętrznej. Ten wyjątek stosuj tylko, gdy `execution_gate` przed zatrzymaniem miał wartość `continue` albo `continue_with_assumptions`, nigdy dla `blocked`.
 - Dla reasoning powyżej `medium` nie wykonuj dalszych tool calli, odczytu repo ani edycji, dopóki użytkownik nie potwierdzi kontynuacji.
 - Jeśli aktywny runtime wymaga ręcznej zmiany modelu/reasoningu, a rekomendacja różni się od aktualnego ustawienia, poproś o zmianę razem z tym samym potwierdzeniem.
-- Jeśli użytkownik wpisze `bez routingu` albo `skip routing`, pomiń routing dla tej tury.
+- Jeśli użytkownik wpisze `bez routingu` albo `skip routing`, pomiń wyłącznie dobór i prezentację modelu/reasoningu/kosztu/skilli dla tej tury. Nadal zainicjuj i oceń `execution_gate`; wszystkie reguły blokowania i zgód pozostają obowiązkowe.
 
 ---
 
@@ -258,9 +277,11 @@ Ten skill ma być pierwszym routerem po obowiązkowym target-only version prefli
 - Nie ukrywaj kosztu.
 - Nie zgaduj nazw modeli.
 - Nie utożsamiaj niskiego reasoningu z pozwoleniem na wykonanie przy brakujących decyzjach blokujących.
+- Nie traktuj `bez routingu` ani `skip routing` jako pominięcia `execution_gate` lub zgody na wykonanie.
 - Nie pozostawiaj `execution_gate` bez wartości; dla niskiej niejednoznaczności ustaw `continue`.
 - Nie przechodź do skilla docelowego ani zapisu przy `execution_gate: blocked`.
 - Nie kontynuuj bez potwierdzenia przy reasoning powyżej `medium`.
+- Nie routuj ponownie jasnego potwierdzenia oczekującego reasoningu i nie proś o to samo potwierdzenie drugi raz.
 - Nie rekomenduj modelu niedostępnego w runtime.
 - Nie pomijaj Cost Estimate w Full Mode.
 - Nie uruchamiaj Full Mode dla trywialnych promptów.

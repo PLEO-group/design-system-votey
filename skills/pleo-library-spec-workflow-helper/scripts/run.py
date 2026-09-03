@@ -128,6 +128,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Fetch Jira context and the current pre-spec workflow state by Jira key.",
     )
     prespec_context_parser.add_argument("--jira-key", required=True, help="Jira key used by the pre-spec workflow.")
+    prespec_context_parser.add_argument(
+        "--include-outdated",
+        action="store_true",
+        help="Include questions invalidated by current code. Intended only for continuing a pre-spec audit.",
+    )
 
     prespec_start_parser = subparsers.add_parser(
         "prespec-start",
@@ -155,6 +160,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pull_storage_parser.add_argument("--path", required=True, help="Storage path from /api/spec-review/storage/tree.")
     pull_storage_parser.add_argument("--output", required=True, help="Destination file path or directory.")
+    pull_storage_parser.add_argument(
+        "--versioning-file",
+        default=str(DEFAULT_VERSIONING_FILE),
+        help="Version registry updated when --output is the canonical specification.md/spec.md path.",
+    )
     pull_storage_parser.add_argument(
         "--confirm-local-write",
         action="store_true",
@@ -229,6 +239,7 @@ def main() -> int:
                 base_url=base_url,
                 storage_path=args.path,
                 output_arg=args.output,
+                versioning_file=Path(args.versioning_file).expanduser(),
                 confirm_local_write=args.confirm_local_write,
                 headers=headers,
                 timeout=args.timeout,
@@ -254,6 +265,7 @@ def main() -> int:
             result = fetch_prespec_context(
                 base_url=base_url,
                 jira_key=args.jira_key,
+                include_outdated=args.include_outdated,
                 headers=headers,
                 timeout=args.timeout,
             )
@@ -384,25 +396,61 @@ def inspect_status(
     local_specs = read_versioning_file(versioning_file)
     remote_tree = fetch_storage_tree(base_url=base_url, project_slug=project_slug, headers=headers, timeout=timeout)
     remote_versions = extract_remote_versions(remote_tree)
+    local_versions = {spec.feature_slug: spec.version for spec in local_specs}
+    sdd_root = versioning_file.resolve().parent
+    local_files = {
+        feature_slug: find_local_specification_path(sdd_root, feature_slug)
+        for feature_slug in set(local_versions) | set(remote_versions)
+    }
 
     statuses = []
     outdated = []
     for spec in local_specs:
         remote_info = remote_versions.get(spec.feature_slug)
+        local_file = local_files.get(spec.feature_slug)
+        local_present = local_file is not None
         latest_remote_version = remote_info.version if remote_info else None
         latest_remote_path = remote_info.path if remote_info else None
-        up_to_date = latest_remote_version is None or compare_versions(spec.version, latest_remote_version) >= 0
+        up_to_date = local_present and (
+            latest_remote_version is None or compare_versions(spec.version, latest_remote_version) >= 0
+        )
         entry = {
             "featureSlug": spec.feature_slug,
             "path": str(spec.path),
+            "localFilePath": str(local_file) if local_file is not None else None,
+            "localPresent": local_present,
             "localVersion": spec.version,
             "latestRemoteVersion": latest_remote_version,
             "latestRemotePath": latest_remote_path,
             "upToDate": up_to_date,
         }
         statuses.append(entry)
-        if not up_to_date:
+        if local_present and latest_remote_version is not None \
+                and compare_versions(spec.version, latest_remote_version) < 0:
             outdated.append(entry)
+
+    remote_specs = []
+    missing_local_specs = []
+    for feature_slug, remote_info in sorted(remote_versions.items()):
+        local_version = local_versions.get(feature_slug)
+        local_file = local_files.get(feature_slug)
+        local_present = local_file is not None
+        up_to_date = local_present and local_version is not None \
+            and compare_versions(local_version, remote_info.version) >= 0
+        entry = {
+            "featureSlug": feature_slug,
+            "localFilePath": str(local_file) if local_file is not None else None,
+            "localVersion": local_version,
+            "latestRemoteVersion": remote_info.version,
+            "latestRemotePath": remote_info.path,
+            "localPresent": local_present,
+            "upToDate": up_to_date,
+        }
+        remote_specs.append(entry)
+        if not local_present:
+            missing_local_specs.append(entry)
+
+    specs_to_pull = [entry for entry in remote_specs if not entry["upToDate"]]
 
     return {
         "ok": True,
@@ -410,6 +458,9 @@ def inspect_status(
         "versioningFile": str(versioning_file),
         "specs": statuses,
         "outdatedSpecs": outdated,
+        "remoteSpecs": remote_specs,
+        "missingLocalSpecs": missing_local_specs,
+        "specsToPull": specs_to_pull,
     }
 
 
@@ -500,13 +551,11 @@ def download_current_spec(
 
     filename = resolve_download_filename(response.headers, normalized_jira_key)
     output_path = resolve_output_path(output_arg, filename)
-    output_path, feature_slug, relocated_to_feature_slug = relocate_output_path_by_feature_slug(
-        output_path=output_path,
-        body=response.body,
-    )
+    feature_slug = extract_feature_slug(response.body)
+    writes_to_canonical_spec_path = is_path_within(output_path, DEFAULT_SDD_ROOT)
     ensure_local_write_confirmed(
         output_path=output_path,
-        relocated_to_feature_slug=relocated_to_feature_slug,
+        relocated_to_feature_slug=writes_to_canonical_spec_path,
         confirm_local_write=confirm_local_write,
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -519,7 +568,7 @@ def download_current_spec(
         "contentType": response.headers.get("Content-Type"),
         "fileName": filename,
         "featureSlug": feature_slug,
-        "relocatedToFeatureSlugPath": relocated_to_feature_slug,
+        "relocatedToFeatureSlugPath": False,
         "confirmedLocalWrite": confirm_local_write,
         "savedTo": str(output_path),
         "sizeBytes": len(response.body),
@@ -544,14 +593,8 @@ def download_workflow_bundle(
         timeout=timeout,
     )
 
-    source_file = require_workflow_file_metadata(metadata, "sourceFile")
+    tester_workflow = bool(metadata.get("testerWorkflow"))
     current_file = require_workflow_file_metadata(metadata, "currentFile")
-    source_response = send_request(
-        method="GET",
-        url=with_library_user_id(build_source_spec_url(base_url, normalized_jira_key)),
-        headers=headers,
-        timeout=timeout,
-    )
     current_response = send_request(
         method="GET",
         url=with_library_user_id(build_current_spec_url(base_url, normalized_jira_key)),
@@ -559,53 +602,17 @@ def download_workflow_bundle(
         timeout=timeout,
     )
 
-    source_filename = resolve_download_filename(source_response.headers, source_file["fileName"])
     current_filename = resolve_download_filename(current_response.headers, current_file["fileName"])
-    feature_slug = (
-        extract_feature_slug(source_response.body)
-        or extract_feature_slug(current_response.body)
-    )
-
-    source_output_path = resolve_workflow_output_path(
-        output_dir_arg=output_dir_arg,
-        feature_slug=feature_slug,
-        filename=source_filename,
-        source_file=True,
-    )
+    feature_slug = extract_feature_slug(current_response.body)
     current_output_path = resolve_workflow_output_path(
         output_dir_arg=output_dir_arg,
         feature_slug=feature_slug,
         filename=current_filename,
-        source_file=False,
+        main_specification_file=tester_workflow,
     )
 
-    saved_files = []
-    if source_output_path.resolve() == current_output_path.resolve():
-        ensure_local_write_confirmed(
-            output_path=source_output_path,
-            relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
-            confirm_local_write=confirm_local_write,
-        )
-        source_output_path.parent.mkdir(parents=True, exist_ok=True)
-        source_output_path.write_bytes(source_response.body)
-        saved_files.append({
-            "role": source_file["role"],
-            "fileName": source_filename,
-            "savedTo": str(source_output_path),
-            "slackFileId": source_file["slackFileId"],
-            "sizeBytes": len(source_response.body),
-        })
-    else:
-        saved_files.append(save_downloaded_workflow_file(
-            body=source_response.body,
-            output_path=source_output_path,
-            role=source_file["role"],
-            filename=source_filename,
-            slack_file_id=source_file["slackFileId"],
-            confirm_local_write=confirm_local_write,
-            relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
-        ))
-        saved_files.append(save_downloaded_workflow_file(
+    if tester_workflow:
+        saved_files = [save_downloaded_workflow_file(
             body=current_response.body,
             output_path=current_output_path,
             role=current_file["role"],
@@ -613,7 +620,61 @@ def download_workflow_bundle(
             slack_file_id=current_file["slackFileId"],
             confirm_local_write=confirm_local_write,
             relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
-        ))
+        )]
+    else:
+        source_file = require_workflow_file_metadata(metadata, "sourceFile")
+        source_response = send_request(
+            method="GET",
+            url=with_library_user_id(build_source_spec_url(base_url, normalized_jira_key)),
+            headers=headers,
+            timeout=timeout,
+        )
+        source_filename = resolve_download_filename(source_response.headers, source_file["fileName"])
+        feature_slug = feature_slug or extract_feature_slug(source_response.body)
+        source_output_path = resolve_workflow_output_path(
+            output_dir_arg=output_dir_arg,
+            feature_slug=feature_slug,
+            filename=source_filename,
+            main_specification_file=True,
+        )
+        current_output_path = resolve_workflow_output_path(
+            output_dir_arg=output_dir_arg,
+            feature_slug=feature_slug,
+            filename=current_filename,
+            main_specification_file=False,
+        )
+
+        if source_output_path.resolve() == current_output_path.resolve():
+            saved_files = [save_downloaded_workflow_file(
+                body=current_response.body,
+                output_path=current_output_path,
+                role=current_file["role"],
+                filename=current_filename,
+                slack_file_id=current_file["slackFileId"],
+                confirm_local_write=confirm_local_write,
+                relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
+            )]
+        else:
+            saved_files = [
+                save_downloaded_workflow_file(
+                    body=source_response.body,
+                    output_path=source_output_path,
+                    role=source_file["role"],
+                    filename=source_filename,
+                    slack_file_id=source_file["slackFileId"],
+                    confirm_local_write=confirm_local_write,
+                    relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
+                ),
+                save_downloaded_workflow_file(
+                    body=current_response.body,
+                    output_path=current_output_path,
+                    role=current_file["role"],
+                    filename=current_filename,
+                    slack_file_id=current_file["slackFileId"],
+                    confirm_local_write=confirm_local_write,
+                    relocated_to_feature_slug=output_dir_arg is None and feature_slug is not None,
+                ),
+            ]
 
     affected_result = {
         "enabled": with_affected,
@@ -621,7 +682,7 @@ def download_workflow_bundle(
         "skipped": [],
     }
     if with_affected:
-        if bool(metadata.get("testerWorkflow")):
+        if tester_workflow:
             affected_result = {
                 "enabled": True,
                 "updated": [],
@@ -645,7 +706,7 @@ def download_workflow_bundle(
         "jiraKey": normalized_jira_key,
         "projectSlug": metadata.get("projectSlug"),
         "workflowStatus": metadata.get("workflowStatus"),
-        "testerWorkflow": bool(metadata.get("testerWorkflow")),
+        "testerWorkflow": tester_workflow,
         "featureSlug": feature_slug,
         "files": saved_files,
         "affectedSpecifications": affected_result,
@@ -719,7 +780,7 @@ def resolve_workflow_output_path(
     output_dir_arg: Optional[str],
     feature_slug: Optional[str],
     filename: str,
-    source_file: bool,
+    main_specification_file: bool,
 ) -> Path:
     if output_dir_arg:
         return Path(output_dir_arg).expanduser() / filename
@@ -727,7 +788,7 @@ def resolve_workflow_output_path(
         return Path(filename)
 
     feature_dir = DEFAULT_SDD_ROOT / feature_slug
-    if source_file:
+    if main_specification_file:
         specification_path = feature_dir / "specification.md"
         if specification_path.is_file():
             return specification_path
@@ -816,7 +877,7 @@ def pull_affected_specifications(
             output_dir_arg=None,
             feature_slug=feature_slug,
             filename="specification.md",
-            source_file=True,
+            main_specification_file=True,
         )
         saved = save_downloaded_workflow_file(
             body=response.body,
@@ -896,10 +957,12 @@ def download_storage_file(
     base_url: str,
     storage_path: str,
     output_arg: str,
+    versioning_file: Path,
     confirm_local_write: bool,
     headers: Dict[str, str],
     timeout: int,
 ) -> Dict[str, object]:
+    storage_spec = parse_storage_specification_path(storage_path)
     response = send_request(
         method="GET",
         url=with_library_user_id(build_storage_file_url(base_url, storage_path)),
@@ -908,13 +971,38 @@ def download_storage_file(
     )
     filename = resolve_download_filename(response.headers, Path(storage_path).name)
     output_path = resolve_output_path(output_arg, filename)
+    versioning_path = versioning_file.resolve()
+    sdd_root = versioning_path.parent
+    writes_to_sdd_root = is_path_within(output_path, sdd_root)
+    updates_versioning = False
+    feature_slug = None
+    specification_version = None
+    if storage_spec is not None:
+        feature_slug, specification_version = storage_spec
+        canonical_paths = {
+            (sdd_root / feature_slug / "specification.md").resolve(),
+            (sdd_root / feature_slug / "spec.md").resolve(),
+        }
+        updates_versioning = output_path.resolve() in canonical_paths
+    if writes_to_sdd_root and not updates_versioning:
+        if storage_spec is None:
+            raise SkillError(
+                "Cannot write an archived file into the SDD root because its storage path does not identify "
+                "featureSlug and specification version. Use a temporary output path."
+            )
+        raise SkillError(
+            f"Canonical storage pull for '{feature_slug}' must target "
+            f"{sdd_root / feature_slug / 'specification.md'} or {sdd_root / feature_slug / 'spec.md'}."
+        )
     ensure_local_write_confirmed(
         output_path=output_path,
-        relocated_to_feature_slug=False,
+        relocated_to_feature_slug=writes_to_sdd_root,
         confirm_local_write=confirm_local_write,
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(response.body)
+    if updates_versioning:
+        update_versioning_entry(versioning_path, feature_slug, specification_version)
     return {
         "ok": True,
         "path": storage_path,
@@ -922,7 +1010,26 @@ def download_storage_file(
         "savedTo": str(output_path),
         "fileName": filename,
         "sizeBytes": len(response.body),
+        "featureSlug": feature_slug,
+        "specificationVersion": specification_version,
+        "versioningUpdated": updates_versioning,
+        "versioningFile": str(versioning_path) if updates_versioning else None,
     }
+
+
+def parse_storage_specification_path(storage_path: str) -> Optional[Tuple[str, str]]:
+    normalized_path = storage_path.replace("\\", "/")
+    match = re.search(
+        r"(?:^|/)([^/]+)/versions/specification-([0-9]+(?:\.[0-9]+){0,3})\.md$",
+        normalized_path,
+        re.IGNORECASE,
+    )
+    if not match:
+        return None
+    feature_slug = match.group(1)
+    version = match.group(2)
+    normalize_version_tuple(version)
+    return feature_slug, version
 
 
 def fetch_spec_task_context(
@@ -953,13 +1060,17 @@ def fetch_prespec_context(
     *,
     base_url: str,
     jira_key: str,
+    include_outdated: bool,
     headers: Dict[str, str],
     timeout: int,
 ) -> Dict[str, object]:
     normalized_jira_key = normalize_jira_key(jira_key)
+    context_url = build_prespec_context_url(base_url, normalized_jira_key)
+    if include_outdated:
+        context_url = f"{context_url}?includeOutdated=true"
     response = send_request(
         method="GET",
-        url=with_library_user_id(build_prespec_context_url(base_url, normalized_jira_key)),
+        url=with_library_user_id(context_url),
         headers=headers,
         timeout=timeout,
     )
@@ -1021,7 +1132,13 @@ def load_prespec_start_payload(file_arg: str) -> Dict[str, object]:
     if not isinstance(raw_payload, dict):
         raise SkillError("Pre-spec payload must be a JSON object.")
 
-    allowed_fields = {"questions", "analysisLimitations", "analyzedRepositories"}
+    allowed_fields = {
+        "questions",
+        "analysisLimitations",
+        "analyzedRepositories",
+        "astreaConversationManaged",
+        "astreaConversationCompleted",
+    }
     unexpected_fields = sorted(set(raw_payload) - allowed_fields)
     if unexpected_fields:
         raise SkillError(
@@ -1033,7 +1150,26 @@ def load_prespec_start_payload(file_arg: str) -> Dict[str, object]:
         raise SkillError("Pre-spec payload field 'questions' must be an array.")
     normalized_questions = []
     seen_question_ids = set()
-    allowed_question_fields = {"id", "category", "question", "suggestedAnswer", "rationale"}
+    astrea_conversation_managed = raw_payload.get("astreaConversationManaged", False)
+    astrea_conversation_completed = raw_payload.get("astreaConversationCompleted", False)
+    if not isinstance(astrea_conversation_managed, bool):
+        raise SkillError("astreaConversationManaged must be a boolean.")
+    if not isinstance(astrea_conversation_completed, bool):
+        raise SkillError("astreaConversationCompleted must be a boolean.")
+    if astrea_conversation_completed and not astrea_conversation_managed:
+        raise SkillError("astreaConversationCompleted requires astreaConversationManaged=true.")
+    allowed_question_fields = {
+        "id",
+        "category",
+        "question",
+        "suggestedAnswer",
+        "rationale",
+        "finalAnswer",
+        "answerType",
+        "parentQuestionId",
+        "revalidationNote",
+        "answeredBySlackUserId",
+    }
     for index, item in enumerate(questions):
         if not isinstance(item, dict):
             raise SkillError(f"questions[{index}] must be an object.")
@@ -1058,7 +1194,53 @@ def load_prespec_start_payload(file_arg: str) -> Dict[str, object]:
                 suggested_answer,
                 f"questions[{index}].suggestedAnswer",
             )
+        final_answer = item.get("finalAnswer")
+        answer_type = item.get("answerType")
+        if astrea_conversation_completed:
+            normalized_question["finalAnswer"] = require_non_empty_string(
+                final_answer,
+                f"questions[{index}].finalAnswer",
+            )
+            normalized_answer_type = require_non_empty_string(
+                answer_type,
+                f"questions[{index}].answerType",
+            ).upper()
+            if normalized_answer_type not in {"TEXT", "SUGGESTION", "NOT_APPLICABLE", "OUTDATED"}:
+                raise SkillError(
+                    f"questions[{index}].answerType must be TEXT, SUGGESTION, NOT_APPLICABLE or OUTDATED."
+                )
+            normalized_question["answerType"] = normalized_answer_type
+            if normalized_answer_type != "OUTDATED" and item.get("answeredBySlackUserId") is None:
+                raise SkillError(
+                    f"questions[{index}].answeredBySlackUserId is required for participant answers."
+                )
+        elif final_answer is not None or answer_type is not None:
+            raise SkillError(
+                "Completed answers require astreaConversationCompleted=true."
+            )
+        for optional_field in ("parentQuestionId", "revalidationNote", "answeredBySlackUserId"):
+            optional_value = item.get(optional_field)
+            if optional_value is not None:
+                normalized_question[optional_field] = require_non_empty_string(
+                    optional_value,
+                    f"questions[{index}].{optional_field}",
+                )
+        if normalized_question.get("answerType") == "OUTDATED" \
+                and "revalidationNote" not in normalized_question:
+            raise SkillError(
+                f"questions[{index}].revalidationNote is required for OUTDATED questions."
+            )
         normalized_questions.append(normalized_question)
+
+    for index, question in enumerate(normalized_questions):
+        parent_question_id = question.get("parentQuestionId")
+        if parent_question_id is None:
+            continue
+        if parent_question_id.casefold() == question["id"].casefold() \
+                or parent_question_id.casefold() not in seen_question_ids:
+            raise SkillError(
+                f"questions[{index}].parentQuestionId must reference another question from the payload."
+            )
 
     analysis_limitations = normalize_string_array(
         raw_payload.get("analysisLimitations", []),
@@ -1075,6 +1257,8 @@ def load_prespec_start_payload(file_arg: str) -> Dict[str, object]:
         "questions": normalized_questions,
         "analysisLimitations": analysis_limitations,
         "analyzedRepositories": analyzed_repositories,
+        "astreaConversationManaged": astrea_conversation_managed,
+        "astreaConversationCompleted": astrea_conversation_completed,
     }
 
 
@@ -1387,12 +1571,19 @@ def upload_storage_bundle(
     
 
 def resolve_local_specification_path(sdd_root: Path, feature_slug: str) -> Path:
+    specification_path = find_local_specification_path(sdd_root, feature_slug)
+    if specification_path is not None:
+        return specification_path
+    raise SkillError(f"Missing specification file for feature '{feature_slug}' in {sdd_root / feature_slug}")
+
+
+def find_local_specification_path(sdd_root: Path, feature_slug: str) -> Optional[Path]:
     feature_dir = sdd_root / feature_slug
     candidates = [feature_dir / "specification.md", feature_dir / "spec.md"]
     for candidate in candidates:
         if candidate.is_file():
             return candidate.resolve()
-    raise SkillError(f"Missing specification file for feature '{feature_slug}' in {feature_dir}")
+    return None
 
 
 def resolve_story_paths(sdd_root: Path, feature_slug: str) -> List[Path]:
@@ -1604,22 +1795,6 @@ def resolve_output_path(output_arg: str, filename: str) -> Path:
     if output_arg.endswith(("\\", "/")) or (output_path.exists() and output_path.is_dir()):
         return output_path / filename
     return output_path
-
-
-def relocate_output_path_by_feature_slug(*, output_path: Path, body: bytes) -> Tuple[Path, Optional[str], bool]:
-    feature_slug = extract_feature_slug(body)
-    if not feature_slug:
-        return output_path, None, False
-
-    canonical_directory = DEFAULT_SDD_ROOT / feature_slug
-    canonical_spec_path = canonical_directory / "spec.md"
-    if canonical_spec_path.is_file():
-        return canonical_spec_path, feature_slug, output_path != canonical_spec_path
-
-    if is_path_within(output_path, canonical_directory):
-        return output_path, feature_slug, False
-
-    return canonical_directory / output_path.name, feature_slug, True
 
 
 def ensure_local_write_confirmed(

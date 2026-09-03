@@ -1,0 +1,20 @@
+<span
+  class="chip"
+  [class.disabled]="disabled()"
+  [attr.aria-disabled]="disabled()"
+>
+  <vt-text
+    variant="caption"
+    [content]="label()"
+    [color]="textColor()"
+  />
+  @if (showRemove()) {
+    <button
+      class="remove"
+      type="button"
+      [disabled]="disabled()"
+      [attr.aria-label]="removeAriaLabel()"
+      (click)="removed.emit()"
+    ></button>
+  }
+</span>

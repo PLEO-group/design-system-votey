@@ -1,7 +1,7 @@
 ---
 name: pleo-library-skill-version-guard
-description: Sprawdza target-only, czy skill użyty w aktualnym procesie jest aktualny względem biblioteki, oraz dba o świeżość manifestu projektu w PleoAI. Nie raportuje telemetryki.
-version: 1.6.6
+description: Sprawdza wersję wskazanego skilla, pilnuje świeżości manifestu projektu i automatycznie aktualizuje wykryte nieaktualne skille, jeżeli ich katalogi są czyste w Git. Nie pyta o zgodę na bezpieczny pull i nie raportuje telemetryki.
+version: 1.8.1
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
@@ -9,41 +9,48 @@ tags: []
 ---
 # Pleo Library Skill Version Guard
 
-Używaj tego skilla, gdy trzeba sprawdzić, czy skill użyty w aktualnym procesie jest aktualny względem biblioteki, albo gdy trzeba pobrać nowszą wersję lokalnego skilla.
-Każde uruchomienie wykonuje świeży target-only check wskazanego skilla.
+Guard utrzymuje wersje skilli bez ręcznego potwierdzania bezpiecznych aktualizacji.
 
 ## Zasady
 
-- Każdy check wykonuje świeże porównanie lokalnej wersji wskazanego skilla z biblioteką.
-- Przed pełną synchronizacją manifestu skrypt sprawdza `/skills/remote/project-skill-state/status`.
-- Jeśli backendowy manifest projektu ma `verifiedOn` z dzisiaj i liczba zarejestrowanych skilli zgadza się z lokalną liczbą skilli, wystarczy target-only check.
-- Jeśli manifest nie jest z dzisiaj albo liczba skilli się nie zgadza, skrypt synchronizuje manifest `skillName + installedVersion` projektu przez `/skills/remote/project-skill-state/sync`.
-- Skille `pleo-library-*` mogą być automatycznie aktualizowane, gdy remote ma nowszą wersję.
-- Dla skilli spoza `pleo-library-*` pobieraj aktualizację dopiero po zgodzie użytkownika.
-- Ten check jest infrastrukturą, nie realnym użyciem skilla, więc nie wysyłaj dla niego telemetryki.
-- Jeśli lokalny skill nie ma `SKILL.md` albo frontmatter `version`, przerwij z błędem.
+- Uruchamiaj go tylko dla konkretnego skilla używanego w bieżącym procesie albo na jawne żądanie sprawdzenia wersji.
+- `check` porównuje lokalne `version` z `latestVersion` w bibliotece.
+- Po target-checku wykonuje lekki check statusu manifestu.
+- Pełny sync listy lokalnych `skillName + installedVersion` wykonuje tylko wtedy, gdy manifest nie był zweryfikowany dzisiaj, zmieniła się liczba lokalnych skilli albo target został właśnie zaktualizowany.
+- Każdy nieaktualny skill wykryty bezpośrednio albo przez manifest aktualizuje od razu bez pytania użytkownika.
+- Jeśli katalog jest czysty, skrypt automatycznie wykonuje pull bez pytania użytkownika.
+- Jeśli katalog ma zmiany staged, unstaged albo untracked, skrypt nie aktualizuje skilla i zwraca `blockedReason: local_changes`. Nie proś wtedy automatycznie o zgodę na nadpisanie zmian.
+- W runtime Astrei skille są zarządzane per task. Gdy konfiguracja ma `runtimeManagedSkills: true`, guard używa zapisywalnego `workspace/skills`, pomija jego kontrolę Git, zachowuje atomową podmianę oraz próbuje zapisać snapshot faktycznie zainstalowanej aktualizacji pod ścieżką przekazaną przez `PLEO_ASTREA_SKILL_SNAPSHOT_DIR`. Snapshot jest opcjonalnym artefaktem technicznym publikatora, nie zmianą repozytorium: błąd jego zapisu jest raportowany diagnostycznie, ale nie cofa aktualizacji skilla i nie blokuje pracy Astrei.
+- Dla aktywnego workspace'u utworzonego przez runtime używający read-only symlinka `workspace/skills -> /srv/pleo-agent/skills` guard jednorazowo materializuje task-localną kopię wszystkich skilli i od tej chwili aktualizuje wyłącznie ją. Nie próbuje tworzyć locka ani podmieniać plików w chronionym katalogu globalnym.
+- W trybie Astrei konfigurację workspace wskaż przez `PLEO_ASTREA_WORKSPACE_ROOT`. Guard szuka jej przed fallbackiem do lokalizacji skryptu, dzięki czemu symlink `skills` do współdzielonego katalogu nie zmienia repo root.
+- Przed podmianą guard ponownie porównuje aktualną wersję z wersją payloadu. Jeśli używana jest już ta sama albo nowsza wersja, nie nadpisuje katalogu; zapisuje jednak snapshot wersji używanej przez bieżący task, aby późniejsza publikacja była powtarzalna. Równoległość tego samego taska zabezpiecza nadrzędny `task.lock` runtime Astrei.
+- Dla workspace Astrei utworzonego przez starszy runtime, którego `.agent-library.yaml` nie ma jeszcze `paths`, guard używa istniejącego `workspace/skills` jako zarządzanego katalogu. Dzięki temu aktualizacja runtime nie wymaga restartowania aktywnych tasków.
+- Po aktualizacjach synchronizuje manifest ponownie. Liczba prób jest ograniczona liczbą lokalnych skilli.
+- Katalog z `SKILL.md` bez poprawnego frontmatter `version` nie przerywa synchronizacji pozostałych skilli: guard pomija go w payloadzie manifestu i raportuje w `invalidLocalSkills` z przyczyną `invalid_skill_metadata`.
+- Po automatycznym pullu odczytaj zaktualizowany skill ponownie, jeżeli dalsza praca zależy od jego instrukcji.
+- Guard jest infrastrukturą; nie wysyłaj dla niego telemetryki.
+- Przed uruchomieniem wymagana jest niepusta zmienna `TELEMETRY_USER_ID`.
 
-## Jak uruchomić
+## Uruchomienie
+
+Wybierz dostępny launcher Pythona i uruchom:
 
 ```bash
 python skills/pleo-library-skill-version-guard/scripts/run.py check --skill <skill-name>
-python skills/pleo-library-skill-version-guard/scripts/run.py pull --skill <skill-name>
-python skills/pleo-library-skill-version-guard/scripts/run.py check --skill <skill-name> --full-project-check
 ```
 
-## Wynik JSON
+Jawne `pull --skill <skill-name>` pozostaje dostępne operacyjnie, ale również odmawia nadpisania katalogu z lokalnymi zmianami.
 
-- `guardMode`: tryb sprawdzenia aktualności skilli.
-- `versionRelation`: `missing_remote`, `local_newer`, `remote_newer` albo `same`.
-- `needsPull`: `true`, gdy biblioteka ma nowszą wersję niż lokalna.
-- `needsPublish`: `true`, gdy lokalna wersja jest nowsza niż biblioteka albo remote nie istnieje.
-- `projectSkillStateSync`: wynik sprawdzenia świeżości manifestu albo pełnej synchronizacji manifestu projektu.
-- `autoPulledTargetSkill`: wynik automatycznego pull dla wskazanego `pleo-library-*`, jeśli wystąpi.
+## Wynik
 
-## Workflow agenta
+Najważniejsze pola JSON:
 
-1. Uruchom `check --skill <skill-name>` dla konkretnego skilla użytego w aktualnym procesie albo `check --skill <skill-name> --full-project-check`, gdy użytkownik chce pełniejszego audytu projektu.
-2. Jeśli `needsPull=true` dla skilla `pleo-library-*`, skrypt wykona automatyczny pull i zwróci wynik po aktualizacji.
-3. Jeśli `needsPull=true` dla innego skilla, zapytaj użytkownika przed `pull`.
-4. Po `pull` uznaj wcześniej zaczytaną treść aktualizowanego skilla za nieaktualną i odczytaj pliki ponownie, jeśli dalsza praca od nich zależy.
-5. Nie zapisuj w rozmowie listy sprawdzonych skilli; kolejne sprawdzenie ma być świeżym target-only checkiem.
+- `versionRelation`: `missing_remote`, `local_newer`, `remote_newer` albo `same`;
+- `needsPull`: czy biblioteka miała nowszą wersję;
+- `localStateBeforeUpdate.clean`: czy katalog był czysty przed aktualizacją;
+- `autoPull`: wynik automatycznej aktualizacji albo przyczyna blokady;
+- `projectSkillStateSync.autoUpdatedSkills`: skille zaktualizowane na podstawie manifestu;
+- `projectSkillStateSync.blockedSkills`: skille pominięte z powodu lokalnych zmian lub błędu;
+- `projectSkillStateSync.invalidLocalSkills`: lokalne katalogi pominięte w manifeście z powodu brakującej lub nieprawidłowej wersji;
+- `projectSkillStateSync.skipped`: `true`, gdy dzisiejszy manifest i liczba skilli pozwoliły pominąć pełny sync;
+- `updateStrategy`: strategia zapisu zwrócona w `autoPull.pullResult`.

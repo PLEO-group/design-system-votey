@@ -10,50 +10,14 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.8.0
+version: 1.14.2
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
 tags: []
 ---
 
-# CHANGELOG
-
-# 1.4.0 — Poprawiono opis triggerów, dodano referencje sekcji w checkliście,
-
-# rozdzielono wielowarunkowe reguły na listy, dodano zakres skilla
-
-# i instrukcję dla niejasnych wzorców.
-
-# 1.5.0 — Dodano uogólniony kontrakt refaktoru UI bez regresji,
-
-# zasady ograniczania override'ów Design System i reguły layoutu kolekcji/tabel.
-
-# 1.6.0 — Dodano operacyjne triggery/antytriggery, priorytety konfliktów,
-
-# generyczne odkrywanie wzorców repo, minimalną weryfikację,
-
-# komunikaty dla brakujących tokenów i ujednolicono prompty agentów.
-
-# 1.6.1 — Doprecyzowano zakaz wydzielania jednorazowych helperów dla krótkich
-
-# warunków i prostych mapowań wartości.
-
-# 1.6.2 — Dodano zasadę diagnozy stanu komponentów UI opartych o biblioteki
-
-# przed zmianą stylów selected/hover/disabled.
-
-# 1.7.0 — Wzmocniono zasadę dla nowych komponentów: domyślnie muszą używać
-
-# Angular Signals API dla kontraktu komponentu, query i lokalnego state'u.
-
-# 1.7.1 — Dodano zasadę unikania porównań do powtarzalnych stringów
-
-# kontraktowych na rzecz enumów albo typowanych stałych.
-
-# 1.8.0 — Dodano obowiązkowe discovery i ocenę reużywalności przed tworzeniem
-
-# lokalnych validatorów, checkerów i podobnych mechanizmów sprawdzających.
+Historia zmian jest w [references/history.md](references/history.md). Wczytuj ją tylko przy audycie wersji, analizie regresji zachowania skilla albo przygotowaniu publikacji.
 
 # Standardy pisania kodu Angular — zasady zespołu
 
@@ -101,13 +65,26 @@ Czy mam potraktować to jako zmianę kodu Angular w tym projekcie i zastosować 
 
 Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 
-- SCSS: hierarchia zgodna z HTML → [1.1], brak `__` → [1.3], tylko tokeny kolorów → [1.2].
+- SCSS: hierarchia zgodna z HTML → [1.1], nazwy klas wyłącznie w kebab-case → [1.3], tylko tokeny kolorów → [1.2].
 - Design System: najpierw publiczne API komponentu, override internali tylko lokalnie i z powodem → [1.4].
-- HTML: brak metod w szablonie → [2.3], statyczne inputy bez `[]` → [2.1], długie wyrażenia w `@let` → [2.4], `@for` z stabilnym `track` → [2.7], poprawna kolejność atrybutów → [2.6].
-- TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [3.16], nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], discovery przed lokalnymi mechanizmami sprawdzającymi → [3.17], ocena wpływu na testy → [3.11].
-- Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [3.13].
-- Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [3.15].
+- HTML: brak stylów inline i klasy wyłącznie w kebab-case → [2.2], brak logiki wywoływanej podczas renderowania oraz audyt wywołań → [2.3], statyczne inputy bez `[]` → [2.1], długie wyrażenia w `@let` → [2.4], `@for` z stabilnym `track` → [2.7], poprawna kolejność atrybutów → [2.6].
+- TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [playbook 3.16](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe), nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], przed validatorem lub checkerem potwierdź konieczność reguły i osiągalność błędnego stanu, dopiero potem wykonaj discovery → [playbook 3.17](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi), ocena wpływu na testy → [3.11].
+- Tłumaczenia: w każdym edytowanym pliku usuń zauważone, nietłumaczone polskie teksty UI; użyj wyłącznie istniejących prefiksów grup i wypisz użytkownikowi klucze z polskimi tekstami → [3.12].
+- Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [playbook 3.13](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu).
+- Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [playbook 3.15](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki).
 - Animacje: dla nowego kodu CSS + `animate.enter` / `animate.leave`, bez nowych legacy triggerów → [4].
+
+## Warunkowe playbooki i twarde bramki
+
+Nie wczytuj [pełnych playbooków](references/conditional-playbooks.md) przy prostej zmianie SCSS albo typów, jeśli żaden z poniższych warunków nie zachodzi. Gdy warunek zachodzi, wczytaj wyłącznie wskazaną sekcję przed edycją.
+
+| Warunek | Twarda bramka pozostająca zawsze w mocy | Referencja |
+| --- | --- | --- |
+| Zastępujesz lub istotnie przebudowujesz komponent, modal, formularz, listę, tabelę albo inny widok. | Najpierw odtwórz kontrakt danych, stanu i interakcji. Refaktor frontend-only nie może zmienić payloadu ani wartości formularza bez jawnej decyzji. | [3.13 Refaktor UI](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu) |
+| Zmieniasz tabelę, listę, layout kolekcji, paginację, virtual scroll albo zachowanie przy węższym kontenerze. | Najpierw użyj publicznego API Design System i zachowaj wspólny model kolumn, stany oraz kontrakt interakcji. | [3.14 Tabele i kolekcje](references/conditional-playbooks.md#314-widoki-tabelaryczne-listy-i-layout-kolekcji) |
+| Naprawiasz stan `selected`, `hover`, `disabled`, `readonly` albo `loading` komponentu bibliotecznego. | Najpierw sprawdź stabilność danych, wartość formularza i publiczne API komponentu; SCSS jest ostatnim krokiem. | [3.15 Komponenty bibliotek](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki) |
+| Dodajesz lub zmieniasz string kontraktowy FE/BE, status, typ, rolę, permission, kod języka albo wartość słownikową. | Użyj istniejącego enuma/modelu lub jednego typowanego źródła prawdy; nie utrwalaj powtarzalnego literalu. | [3.16 Stringi kontraktowe](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe) |
+| Dodajesz validator, checker, predykat, guard wartości, normalizator albo podobny mechanizm sprawdzający. | Najpierw potwierdź, że reguła wynika z realnego kontraktu i że błędny stan jest osiągalny. Następnie wykonaj discovery publicznego API, shared utils i rozwiązań domenowych; nie duplikuj istniejącej semantyki. | [3.17 Discovery validatorów](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi) |
 
 ## Priorytet reguł przy konflikcie
 
@@ -131,14 +108,25 @@ Widzę konflikt: lokalny wzorzec robi X, a standard skilla zaleca Y. Proponuję 
 
 ## Minimalna weryfikacja po zmianach
 
-Dobierz komendy do faktycznej zmiany i skryptów aktualnego projektu. Najpierw sprawdź `package.json`, `angular.json` i używany runner testów.
+Ta sekcja pomaga dobrać właściwą weryfikację, ale sama nie daje zgody na
+uruchomienie komend ani narzędzi runtime. Najpierw sprawdź instrukcje projektu i
+zakres jawnie zlecony przez użytkownika. Nie uruchamiaj automatycznie builda,
+type-checka, lintu, testów ani Chrome/runtime, jeżeli projekt lub użytkownik nie
+udzielił takiej zgody. Bardziej restrykcyjna instrukcja projektu ma pierwszeństwo.
+
+Po uzyskaniu wymaganej zgody dobierz najwęższy zakres do faktycznej zmiany i
+skryptów aktualnego projektu. Najpierw sprawdź `package.json`, `angular.json` i
+używany runner:
 
 - type-check/build: preferuj lokalny build/type-check, np. `npm run build`, `npx ng build` albo dedykowany skrypt projektu,
 - lint TS/HTML/SCSS: preferuj lokalny lint, np. `npm run lint`, `npx ng lint`, `npx eslint` albo `npx stylelint`,
-- testy jednostkowe: uruchom najbliższy spec przez lokalny runner, np. Jest/Vitest/Karma przez `npm test`, `npx ng test` albo dedykowany skrypt projektu,
-- wizualny smoke-test: dla zmian UI uruchom widok w przeglądarce i sprawdź screenshot, console errors, overflow oraz stany hover/disabled/selected/loading/empty.
+- testy jednostkowe: wybierz najbliższy spec i lokalny runner Jest/Vitest/Karma zamiast pełnej suity,
+- wizualny smoke-test: dla zmian UI sprawdź screenshot, console errors, overflow oraz istotne stany komponentu.
 
-Jeśli któregoś kroku nie da się wykonać, podaj konkretny powód i residual risk.
+Aktualizacja pliku testowego w ramach implementacji nie oznacza zgody na jego
+uruchomienie. Jeśli weryfikacja nie została zlecona albo nie można jej wykonać,
+nie uruchamiaj jej i w odpowiedzi podaj ten fakt, rekomendowaną komendę oraz
+residual risk.
 
 ---
 
@@ -167,8 +155,11 @@ Nie widzę pasującego tokenu dla tego koloru. Najbliższy wygląda na `<token>`
 
 ### [1.3] Nazwy klas
 
-Nie używaj `__`.
-Preferuj hierarchię klas zamiast BEM z podwójnym podkreślnikiem.
+Wszystkie własne klasy CSS zapisuj wyłącznie w kebab-case: małymi literami, z segmentami oddzielonymi pojedynczym `-`.
+Nie używaj `_`, `__`, camelCase, PascalCase ani modyfikatorów BEM z `--`.
+Reguła obejmuje HTML, SCSS, klasy przekazywane przez inputy oraz klasy tworzone dynamicznie.
+Nie zmieniaj nazw klas bibliotek zewnętrznych, których projekt nie kontroluje.
+Preferuj krótkie, semantyczne nazwy i hierarchię SCSS zamiast powtarzania pełnej nazwy komponentu.
 
 ### [1.4] Design System i override budget
 
@@ -201,16 +192,41 @@ Wyjątek: `[attr]="expression"` jest poprawne, gdy wartość pochodzi ze zmienne
 
 Preferuj nazwy budujące hierarchię, np. `wrapper`, `main`, `sub`, `box`, `line`, `header`, `body`, `footer`, `inner`, `content`, `group`.
 Unikaj powtarzania pełnej nazwy komponentu na każdym poziomie.
+Stosuj wyłącznie kebab-case zgodnie z [1.3].
+Nie używaj stylów inline: `style="..."`, `[style]`, `[style.*]` ani `[ngStyle]`.
+Stałe reguły przenoś do SCSS komponentu, a warianty prezentacji wyrażaj przez semantyczne klasy i bindingi `[class.nazwa-wariantu]`.
 
 ### [2.3] Metody w szablonie
 
-Nigdy nie wywołuj metod bezpośrednio w szablonie.
+Nie wywołuj w szablonie metod komponentu, serwisu ani obiektu, które podczas change detection:
+
+- mapują, filtrują, sortują albo formatują dane,
+- sprawdzają predykat lub permission,
+- tworzą `Observable`, kolekcję albo inny nowy obiekt,
+- wykonują odczyt, który można przygotować raz w TypeScript, np. `asObservable()`.
+
 Preferuj kolejno:
 
 1. przygotowaną właściwość, `signal()` albo `computed()`,
 2. `@let` dla długich lub powtarzanych wyrażeń,
 3. czysty `pipe` dla reużywalnej transformacji,
 4. `protected get` tylko dla trywialnego, niealokującego odczytu i gdy pasuje do istniejącego stylu pliku.
+
+Nie traktuj składni wywołania jako automatycznego naruszenia. Dozwolone są:
+
+- odczyty `signal()` i `computed()`, ponieważ są reaktywnym kontraktem template'u,
+- handlery uruchamiane wyłącznie przez output lub zdarzenie użytkownika, np. `(buttonClick)="submit()"`,
+- intrinsics kompilatora Angulara, np. `$any()`, jeśli istniejący kontrakt naprawdę ich wymaga.
+
+Handler zdarzenia powinien delegować do logiki w TypeScript i nie zawierać rozbudowanego wyrażenia w HTML. Nie zastępuj signala getterem tylko po to, aby usunąć nawiasy.
+
+Po zmianie template'u przeskanuj zmienione pliki pod kątem składni wywołań i sklasyfikuj wyniki, zamiast wykonywać ślepy refaktor. Przykładowy skan kandydatów:
+
+```text
+rg -n "[A-Za-z_$][A-Za-z0-9_$]*\\s*\\(" <zmienione-pliki-html>
+```
+
+W raporcie lub review traktuj jako finding wyłącznie logikę renderowania, a nie poprawne odczyty signali i handlery zdarzeń.
 
 ### [2.4] `@let`
 
@@ -300,6 +316,11 @@ Preferuj:
 - `BehaviorSubject` dla stanu z wieloma subskrybentami lub historią,
 - `Subject` dla zdarzeń jednorazowych,
 - zwykłą właściwość tylko dla prostych, statycznych wartości.
+
+Globalne zdarzenia środowiska, takie jak viewport albo device type, obsługuj w
+właścicielu infrastruktury i udostępniaj przez publiczny `Observable` albo signal.
+Komponent potomny ma konsumować ten stan; nie dodawaj równoległego `HostListener`
+do `window`/`document`, chyba że serwis nie udostępnia potrzebnego kontraktu.
 
 ### [3.5] Nowoczesne API komponentów
 
@@ -419,6 +440,13 @@ Jeśli modyfikujesz plik `.ts`, sprawdź, czy obok istnieje `.spec.ts`.
 Jeśli istnieje i zmiana dotyka logiki, stanu, inputów, outputów, requestów albo warunków w template, zaktualizuj test.
 Nie wymagaj aktualizacji testów tylko dla czystej zmiany SCSS.
 
+Nie uruchamiaj testów jednostkowych automatycznie po aktualizacji speca. Wykonaj je
+wyłącznie na wyraźne polecenie użytkownika, w najwęższym wskazanym zakresie. Pełna
+suita wymaga osobnego uprzedzenia o koszcie czasu i tokenów oraz potwierdzenia.
+Walidacja runtime/Chrome Debug również wymaga jawnej zgody zgodnie z instrukcją projektu.
+Ta bramka autoryzacji ma pierwszeństwo nad przykładami komend z sekcji
+„Minimalna weryfikacja po zmianach”.
+
 W odpowiedzi końcowej krótko zaznacz wpływ zmian `.ts` na testy:
 
 - jeśli trzeba było zmienić testy, napisz czy zostały zmienione,
@@ -433,7 +461,29 @@ Testy: zaktualizowano `<plik>.spec.ts` / brak testów w pobliżu — rekomenduj�
 
 ### [3.12] Tłumaczenia i nowe klucze
 
+Jeżeli po handoffie użytkownik prosi o kompletne query, INSERT, UPSERT albo
+migrację tłumaczeń dla GoCouriers, wczytaj
+`skills/gocouriers-translation-query/SKILL.md`. Ten skill pozostaje właścicielem
+generowania wielojęzycznego SQL i jego walidacji; nie rozszerzaj zasad Angulara o
+schemat bazy ani samodzielnie nie stosuj angielskich fallbacków.
+
 Nie dodawaj nowych wpisów do plików i18n/tłumaczeń podczas implementacji FE, chyba że użytkownik jawnie poprosi o edycję słowników.
+
+Jeżeli projekt ma potwierdzony proces dodawania tłumaczeń przez osobne UI, CMS albo panel administracyjny, pełny nowy klucz użyty w kodzie nie musi jeszcze istnieć w słownikach trzymanych w repo. Traktuj listę kluczy z polskimi tekstami przekazaną użytkownikowi jako prawidłowy handoff do tego procesu.
+
+W takim projekcie nie klasyfikuj samego braku wpisu słownikowego jako blockera implementacji, błędu runtime ani findingu blokującego code review lub publikację skilla. Nie wymagaj też dopisania wpisu do repo w tym samym zadaniu. Zgłoś brak wyłącznie informacyjnie w formacie wymaganym niżej. Blocker występuje dopiero wtedy, gdy projekt nie ma potwierdzonego zewnętrznego procesu uzupełniania tłumaczeń albo użytkownik jawnie wymaga kompletnego słownika przed wdrożeniem.
+
+W każdym pliku edytowanym podczas bieżącej pracy sprawdź zauważone literały w języku polskim, które są wyświetlane użytkownikowi albo przekazywane do komponentu UI, np. etykiety, tooltipy, placeholdery, komunikaty, tytuły, teksty przycisków i opisy `aria`.
+
+Jeśli taki tekst nie korzysta z mechanizmu tłumaczeń:
+
+1. Obowiązkowo zastąp go kluczem tłumaczenia w tym samym edytowanym pliku.
+2. Znajdź właściwy, już istniejący prefiks grupy w tym samym feature, sąsiednich użyciach albo słownikach projektu.
+3. Nie twórz nowego prefiksu grupy i nie zgaduj go na podstawie nazwy komponentu. Jeżeli nie istnieje jednoznacznie pasujący prefiks, zatrzymaj tę część zmiany i poproś użytkownika o wskazanie grupy.
+4. Zastosuj lokalny mechanizm tłumaczeń, np. pipe, dyrektywę albo serwis, bez wprowadzania równoległego wzorca.
+5. W odpowiedzi końcowej wypisz każdy wprowadzony klucz wraz z polskim tekstem, który trzeba dodać przez obowiązujący w projekcie proces zarządzania tłumaczeniami.
+
+Nie traktuj jako tekstów wymagających tłumaczenia komentarzy w HTML, TypeScript i SCSS — komentarze mogą pozostać po polsku. Nie zmieniaj też automatycznie danych testowych, wartości kontraktowych FE/BE ani treści technicznych, które nie są prezentowane użytkownikowi.
 
 Jeśli wdrożenie wymaga nowych etykiet, komunikatów, empty state, nazw akcji, tytułów modali albo błędów, użyj kluczy w kodzie zgodnie z lokalnym wzorcem i w odpowiedzi końcowej wypisz brakujące tłumaczenia w formacie:
 
@@ -442,131 +492,6 @@ KLUCZ.TLUMACZENIA: Tłumaczenie po polsku
 ```
 
 Dla błędów numerycznych z backendu używaj klasycznego wzorca `ERRORS.<numer>` i również wypisz brakujące tłumaczenia zamiast dopisywać je samodzielnie do plików i18n.
-
-### [3.13] Refaktor UI bez regresji kontraktu
-
-Gdy zastępujesz istniejący fragment UI nowym komponentem, modalem, formularzem, listą, tabelą albo innym widokiem, przed edycją odtwórz z kodu kontrakt zachowania:
-
-- własność stanu: parent/container, child komponent, formularz, store albo serwis,
-- inputy, outputy, kontrolki formularza, selektory, serwisy i eventy,
-- shape danych zapisywanych do formularza, store, local state albo requestu,
-- zasady enabled, disabled, readonly, selected, loading, empty, error i data,
-- dokładny trigger interakcji: row, checkbox, radio, button, link, menu albo skrót klawiaturowy,
-- redirecty, linki otwierane w nowym oknie, tooltipy, ikony, komunikaty i aria/keyboard behavior,
-- kontrakt refreshu danych po mutacji albo zmianie filtrów.
-
-Refaktor frontend-only nie może zmienić shape obiektu wysyłanego dalej do requestu ani wartości zapisanej w istniejącej kontrolce formularza, chyba że użytkownik jawnie tego chce.
-
-Dla widoków kolekcji, niezależnie od prezentacji jako tabela, lista, kafle, drzewo, stepper albo virtual scroll:
-
-- najpierw zachowaj model danych, selekcję, disabled rules, uprawnienia i nawigację,
-- nie zmieniaj triggera wyboru ani zakresu klikalności bez jawnej decyzji,
-- sprawdź zachowanie dla elementów enabled, disabled, pustych, ładowanych i po błędzie,
-- po zmianie usuń martwe inputy, outputy, metody, helpery i style starego widoku.
-
-Jeśli nowy projekt UI wymaga zmiany kontraktu interakcji, potraktuj to jako zmianę funkcjonalną i potwierdź ją ze specyfikacją albo użytkownikiem.
-
-Edge case: dla list filtrowanych, sortowanych, przeładowywanych albo wirtualizowanych nie używaj `track $index`; wybierz stabilne `id`, `uuid`, slug albo inny niezmienny klucz domenowy.
-
-### [3.14] Widoki tabelaryczne, listy i layout kolekcji
-
-Domyślnie używaj komponentów tabel, list, paginacji, filtrów, sortowania i empty/loading state z Design System albo z istniejących wzorców projektu. Nie buduj własnego header/body grid, jeśli DS table pokrywa wymagania.
-
-Dla tabel Design System:
-
-- używaj publicznego API komponentu, definicji kolumn, slotów, inputów i eventów,
-- trzymaj sortowanie, filtrowanie, paginację i akcje w modelu zgodnym z lokalnym wzorcem,
-- nie nadpisuj internali wierszy, headerów, radio/checkboxów ani hoveru, jeśli da się użyć wariantu albo konfiguracji DS,
-- stany initial, loading, empty, error i data realizuj wzorcem komponentu albo lokalnym komponentem stanu używanym w module.
-
-Custom table-like layout, CSS grid albo `cdk-virtual-scroll-viewport` stosuj wtedy, gdy DS nie wspiera wymaganego zachowania, istniejący moduł ma taki wzorzec albo wymaganie interakcji tego potrzebuje. Wtedy jawnie ustal:
-
-- szerokość kontenera, padding poziomy i model kolumn,
-- zachowanie przy węższym kontenerze i długich treściach,
-- `min-width: 0` dla komórek z tekstem,
-- `align-items: center` dla wierszy,
-- wysokość wiersza zgodną z `itemSize`,
-- `flex: 1` / `min-height: 0` dla viewportu,
-- czy ostatnia kolumna ma wystarczającą szerokość dla akcji.
-
-W custom grid header i body muszą używać tego samego modelu kolumn oraz tego samego paddingu poziomego. Nie używaj twardych szerokości `px` dla całej siatki, jeśli realny kontener może być węższy niż frame z Figmy.
-
-### [3.15] Istniejące komponenty UI oparte o biblioteki
-
-Gdy zmieniasz zachowanie istniejącego komponentu UI opartego o bibliotekę, np. select, autocomplete, datepicker, table, tree, menu albo virtual scroll, najpierw rozdziel zmianę na:
-
-- kontrakt danych i formularza,
-- stan komponentu, np. selected, marked, disabled, readonly, loading,
-- minimalny styl potrzebny dla nowego stanu.
-
-Jeśli użytkownik prosi o zachowanie dotychczasowego wyglądu, nie przebudowuj template i nie zmieniaj stylów selected/hover/default tylko dlatego, że dodajesz disabled, readonly albo blokadę akcji.
-
-Przed zmianą SCSS dla selected/hover/disabled sprawdź:
-
-- czy lista `items` ma stabilne referencje i nie jest tworzona od nowa w getterze używanym w template,
-- czy `bindValue`, `bindLabel`, `compareWith`, `trackBy` albo lokalny odpowiednik są zgodne z wartością formularza,
-- czy stan selected/marked/disabled wynika z danych komponentu biblioteki, a nie z ręcznie odtworzonego template,
-- czy nowy stan disabled nie nadpisuje istniejącego selected albo hover dla elementów, które nadal mają być aktywne.
-
-Jeśli poprawka dotyczy tylko zablokowania opcji albo akcji, preferuj publiczny stan danych/API komponentu, np. `disabled: true`, `readonly`, `compareWith`, stabilną listę opcji albo konfigurację komponentu. Własny `ng-template`, ręczne klasy opcji albo override internali dodawaj dopiero wtedy, gdy publiczne API nie wystarcza.
-
-Po zmianie sprawdź osobno:
-
-- opcję aktywną i wybraną,
-- opcję aktywną pod hoverem,
-- opcję disabled,
-- opcję jednocześnie selected i disabled, jeśli taki stan jest możliwy.
-
-### [3.16] Powtarzalne stringi kontraktowe
-
-Nie porównuj w kodzie do powtarzalnych stringów opisujących kontrakt FE/BE, stan domenowy, kod języka, status, typ, rolę, tryb, permission albo wartość słownikową.
-Jeśli literal występuje w kilku miejscach albo może być częścią kontraktu z backendem, użyj istniejącego enuma, typowanej stałej `as const` albo union type z jednego źródła prawdy.
-
-Preferowana kolejność:
-
-1. użyj istniejącego enuma/modelu z `_models`, `enum`, `types` albo lokalnego kontraktu API,
-2. jeśli go nie ma, dodaj mały enum albo typowaną stałą blisko domeny, w osobnym pliku modelu, jeśli taki wzorzec istnieje,
-3. literal zostaw tylko dla jednorazowej wartości lokalnej, która nie jest kontraktem i nie powtarza się w logice.
-
-Przykład niedopuszczalny dla powtarzalnego kontraktu:
-
-```ts
-if (normalizedLanguage !== "pl") {
-  void this.loadLanguage("pl");
-}
-```
-
-Preferuj:
-
-```ts
-if (normalizedLanguage !== LanguageEnum.polish) {
-  void this.loadLanguage(LanguageEnum.polish);
-}
-```
-
-Jeśli w skrajnym przypadku porównanie do pojedynczego stringa wydaje się dopuszczalne, ale wartość wygląda na kontraktową albo może wrócić w kolejnych miejscach, dopytaj użytkownika o decyzję zamiast samodzielnie utrwalać literal.
-
-### [3.17] Discovery przed lokalnymi mechanizmami sprawdzającymi
-
-Przed dodaniem własnego mechanizmu, który waliduje, sprawdza, klasyfikuje albo ogranicza dane, najpierw wykonaj discovery w projekcie i używanych bibliotekach. Dotyczy to między innymi validatorów formularzy, checkerów, predykatów, guardów wartości, funkcji normalizujących oraz pomocniczych reguł poprawności.
-
-Szukaj po zachowaniu i regule biznesowej, nie tylko po planowanej nazwie. Sprawdź kolejno:
-
-1. publiczne API frameworka, Design Systemu albo używanej biblioteki,
-2. istniejące rozwiązania współdzielone w projekcie, takie jak validatory, utile, stałe, dyrektywy i helpery,
-3. rozwiązania w tym samym feature lub domenie, które można bezpiecznie rozszerzyć bez zmiany ich obecnej semantyki,
-4. czy reguła jest na tyle ogólna i prawdopodobna do ponownego użycia, że powinna trafić do współdzielonej lokalizacji zamiast do pojedynczego komponentu.
-
-Stosuj następującą kolejność decyzji:
-
-- użyj istniejącego rozwiązania, jeśli dokładnie pokrywa wymaganą semantykę,
-- rozszerz istniejące rozwiązanie, jeśli da się zachować kompatybilność i czytelne API,
-- utwórz rozwiązanie współdzielone, jeśli reguła jest niezależna od konkretnego widoku lub domeny i ma realny potencjał wielu konsumentów,
-- zostaw implementację lokalną tylko wtedy, gdy reguła jest rzeczywiście specyficzna dla jednego flow albo współdzielona abstrakcja byłaby sztuczna i utrudniała zrozumienie kodu.
-
-Nie twórz kilku prawie identycznych lokalnych sprawdzaczy. Nowe rozwiązanie współdzielone powinno mieć neutralną nazwę, minimalne API bez zależności od konkretnego komponentu oraz testy obejmujące wartości graniczne i niepoprawne dane.
-
-Discovery nie oznacza automatycznego uogólniania. Nie używaj istniejącego rozwiązania o podobnej nazwie, jeśli ma inną semantykę, i nie przenoś jednorazowej prostej reguły do shared bez realnej korzyści z reużycia.
 
 ---
 

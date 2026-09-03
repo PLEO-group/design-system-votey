@@ -8,6 +8,7 @@ Używaj tej referencji, gdy zadanie wymaga dopasowania komponentu lub modułu do
 - [Route Placement Contract](#route-placement-contract)
 - [Module Selector Contract](#module-selector-contract)
 - [Collection State Contract](#collection-state-contract)
+- [Interaction Acceptance Contract](#interaction-acceptance-contract)
 - [Figma Read](#figma-read)
 - [Breakpoint Acceptance Ledger](#breakpoint-acceptance-ledger)
 - [Follow-up Fast Path](#follow-up-fast-path)
@@ -84,6 +85,27 @@ Nie wyprowadzaj geometrii pojedynczego elementu z szerokości aktualnie dostępn
 kolumny również wtedy, gdy danych jest mniej niż slotów. Dla pełnej macierzy runtime użyj sekcji `Kolekcje: liczebność
 i stabilność layoutu` oraz `Zagnieżdżony scroll, doładowanie i focus` ze skilla `chrome-debug`.
 
+## Interaction Acceptance Contract
+
+Przed implementacją interakcji i motion zapisz osiągalne przejścia:
+
+```text
+Interaction acceptance:
+- breakpoint / pointer / orientation:
+- initial state:
+- input: click | hover | focus | Enter | Space | Escape | Tab | touch
+- expected state:
+- focus target / restore target:
+- navigation or close side effect:
+- motion owner:
+```
+
+Uwzględnij tylko realne inputy i stany, ale zawsze klawiaturę dla elementów fokusowalnych i touch dla breakpointów
+dotykowych. Desktop view i mobile akordeon to osobne kontrakty nawet przy tych samych danych.
+
+Semantyka, tab order, initial focus i Escape poprzedzają motion tuning. Po zmianie DOM, mount/unmount, focus managementu
+lub routingu oznacz zależne scenariusze jako `needs-recheck`.
+
 ## Figma Read
 
 1. Wykonaj `references/mcp-guard.md`.
@@ -145,12 +167,15 @@ Visual tuning:
 - direction albo accepted/rejected bounds:
 - planned delta:
 - source: Figma | user-directed override
+- affected breakpoints / shared rule:
 ```
 
 Dla pierwszej korekty kierunkowej wybierz najbliższy sąsiedni token skali projektu albo konserwatywną zmianę rzędu
 10-20% bieżącej wartości lub zakresu. Jeśli znasz jedną wartość zaakceptowaną i jedną odrzuconą, wybierz punkt pośredni
 i zawężaj zakres zamiast skakać poza znane granice. Dokładna wartość podana przez użytkownika ma pierwszeństwo.
 Po każdej zmianie zapisz `before -> after` i wykonaj skoncentrowaną walidację runtime właściwego scope'u.
+Zapisuj ostatnią wartość zaakceptowaną i odrzuconą. Zawężaj zakres; nie wracaj do odrzuconej wartości bez nowych danych
+z Figmy lub decyzji użytkownika.
 
 ## Implementation Rules
 
@@ -185,11 +210,12 @@ Po każdej zmianie zapisz `before -> after` i wykonaj skoncentrowaną walidację
    - media,
    - CTA lub inne kluczowe elementy, jeśli występują.
 9. Porównaj metryki z Figmą.
-10. Popraw kod.
-11. Zaktualizuj ledger i oznacz zależne wcześniejsze breakpointy jako `needs-recheck`, jeśli poprawka dotyka wspólnego kodu.
-12. Odśwież stronę, ponownie potwierdź freshness marker i powtarzaj loop aż różnice mieszczą się w tolerancji albo pojawi się blocker.
-13. Zweryfikuj ponownie każdy breakpoint ze statusem `needs-recheck`.
-14. Po walidacji zatrzymaj wyłącznie tymczasowy proces uruchomiony przez bieżący flow; nie ubijaj zastanego serwera.
+10. Wykonaj Interaction Acceptance Contract przez realne inputy, jeśli moduł jest interaktywny.
+11. Popraw kod.
+12. Zaktualizuj ledger; wspólny kod oznacza zależne breakpointy i interakcje jako `needs-recheck`.
+13. Odśwież stronę, ponownie potwierdź freshness marker i powtarzaj loop aż różnice mieszczą się w tolerancji albo pojawi się blocker.
+14. Zweryfikuj ponownie każdy breakpoint i scenariusz ze statusem `needs-recheck`.
+15. Po walidacji zatrzymaj wyłącznie tymczasowy proces uruchomiony przez bieżący flow; nie ubijaj zastanego serwera.
 
 Minimalna tolerancja dla pixel-perfect:
 
@@ -220,6 +246,7 @@ Na końcu podaj krótko:
 - wynik macierzy route placement, w tym trasy zabronione i wymagana pozycja modułu;
 - końcowy breakpoint ledger, w tym ponowne weryfikacje po zmianach wspólnych;
 - wynik wymaganych stanów kolekcji, jeśli moduł renderuje listę, grid, slider albo paginację;
+- wynik Interaction Acceptance Contract, w tym focus, Escape, touch i routing w wymaganym zakresie;
 - użyty base URL oraz czy dev server został zreusingowany czy uruchomiony;
 - freshness marker i wynik jego sprawdzenia;
 - PID/owner oraz potwierdzenie cleanupu, jeśli uruchomiono serwer tymczasowy;

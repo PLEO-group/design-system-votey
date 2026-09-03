@@ -16,10 +16,12 @@ Wykonaj tylko jeden wariant:
   - Jeśli tool jest dostępny, wywołaj `mcp__claude_ai_Figma__whoami`.
   - **Uwaga dla subagentów**: Agent spawnowany przez `Task`/`Agent` tool NIE widzi listy deferred tools rodzica — ma własny zestaw. Nie deleguj checku MCP Figma do subagenta, który nie ma załadowanego `mcp__claude_ai_Figma__whoami` — dostaniesz fałszywy negatyw. Wykonaj check w głównej sesji.
 - **Codex (CLI / IDE)**
-  - Najpierw sprawdź czy `codex` CLI jest dostępny (`codex --version`).
-  - Jeśli komenda `codex` nie istnieje (np. `command not found`), przerwij i zgłoś użytkownikowi:
+  - Najpierw sprawdź, czy w bieżącej sesji są natywne callable tools Figmy albo deferred tools Figmy dostępne przez `tool_search`.
+  - Jeśli natywne narzędzie Figma jest dostępne, użyj najlżejszego checku z tej sesji (preferuj `whoami`) i nie wymagaj obecności `codex` CLI w `PATH`.
+  - Jeśli natywne narzędzie Figma nie jest dostępne, dopiero wtedy sprawdź czy `codex` CLI jest dostępny (`codex --version`).
+  - Jeśli komenda `codex` nie istnieje (np. `command not found`) i nie ma natywnych narzędzi Figmy, przerwij i zgłoś użytkownikowi:
     - że Codex CLI nie jest zainstalowany lub nie jest dostępny w `PATH`
-    - że bez tego nie da się wykonać checku MCP Figma w tym workflow
+    - że w tej sesji nie ma też natywnych narzędzi Figmy, więc nie da się wykonać checku MCP Figma w tym workflow
   - Wykonaj check w tej kolejności:
 
     ```bash
@@ -27,18 +29,19 @@ Wykonaj tylko jeden wariant:
     codex mcp list
     ```
 
-  - Agent ma wykonywać te komendy samodzielnie (nie odsyłaj użytkownika do ręcznej konfiguracji, chyba że OAuth wymaga interakcji w przeglądarce).
+  - Agent może samodzielnie wykonywać wyłącznie komendy diagnostyczne, które nie zmieniają lokalnej konfiguracji, np. `codex --version`, `echo $CODEX_HOME` i `codex mcp list`.
+  - Nie wykonuj samodzielnie komend mutujących konfigurację MCP ani uruchamiających OAuth, takich jak `codex mcp add figma --url https://mcp.figma.com/mcp` albo `codex mcp login figma`, chyba że użytkownik wcześniej jawnie poprosił o konfigurację MCP lub potwierdził zgodę na tę zmianę.
   - Nie traktuj `list_mcp_resources` albo braku globalnie wystawionych callable tooli Figmy w głównej sesji jako dowodu, że Figma MCP nie działa. W Codexie to może oznaczać tylko tyle, że narzędzia nie są wystawione bezpośrednio w tej rozmowie.
   - Najpierw sprawdź konfigurację MCP: `codex mcp list`.
   - Serwer `figma` musi być widoczny i `enabled`.
   - Jeśli `figma` nie jest widoczna, sprawdź czy sesja nie działa na innym `CODEX_HOME` niż globalne `~/.codex`:
     - sprawdź `echo $CODEX_HOME` i plik `$CODEX_HOME/config.toml`
-    - jeśli w tej sesji brak wpisu `[mcp_servers.figma]`, zainicjalizuj MCP lokalnie dla tej sesji:
+    - jeśli w tej sesji brak wpisu `[mcp_servers.figma]`, zatrzymaj flow i poinformuj użytkownika, że aktywne `CODEX_HOME` wymaga konfiguracji MCP Figma; podaj komendy, które wymagają jego zgody:
       - `codex mcp add figma --url https://mcp.figma.com/mcp`
       - `codex mcp login figma`
-      - ponów `codex mcp list`
-    - jeśli `figma` jest skonfigurowana tylko globalnie (`~/.codex`), ale nie w aktywnym `CODEX_HOME`, skonfiguruj ją ponownie w aktywnej sesji i nie kontynuuj checku dopóki `Status` nie będzie `enabled`
-  - Jeśli po inicjalizacji nadal brak `enabled`, zatrzymaj się i zgłoś blokadę użytkownikowi.
+      - `codex mcp list`
+    - jeśli `figma` jest skonfigurowana tylko globalnie (`~/.codex`), ale nie w aktywnym `CODEX_HOME`, zatrzymaj flow i poproś o zgodę na ponowną konfigurację w aktywnej sesji; nie kontynuuj checku dopóki użytkownik nie potwierdzi zgody i `Status` nie będzie `enabled`
+  - Jeśli po konfiguracji zaakceptowanej przez użytkownika nadal brak `enabled`, zatrzymaj się i zgłoś blokadę użytkownikowi.
   - Następnie wykonaj najlżejsze dostępne narzędzie Figma z tej sesji (preferuj `whoami`, jeśli jest udostępnione przez klienta).
   - Jeśli `figma` jest `enabled`, ale główna sesja nie ma natywnych callable tooli Figmy, użyj **read-only bridge** przez `codex exec` i każ mu:
     - wykonać `whoami`,

@@ -31,8 +31,8 @@ INSTRUCTION_FILENAMES = {
 
 USAGE_RULES = (
     "Uruchom skill, gdy zadanie wyraźnie pasuje do jego opisu.",
-    "`pleo-library-skill-version-guard` wykonuje target-only check skilli użytych w aktualnym procesie i sprawdza, czy backendowy manifest projektu jest zweryfikowany dzisiaj.",
-    "Jeśli manifest projektu nie jest zweryfikowany dzisiaj albo liczba skilli się nie zgadza, `pleo-library-skill-version-guard` synchronizuje manifest projektu do PleoAI.",
+    "`pleo-library-skill-version-guard` wykonuje target-only check wskazanego skilla i lekki check statusu manifestu; pełny sync robi tylko dla manifestu niezweryfikowanego dzisiaj, zmiany liczby skilli albo po aktualizacji targetu.",
+    "Wszystkie wykryte nieaktualne skille z czystymi katalogami Git aktualizuje automatycznie bez pytania użytkownika; lokalne zmiany blokują pull danego skilla.",
     "Nie raportuj telemetrycznie samego `pleo-library-skill-version-guard`, bo to infrastrukturalny check aktualności skilli.",
     "Przed użyciem lokalnych skilli uruchom `pleo-library-skill-version-guard`, jeśli chcesz potwierdzić aktualność skilli w repo.",
     "Po routingu `pleo-library-prompt-model-triage` kontynuuj bez pytania, jeśli rekomendowany reasoning to `medium` albo niżej; jeśli reasoning jest wyższy niż `medium`, zatrzymaj się i czekaj na jasne potwierdzenie użytkownika przed dalszą pracą.",

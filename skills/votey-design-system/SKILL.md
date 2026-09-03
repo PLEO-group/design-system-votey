@@ -17,7 +17,7 @@ description: >
   z makiet Figmy w ekosystemie Votey.
   Pomiń dla projektów BoxEs, aplikacji bez tej paczki oraz samego odczytu Figmy bez
   implementacji w kodzie.
-version: 1.3.1
+version: 1.3.2
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -27,6 +27,8 @@ tags: [FE]
 # Votey Design System
 
 # CHANGELOG
+
+# 1.3.2 — Dodano obowiązkowy preflight publicznych komponentów i lokalnych prymitywów przed implementacją UI.
 
 # 1.3.1 — Udokumentowano publiczny context ilustracji `info` dla szczegółowych infografik.
 
@@ -99,6 +101,25 @@ Nie zamykaj zadania, jeżeli zmiana jednego frameworka wymusza na drugim nową z
 konfigurację albo migrację, której użytkownik jawnie nie objął zakresem.
 
 ## Workflow
+
+### Preflight komponentów i prymitywów
+
+Przed pierwszą edycją template'u, JSX, SCSS, Tailwinda albo klas layoutowych dla
+nowego lub istotnie zmienianego UI wypisz krótkie mapowanie `potrzeba UI ->
+publiczny komponent / lokalny prymityw Votey` dla elementów występujących w
+zakresie:
+
+- kontener, modal albo overlay,
+- nawigacja, taby albo selektor,
+- typografia i widoczne teksty,
+- stan ładowania, pusty albo błędny,
+- akcje i przyciski,
+- ikony lub ilustracje.
+
+Potwierdź publiczne API z zainstalowanej wersji i sprawdź najwyżej jeden najbliższy
+przykład konsumencki. Nie przeglądaj całej paczki. Lokalny komponent lub wrapper
+jest dopuszczalny tylko wtedy, gdy publiczny kontrakt nie pokrywa potrzeby; oznacz
+to jako `gap` i krótko uzasadnij granicę lokalnego rozwiązania.
 
 1. Odczytaj `AGENTS.md`, `package.json`, konfigurację builda i najbliższy istniejący
    przykład w repo.

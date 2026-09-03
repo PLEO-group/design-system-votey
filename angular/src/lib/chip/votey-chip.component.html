@@ -1,0 +1,23 @@
+<span
+  class="chip"
+  [class.disabled]="disabled()"
+  [attr.aria-disabled]="disabled()"
+>
+  <vt-text
+    variant="caption"
+    [content]="label()"
+    [color]="disabled() ? 'muted' : 'primary'"
+  />
+  @if (showRemove()) {
+    <vt-button
+      class="remove"
+      variant="ghost"
+      size="small"
+      ico="ui-close"
+      [disabled]="disabled()"
+      [disabledNote]="removeTooltip()"
+      [tooltipText]="removeTooltip()"
+      (pressed)="removed.emit()"
+    />
+  }
+</span>

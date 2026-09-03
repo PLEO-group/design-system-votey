@@ -1,7 +1,7 @@
 ---
 name: pleo-library-shared-skill-sync
 description: Sprawdza listę shared skilli w bibliotece i porównuje ją z lokalnym katalogiem `skills`. Używaj, gdy użytkownik chce zobaczyć brakujące shared skille, pobrać shared skille albo gdy `pleo-library-prompt-model-triage` wskaże ten skill; nie raportuj tego skilla w telemetryce.
-version: 1.2.5
+version: 1.2.7
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
@@ -18,7 +18,7 @@ Nie raportuj tego skilla w telemetryce, bo nazwa zaczyna się od `pleo-library-`
 Skrypt z `scripts/run.py`:
 
 1. pobiera listę shared skilli z biblioteki przez publiczny `GET /skills/remote/shared`,
-2. opcjonalnie pobiera listę dostępnych kategorii shared skilli przez publiczny `GET /skills/remote/shared/categories`,
+2. pobiera listę dostępnych kategorii shared skilli przez publiczny `GET /skills/remote/shared/categories` tylko dla jawnej komendy `categories`; zwykły `check` nie zależy od tego endpointu,
 3. potrafi filtrować shared skille po kategorii, tagach albo obu naraz,
 4. porównuje wynik z lokalnym katalogiem `skills/`,
 5. wskazuje brakujące shared skille oraz ich `latestVersion`,
@@ -33,6 +33,7 @@ Sprawdzenie braków:
 
 ```bash
 python skills/pleo-library-shared-skill-sync/scripts/run.py categories
+python skills/pleo-library-shared-skill-sync/scripts/run.py check
 python skills/pleo-library-shared-skill-sync/scripts/run.py check --category "<category>"
 python skills/pleo-library-shared-skill-sync/scripts/run.py check --tag "<tag>"
 python skills/pleo-library-shared-skill-sync/scripts/run.py check --category "<category>" --tag "<tag>"
@@ -51,7 +52,7 @@ Skrypt wypisuje wynik jako JSON.
 
 - W standardowym flow może go poprzedzać target-only check przez `pleo-library-skill-version-guard`, jeśli trzeba sprawdzić aktualność skilla użytego w aktualnym procesie.
 - Nie raportuj telemetryki dla tego skilla i nie używaj `--allow-pleo-library-skill` w zwykłym flow.
-- Gdy użytkownik chce szukać po kategorii, możesz najpierw sprawdzić `GET /skills/remote/shared/categories`. Przy wyszukiwaniu po tagach nie jest to wymagane.
+- Gdy użytkownik chce najpierw zobaczyć dostępne kategorie, uruchom osobną komendę `categories`. `check` — także z `--category` — korzysta bezpośrednio z `GET /skills/remote/shared` i nie może być blokowany przez awarię pomocniczego endpointu kategorii.
 - Traktuj `GET /skills/remote/shared` jako publiczne źródło prawdy dla shared skilli w wybranym filtrze: kategorii, tagach albo obu naraz.
 - Gdy `pull --skill` dostaje kilka nazw, najpierw rozwiąż wszystkie nazwy względem listy remote; pobieraj jednoznacznie rozpoznane pozycje, a nierozpoznane albo niejednoznaczne zwracaj w `requestedSkillResolution.unresolvedSkills`.
 - Jeśli dokładna nazwa nie istnieje, traktuj jednoznaczne dopasowanie aliasu jako poprawne tylko wtedy, gdy kandydat jest unikalny; przy wielu kandydatach nie zgaduj.
@@ -61,7 +62,7 @@ Skrypt wypisuje wynik jako JSON.
 - Nie nadpisuj istniejącego lokalnego skilla przy `pull`; ten skill służy do pobierania brakujących katalogów, nie do aktualizacji już obecnych.
 - Po `pull` zawsze odśwież lokalne `AGENTS.md`, `CLAUDE.md` i `GEMINI.md`.
 - Przy odświeżaniu instrukcji utrzymaj bramkę triage: reasoning `medium` albo niżej kontynuuje bez pytania, a reasoning powyżej `medium` wymaga potwierdzenia użytkownika przed dalszą pracą.
-- Przy odświeżaniu instrukcji utrzymaj zasadę `pleo-library-skill-version-guard`: target-only check aktualności skilli bez telemetryki, z pełnym syncem manifestu tylko wtedy, gdy backendowy manifest nie jest z dzisiaj albo liczba skilli się nie zgadza.
+- Przy odświeżaniu instrukcji utrzymaj zasadę `pleo-library-skill-version-guard`: check targetu i statusu manifestu bez telemetryki, pełny sync tylko gdy potrzebny oraz automatyczny pull wykrytych nieaktualnych skilli z czystymi katalogami Git.
 - Przy odświeżaniu instrukcji utrzymaj zasadę telemetryki bez heartbeatów: `progress` tylko przy realnej zmianie etapu, a sesja bez terminalnego eventu zostanie automatycznie uznana za przerwaną po 30 minutach bez nowych eventów.
 - Po `pull` uznaj wcześniej zaczytane w czacie wersje nowo pobranych skilli oraz odświeżonych plików instrukcji za nieaktualne.
 - Jeśli dalsza praca zależy od któregoś z pobranych skilli albo od zaktualizowanych `AGENTS.md`, `CLAUDE.md` lub `GEMINI.md`, odczytaj te pliki ponownie z dysku i kontynuuj na świeżej treści.

@@ -13,7 +13,7 @@ resolvedTooltipText() | vtTranslate;
     [class.disabled]="disabled()"
     [disabled]="disabled()"
     [attr.aria-disabled]="disabled()"
-    [attr.aria-label]="translatedText || ico() || null"
+    [attr.aria-label]="translatedText || translatedTooltipText || ico() || null"
     [type]="type()"
     (click)="pressed.emit()"
   >

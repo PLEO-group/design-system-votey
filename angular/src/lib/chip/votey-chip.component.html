@@ -6,15 +6,18 @@
   <vt-text
     variant="caption"
     [content]="label()"
-    [color]="textColor()"
+    [color]="disabled() ? 'muted' : 'primary'"
   />
   @if (showRemove()) {
-    <button
+    <vt-button
       class="remove"
-      type="button"
+      variant="ghost"
+      size="small"
+      ico="ui-close"
       [disabled]="disabled()"
-      [attr.aria-label]="removeAriaLabel()"
-      (click)="removed.emit()"
-    ></button>
+      [disabledNote]="removeTooltip()"
+      [tooltipText]="removeTooltip()"
+      (pressed)="removed.emit()"
+    />
   }
 </span>

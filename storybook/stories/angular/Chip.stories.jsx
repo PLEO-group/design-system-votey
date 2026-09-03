@@ -3,7 +3,7 @@ import { fn } from "@storybook/test";
 
 function setChipInputs(componentRef, props) {
   componentRef.setInput("label", props.label);
-  componentRef.setInput("removeAriaLabel", props.removeAriaLabel);
+  componentRef.setInput("removeTooltip", props.removeTooltip);
   componentRef.setInput("showRemove", props.showRemove);
   componentRef.setInput("disabled", props.disabled);
 }
@@ -104,7 +104,7 @@ export default {
   },
   args: {
     label: "Uchwała nr VIII",
-    removeAriaLabel: "Usuń uchwałę nr VIII",
+    removeTooltip: "Usuń uchwałę nr VIII",
     showRemove: true,
     disabled: false,
     onRemoved: fn(),

@@ -121,9 +121,10 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.deepEqual(VoteyChipComponent.ɵcmp.selectors, [["vt-chip"]]);
   assert.equal(VoteyChipComponent.ɵcmp.inputs.label[0], "label");
   assert.equal(
-    VoteyChipComponent.ɵcmp.inputs.removeAriaLabel[0],
-    "removeAriaLabel",
+    VoteyChipComponent.ɵcmp.inputs.removeTooltip[0],
+    "removeTooltip",
   );
+  assert.equal(VoteyChipComponent.ɵcmp.inputs.removeAriaLabel, undefined);
   assert.equal(VoteyChipComponent.ɵcmp.inputs.showRemove[0], "showRemove");
   assert.equal(VoteyChipComponent.ɵcmp.inputs.disabled[0], "disabled");
   assert.equal(VoteyChipComponent.ɵcmp.outputs.removed, "removed");
@@ -206,9 +207,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "on-sidebar",
   ]);
   const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
+  const chipDependencies = VoteyChipComponent.ɵcmp.dependencies();
   const radioButtonDependencies =
     VoteyRadioButtonComponent.ɵcmp.dependencies();
   assert.ok(buttonDependencies.includes(VoteyTextComponent));
+  assert.ok(chipDependencies.includes(VoteyButtonComponent));
+  assert.ok(chipDependencies.includes(VoteyTextComponent));
   assert.ok(radioButtonDependencies.includes(VoteyTextComponent));
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
@@ -349,7 +353,6 @@ test("chip exposes removable and disabled defaults", async () => {
 
   assert.equal(chip.showRemove(), true);
   assert.equal(chip.disabled(), false);
-  assert.equal(chip.textColor(), "primary");
 
   chip.removed.emit();
   assert.deepEqual(removedEvents, [true]);

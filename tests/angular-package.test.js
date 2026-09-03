@@ -91,6 +91,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
+    VoteyInputComponent,
+    VoteyInputTypes,
+    VoteyInputVariants,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
     VoteyTextColors,
@@ -164,6 +167,18 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
+  assert.equal(typeof VoteyInputComponent, "function");
+  assert.deepEqual(VoteyInputComponent.ɵcmp.selectors, [["vt-input"]]);
+  assert.deepEqual(VoteyInputVariants, ["boxed", "underline"]);
+  assert.deepEqual(VoteyInputTypes, [
+    "text",
+    "email",
+    "password",
+    "search",
+    "tel",
+    "url",
+    "number",
+  ]);
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
   assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
@@ -287,6 +302,44 @@ test("checkbox synchronizes model, forms callbacks and changed output", async ()
 
   checkbox.setDisabledState(true);
   assert.equal(checkbox.effectiveDisabled(), true);
+
+  subscription.unsubscribe();
+});
+
+test("input synchronizes value, forms callbacks, disabled state and changed output", async () => {
+  const { Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const formValues = [];
+  const changedValues = [];
+  let touched = false;
+  const subscription = input.changed.subscribe((value) =>
+    changedValues.push(value),
+  );
+
+  input.registerOnChange((value) => formValues.push(value));
+  input.registerOnTouched(() => {
+    touched = true;
+  });
+  input.writeValue("Wartość");
+
+  assert.equal(input.value(), "Wartość");
+  assert.equal(input.inputClasses(), "input boxed");
+
+  input.handleInput({ target: { value: "Nowa wartość" } });
+  input.markAsTouched();
+
+  assert.equal(input.value(), "Nowa wartość");
+  assert.deepEqual(formValues, ["Nowa wartość"]);
+  assert.deepEqual(changedValues, ["Nowa wartość"]);
+  assert.equal(touched, true);
+
+  input.setDisabledState(true);
+  assert.equal(input.effectiveDisabled(), true);
+  assert.equal(input.inputClasses(), "input boxed disabled");
 
   subscription.unsubscribe();
 });

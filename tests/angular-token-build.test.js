@@ -87,7 +87,7 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     for (const legacyOutput of legacyAfterBuild) {
         assert.doesNotMatch(legacyOutput, /--grid-/);
     }
-    assert.equal(declarations.size, 209);
+    assert.equal(declarations.size, 224);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
     assert.match(firstBuild, /--color-gray-900: #444d5f;/);
@@ -101,6 +101,14 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assert.match(
         firstBuild,
         /--color-text-primary: var\(--color-navy-blue-800\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-text-placeholder: var\(--color-gray-blue-200\);/,
+    );
+    assert.match(
+        firstBuild,
+        /--color-border-field: var\(--color-gray-blue-100\);/,
     );
     assert.match(firstBuild, /--spacing-16: 16px;/);
     assert.match(firstBuild, /--radius-card: var\(--radius-30\);/);
@@ -118,7 +126,12 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);
+    assert.match(firstBuild, /--typo-field-font-size: 16px;/);
+    assert.match(firstBuild, /--typo-field-line-height: 22px;/);
+    assert.match(firstBuild, /--typo-input-label-font-weight: 800;/);
+    assert.match(firstBuild, /--typo-input-label-line-height: 19px;/);
     assert.match(firstBuild, /--space-page-margin: 0px;/);
+    assert.match(firstBuild, /--space-field-padding-x: 0px;/);
     assert.match(
         firstBuild,
         /body\[data-device=mobile\] \{\n  --grid-columns: 4;/,
@@ -185,11 +198,11 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.equal(
         [...firstBuild.matchAll(/@media \(max-width: 360px\)/g)].length,
-        117,
+        132,
     );
     assert.equal(
         [...firstBuild.matchAll(/@media \(min-width: 1920px\)/g)].length,
-        117,
+        132,
     );
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);

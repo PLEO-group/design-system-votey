@@ -205,5 +205,46 @@ declare class VoteyTextComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };
+declare const VoteyInputVariants: readonly ["boxed", "underline"];
+declare const VoteyInputTypes: readonly ["text", "email", "password", "search", "tel", "url", "number"];
+type VoteyInputVariant = (typeof VoteyInputVariants)[number];
+type VoteyInputType = (typeof VoteyInputTypes)[number];
+declare class VoteyInputComponent implements ControlValueAccessor {
+    private readonly fallbackId;
+    private readonly formDisabled;
+    readonly value: ModelSignal<string>;
+    readonly variant: InputSignal<VoteyInputVariant>;
+    readonly type: InputSignal<VoteyInputType>;
+    readonly label: InputSignal<string>;
+    readonly placeholder: InputSignal<string>;
+    readonly helper: InputSignal<string>;
+    readonly showLabel: InputSignal<boolean>;
+    readonly showHelper: InputSignal<boolean>;
+    readonly icon: InputSignal<VoteyIcon | "">;
+    readonly disabled: InputSignal<boolean>;
+    readonly required: InputSignal<boolean>;
+    readonly error: InputSignal<boolean>;
+    readonly id: InputSignal<string>;
+    readonly name: InputSignal<string>;
+    readonly autocomplete: InputSignal<string>;
+    readonly changed: OutputEmitterRef<string>;
+    protected readonly effectiveDisabled: Signal<boolean>;
+    protected readonly resolvedId: Signal<string>;
+    protected readonly helperId: Signal<string>;
+    protected readonly helperVisible: Signal<boolean>;
+    protected readonly labelVisible: Signal<boolean>;
+    protected readonly inputClasses: Signal<string>;
+    private onChange;
+    private onTouched;
+    writeValue(value: string | null): void;
+    registerOnChange(callback: (value: string) => void): void;
+    registerOnTouched(callback: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    protected handleInput(event: Event): void;
+    protected markAsTouched(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyInputComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "value": { "alias": "value"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "showLabel": { "alias": "showLabel"; "required": false; "isSignal": true; }; "showHelper": { "alias": "showHelper"; "required": false; "isSignal": true; }; "icon": { "alias": "icon"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "autocomplete": { "alias": "autocomplete"; "required": false; "isSignal": true; }; }, { "value": "valueChange"; "changed": "changed"; }, never, never, true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputTypes, VoteyInputVariants, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputType, VoteyInputVariant, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

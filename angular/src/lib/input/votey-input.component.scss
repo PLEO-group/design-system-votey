@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-stack-gap-s);
+  width: 100%;
+
+  .label {
+    color: var(--color-text-primary);
+    font-family: var(--typo-input-label-font-family);
+    font-size: var(--typo-input-label-font-size);
+    font-weight: var(--typo-input-label-font-weight);
+    letter-spacing: var(--typo-input-label-letter-spacing);
+    line-height: var(--typo-input-label-line-height);
+  }
+
+  .field {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    width: 100%;
+    height: 50px;
+    padding: 0 var(--space-field-padding-x);
+    overflow: hidden;
+    border: 1px solid var(--color-border-field);
+    border-radius: var(--radius-input);
+    background-color: var(--color-bg-surface);
+
+    &:focus-within {
+      border: 2px solid var(--color-accent-primary);
+    }
+
+    .control {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--color-text-primary);
+      font-family: var(--typo-field-font-family);
+      font-size: var(--typo-field-font-size);
+      font-weight: var(--typo-field-font-weight);
+      letter-spacing: var(--typo-field-letter-spacing);
+      line-height: var(--typo-field-line-height);
+
+      &::placeholder {
+        color: var(--color-text-placeholder);
+        opacity: 1;
+      }
+    }
+
+    .icon {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--color-text-primary);
+    }
+  }
+
+  .helper {
+    color: var(--color-text-muted);
+    font-family: var(--typo-caption-s-font-family);
+    font-size: var(--typo-caption-s-font-size);
+    font-weight: var(--typo-caption-s-font-weight);
+    letter-spacing: var(--typo-caption-s-letter-spacing);
+    line-height: var(--typo-caption-s-line-height);
+  }
+
+  &.underline {
+    .field {
+      height: 40px;
+      border: 0;
+      border-bottom: 1px solid var(--color-border-field);
+      border-radius: 0;
+      background-color: transparent;
+
+      &:focus-within {
+        border-bottom: 2px solid var(--color-accent-primary);
+      }
+    }
+  }
+
+  &.error {
+    .field,
+    .field:focus-within {
+      border-color: var(--color-state-error);
+    }
+
+    .helper {
+      color: var(--color-state-error);
+    }
+  }
+
+  &.disabled {
+    .label,
+    .helper {
+      color: var(--color-text-muted);
+    }
+
+    .field {
+      background-color: var(--color-bg-surface-tint);
+
+      .control,
+      .icon {
+        color: var(--color-text-muted);
+      }
+
+      .control {
+        cursor: not-allowed;
+
+        &::placeholder {
+          color: var(--color-text-muted);
+        }
+      }
+    }
+
+    &.underline {
+      .field {
+        background-color: transparent;
+      }
+    }
+  }
+}

@@ -246,6 +246,10 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "19": {
+      "value": 19,
+      "type": "number"
+    },
     "20": {
       "value": 20,
       "type": "number",

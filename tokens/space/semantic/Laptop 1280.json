@@ -100,6 +100,10 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "field-padding-x": {
+      "value": "{space.20}",
+      "type": "number"
+    },
     "icon-gap": {
       "value": "{space.12}",
       "type": "number",

@@ -1,0 +1,32 @@
+<div [class]="inputClasses()">
+  @if (labelVisible()) {
+    <label class="label" [for]="resolvedId()">{{ label() }}</label>
+  }
+
+  <div class="field">
+    <input
+      class="control"
+      [id]="resolvedId()"
+      [name]="name()"
+      [type]="type()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [autocomplete]="autocomplete()"
+      [disabled]="effectiveDisabled()"
+      [required]="required()"
+      [attr.aria-invalid]="error() ? true : null"
+      [attr.aria-describedby]="helperVisible() ? helperId() : null"
+      (input)="handleInput($event)"
+      (blur)="markAsTouched()"
+    />
+
+    @let currentIcon = icon();
+    @if (currentIcon) {
+      <vt-icon class="icon" [ico]="currentIcon" />
+    }
+  </div>
+
+  @if (helperVisible()) {
+    <span class="helper" [id]="helperId()">{{ helper() }}</span>
+  }
+</div>

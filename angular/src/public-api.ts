@@ -44,6 +44,8 @@ export type {
   VoteyButtonType,
   VoteyButtonVariant,
 } from "./lib/button/votey-button.component";
+export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
+export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";

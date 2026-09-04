@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef, InputSignalWithTransform } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, InputSignalWithTransform, ElementRef, TemplateRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -148,6 +148,57 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyCheckboxComponent, "vt-checkbox", never, { "checked": { "alias": "checked"; "required": false; "isSignal": true; }; "indeterminate": { "alias": "indeterminate"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "labelPosition": { "alias": "labelPosition"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "value": { "alias": "value"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; "indeterminate": "indeterminateChange"; "changed": "changed"; }, never, ["*"], true, never>;
 }
 
+declare class VoteyFilePickerComponent implements ControlValueAccessor {
+    private readonly fallbackId;
+    private readonly formDisabled;
+    readonly value: ModelSignal<File | null>;
+    readonly filename: InputSignal<string>;
+    readonly label: InputSignal<string>;
+    readonly emptyText: InputSignal<string>;
+    readonly actionText: InputSignal<string>;
+    readonly showLabel: InputSignalWithTransform<boolean, unknown>;
+    readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly required: InputSignalWithTransform<boolean, unknown>;
+    readonly id: InputSignal<string>;
+    readonly name: InputSignal<string>;
+    readonly accept: InputSignal<string>;
+    readonly capture: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly dataCy: InputSignal<string>;
+    readonly changed: OutputEmitterRef<File | null>;
+    readonly cancelled: OutputEmitterRef<void>;
+    readonly focused: OutputEmitterRef<FocusEvent>;
+    readonly blurred: OutputEmitterRef<FocusEvent>;
+    protected readonly fileInput: Signal<ElementRef<HTMLInputElement> | undefined>;
+    protected readonly actionElement: Signal<ElementRef<HTMLButtonElement> | undefined>;
+    protected readonly effectiveDisabled: Signal<boolean>;
+    protected readonly resolvedId: Signal<string>;
+    protected readonly statusId: Signal<string>;
+    protected readonly labelVisible: Signal<boolean>;
+    protected readonly hasFile: Signal<boolean>;
+    protected readonly resolvedFilename: Signal<string>;
+    protected readonly resolvedAriaLabel: Signal<string>;
+    protected readonly filePickerClasses: Signal<string>;
+    private onChange;
+    private onTouched;
+    writeValue(value: File | null | undefined): void;
+    registerOnChange(callback: (value: File | null) => void): void;
+    registerOnTouched(callback: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    open(): void;
+    focus(options?: FocusOptions): void;
+    blur(): void;
+    clear(): void;
+    protected handleChange(event: Event): void;
+    protected handleCancel(): void;
+    protected handleFocus(event: FocusEvent): void;
+    protected handleBlur(event: FocusEvent): void;
+    private resetNativeInput;
+    private commitValue;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyFilePickerComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyFilePickerComponent, "vt-file-picker", never, { "value": { "alias": "value"; "required": false; "isSignal": true; }; "filename": { "alias": "filename"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "actionText": { "alias": "actionText"; "required": false; "isSignal": true; }; "showLabel": { "alias": "showLabel"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "accept": { "alias": "accept"; "required": false; "isSignal": true; }; "capture": { "alias": "capture"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "value": "valueChange"; "changed": "changed"; "cancelled": "cancelled"; "focused": "focused"; "blurred": "blurred"; }, never, never, true, never>;
+}
+
 type VoteyRadioButtonLabelPosition = "before" | "after";
 interface VtRadioOption<T = unknown> {
     readonly label: string;
@@ -205,5 +256,5 @@ declare class VoteyTextComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

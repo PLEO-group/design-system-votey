@@ -545,6 +545,24 @@
       }
     }
   },
+  "input-label": {
+    "font-weight": {
+      "value": "{font-weight.extrabold}",
+      "type": "text"
+    },
+    "font-size": {
+      "value": "{font-size.14}",
+      "type": "number"
+    },
+    "line-height": {
+      "value": "{line-height.19}",
+      "type": "number"
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number"
+    }
+  },
   "label": {
     "font-weight": {
       "value": "{font-weight.semibold}",

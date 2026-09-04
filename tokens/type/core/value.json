@@ -246,6 +246,16 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "19": {
+      "value": 19,
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
     "20": {
       "value": 20,
       "type": "number",

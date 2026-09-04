@@ -274,6 +274,10 @@
       "value": "rgba({color.navy-blue-900}, {opacity.8})",
       "type": "color"
     },
+    "overlay": {
+      "value": "rgba({color.navy-blue-800}, {opacity.12})",
+      "type": "color"
+    },
     "event-filter": {
       "value": "rgba({color.navy-blue-700}, {opacity.30})",
       "type": "color"

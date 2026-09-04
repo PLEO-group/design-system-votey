@@ -120,6 +120,7 @@
   --color-state-warning: var(--color-yellow-600);
   --color-state-info: var(--color-blue-400);
   --color-shadow-soft: rgba(1, 0, 39, 0.08);
+  --color-shadow-overlay: rgba(7, 6, 78, 0.12);
   --color-shadow-event-filter: rgba(19, 18, 93, 0.3);
   --color-overlay-loader: rgba(255, 255, 255, 0.78);
   --color-overlay-loader-soft: rgba(255, 255, 255, 0.68);
@@ -157,6 +158,7 @@
   --color-state-warning: var(--color-yellow-400);
   --color-state-info: var(--color-blue-300);
   --color-shadow-soft: rgba(1, 0, 39, 0.08);
+  --color-shadow-overlay: rgba(7, 6, 78, 0.12);
   --color-shadow-event-filter: rgba(19, 18, 93, 0.3);
   --color-overlay-loader: rgba(255, 255, 255, 0.78);
   --color-overlay-loader-soft: rgba(255, 255, 255, 0.68);

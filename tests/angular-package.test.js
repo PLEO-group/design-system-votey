@@ -91,6 +91,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
+    VoteyMenuComponent,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
     VoteyTextColors,
@@ -162,6 +163,13 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded, undefined);
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
+  assert.equal(typeof VoteyMenuComponent, "function");
+  assert.deepEqual(VoteyMenuComponent.ɵcmp.selectors, [["vt-menu"]]);
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.items[0], "items");
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.selectedId[0], "selectedId");
+  assert.equal(VoteyMenuComponent.ɵcmp.outputs.itemSelected, "itemSelected");
+  assert.equal(VoteyMenuComponent.ɵcmp.outputs.dismissed, "dismissed");
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
   assert.equal(typeof VoteyTextComponent, "function");
@@ -254,6 +262,38 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     require.resolve("@pleodigital/design-system-votey/ds-device-mixins"),
     /dist[\\/]scss[\\/]_ds-device-mixins\.scss$/,
   );
+});
+
+test("menu emits enabled item selections and dismissal intents", async () => {
+  const { Injector, runInInjectionContext, VoteyMenuComponent } =
+    await loadAngularRuntime();
+  const menu = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyMenuComponent(),
+  );
+  const selectedItems = [];
+  let dismissedCount = 0;
+  const itemSubscription = menu.itemSelected.subscribe((item) =>
+    selectedItems.push(item),
+  );
+  const dismissedSubscription = menu.dismissed.subscribe(() => {
+    dismissedCount += 1;
+  });
+  const profile = { id: "profile", label: "Profil" };
+  const disabled = { id: "disabled", label: "Disabled", disabled: true };
+
+  menu.handleItemPressed(profile, 0);
+  menu.handleItemPressed(disabled, 1);
+  menu.handleKeydown(
+    { key: "Escape", stopPropagation() {} },
+    0,
+  );
+
+  assert.deepEqual(selectedItems, [profile]);
+  assert.equal(dismissedCount, 1);
+
+  itemSubscription.unsubscribe();
+  dismissedSubscription.unsubscribe();
 });
 
 test("checkbox synchronizes model, forms callbacks and changed output", async () => {

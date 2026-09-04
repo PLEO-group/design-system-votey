@@ -1,0 +1,28 @@
+<ul
+  class="menu"
+  role="menu"
+  [attr.aria-label]="resolvedAriaLabel()"
+  [attr.aria-labelledby]="ariaLabelledby()"
+  [attr.data-cy]="dataCy()"
+>
+  @for (item of items(); track item.id; let index = $index) {
+    <li role="none">
+      <button
+        #menuItem
+        class="item"
+        type="button"
+        role="menuitem"
+        [class.disabled]="item.disabled"
+        [class.selected]="item.id === selectedId()"
+        [disabled]="item.disabled"
+        [attr.data-item-id]="item.id"
+        [attr.tabindex]="index === resolvedActiveIndex() ? 0 : -1"
+        (click)="handleItemPressed(item, index)"
+        (focus)="handleItemFocus(index)"
+        (keydown)="handleKeydown($event, index)"
+      >
+        <span class="label">{{ item.label }}</span>
+      </button>
+    </li>
+  }
+</ul>

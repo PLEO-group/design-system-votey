@@ -1,0 +1,48 @@
+<div [class]="filePickerClasses()">
+  @if (labelVisible()) {
+    <label class="label" [for]="resolvedId()">{{ label() }}</label>
+  }
+
+  <div class="row">
+    <div class="file-box">
+      <span
+        class="filename"
+        aria-live="polite"
+        [id]="statusId()"
+        [attr.title]="resolvedFilename()"
+      >
+        {{ resolvedFilename() }}
+      </span>
+    </div>
+
+    <button
+      #actionElement
+      class="action"
+      type="button"
+      [disabled]="effectiveDisabled()"
+      [attr.aria-controls]="resolvedId()"
+      [attr.aria-describedby]="statusId()"
+      [attr.aria-label]="resolvedAriaLabel()"
+      [attr.aria-required]="required()"
+      (click)="open()"
+      (focus)="handleFocus($event)"
+      (blur)="handleBlur($event)"
+    >
+      {{ actionText() }}
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      hidden
+      [id]="resolvedId()"
+      [name]="name()"
+      [disabled]="effectiveDisabled()"
+      [attr.accept]="accept() || null"
+      [attr.capture]="capture() || null"
+      [attr.data-cy]="dataCy() || null"
+      (change)="handleChange($event)"
+      (cancel)="handleCancel()"
+    />
+  </div>
+</div>

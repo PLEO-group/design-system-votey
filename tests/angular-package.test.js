@@ -88,6 +88,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonSizes,
     VoteyButtonVariants,
     VoteyCheckboxComponent,
+    VoteyFilePickerComponent,
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
@@ -116,6 +117,15 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(typeof VoteyCheckboxComponent, "function");
   assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyFilePickerComponent, "function");
+  assert.deepEqual(VoteyFilePickerComponent.ɵcmp.selectors, [
+    ["vt-file-picker"],
+  ]);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.value[0], "value");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
   assert.equal(typeof VoteyRadioButtonComponent, "function");
   assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
     ["vt-radio-button"],
@@ -254,6 +264,60 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     require.resolve("@pleodigital/design-system-votey/ds-device-mixins"),
     /dist[\\/]scss[\\/]_ds-device-mixins\.scss$/,
   );
+});
+
+test("file picker synchronizes files, forms callbacks and disabled state", async () => {
+  const { Injector, runInInjectionContext, VoteyFilePickerComponent } =
+    await loadAngularRuntime();
+  const filePicker = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyFilePickerComponent(),
+  );
+  const initialFile = { name: "pierwszy.pdf" };
+  const selectedFile = { name: "uchwala.pdf" };
+  const formValues = [];
+  const changedValues = [];
+  let touched = 0;
+  const subscription = filePicker.changed.subscribe((value) =>
+    changedValues.push(value),
+  );
+
+  filePicker.registerOnChange((value) => formValues.push(value));
+  filePicker.registerOnTouched(() => touched++);
+  filePicker.writeValue(initialFile);
+
+  assert.equal(filePicker.value(), initialFile);
+  assert.equal(filePicker.resolvedFilename(), "pierwszy.pdf");
+  assert.equal(filePicker.filePickerClasses(), "file-picker filled");
+
+  const changeEvent = {
+    target: {
+      files: {
+        item: () => selectedFile,
+      },
+    },
+  };
+  filePicker.handleChange(changeEvent);
+  filePicker.handleChange(changeEvent);
+  filePicker.handleBlur({});
+
+  assert.equal(filePicker.value(), selectedFile);
+  assert.deepEqual(formValues, [selectedFile]);
+  assert.deepEqual(changedValues, [selectedFile]);
+  assert.equal(touched, 1);
+
+  filePicker.setDisabledState(true);
+  assert.equal(filePicker.effectiveDisabled(), true);
+  filePicker.clear();
+  assert.equal(filePicker.value(), selectedFile);
+
+  filePicker.setDisabledState(false);
+  filePicker.clear();
+  assert.equal(filePicker.value(), null);
+  assert.deepEqual(formValues, [selectedFile, null]);
+  assert.deepEqual(changedValues, [selectedFile, null]);
+
+  subscription.unsubscribe();
 });
 
 test("checkbox synchronizes model, forms callbacks and changed output", async () => {

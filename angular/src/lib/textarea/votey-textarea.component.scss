@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.textarea {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-8);
+  width: 100%;
+
+  .label {
+    color: var(--color-text-secondary);
+    font-family: var(--typo-input-label-font-family);
+    font-size: var(--typo-input-label-font-size);
+    font-weight: var(--typo-input-label-font-weight);
+    letter-spacing: var(--typo-input-label-letter-spacing);
+    line-height: var(--typo-input-label-line-height);
+  }
+
+  .field {
+    box-sizing: border-box;
+    width: 100%;
+    height: 120px;
+    min-height: 120px;
+    padding: calc(var(--spacing-12) + var(--spacing-2)) var(--spacing-16);
+    overflow: hidden;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-input);
+    background-color: var(--color-bg-surface);
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+
+    &:focus-within {
+      border-color: var(--color-accent-primary);
+      box-shadow: inset 0 0 0 1px var(--color-accent-primary);
+    }
+
+    .control {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      overflow: auto;
+      border: 0;
+      outline: 0;
+      resize: none;
+      background: transparent;
+      color: var(--color-text-primary);
+      font-family: var(--typo-body-font-family);
+      font-size: var(--typo-body-font-size);
+      font-weight: var(--typo-body-font-weight);
+      letter-spacing: var(--typo-body-letter-spacing);
+      line-height: var(--typo-body-line-height);
+
+      &::placeholder {
+        color: var(--color-text-muted);
+        opacity: 1;
+      }
+    }
+  }
+
+  .helper {
+    color: var(--color-text-muted);
+    font-family: var(--typo-caption-s-font-family);
+    font-size: var(--typo-caption-s-font-size);
+    font-weight: var(--typo-caption-s-font-weight);
+    letter-spacing: var(--typo-caption-s-letter-spacing);
+    line-height: var(--typo-caption-s-line-height);
+  }
+
+  &.filled {
+    .field {
+      border-color: var(--color-border-strong);
+
+      &:focus-within {
+        border-color: var(--color-accent-primary);
+        box-shadow: inset 0 0 0 1px var(--color-accent-primary);
+      }
+    }
+  }
+
+  &.error {
+    .field,
+    .field:focus-within {
+      border-color: var(--color-state-error);
+      box-shadow: none;
+    }
+
+    .helper {
+      color: var(--color-state-error);
+    }
+  }
+
+  &.disabled {
+    .field,
+    .field:focus-within {
+      border-color: var(--color-border-subtle);
+      background-color: var(--color-bg-surface-tint);
+      box-shadow: none;
+
+      .control {
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textarea {
+    .field {
+      transition: none;
+    }
+  }
+}

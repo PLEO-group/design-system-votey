@@ -87,7 +87,7 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     for (const legacyOutput of legacyAfterBuild) {
         assert.doesNotMatch(legacyOutput, /--grid-/);
     }
-    assert.equal(declarations.size, 209);
+    assert.equal(declarations.size, 214);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
     assert.match(firstBuild, /--color-gray-900: #444d5f;/);
@@ -104,6 +104,9 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.match(firstBuild, /--spacing-16: 16px;/);
     assert.match(firstBuild, /--radius-card: var\(--radius-30\);/);
+    assert.match(firstBuild, /--typo-input-label-font-weight: 800;/);
+    assert.match(firstBuild, /--typo-input-label-font-size: 14px;/);
+    assert.match(firstBuild, /--typo-input-label-line-height: 19px;/);
     assert.match(
         firstBuild,
         /--font-family-open-sans: "Open Sans", Arial, sans-serif;/,
@@ -185,11 +188,11 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.equal(
         [...firstBuild.matchAll(/@media \(max-width: 360px\)/g)].length,
-        117,
+        123,
     );
     assert.equal(
         [...firstBuild.matchAll(/@media \(min-width: 1920px\)/g)].length,
-        117,
+        123,
     );
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);

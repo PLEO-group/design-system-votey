@@ -1,0 +1,44 @@
+<div [class]="textareaClasses()">
+  @if (labelVisible()) {
+    <label class="label" [for]="resolvedId()">{{ label() }}</label>
+  }
+
+  <div class="field">
+    <textarea
+      #textareaElement
+      class="control"
+      [id]="resolvedId()"
+      [name]="name()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="effectiveDisabled()"
+      [required]="required()"
+      [readOnly]="readOnly()"
+      [spellcheck]="spellcheck()"
+      [attr.autocomplete]="autocomplete() || null"
+      [attr.autofocus]="autofocus() ? '' : null"
+      [attr.minlength]="minLength()"
+      [attr.maxlength]="maxLength()"
+      [attr.aria-label]="resolvedAriaLabel()"
+      [attr.aria-invalid]="error() ? true : null"
+      [attr.aria-describedby]="resolvedAriaDescribedby()"
+      [attr.aria-errormessage]="error() && helperVisible() ? helperId() : null"
+      [attr.data-cy]="dataCy() || null"
+      (input)="handleInput($event)"
+      (focus)="handleFocus($event)"
+      (blur)="handleBlur($event)"
+      (keydown)="handleKeyDown($event)"
+    ></textarea>
+  </div>
+
+  @if (helperVisible()) {
+    <span
+      class="helper"
+      [id]="helperId()"
+      [attr.role]="error() ? 'alert' : null"
+      [attr.aria-live]="error() ? 'polite' : null"
+    >
+      {{ helper() }}
+    </span>
+  }
+</div>

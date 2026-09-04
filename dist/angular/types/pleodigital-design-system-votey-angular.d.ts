@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef, InputSignalWithTransform } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ModelSignal, TemplateRef, InputSignalWithTransform, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ControlValueAccessor, FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -187,6 +187,62 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
+declare class VoteyTextareaComponent implements ControlValueAccessor {
+    private readonly fallbackId;
+    private readonly formDisabled;
+    readonly value: ModelSignal<string>;
+    readonly label: InputSignal<string>;
+    readonly placeholder: InputSignal<string>;
+    readonly helper: InputSignal<string>;
+    readonly showLabel: InputSignalWithTransform<boolean, unknown>;
+    readonly showHelper: InputSignalWithTransform<boolean, unknown>;
+    readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly required: InputSignalWithTransform<boolean, unknown>;
+    readonly readOnly: InputSignalWithTransform<boolean, unknown>;
+    readonly error: InputSignalWithTransform<boolean, unknown>;
+    readonly trimOnBlur: InputSignalWithTransform<boolean, unknown>;
+    readonly autofocus: InputSignalWithTransform<boolean, unknown>;
+    readonly spellcheck: InputSignalWithTransform<boolean, unknown>;
+    readonly id: InputSignal<string>;
+    readonly name: InputSignal<string>;
+    readonly autocomplete: InputSignal<string>;
+    readonly minLength: InputSignal<number | null>;
+    readonly maxLength: InputSignal<number | null>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly ariaDescribedby: InputSignal<string>;
+    readonly dataCy: InputSignal<string>;
+    readonly changed: OutputEmitterRef<string>;
+    readonly focused: OutputEmitterRef<FocusEvent>;
+    readonly blurred: OutputEmitterRef<FocusEvent>;
+    readonly keyDown: OutputEmitterRef<KeyboardEvent>;
+    protected readonly textareaElement: Signal<ElementRef<HTMLTextAreaElement> | undefined>;
+    protected readonly effectiveDisabled: Signal<boolean>;
+    protected readonly resolvedId: Signal<string>;
+    protected readonly helperId: Signal<string>;
+    protected readonly labelVisible: Signal<boolean>;
+    protected readonly helperVisible: Signal<boolean>;
+    protected readonly resolvedAriaLabel: Signal<string | null>;
+    protected readonly resolvedAriaDescribedby: Signal<string | null>;
+    protected readonly textareaClasses: Signal<string>;
+    private onChange;
+    private onTouched;
+    writeValue(value: string | null | undefined): void;
+    registerOnChange(callback: (value: string) => void): void;
+    registerOnTouched(callback: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    focus(options?: FocusOptions): void;
+    blur(): void;
+    select(): void;
+    clear(): void;
+    protected handleInput(event: Event): void;
+    protected handleFocus(event: FocusEvent): void;
+    protected handleBlur(event: FocusEvent): void;
+    protected handleKeyDown(event: KeyboardEvent): void;
+    private commitValue;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextareaComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextareaComponent, "vt-textarea", never, { "value": { "alias": "value"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "showLabel": { "alias": "showLabel"; "required": false; "isSignal": true; }; "showHelper": { "alias": "showHelper"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "readOnly": { "alias": "readOnly"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "trimOnBlur": { "alias": "trimOnBlur"; "required": false; "isSignal": true; }; "autofocus": { "alias": "autofocus"; "required": false; "isSignal": true; }; "spellcheck": { "alias": "spellcheck"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "autocomplete": { "alias": "autocomplete"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "value": "valueChange"; "changed": "changed"; "focused": "focused"; "blurred": "blurred"; "keyDown": "keyDown"; }, never, never, true, never>;
+}
+
 declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "body-l", "body", "body-s", "caption", "caption-s", "micro", "button", "table-header", "label"];
 declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
 type VoteyTextVariant = (typeof VoteyTextVariants)[number];
@@ -205,5 +261,5 @@ declare class VoteyTextComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTextareaComponent, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

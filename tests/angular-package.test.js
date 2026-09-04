@@ -93,6 +93,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIllustrationNames,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
+    VoteyTextareaComponent,
     VoteyTextColors,
     VoteyTextComponent,
     VoteyTextVariants,
@@ -164,6 +165,16 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
+  assert.equal(typeof VoteyTextareaComponent, "function");
+  assert.deepEqual(VoteyTextareaComponent.ɵcmp.selectors, [["vt-textarea"]]);
+  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.value[0], "value");
+  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.label[0], "label");
+  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.error[0], "error");
+  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.maxLength[0], "maxLength");
+  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.focused, "focused");
+  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.blurred, "blurred");
+  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.keyDown, "keyDown");
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
   assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
@@ -254,6 +265,43 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     require.resolve("@pleodigital/design-system-votey/ds-device-mixins"),
     /dist[\\/]scss[\\/]_ds-device-mixins\.scss$/,
   );
+});
+
+test("textarea synchronizes model, forms callbacks and changed output", async () => {
+  const { Injector, runInInjectionContext, VoteyTextareaComponent } =
+    await loadAngularRuntime();
+  const textarea = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyTextareaComponent(),
+  );
+  const formValues = [];
+  const changedValues = [];
+  let touched = 0;
+  const subscription = textarea.changed.subscribe((value) =>
+    changedValues.push(value),
+  );
+
+  textarea.registerOnChange((value) => formValues.push(value));
+  textarea.registerOnTouched(() => touched++);
+  textarea.writeValue("Treść początkowa");
+
+  assert.equal(textarea.value(), "Treść początkowa");
+  assert.equal(textarea.textareaClasses(), "textarea filled");
+
+  textarea.handleInput({ target: { value: "Nowa treść" } });
+  textarea.handleInput({ target: { value: "Nowa treść" } });
+  textarea.handleBlur({ target: { value: "Nowa treść" } });
+
+  assert.deepEqual(formValues, ["Nowa treść"]);
+  assert.deepEqual(changedValues, ["Nowa treść"]);
+  assert.equal(touched, 1);
+
+  textarea.setDisabledState(true);
+  assert.equal(textarea.effectiveDisabled(), true);
+  textarea.clear();
+  assert.equal(textarea.value(), "Nowa treść");
+
+  subscription.unsubscribe();
 });
 
 test("checkbox synchronizes model, forms callbacks and changed output", async () => {

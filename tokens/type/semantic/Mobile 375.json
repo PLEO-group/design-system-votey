@@ -545,6 +545,18 @@
       }
     }
   },
+  "field": {
+    "font-weight": { "value": "{font-weight.semibold}", "type": "text" },
+    "font-size": { "value": "{font-size.16}", "type": "number" },
+    "line-height": { "value": "{line-height.22}", "type": "number" },
+    "letter-spacing": { "value": "{letter-spacing.0}", "type": "number" }
+  },
+  "input-label": {
+    "font-weight": { "value": "{font-weight.extrabold}", "type": "text" },
+    "font-size": { "value": "{font-size.14}", "type": "number" },
+    "line-height": { "value": "{line-height.19}", "type": "number" },
+    "letter-spacing": { "value": "{letter-spacing.0}", "type": "number" }
+  },
   "label": {
     "font-weight": {
       "value": "{font-weight.semibold}",

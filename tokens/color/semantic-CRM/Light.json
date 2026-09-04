@@ -102,6 +102,10 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "placeholder": {
+      "value": "{color.gray-blue-200}",
+      "type": "color"
+    },
     "inverse": {
       "value": "{color.white}",
       "type": "color",
@@ -215,6 +219,10 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "field": {
+      "value": "{color.gray-blue-100}",
+      "type": "color"
     }
   },
   "state": {

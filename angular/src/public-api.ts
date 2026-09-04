@@ -61,3 +61,16 @@ export type {
   VoteyTextColor,
   VoteyTextVariant,
 } from "./lib/text/votey-text.component";
+export {
+  VoteyInputComponent,
+  VoteyInputModes,
+  VoteyInputTypeNames,
+  VoteyInputTypes,
+  VoteyInputVariants,
+} from "./lib/input/votey-input.component";
+export type {
+  VoteyInputMode,
+  VoteyInputType,
+  VoteyInputValue,
+  VoteyInputVariant,
+} from "./lib/input/votey-input.component";

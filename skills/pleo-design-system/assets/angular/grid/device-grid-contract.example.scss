@@ -1,0 +1,25 @@
+@use "../../responsive/responsive-config.generated" as config;
+@use "./grid-functions.example" as grid;
+
+// data-device is set by device detection, not inferred from viewport width.
+// The manifest decides which reference breakpoint each device uses.
+@each $variant in config.$ds-grid-variants {
+  @each $device, $breakpoint in config.$ds-device-breakpoint-map {
+    :where(html, body)[data-grid-type="#{$variant}"][data-device="#{$device}"] {
+      @include grid.apply-grid-contract($variant, $breakpoint);
+    }
+  }
+}
+
+.ds-grid {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-column-gap);
+  width: 100%;
+  padding-inline: var(--grid-margin);
+}
+
+.ds-grid-full-width {
+  grid-column: 1 / -1;
+}

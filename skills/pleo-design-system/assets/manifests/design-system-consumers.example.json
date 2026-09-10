@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "packageName": "@pleodigital/design-system-example",
+  "consumers": [
+    {
+      "id": "example-app",
+      "repositoryId": "example-monorepo",
+      "applicationRoot": "apps/example-app"
+    }
+  ]
+}

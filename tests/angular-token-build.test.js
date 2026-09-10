@@ -140,6 +140,9 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assertColorReferences(firstBuild, crmLightTokens);
     assert.match(firstBuild, /--spacing-16: 16px;/);
     assert.match(firstBuild, /--radius-card: var\(--radius-30\);/);
+    assert.match(firstBuild, /--typo-input-label-font-weight: 800;/);
+    assert.match(firstBuild, /--typo-input-label-font-size: 14px;/);
+    assert.match(firstBuild, /--typo-input-label-line-height: 19px;/);
     assert.match(
         firstBuild,
         /--font-family-open-sans: "Open Sans", Arial, sans-serif;/,

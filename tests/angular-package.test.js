@@ -88,6 +88,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonSizes,
     VoteyButtonVariants,
     VoteyCheckboxComponent,
+    VoteyFilePickerComponent,
+    VoteyFormControlApplyDirective,
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
@@ -117,6 +119,26 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(typeof VoteyCheckboxComponent, "function");
   assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyFilePickerComponent, "function");
+  assert.deepEqual(VoteyFilePickerComponent.ɵcmp.selectors, [
+    ["vt-file-picker"],
+  ]);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.value, undefined);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.initialValue[0],
+    "initialValue",
+  );
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
+  assert.equal(typeof VoteyFormControlApplyDirective, "function");
+  assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
+    ["", "vtFormControlApply", ""],
+  ]);
   assert.equal(typeof VoteyRadioButtonComponent, "function");
   assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
     ["vt-radio-button"],
@@ -166,7 +188,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(typeof VoteyMenuComponent, "function");
   assert.deepEqual(VoteyMenuComponent.ɵcmp.selectors, [["vt-menu"]]);
   assert.equal(VoteyMenuComponent.ɵcmp.inputs.items[0], "items");
-  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyMenuComponent.ɵcmp.inputs.selectedId[0], "selectedId");
   assert.equal(VoteyMenuComponent.ɵcmp.outputs.itemSelected, "itemSelected");
   assert.equal(VoteyMenuComponent.ɵcmp.outputs.dismissed, "dismissed");

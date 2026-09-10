@@ -1,0 +1,10 @@
+.angular-file-picker-story {
+  width: 400px;
+  max-width: calc(100vw - (2 * var(--spacing-16)));
+
+  .preview,
+  vt-file-picker {
+    display: block;
+    width: 100%;
+  }
+}

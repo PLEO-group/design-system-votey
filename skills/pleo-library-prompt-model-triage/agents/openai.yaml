@@ -5,7 +5,7 @@ interface:
 
 provider:
   name: "openai"
-  catalog_verified_on: "2026-07-22"
+  catalog_verified_on: "2026-08-24"
   reference: "references/codex-openai.md"
   default_tier: "balanced"
   default_model: "gpt-5.6-terra"
@@ -36,14 +36,14 @@ provider:
     long_context_output_multiplier: 1.5
   pricing_estimates:
     gpt-5.6-sol:
-      input_per_1m: 5.00
-      output_per_1m: 30.00
-      reasoning_per_1m: 30.00
+      input_per_1m: 4.00
+      output_per_1m: 20.00
+      reasoning_per_1m: 20.00
     gpt-5.6-terra:
-      input_per_1m: 2.50
-      output_per_1m: 15.00
-      reasoning_per_1m: 15.00
+      input_per_1m: 2.00
+      output_per_1m: 12.00
+      reasoning_per_1m: 12.00
     gpt-5.6-luna:
-      input_per_1m: 1.00
-      output_per_1m: 6.00
-      reasoning_per_1m: 6.00
+      input_per_1m: 0.20
+      output_per_1m: 1.20
+      reasoning_per_1m: 1.20

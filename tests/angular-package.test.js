@@ -184,15 +184,24 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "h3",
     "h4",
     "h5",
+    "display-l",
+    "body-2xl",
+    "body-xl",
     "body-l",
+    "body-l-semibold",
+    "body-l-bold",
     "body",
     "body-s",
     "caption",
+    "caption-extrabold",
+    "caption-light",
     "caption-s",
     "micro",
     "button",
+    "button-small",
     "table-header",
     "label",
+    "field",
   ]);
   assert.deepEqual(VoteyTextColors, [
     "primary",
@@ -502,4 +511,78 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
   assert.ok(
     registrations.every(({ url }) => url.startsWith("assets/votey/")),
   );
+});
+
+test("SVG registry and checkbox share the configured asset base URL", async () => {
+  const {
+    DomSanitizer,
+    Injector,
+    MatIconRegistry,
+    runInInjectionContext,
+    VOTEY_SVG_REGISTRY_CONFIG,
+    VoteyCheckboxComponent,
+    VoteySvgRegistryService,
+  } = await loadAngularRuntime();
+  const registrations = [];
+  const config = { assetBaseUrl: "portal/assets/votey/" };
+  const injector = Injector.create({
+    providers: [
+      { provide: VOTEY_SVG_REGISTRY_CONFIG, useValue: config },
+      {
+        provide: MatIconRegistry,
+        useValue: {
+          addSvgIcon(name, url) {
+            registrations.push({ name, url });
+          },
+        },
+      },
+      {
+        provide: DomSanitizer,
+        useValue: {
+          bypassSecurityTrustResourceUrl(url) {
+            return url;
+          },
+        },
+      },
+    ],
+  });
+  const { checkbox, service } = runInInjectionContext(injector, () => ({
+    checkbox: new VoteyCheckboxComponent(),
+    service: new VoteySvgRegistryService(),
+  }));
+
+  service.register();
+
+  assert.ok(
+    registrations.every(({ url }) => url.startsWith("portal/assets/votey/")),
+  );
+  assert.equal(
+    checkbox.checkmarkMaskUrl,
+    'url("portal/assets/votey/icons/special/icon_sp_check.svg")',
+  );
+
+  const checkboxTemplate = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/checkbox/votey-checkbox.component.html",
+    ),
+    "utf8",
+  );
+  const checkboxStyles = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/checkbox/votey-checkbox.component.scss",
+    ),
+    "utf8",
+  );
+
+  assert.match(
+    checkboxTemplate,
+    /\[style\.--votey-checkbox-checkmark-url\]="checkmarkMaskUrl"/,
+  );
+  assert.match(
+    checkboxStyles,
+    /mask: var\(--votey-checkbox-checkmark-url\)/,
+  );
+  assert.doesNotMatch(checkboxStyles, /\/assets\/votey/);
 });

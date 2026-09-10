@@ -11,7 +11,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.32}",
+      "value": "{font-size.24}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -21,7 +21,7 @@
       }
     },
     "line-height": {
-      "value": "{line-height.45}",
+      "value": "{line-height.33}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -95,7 +95,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.24}",
+      "value": "{font-size.18}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -105,7 +105,7 @@
       }
     },
     "line-height": {
-      "value": "{line-height.33}",
+      "value": "{line-height.25}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -263,7 +263,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.15}",
+      "value": "{font-size.13}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -273,7 +273,7 @@
       }
     },
     "line-height": {
-      "value": "{line-height.20}",
+      "value": "{line-height.18}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -347,7 +347,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.13}",
+      "value": "{font-size.12}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -357,7 +357,7 @@
       }
     },
     "line-height": {
-      "value": "{line-height.17}",
+      "value": "{line-height.16}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -473,7 +473,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.15}",
+      "value": "{font-size.14}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -547,7 +547,7 @@
   },
   "label": {
     "font-weight": {
-      "value": "{font-weight.semibold}",
+      "value": "{font-weight.extrabold}",
       "type": "text",
       "$extensions": {
         "com.figma.scopes": [
@@ -557,7 +557,7 @@
       }
     },
     "font-size": {
-      "value": "{font-size.13}",
+      "value": "{font-size.12}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -567,7 +567,7 @@
       }
     },
     "line-height": {
-      "value": "{line-height.17}",
+      "value": "{line-height.16}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
@@ -580,6 +580,384 @@
       "value": "{letter-spacing.0}",
       "type": "number",
       "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "field": {
+    "font-weight": {
+      "value": "{font-weight.semibold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.14}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.19}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "body-l-semibold": {
+    "font-weight": {
+      "value": "{font-weight.semibold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.13}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.18}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "body-l-bold": {
+    "font-weight": {
+      "value": "{font-weight.bold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.13}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.18}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "caption-extrabold": {
+    "font-weight": {
+      "value": "{font-weight.extrabold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.11}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.15}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "caption-light": {
+    "font-weight": {
+      "value": "{font-weight.light}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.11}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.15}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "body-2xl": {
+    "font-weight": {
+      "value": "{font-weight.regular}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.16}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.23}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "display-l": {
+    "font-weight": {
+      "value": "{font-weight.extrabold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.33}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.45}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "button-small": {
+    "font-weight": {
+      "value": "{font-weight.extrabold}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.10}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.15}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    }
+  },
+  "body-xl": {
+    "font-weight": {
+      "value": "{font-weight.regular}",
+      "type": "text",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "font-size": {
+      "value": "{font-size.16}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "line-height": {
+      "value": "{line-height.22}",
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "letter-spacing": {
+      "value": "{letter-spacing.0}",
+      "type": "number",
+      "": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],

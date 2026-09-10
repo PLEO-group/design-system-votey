@@ -1,5 +1,6 @@
 <mat-checkbox
   [class.checkbox-error]="error()"
+  disableRipple
   [checked]="checked()"
   [disabled]="effectiveDisabled()"
   [indeterminate]="indeterminate()"
@@ -8,7 +9,7 @@
   [id]="id()"
   [name]="name()"
   [value]="value()"
-  [disableRipple]="true"
+  [style.--votey-checkbox-checkmark-url]="checkmarkMaskUrl"
   (change)="handleChange($event)"
   (indeterminateChange)="indeterminate.set($event)"
   (focusout)="markAsTouched()"

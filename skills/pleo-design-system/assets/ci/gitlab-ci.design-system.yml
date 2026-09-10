@@ -1,0 +1,22 @@
+design-system-contract:
+  image: node:lts
+  script:
+    - npm ci
+    - node tools/pleo-design-system/validate-design-system.mjs --manifest design-system.manifest.json
+    - node tools/pleo-design-system/validate-company-standard-contracts.mjs --registry tools/pleo-design-system/references/company-standard-contracts.json
+    - node tools/pleo-design-system/generate-manifest-types.mjs --schema tools/pleo-design-system/references/company-standard-contracts.schema.json --output tools/pleo-design-system/references/company-standard-contracts.generated.ts --check
+    - node tools/pleo-design-system/validate-design-system-skill.mjs --project . --manifest design-system.manifest.json --contracts tools/pleo-design-system/references/company-standard-contracts.json
+    - node tools/pleo-design-system/generate-manifest-types.mjs --schema schemas/design-system.schema.json --output src/types/design-system-manifest.generated.ts --check
+    - node tools/pleo-design-system/generate-manifest-types.mjs --schema schemas/design-system-consumer.schema.json --validate-only
+    - node tools/pleo-design-system/verify-responsive-config.mjs --project . --manifest design-system.manifest.json
+    - node tools/pleo-design-system/validate-repository-boundary.mjs --project . --manifest design-system.manifest.json
+    - npm run build:assets
+    - npm run check:assets
+    - npm run build
+    - npm test
+    - npm run build-storybook
+    - npm pack --dry-run
+    - git diff --exit-code
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

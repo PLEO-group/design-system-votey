@@ -1,0 +1,94 @@
+{
+  "$schema": "./company-standard-contracts.schema.json",
+  "schemaVersion": 1,
+  "contracts": [
+    {
+      "id": "repository-boundary",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "block-on-stale",
+      "reference": "repository-topology-and-boundaries.md",
+      "summary": "Granica niezależnej paczki npm, publiczne importy i kontrolowany wyjątek embedded mini-DS dla szczególnie małych projektów."
+    },
+    {
+      "id": "foundation-tokens",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "block-on-stale",
+      "reference": "tokens-figma-and-theming.md",
+      "summary": "Figma Variables, core/semantic, Style Dictionary i polityki per framework."
+    },
+    {
+      "id": "semantic-theming",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "tokens-figma-and-theming.md",
+      "summary": "Semantic light/dark oraz frameworkowe kontrakty runtime themingu."
+    },
+    {
+      "id": "svg-assets-source-driven",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "block-on-stale",
+      "reference": "svg-asset-pipeline.md",
+      "summary": "Nazwy źródłowych SVG generują typy, registry, eksporty i preview."
+    },
+    {
+      "id": "responsive-device",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "responsive-layout-and-grid.md",
+      "summary": "Responsywność oparta na detekcji device i publicznym mixinie device()."
+    },
+    {
+      "id": "responsive-media",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "responsive-layout-and-grid.md",
+      "summary": "Responsywność CSS media oparta na publicznym mixinie breakpoint()."
+    },
+    {
+      "id": "grid-layout",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "responsive-layout-and-grid.md",
+      "summary": "Opcjonalny grid, reusable patterns i walidacja overlayem."
+    },
+    {
+      "id": "component-authoring",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "design-system-skill-contract.md",
+      "summary": "Komponenty, publiczne API, wrappery, tokenizacja, stany i testy."
+    },
+    {
+      "id": "preview-documentation",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "review-on-stale",
+      "reference": "design-system-skill-contract.md",
+      "summary": "Storybook lub aplikacja preview, dokumentacja i smoke test."
+    },
+    {
+      "id": "consumer-integration",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "block-on-stale",
+      "reference": "assets-public-api-and-consumers.md",
+      "summary": "Instrukcja per konsument, publiczne entry pointy i integracja paczki."
+    },
+    {
+      "id": "framework-isolation",
+      "version": "1.0.0",
+      "status": "current",
+      "upgradePolicy": "block-on-stale",
+      "reference": "company-standard.md",
+      "summary": "Izolacja zmian i bundle'i Angular/React oraz walidacja zmian shared."
+    }
+  ]
+}

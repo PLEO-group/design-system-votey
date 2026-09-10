@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pleodigital.com/schemas/design-system-skill-registry.schema.json",
+  "title": "Pleo design system skill registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "designSystems"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "designSystems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["package", "skill", "frameworks", "aliases", "status", "distribution"],
+        "properties": {
+          "package": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "frameworks": {
+            "type": "array",
+            "items": { "enum": ["angular", "react"] },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "status": { "enum": ["active", "deprecated", "planned"] },
+          "distribution": { "const": "SHARED" }
+        }
+      }
+    }
+  }
+}

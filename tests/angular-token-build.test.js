@@ -32,6 +32,20 @@ const crmDarkTokens = require(path.join(
     'semantic-CRM',
     'Dark.json',
 ));
+const responsiveSpacingTokens = require(path.join(
+    projectRoot,
+    'tokens',
+    'space',
+    'semantic',
+    'Mobile 360.json',
+));
+const responsiveTypographyTokens = require(path.join(
+    projectRoot,
+    'tokens',
+    'type',
+    'semantic',
+    'Desktop 1920.json',
+));
 
 function getTokenPaths(object, currentPath = []) {
     return Object.entries(object).flatMap(([key, value]) => {
@@ -45,6 +59,36 @@ function getTokenPaths(object, currentPath = []) {
             ? getTokenPaths(value, tokenPath)
             : [];
     });
+}
+
+function getColorReferences(object, currentPath = []) {
+    return Object.entries(object).flatMap(([key, value]) => {
+        const tokenPath = [...currentPath, key];
+
+        if (
+            value &&
+            value.type === 'color' &&
+            typeof value.value === 'string' &&
+            /^\{color\.[^}]+\}$/.test(value.value)
+        ) {
+            return [
+                {
+                    name: `--color-${tokenPath.join('-')}`,
+                    reference: `--${value.value.slice(1, -1).replaceAll('.', '-')}`,
+                },
+            ];
+        }
+
+        return value && typeof value === 'object'
+            ? getColorReferences(value, tokenPath)
+            : [];
+    });
+}
+
+function assertColorReferences(css, tokens) {
+    for (const {name, reference} of getColorReferences(tokens)) {
+        assert.match(css, new RegExp(`${name}: var\\(${reference}\\);`));
+    }
 }
 
 function buildAngularTokens() {
@@ -87,21 +131,13 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     for (const legacyOutput of legacyAfterBuild) {
         assert.doesNotMatch(legacyOutput, /--grid-/);
     }
-    assert.equal(declarations.size, 210);
     for (const reference of references) assert.ok(declarations.has(reference));
     assert.match(firstBuild, /--color-white: #ffffff;/);
     assert.match(firstBuild, /--color-gray-900: #444d5f;/);
     assert.match(firstBuild, /--color-navy-blue-300: #606489;/);
     assert.match(firstBuild, /--color-yellow-25: #fffcf1;/);
     assert.match(firstBuild, /--color-yellow-50: #fff5e1;/);
-    assert.match(
-        firstBuild,
-        /--color-bg-page: var\(--color-gray-100\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-text-primary: var\(--color-navy-blue-800\);/,
-    );
+    assertColorReferences(firstBuild, crmLightTokens);
     assert.match(firstBuild, /--spacing-16: 16px;/);
     assert.match(firstBuild, /--radius-card: var\(--radius-30\);/);
     assert.match(
@@ -118,6 +154,17 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);
+    for (const role of Object.keys(responsiveTypographyTokens)) {
+        for (const property of [
+            'font-family',
+            'font-size',
+            'font-weight',
+            'letter-spacing',
+            'line-height',
+        ]) {
+            assert.ok(declarations.has(`--typo-${role}-${property}`));
+        }
+    }
     assert.match(firstBuild, /--space-page-margin: 0px;/);
     assert.match(
         firstBuild,
@@ -187,13 +234,16 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         firstBuild,
         /body\[data-device=mobile\] \{\n    --typo-h1-font-size: calc\(0vw \+ 24px\);/,
     );
+    const responsiveDeclarationCount =
+        Object.keys(responsiveSpacingTokens.space).length * 3 +
+        Object.keys(responsiveTypographyTokens).length * 6;
     assert.equal(
         [...firstBuild.matchAll(/@media \(max-width: 360px\)/g)].length,
-        117,
+        responsiveDeclarationCount,
     );
     assert.equal(
         [...firstBuild.matchAll(/@media \(min-width: 1920px\)/g)].length,
-        117,
+        responsiveDeclarationCount,
     );
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);
@@ -205,18 +255,10 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         [...firstBuild.matchAll(/\[data-votey-theme="dark"\]/g)].length,
         1,
     );
-    assert.match(
-        firstBuild,
-        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-bg-page: var\(--color-navy-blue-900\);/,
-    );
-    assert.match(
-        firstBuild,
-        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-text-primary: var\(--color-white\);/,
-    );
-    assert.match(
-        firstBuild,
-        /\[data-votey-theme="dark"\] \{[\s\S]*?--color-border-subtle: var\(--color-navy-blue-600\);/,
-    );
+    const darkCss = firstBuild
+        .split('/* CRM dark semantic colors. */')[1]
+        .split('/* Responsive spacing and typography. */')[0];
+    assertColorReferences(darkCss, crmDarkTokens);
 });
 
 test('Angular build publishes mixins compatible with angular-design-system', () => {

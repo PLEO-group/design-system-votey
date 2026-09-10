@@ -162,6 +162,8 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     readonly value: InputSignal<string>;
     readonly changed: OutputEmitterRef<boolean>;
     private readonly formDisabled;
+    private readonly svgRegistryConfig;
+    protected readonly checkmarkMaskUrl: string;
     protected readonly effectiveDisabled: Signal<boolean>;
     private onChange;
     private onTouched;
@@ -214,7 +216,7 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "body-l", "body", "body-s", "caption", "caption-s", "micro", "button", "table-header", "label"];
+declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "display-l", "body-2xl", "body-xl", "body-l", "body-l-semibold", "body-l-bold", "body", "body-s", "caption", "caption-extrabold", "caption-light", "caption-s", "micro", "button", "button-small", "table-header", "label", "field"];
 declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
 type VoteyTextVariant = (typeof VoteyTextVariants)[number];
 type VoteyTextColor = (typeof VoteyTextColors)[number];

@@ -4,33 +4,43 @@ import { fn } from "@storybook/test";
 import "./Textarea.stories.scss";
 
 const textareaInputs = [
-  "value",
   "label",
   "placeholder",
   "helper",
-  "showLabel",
-  "showHelper",
   "disabled",
-  "required",
-  "readOnly",
-  "error",
   "trimOnBlur",
-  "autofocus",
   "spellcheck",
-  "id",
-  "name",
-  "autocomplete",
   "minLength",
   "maxLength",
-  "ariaLabel",
-  "ariaDescribedby",
-  "dataCy",
 ];
 
-function setTextareaInputs(componentRef, props) {
+function setTextareaInputs(componentRef, control, Validators, props) {
+  const validators = [
+    props.required || props.showError ? Validators.required : null,
+    props.minLength === null ? null : Validators.minLength(props.minLength),
+    props.maxLength === null ? null : Validators.maxLength(props.maxLength),
+  ].filter(Boolean);
+
+  control.setValidators(validators);
+  control.setValue(props.text, { emitEvent: false });
+  control.updateValueAndValidity({ emitEvent: false });
+
+  if (props.showError) {
+    control.markAsTouched();
+  } else {
+    control.markAsUntouched();
+  }
+
+  componentRef.setInput("control", control);
+
   for (const inputName of textareaInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
+
+  componentRef.setInput("initialValue", props.initialValue);
+  componentRef.setInput("staticValue", props.staticValue);
+  componentRef.setInput("disable", props.disable);
+  componentRef.setInput("block", props.block);
 }
 
 function AngularTextareaPreview(props) {
@@ -47,10 +57,12 @@ function AngularTextareaPreview(props) {
       const [
         { createComponent },
         { createApplication },
-        { VoteyTextareaComponent },
+        { FormControl, Validators },
+        { VoteyTextAreaComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
+        import("@angular/forms"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
 
@@ -66,7 +78,7 @@ function AngularTextareaPreview(props) {
       const textareaHost = document.createElement("vt-textarea");
       hostRef.current.replaceChildren(textareaHost);
 
-      const componentRef = createComponent(VoteyTextareaComponent, {
+      const componentRef = createComponent(VoteyTextAreaComponent, {
         environmentInjector: applicationRef.injector,
         hostElement: textareaHost,
       });
@@ -84,10 +96,21 @@ function AngularTextareaPreview(props) {
           latestPropsRef.current.onKeyDown(event)
         ),
       ];
+      const control = new FormControl("", { nonNullable: true });
 
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef };
-      setTextareaInputs(componentRef, latestPropsRef.current);
+      angularRuntimeRef.current = {
+        applicationRef,
+        componentRef,
+        control,
+        Validators,
+      };
+      setTextareaInputs(
+        componentRef,
+        control,
+        Validators,
+        latestPropsRef.current
+      );
       applicationRef.tick();
 
       angularRuntimeRef.current.destroy = () => {
@@ -112,7 +135,12 @@ function AngularTextareaPreview(props) {
 
     if (!angularRuntime) return;
 
-    setTextareaInputs(angularRuntime.componentRef, props);
+    setTextareaInputs(
+      angularRuntime.componentRef,
+      angularRuntime.control,
+      angularRuntime.Validators,
+      props
+    );
     angularRuntime.applicationRef.tick();
   }, [props]);
 
@@ -134,29 +162,31 @@ export default {
     onFocused: { action: "focused", table: { category: "Events" } },
     onBlurred: { action: "blurred", table: { category: "Events" } },
     onKeyDown: { action: "keyDown", table: { category: "Events" } },
+    required: {
+      description: "Adds Validators.required to the preview FormControl.",
+    },
+    showError: {
+      description: "Shows the required error state for an empty textarea.",
+    },
+    disable: { control: "boolean" },
+    block: { control: "boolean" },
   },
   args: {
-    value: "",
+    text: "",
     label: "Opis wydarzenia",
     placeholder: "Wpisz opis…",
     helper: "Maks. 2000 znaków",
-    showLabel: true,
-    showHelper: true,
     disabled: false,
     required: false,
-    readOnly: false,
-    error: false,
+    showError: false,
     trimOnBlur: false,
-    autofocus: false,
     spellcheck: true,
-    id: "storybook-textarea",
-    name: "storybook-textarea",
-    autocomplete: "off",
     minLength: null,
     maxLength: 2000,
-    ariaLabel: "",
-    ariaDescribedby: "",
-    dataCy: "storybook-textarea",
+    initialValue: undefined,
+    staticValue: undefined,
+    disable: undefined,
+    block: undefined,
     onChanged: fn(),
     onFocused: fn(),
     onBlurred: fn(),
@@ -173,7 +203,7 @@ export const Playground = {
         {...args}
         onChanged={(value) => {
           args.onChanged(value);
-          updateArgs({ value });
+          updateArgs({ text: value });
         }}
       />
     );

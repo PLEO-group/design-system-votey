@@ -96,7 +96,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyMenuComponent,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
-    VoteyTextareaComponent,
+    VoteyTextAreaComponent,
     VoteyTextColors,
     VoteyTextComponent,
     VoteyTextVariants,
@@ -195,16 +195,17 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyMenuComponent.ɵcmp.outputs.dismissed, "dismissed");
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
-  assert.equal(typeof VoteyTextareaComponent, "function");
-  assert.deepEqual(VoteyTextareaComponent.ɵcmp.selectors, [["vt-textarea"]]);
-  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.value[0], "value");
-  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.label[0], "label");
-  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.error[0], "error");
-  assert.equal(VoteyTextareaComponent.ɵcmp.inputs.maxLength[0], "maxLength");
-  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.changed, "changed");
-  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.focused, "focused");
-  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.blurred, "blurred");
-  assert.equal(VoteyTextareaComponent.ɵcmp.outputs.keyDown, "keyDown");
+  assert.equal(typeof VoteyTextAreaComponent, "function");
+  assert.deepEqual(VoteyTextAreaComponent.ɵcmp.selectors, [["vt-textarea"]]);
+  assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.value, undefined);
+  assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.label[0], "label");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.error, undefined);
+  assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.maxLength[0], "maxLength");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.focused, "focused");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.blurred, "blurred");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.keyDown, "keyDown");
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
   assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
@@ -242,6 +243,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "muted",
     "inverse",
     "accent",
+    "error",
     "on-sidebar",
   ]);
   const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();

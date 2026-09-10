@@ -149,6 +149,7 @@ declare class VoteyFormControlApplyDirective<T> implements OnDestroy {
     formControl: FormControl<T | null>;
     private valueChangesSubscription;
     private statusChangesSubscription;
+    private eventsSubscription;
     constructor();
     set staticValue(value: T | null | undefined);
     set initialValue(value: T | null | undefined);
@@ -160,6 +161,7 @@ declare class VoteyFormControlApplyDirective<T> implements OnDestroy {
     ngOnDestroy(): void;
     protected handleFormControlValueChange(_value: T | null): void;
     protected handleFormControlDisabledChange(_disabled: boolean): void;
+    protected handleFormControlStateChange(): void;
     private observeFormControl;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyFormControlApplyDirective<any>, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyFormControlApplyDirective<any>, "[vtFormControlApply]", never, { "staticValue": { "alias": "staticValue"; "required": false; }; "initialValue": { "alias": "initialValue"; "required": false; }; "control": { "alias": "control"; "required": false; }; "disable": { "alias": "disable"; "required": false; }; "block": { "alias": "block"; "required": false; }; }, {}, never, never, true, never>;
@@ -221,6 +223,7 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     protected handleCancel(): void;
     protected handleFormControlValueChange(value: File | null): void;
     protected handleFormControlDisabledChange(disabled: boolean): void;
+    protected handleFormControlStateChange(): void;
     private resetNativeInput;
     private commitValue;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyFilePickerComponent, never>;
@@ -265,8 +268,45 @@ declare class VoteyRadioOptionContentDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyRadioOptionContentDirective, "ng-template[vtRadioOptionContent]", never, { "optionId": { "alias": "vtRadioOptionContent"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
+declare class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<string> {
+    private readonly formDisabled;
+    private readonly formControlStateVersion;
+    readonly label: InputSignal<string>;
+    readonly placeholder: InputSignal<string>;
+    readonly helper: InputSignal<string>;
+    readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly trimOnBlur: InputSignalWithTransform<boolean, unknown>;
+    readonly spellcheck: InputSignalWithTransform<boolean, unknown>;
+    readonly minLength: InputSignal<number | null>;
+    readonly maxLength: InputSignal<number | null>;
+    readonly dataCy: InputSignal<string>;
+    readonly changed: OutputEmitterRef<string>;
+    readonly focused: OutputEmitterRef<FocusEvent>;
+    readonly blurred: OutputEmitterRef<FocusEvent>;
+    readonly keyDown: OutputEmitterRef<KeyboardEvent>;
+    protected readonly textareaElement: Signal<ElementRef<HTMLTextAreaElement> | undefined>;
+    protected readonly textValue: WritableSignal<string>;
+    protected readonly effectiveDisabled: Signal<boolean>;
+    protected readonly isRequired: Signal<boolean>;
+    protected readonly hasError: Signal<boolean>;
+    protected readonly errorTranslationKey: Signal<string | null>;
+    focus(options?: FocusOptions): void;
+    blur(): void;
+    select(): void;
+    protected handleInput(event: Event): void;
+    protected handleFocus(event: FocusEvent): void;
+    protected handleBlur(event: FocusEvent): void;
+    protected handleKeyDown(event: KeyboardEvent): void;
+    protected handleFormControlValueChange(value: string | null): void;
+    protected handleFormControlDisabledChange(disabled: boolean): void;
+    protected handleFormControlStateChange(): void;
+    private commitValue;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextAreaComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextAreaComponent, "vt-textarea", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "trimOnBlur": { "alias": "trimOnBlur"; "required": false; "isSignal": true; }; "spellcheck": { "alias": "spellcheck"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "focused": "focused"; "blurred": "blurred"; "keyDown": "keyDown"; }, never, never, true, never>;
+}
+
 declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "display-l", "body-2xl", "body-xl", "body-l", "body-l-semibold", "body-l-bold", "body", "body-s", "caption", "caption-extrabold", "caption-light", "caption-s", "micro", "button", "button-small", "table-header", "label", "field"];
-declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "on-sidebar"];
+declare const VoteyTextColors: readonly ["primary", "secondary", "muted", "inverse", "accent", "error", "on-sidebar"];
 type VoteyTextVariant = (typeof VoteyTextVariants)[number];
 type VoteyTextColor = (typeof VoteyTextColors)[number];
 declare class VoteyTextComponent {
@@ -283,5 +323,5 @@ declare class VoteyTextComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFormControlApplyDirective, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFormControlApplyDirective, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyMenuItem, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

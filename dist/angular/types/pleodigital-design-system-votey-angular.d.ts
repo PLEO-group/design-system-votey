@@ -135,6 +135,8 @@ declare class VoteyCheckboxComponent implements ControlValueAccessor {
     readonly value: InputSignal<string>;
     readonly changed: OutputEmitterRef<boolean>;
     private readonly formDisabled;
+    private readonly svgRegistryConfig;
+    protected readonly checkmarkMaskUrl: string;
     protected readonly effectiveDisabled: Signal<boolean>;
     private onChange;
     private onTouched;

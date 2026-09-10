@@ -70,7 +70,7 @@ const preview = {
             storySort: {
                 order: [
                     'ANGULAR COMPONENTS',
-                    ['Button', 'Checkbox', 'Icon', 'Radio Button', 'Text'],
+                    ['Button', 'Checkbox', 'Icon', 'Menu', 'Radio Button', 'Text'],
                     'CRM Tokens',
                     ['Colors', 'Foundations'],
                     'PWA Tokens',

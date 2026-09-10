@@ -12,6 +12,8 @@ import {
   type WritableSignal,
   viewChildren,
 } from "@angular/core";
+import { VoteyTextComponent } from "../text/votey-text.component";
+import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
 export interface VoteyMenuItem {
   readonly id: string;
@@ -24,20 +26,17 @@ export interface VoteyMenuItem {
   templateUrl: "./votey-menu.component.html",
   styleUrl: "./votey-menu.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [VoteyTextComponent, VoteyTranslatePipe],
 })
 export class VoteyMenuComponent {
   public readonly items: InputSignal<readonly VoteyMenuItem[]> = input<
     readonly VoteyMenuItem[]
   >([]);
-  public readonly ariaLabel: InputSignal<string> = input<string>("Menu");
-  public readonly ariaLabelledby: InputSignal<string | null> = input<
-    string | null
-  >(null);
   public readonly selectedId: InputSignal<string | null> = input<string | null>(
-    null,
+    null
   );
   public readonly dataCy: InputSignal<string | null> = input<string | null>(
-    null,
+    null
   );
 
   public readonly itemSelected: OutputEmitterRef<VoteyMenuItem> =
@@ -48,20 +47,17 @@ export class VoteyMenuComponent {
     readonly ElementRef<HTMLButtonElement>[]
   > = viewChildren<ElementRef<HTMLButtonElement>>("menuItem");
   protected readonly activeIndex: WritableSignal<number> = signal<number>(0);
-  protected readonly resolvedAriaLabel: Signal<string | null> = computed<
-    string | null
-  >(() => (this.ariaLabelledby() ? null : this.ariaLabel()));
   protected readonly resolvedActiveIndex: Signal<number> = computed<number>(
     () => {
-      const items = this.items();
-      const activeIndex = this.activeIndex();
+      const items: readonly VoteyMenuItem[] = this.items();
+      const activeIndex: number = this.activeIndex();
 
       if (items[activeIndex] && !items[activeIndex].disabled) {
         return activeIndex;
       }
 
       return items.findIndex((item: VoteyMenuItem) => !item.disabled);
-    },
+    }
   );
 
   public focusFirst(): void {
@@ -77,9 +73,7 @@ export class VoteyMenuComponent {
   }
 
   protected handleItemPressed(item: VoteyMenuItem, index: number): void {
-    if (item.disabled) {
-      return;
-    }
+    if (item.disabled) return;
 
     this.activeIndex.set(index);
     this.itemSelected.emit(item);
@@ -114,14 +108,12 @@ export class VoteyMenuComponent {
   }
 
   private focusEnabledItem(startIndex: number, direction: 1 | -1): void {
-    const items = this.items();
+    const items: readonly VoteyMenuItem[] = this.items();
 
-    if (items.length === 0) {
-      return;
-    }
+    if (items.length === 0) return;
 
     for (let offset = 0; offset < items.length; offset += 1) {
-      const index =
+      const index: number =
         (startIndex + offset * direction + items.length) % items.length;
 
       if (!items[index].disabled) {

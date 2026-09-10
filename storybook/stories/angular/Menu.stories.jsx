@@ -2,17 +2,31 @@ import React, { useEffect, useRef } from "react";
 import { fn } from "@storybook/test";
 import "./Menu.stories.scss";
 
-const menuInputs = [
-  "items",
-  "ariaLabel",
-  "ariaLabelledby",
-  "selectedId",
-  "dataCy",
-];
+const menuInputs = ["items", "selectedId"];
+
+const selectedIdOptions = {
+  none: null,
+  profile: "profile",
+  settings: "settings",
+  organizations: "organizations",
+  logout: "logout",
+};
+
+const disabledIdOptions = selectedIdOptions;
 
 function setMenuInputs(componentRef, props) {
   for (const inputName of menuInputs) {
-    componentRef.setInput(inputName, props[inputName]);
+    const value =
+      inputName === "items"
+        ? props.items.map((item) => ({
+            ...item,
+            disabled: props.disabledId
+              ? item.id === props.disabledId
+              : false,
+          }))
+        : props[inputName];
+
+    componentRef.setInput(inputName, value);
   }
 }
 
@@ -108,8 +122,34 @@ export default {
   },
   argTypes: {
     items: { control: "object" },
-    ariaLabelledby: { control: "text" },
-    dataCy: { control: "text" },
+    selectedId: {
+      control: {
+        type: "select",
+        labels: {
+          none: "Brak zaznaczenia",
+          profile: "Profil",
+          settings: "Ustawienia",
+          organizations: "Organizacje",
+          logout: "Wyloguj się",
+        },
+      },
+      mapping: selectedIdOptions,
+      options: Object.keys(selectedIdOptions),
+    },
+    disabledId: {
+      control: {
+        type: "select",
+        labels: {
+          none: "Brak wyłączonego elementu",
+          profile: "Profil",
+          settings: "Ustawienia",
+          organizations: "Organizacje",
+          logout: "Wyloguj się",
+        },
+      },
+      mapping: disabledIdOptions,
+      options: Object.keys(disabledIdOptions),
+    },
     onItemSelected: {
       action: "itemSelected",
       table: { category: "Events" },
@@ -126,10 +166,8 @@ export default {
       { id: "organizations", label: "Organizacje" },
       { id: "logout", label: "Wyloguj się" },
     ],
-    ariaLabel: "Menu użytkownika",
-    ariaLabelledby: null,
-    selectedId: null,
-    dataCy: null,
+    selectedId: "settings",
+    disabledId: "logout",
     onItemSelected: fn(),
     onDismissed: fn(),
   },

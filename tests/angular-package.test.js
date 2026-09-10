@@ -188,7 +188,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(typeof VoteyMenuComponent, "function");
   assert.deepEqual(VoteyMenuComponent.ɵcmp.selectors, [["vt-menu"]]);
   assert.equal(VoteyMenuComponent.ɵcmp.inputs.items[0], "items");
-  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyMenuComponent.ɵcmp.inputs.selectedId[0], "selectedId");
   assert.equal(VoteyMenuComponent.ɵcmp.outputs.itemSelected, "itemSelected");
   assert.equal(VoteyMenuComponent.ɵcmp.outputs.dismissed, "dismissed");

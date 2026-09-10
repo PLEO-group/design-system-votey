@@ -223,6 +223,30 @@
     "blue-25": {
       "value": "#EEFBFE",
       "type": "color"
+    },
+    "mint-green-1300": {
+      "value": "#1e795f",
+      "type": "color"
+    },
+    "blue-gray-100": {
+      "value": "#dfe2eb",
+      "type": "color"
+    },
+    "blue-gray-200": {
+      "value": "#d5d9e5",
+      "type": "color"
+    },
+    "blue-10": {
+      "value": "#f4f9ff",
+      "type": "color"
+    },
+    "blue-50": {
+      "value": "#ebf4fd",
+      "type": "color"
+    },
+    "mint-green-1000": {
+      "value": "#12505e",
+      "type": "color"
     }
   }
 }

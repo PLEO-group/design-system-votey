@@ -9,6 +9,7 @@
     ],
     "declaration": true,
     "declarationMap": true,
+    "outDir": "../out-tsc/lib",
     "inlineSources": true,
     "strict": true,
     "skipLibCheck": true,

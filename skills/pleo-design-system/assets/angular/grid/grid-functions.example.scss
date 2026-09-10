@@ -1,0 +1,51 @@
+@use "sass:map";
+@use "sass:math";
+@use "../../responsive/responsive-config.generated" as config;
+
+@function grid-token($variant, $breakpoint, $field) {
+  $variant-values: map.get(config.$ds-grid-values, $variant);
+  $breakpoint-values: map.get($variant-values, $breakpoint);
+  $value: map.get($breakpoint-values, $field);
+  @if $value == null {
+    @error "Missing grid token #{$variant}.#{$breakpoint}.#{$field}.";
+  }
+  @return $value;
+}
+
+@function has-grid-breakpoint($variant, $breakpoint) {
+  $variant-values: map.get(config.$ds-grid-values, $variant);
+  @return $variant-values != null and map.has-key($variant-values, $breakpoint);
+}
+
+@function breakpoint-width($breakpoint) {
+  $width: map.get(config.$ds-breakpoints, $breakpoint);
+  @if $width == null or $width <= 0 {
+    @error "Grid breakpoint #{$breakpoint} requires a positive reference width.";
+  }
+  @return $width;
+}
+
+// Grid measurements are reference-pixel numbers in the source token JSON.
+// Convert them to viewport units relative to the Figma frame/breakpoint width.
+@function fluid-grid-value($variant, $breakpoint, $field) {
+  @return math.div(
+    grid-token($variant, $breakpoint, $field),
+    breakpoint-width($breakpoint)
+  ) * 100vw;
+}
+
+@function grid-column-width($variant, $breakpoint) {
+  $columns: grid-token($variant, $breakpoint, "columns");
+  $gap: fluid-grid-value($variant, $breakpoint, "gutter");
+  $margin: fluid-grid-value($variant, $breakpoint, "margin");
+  $occupied-space: $gap * ($columns - 1) + 2 * $margin;
+  @return math.div(100vw - $occupied-space, $columns);
+}
+
+@mixin apply-grid-contract($variant, $breakpoint) {
+  --grid-columns: #{grid-token($variant, $breakpoint, "columns")};
+  --grid-column-width: #{grid-column-width($variant, $breakpoint)};
+  --grid-column-gap: #{fluid-grid-value($variant, $breakpoint, "gutter")};
+  --grid-margin: #{fluid-grid-value($variant, $breakpoint, "margin")};
+  --grid-margin-extra: #{fluid-grid-value($variant, $breakpoint, "margin-extra")};
+}

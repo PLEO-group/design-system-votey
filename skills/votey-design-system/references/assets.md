@@ -3,6 +3,10 @@
 Wczytaj tę referencję razem z właściwą referencją frameworka, gdy implementacja
 używa ikony albo ilustracji opublikowanej przez `@pleodigital/design-system-votey`.
 
+To referencja integracyjna. Dla źródłowego SVG, generatora, contextów i operacji
+add/audit/rename/move/remove wczytaj najpierw `svg-assets.md` i uruchom
+`votey-svg-assets`.
+
 ## Najpierw potwierdź publiczny asset
 
 1. Sprawdź zainstalowaną wersję paczki i dokładną publiczną nazwę albo ścieżkę.

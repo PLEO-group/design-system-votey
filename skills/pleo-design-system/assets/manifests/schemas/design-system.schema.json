@@ -1,0 +1,531 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pleodigital.com/schemas/design-system.schema.json",
+  "title": "Pleo design system manifest",
+  "description": "Maszynowy kontrakt paczki design systemu, jej architektury, dystrybucji i integracji.",
+  "x-typescript-type-name": "DesignSystemManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "identity", "designSource", "repository", "distribution", "frameworks", "tokens", "themes", "artifacts", "assets", "responsive", "preview", "commands", "ci", "designSystemSkill", "exceptions"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Ścieżka lub URI schemy używanej przez IDE i narzędzia walidujące manifest."
+    },
+    "schemaVersion": {
+      "const": 1,
+      "description": "Wersja struktury manifestu, niezależna od wersji paczki design systemu."
+    },
+    "kind": {
+      "const": "pleo-design-system",
+      "description": "Stały identyfikator odróżniający manifest design systemu od innych manifestów."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Identyfikacja produktu, paczki, jej wersji i docelowego rejestru.",
+      "additionalProperties": false,
+      "required": ["product", "packageName", "version", "registry"],
+      "properties": {
+        "product": { "type": "string", "minLength": 1, "description": "Czytelna nazwa produktu lub obszaru obsługiwanego przez design system." },
+        "packageName": { "type": "string", "minLength": 1, "description": "Pełna nazwa paczki NPM stanowiąca jej publiczną tożsamość." },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$", "description": "Aktualna wersja paczki zgodna z Semantic Versioning." },
+        "registry": {
+          "type": "object",
+          "description": "Konfiguracja rejestru, do którego paczka jest lub może być publikowana.",
+          "additionalProperties": false,
+          "required": ["type", "access", "url"],
+          "properties": {
+            "type": { "enum": ["npmjs", "private", "custom"], "description": "Rodzaj rejestru paczek; domyślnym wariantem firmowym jest npmjs." },
+            "access": { "enum": ["public", "restricted"], "description": "Poziom dostępu do opublikowanej paczki." },
+            "url": { "type": "string", "minLength": 1, "description": "Adres rejestru paczek używany przez narzędzia publikujące i instalujące." }
+          }
+        }
+      }
+    },
+    "designSource": {
+      "type": "object",
+      "description": "Kanoniczne źródło projektu wizualnego obejmujące cały design system, w tym fundamenty i ewentualne komponenty; jest niezależne od tokenowego sourceOfTruth.",
+      "additionalProperties": false,
+      "required": ["type", "projectUrl", "exceptionReason"],
+      "properties": {
+        "type": { "enum": ["figma", "other"], "description": "Narzędzie będące źródłem całego projektu wizualnego; firmowym defaultem jest Figma." },
+        "projectUrl": { "type": ["string", "null"], "description": "Link do całego projektu lub pliku design systemu, a nie tylko do widoku albo źródła tokenów." },
+        "exceptionReason": { "type": ["string", "null"], "description": "Uzasadnienie braku projektu Figma; dla źródła typu figma wartość musi być null." }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "figma" } }, "required": ["type"] },
+          "then": {
+            "properties": {
+              "projectUrl": { "type": "string", "pattern": "^https://(?:www\\.)?figma\\.com/", "minLength": 1 },
+              "exceptionReason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "other" } }, "required": ["type"] },
+          "then": { "properties": { "exceptionReason": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "repository": {
+      "type": "object",
+      "description": "Topologia repozytorium oraz granice pomiędzy design systemem i jego konsumentami.",
+      "additionalProperties": false,
+      "required": ["topology", "packageRoot", "consumerRoots", "boundaryPolicy"],
+      "properties": {
+        "topology": { "enum": ["standalone-repository", "colocated-workspace-package", "embedded-mini-ds"], "description": "Położenie DS: osobne repozytorium, wydzielona paczka we wspólnym workspace albo zatwierdzony mini-DS osadzony w szczególnie małym projekcie." },
+        "packageRoot": { "type": "string", "minLength": 1, "description": "Ścieżka do katalogu głównego design systemu względem repozytorium; dla embedded-mini-ds musi wynosić kropkę." },
+        "consumerRoots": { "type": "array", "description": "Ścieżki do aplikacji konsumujących DS w tym samym workspace.", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "boundaryPolicy": {
+          "type": "object",
+          "description": "Deterministyczne zasady chroniące granicę publicznego API paczki.",
+          "additionalProperties": false,
+          "required": ["publicImportsOnly", "packageImportsConsumer", "packCheck", "forbiddenPackageImportPrefixes", "localMiniDs"],
+          "properties": {
+            "publicImportsOnly": { "const": true, "description": "Wymusza korzystanie przez konsumentów wyłącznie z publicznych entry pointów paczki." },
+            "packageImportsConsumer": { "const": false, "description": "Zabrania paczce design systemu importowania kodu z aplikacji konsumującej." },
+            "packCheck": { "const": true, "description": "Wymaga sprawdzenia faktycznej zawartości artefaktu tworzonego przez npm pack." },
+            "forbiddenPackageImportPrefixes": { "type": "array", "description": "Prefiksy niedozwolonych importów względnych lub głębokich omijających publiczne API.", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+            "localMiniDs": {
+              "type": "object",
+              "description": "Polityka wykrywania i kontrolowanej migracji lokalnych mini design systemów.",
+              "additionalProperties": false,
+              "required": ["mode", "baselineFile", "heuristicFindings", "justification"],
+              "properties": {
+                "mode": { "enum": ["forbid", "migration-baseline"], "description": "Tryb całkowitego zakazu albo czasowej migracji zamrożonego stanu zastanego." },
+                "baselineFile": { "type": ["string", "null"], "description": "Ścieżka do baseline'u istniejącego mini-DS; null, gdy mini-DS jest całkowicie zabroniony." },
+                "heuristicFindings": { "enum": ["block", "review-required"], "description": "Poziom reakcji na heurystycznie wykryte potencjalne elementy lokalnego mini-DS." },
+                "justification": { "type": ["string", "null"], "description": "Konkretne uzasadnienie wyboru embedded-mini-ds dla szczególnie małego projektu; dla pozostałych topologii null." }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        { "if": { "properties": { "topology": { "const": "colocated-workspace-package" } } }, "then": { "properties": { "consumerRoots": { "minItems": 1 } } } },
+        {
+          "if": { "properties": { "topology": { "const": "embedded-mini-ds" } }, "required": ["topology"] },
+          "then": {
+            "properties": {
+              "packageRoot": { "const": "." },
+              "consumerRoots": { "maxItems": 0 },
+              "boundaryPolicy": {
+                "properties": {
+                  "localMiniDs": {
+                    "properties": {
+                      "mode": { "const": "forbid" },
+                      "baselineFile": { "type": "null" },
+                      "heuristicFindings": { "const": "block" },
+                      "justification": { "type": "string", "minLength": 1 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "boundaryPolicy": {
+                "properties": {
+                  "localMiniDs": {
+                    "properties": {
+                      "mode": { "const": "migration-baseline" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "boundaryPolicy": {
+                "properties": {
+                  "localMiniDs": {
+                    "properties": {
+                      "baselineFile": { "type": "string", "minLength": 1 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "distribution": {
+      "type": "object",
+      "description": "Sposób udostępniania paczki konsumentom i gotowość do publikacji.",
+      "additionalProperties": false,
+      "required": ["mode", "publishable"],
+      "properties": {
+        "mode": { "enum": ["workspace-internal", "registry"], "description": "Dystrybucja tylko wewnątrz workspace albo poprzez rejestr paczek." },
+        "publishable": { "type": "boolean", "description": "Informuje, czy paczka ma skonfigurowany i dozwolony proces publikacji." }
+      },
+      "allOf": [
+        { "if": { "properties": { "mode": { "const": "workspace-internal" } } }, "then": { "properties": { "publishable": { "const": false } } } },
+        { "if": { "properties": { "mode": { "const": "registry" } } }, "then": { "properties": { "publishable": { "const": true } } } }
+      ]
+    },
+    "frameworks": {
+      "type": "object",
+      "description": "Frameworki obsługiwane przez paczkę i ich niezależne publiczne entry pointy.",
+      "additionalProperties": false,
+      "required": ["angular", "react"],
+      "properties": {
+        "angular": { "$ref": "#/$defs/framework", "description": "Konfiguracja wsparcia i entry pointu dla Angulara." },
+        "react": { "$ref": "#/$defs/framework", "description": "Konfiguracja wsparcia i entry pointu dla Reacta." }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Źródło prawdy, generowanie i polityki wykorzystania tokenów design systemu.",
+      "additionalProperties": false,
+      "required": ["sourceOfTruth", "generator", "namingContract", "categories", "frameworkPolicies"],
+      "properties": {
+        "sourceOfTruth": {
+          "type": "object",
+          "description": "Kanoniczne źródło danych tokenowych, preferencyjnie Figma Variables.",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["figma-variables", "json", "other"], "description": "Rodzaj źródła prawdy tokenów." },
+            "url": { "type": "string", "description": "Adres źródła, na przykład pliku Figma zawierającego Variables." },
+            "path": { "type": "string", "description": "Lokalna ścieżka do pliku źródłowego, jeśli tokeny nie pochodzą bezpośrednio z Figmy." },
+            "exceptionReason": { "type": "string", "description": "Uzasadnienie odstępstwa od firmowego źródła prawdy opartego na Figma Variables." }
+          }
+        },
+        "generator": { "const": "style-dictionary", "description": "Obowiązkowy silnik przetwarzający źródłowe tokeny na artefakty frameworkowe." },
+        "namingContract": { "const": "pleo-design-system-tokens-v1", "description": "Wersja kontraktu znaczenia warstw tokenów i rekomendowanych, niewymaganych wzorców nazewnictwa." },
+        "categories": { "type": "object", "description": "Bazowe polityki generowania, autocomplete i użycia dla każdej kategorii tokenów.", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/tokenPolicy" } },
+        "frameworkPolicies": {
+          "type": "object",
+          "description": "Nadpisania polityk tokenowych i formaty outputu definiowane osobno dla frameworków.",
+          "additionalProperties": false,
+          "required": ["angular", "react"],
+          "properties": {
+            "angular": { "$ref": "#/$defs/frameworkTokenPolicy", "description": "Polityki tokenów i outputy przeznaczone dla Angulara." },
+            "react": { "$ref": "#/$defs/frameworkTokenPolicy", "description": "Polityki tokenów i outputy przeznaczone dla Reacta." }
+          }
+        }
+      }
+    },
+    "themes": {
+      "type": "object",
+      "description": "Kontrakt semantic modes light/dark oraz frameworkowego runtime themingu.",
+      "additionalProperties": false,
+      "required": ["modes", "semanticTokenFiles", "angular"],
+      "properties": {
+        "modes": {
+          "type": "array",
+          "description": "Motywy obsługiwane przez publiczne semantic tokens; kontrakt v1 wymaga dokładnie light i dark.",
+          "items": { "enum": ["light", "dark"] },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "semanticTokenFiles": {
+          "type": "object",
+          "description": "Źródłowe pliki semantic tokenów zależnych od motywu, przetwarzane przez Style Dictionary.",
+          "additionalProperties": false,
+          "required": ["light", "dark"],
+          "properties": {
+            "light": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do semantic tokenów light." },
+            "dark": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do semantic tokenów dark." }
+          }
+        },
+        "angular": {
+          "type": "object",
+          "description": "Kontrakt Angular runtime oparty na body[data-theme], sessionStorage i jawnej inicjalizacji loadTheme().",
+          "additionalProperties": false,
+          "required": ["enabled", "host", "attribute", "storage", "storageKey", "defaultTheme", "initialThemeInHtml", "initialization", "useViewTransitions", "servicePath", "contractScssPath"],
+          "properties": {
+            "enabled": { "type": "boolean", "description": "Włącza firmowy Angular theme runtime, gdy paczka obsługuje Angulara." },
+            "host": { "enum": ["body", null], "description": "Element utrzymujący data-theme; standard Angular używa body." },
+            "attribute": { "enum": ["data-theme", null], "description": "Atrybut runtime przełączający semantic token modes; standard używa data-theme." },
+            "storage": { "enum": ["session", null], "description": "Magazyn preferencji użytkownika; standard Angular używa sessionStorage." },
+            "storageKey": { "enum": ["theme", null], "description": "Klucz zapisanej preferencji; standard Angular używa theme." },
+            "defaultTheme": { "enum": ["light", null], "description": "Motyw początkowy przed odczytem zapisanej preferencji." },
+            "initialThemeInHtml": { "enum": ["light", null], "description": "Wartość data-theme umieszczana na body w index.html przed uruchomieniem Angulara." },
+            "initialization": { "enum": ["explicit-load", null], "description": "Sposób inicjalizacji; explicit-load wymaga jawnego wywołania ThemeService.loadTheme() przez konsumenta." },
+            "useViewTransitions": { "type": "boolean", "description": "Włącza document.startViewTransition przy świadomym przełączeniu motywu, z fallbackiem do natychmiastowej zmiany." },
+            "servicePath": { "type": ["string", "null"], "description": "Ścieżka względem packageRoot do publicznego Angular ThemeService." },
+            "contractScssPath": { "type": ["string", "null"], "description": "Ścieżka względem packageRoot do SCSS spinającego wygenerowane semantic modes z body[data-theme]." }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "enabled": { "const": true } }, "required": ["enabled"] },
+              "then": {
+                "properties": {
+                  "host": { "const": "body" },
+                  "attribute": { "const": "data-theme" },
+                  "storage": { "const": "session" },
+                  "storageKey": { "const": "theme" },
+                  "defaultTheme": { "const": "light" },
+                  "initialThemeInHtml": { "const": "light" },
+                  "initialization": { "const": "explicit-load" },
+                  "useViewTransitions": { "const": true },
+                  "servicePath": { "type": "string", "minLength": 1 },
+                  "contractScssPath": { "type": "string", "minLength": 1 }
+                }
+              },
+              "else": {
+                "properties": {
+                  "host": { "type": "null" },
+                  "attribute": { "type": "null" },
+                  "storage": { "type": "null" },
+                  "storageKey": { "type": "null" },
+                  "defaultTheme": { "type": "null" },
+                  "initialThemeInHtml": { "type": "null" },
+                  "initialization": { "type": "null" },
+                  "useViewTransitions": { "const": false },
+                  "servicePath": { "type": "null" },
+                  "contractScssPath": { "type": "null" }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "description": "Polityka przechowywania i deterministycznego generowania artefaktów builda.",
+      "additionalProperties": false,
+      "required": ["policy", "sources", "generated", "cleanBeforeBuild", "verifyDeterminism"],
+      "properties": {
+        "policy": { "enum": ["build-only", "tracked-intermediate", "tracked-dist"], "description": "Określa, które wygenerowane artefakty są śledzone w repozytorium." },
+        "sources": { "type": "array", "description": "Ścieżki do kanonicznych plików źródłowych podlegających generowaniu.", "items": { "type": "string" }, "minItems": 1 },
+        "generated": { "type": "array", "description": "Ścieżki do artefaktów tworzonych automatycznie ze źródeł.", "items": { "type": "string" }, "minItems": 1 },
+        "cleanBeforeBuild": { "type": "boolean", "description": "Określa, czy generator musi usunąć poprzedni output przed rozpoczęciem builda." },
+        "verifyDeterminism": { "type": "boolean", "description": "Określa, czy CI ma potwierdzać identyczny wynik generowania dla tych samych źródeł." }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "description": "Publiczne lokalizacje ikon, ilustracji i integracji assetów frameworkowych.",
+      "additionalProperties": false,
+      "required": ["namingContract", "iconsPath", "illustrationsPath", "angularSvgRegistry", "generatorPath", "configPath", "generatedTypesPath", "reactBarrelPath"],
+      "properties": {
+        "namingContract": { "const": "pleo-design-system-assets-v1", "description": "Wersja obowiązującego firmowego kontraktu nazewnictwa plików i publicznych nazw SVG." },
+        "iconsPath": { "type": "string", "minLength": 1, "description": "Ścieżka publiczna lub paczkowa do kolekcji ikon SVG." },
+        "illustrationsPath": { "type": "string", "minLength": 1, "description": "Ścieżka publiczna lub paczkowa do kolekcji ilustracji SVG." },
+        "angularSvgRegistry": { "type": "boolean", "description": "Określa, czy wariant Angular udostępnia system rejestracji SVG." },
+        "generatorPath": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do generatora typów, registry i frameworkowych mapowań ze źródłowych nazw SVG." },
+        "configPath": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do projektowej konfiguracji contextów, prefixów, namespace'ów i słownictwa SVG." },
+        "generatedTypesPath": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do generowanego pliku TypeScript z nazwami i wpisami registry." },
+        "reactBarrelPath": { "type": ["string", "null"], "description": "Ścieżka względem packageRoot do generowanego publicznego barrel React albo null, gdy React nie jest obsługiwany." }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "description": "Kontrakt nazw breakpointów, detekcji urządzeń, płynnego skalowania tokenów i opcjonalnego gridu.",
+      "additionalProperties": false,
+      "required": ["mode", "deviceTypes", "deviceBreakpointMap", "generatedConfigScssPath", "breakpoints", "scaling", "grid"],
+      "properties": {
+        "mode": { "enum": ["device-contract", "css-media"], "description": "Wyłączny model responsywności: runtime device() oparty na data-device albo breakpoint() oparty na media queries; jeden DS nie może używać obu." },
+        "generatedConfigScssPath": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do mapy SCSS generowanej wspólnie z manifestu, breakpoint tokens i opcjonalnych grid tokens. Plik jest wyłącznie outputem commands.buildTokens i nie wolno edytować go ręcznie." },
+        "deviceTypes": {
+          "type": "array",
+          "description": "Nazwy rodzajów urządzeń ustawianych przez runtime detector dla device-contract; dla css-media lista jest pusta. Nie są synonimami breakpointów viewportu.",
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+          "uniqueItems": true
+        },
+        "deviceBreakpointMap": {
+          "type": "object",
+          "description": "Dla device-contract mapuje każdy device type na breakpoint referencyjny używany przez skalowanie tokenów i opcjonalny grid; dla css-media pozostaje pustym obiektem. Pole nie zależy od włączenia gridu.",
+          "additionalProperties": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" }
+        },
+        "breakpoints": {
+          "type": "object",
+          "description": "Kanoniczna lista wspieranych breakpointów i lokalizacja ich core tokens; kolejność od najmniejszej do największej steruje interpolacją.",
+          "additionalProperties": false,
+          "required": ["names", "tokenFile", "tokenPath"],
+          "properties": {
+            "names": {
+              "type": "array",
+              "description": "Uporządkowane nazwy wspieranych breakpointów, na przykład mobile-small, mobile, tablet-small, tablet, laptop i desktop albo prostszy zestaw mobile, tablet i desktop.",
+              "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+              "minItems": 2,
+              "uniqueItems": true
+            },
+            "tokenFile": { "type": "string", "minLength": 1, "description": "Ścieżka względem packageRoot do źródłowego JSON z wartościami breakpointów przetwarzanego przez Style Dictionary." },
+            "tokenPath": { "type": "string", "minLength": 1, "description": "Kropkowana ścieżka w tokenFile do mapy breakpointów, na przykład breakpoint.core." }
+          }
+        },
+        "scaling": {
+          "type": "object",
+          "description": "Reguły płynnego skalowania responsive tokens pomiędzy breakpointami dla aktualnie wykrytego rodzaju urządzenia.",
+          "additionalProperties": false,
+          "required": ["enabled", "deviceMultipliers", "implicitBreakpointFallbacks"],
+          "properties": {
+            "enabled": { "type": "boolean", "description": "Określa, czy DS generuje płynne wartości tokenów pomiędzy kolejnymi breakpointami." },
+            "deviceMultipliers": {
+              "type": "object",
+              "description": "Jedyne ręcznie edytowane źródło mnożników skali przypisanych do device types; klucze muszą odpowiadać responsive.deviceTypes. Style Dictionary przenosi wartości do generatedConfigScssPath.",
+              "additionalProperties": { "type": "number", "exclusiveMinimum": 0 }
+            },
+            "implicitBreakpointFallbacks": {
+              "type": "object",
+              "description": "Mapowanie breakpointu bez jawnej wartości tokenu na wspierany breakpoint z wartością, na przykład mobile-small na mobile.",
+              "additionalProperties": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" }
+            }
+          }
+        },
+        "grid": {
+          "type": "object",
+          "description": "Konfiguracja opcjonalnego systemu gridu; wartości columns, gutter, margin i margin-extra pozostają core tokens generowanymi przez Style Dictionary.",
+          "additionalProperties": false,
+          "required": ["enabled", "variants", "defaultVariant", "tokenFile", "tokenPath"],
+          "properties": {
+            "enabled": { "type": "boolean", "description": "Określa, czy design system dostarcza własny system gridu." },
+            "variants": {
+              "type": "array",
+              "description": "Nazwy wariantów gridu dostępnych w paczce.",
+              "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+              "uniqueItems": true
+            },
+            "defaultVariant": { "type": ["string", "null"], "description": "Domyślny wariant gridu albo null, gdy grid jest wyłączony." },
+            "tokenFile": { "type": ["string", "null"], "description": "Ścieżka względem packageRoot do źródłowego JSON gridu przetwarzanego przez Style Dictionary albo null, gdy grid jest wyłączony." },
+            "tokenPath": { "type": ["string", "null"], "description": "Kropkowana ścieżka w tokenFile do mapy wariantów gridu, na przykład grid.core, albo null, gdy grid jest wyłączony." }
+          }
+        }
+      }
+    },
+    "preview": {
+      "type": "object",
+      "description": "Środowisko podglądu i dokumentowania elementów design systemu.",
+      "additionalProperties": false,
+      "required": ["type", "command"],
+      "properties": {
+        "type": { "enum": ["storybook", "application"], "description": "Rodzaj środowiska preview: Storybook albo dedykowana aplikacja." },
+        "command": { "type": "string", "minLength": 1, "description": "Komenda uruchamiająca lub budująca środowisko preview." }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "description": "Kanoniczne komendy używane lokalnie, przez agenta i w CI.",
+      "additionalProperties": false,
+      "required": ["buildTokens", "buildAssets", "checkAssets", "build", "test", "pack", "publish"],
+      "properties": {
+        "buildTokens": { "type": "string", "minLength": 1, "description": "Komenda generująca wszystkie tokenowe artefakty przez Style Dictionary." },
+        "buildAssets": { "type": "string", "minLength": 1, "description": "Komenda transformująca źródłowe SVG i generująca typy, registry oraz frameworkowe eksporty z nazw plików." },
+        "checkAssets": { "type": "string", "minLength": 1, "description": "Komenda read-only walidująca nazwy i bezpieczeństwo SVG oraz aktualność wszystkich generowanych kontraktów." },
+        "build": { "type": "string", "minLength": 1, "description": "Komenda budująca dystrybuowalną paczkę design systemu." },
+        "test": { "type": "string", "minLength": 1, "description": "Komenda uruchamiająca obowiązkowe testy design systemu." },
+        "pack": { "type": "string", "minLength": 1, "description": "Komenda weryfikująca zawartość instalowalnego artefaktu paczki." },
+        "publish": { "type": ["string", "null"], "description": "Komenda publikująca paczkę albo null dla paczki dostępnej wyłącznie w workspace." }
+      }
+    },
+    "ci": {
+      "type": "object",
+      "description": "Konfiguracja dostawców CI wykonujących firmowe guardraile.",
+      "additionalProperties": false,
+      "required": ["providers"],
+      "properties": {
+        "providers": { "type": "array", "description": "Lista platform CI, dla których repozytorium posiada aktywną konfigurację.", "items": { "enum": ["github-actions", "gitlab-ci", "bitbucket-pipelines"] }, "minItems": 1, "uniqueItems": true }
+      }
+    },
+    "designSystemSkill": {
+      "type": "object",
+      "description": "Powiązanie paczki z obowiązkowym skillem opisującym konkretny design system.",
+      "additionalProperties": false,
+      "required": ["name", "sourcePath", "verifiedPackageVersion", "companyStandardContracts"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Nazwa skilla konkretnego design systemu zgodna z zasadami nazewnictwa Codex." },
+        "sourcePath": { "type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$", "description": "Względna ścieżka POSIX do źródłowego katalogu skilla w repozytorium, poza .tmp, używana przez CI niezależnie od publikacji SHARED." },
+        "verifiedPackageVersion": { "type": "string", "description": "Wersja paczki, względem której zweryfikowano wiedzę i instrukcje skilla." },
+        "companyStandardContracts": {
+          "type": "array",
+          "description": "Dokładne wersje centralnych kontraktów firmowych zastosowanych i przetłumaczonych na referencje skilla projektowego.",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/companyStandardContractPin" }
+        }
+      }
+    },
+    "exceptions": { "type": "array", "description": "Jawnie zatwierdzone odstępstwa od reguł; tylko status active wpływa na walidatory. Nie jest to historia findingów audytu.", "items": { "$ref": "#/$defs/exception" } }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {
+              "topology": { "const": "embedded-mini-ds" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "distribution": {
+            "properties": {
+              "mode": { "const": "workspace-internal" },
+              "publishable": { "const": false }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "companyStandardContractPin": {
+      "type": "object",
+      "description": "Pin wersji jednego kontraktu z centralnego company-standard-contracts.json.",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "description": "Stabilny identyfikator kontraktu firmowego." },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Dokładna wersja kontraktu zgodna z SemVer." }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "description": "Konfiguracja dostępności frameworka i jego publicznego entry pointu.",
+      "additionalProperties": false,
+      "required": ["enabled", "entryPoint"],
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Określa, czy paczka oficjalnie obsługuje dany framework." },
+        "entryPoint": { "type": ["string", "null"], "description": "Publiczny subpath paczki dla frameworka albo null, jeśli wsparcie jest wyłączone." }
+      }
+    },
+    "tokenLayer": { "enum": ["core", "semantic"], "description": "Warstwa tokenów: surowa core albo przeznaczona do użycia produktowego semantic." },
+    "tokenPolicy": {
+      "type": "object",
+      "description": "Polityka cyklu życia warstw tokenów w wybranej kategorii.",
+      "additionalProperties": false,
+      "required": ["generate", "autocomplete", "allowedUsage"],
+      "properties": {
+        "generate": { "type": "array", "description": "Warstwy tokenów fizycznie generowane do artefaktów.", "items": { "$ref": "#/$defs/tokenLayer" }, "minItems": 1, "uniqueItems": true },
+        "autocomplete": { "type": "array", "description": "Warstwy tokenów prezentowane deweloperowi w podpowiedziach IDE.", "items": { "$ref": "#/$defs/tokenLayer" }, "uniqueItems": true },
+        "allowedUsage": { "type": "array", "description": "Warstwy tokenów dozwolone do bezpośredniego użycia w kodzie konsumenta.", "items": { "$ref": "#/$defs/tokenLayer" }, "uniqueItems": true }
+      }
+    },
+    "frameworkTokenPolicy": {
+      "type": "object",
+      "description": "Frameworkowe nadpisania kategorii tokenów i lista generowanych formatów integracji.",
+      "additionalProperties": false,
+      "required": ["categories", "outputs"],
+      "properties": {
+        "categories": { "type": "object", "description": "Nadpisania polityk wybranych kategorii tokenów dla danego frameworka.", "additionalProperties": { "$ref": "#/$defs/tokenPolicy" } },
+        "outputs": { "type": "array", "description": "Formaty artefaktów tokenowych generowane dla danego frameworka.", "items": { "enum": ["scss", "css-variables", "tailwind"] }, "uniqueItems": true }
+      }
+    },
+    "exception": {
+      "type": "object",
+      "description": "Odstępstwo od reguły zaakceptowane przez dewelopera po konsultacji z przełożonym, wraz ze statusem cyklu życia.",
+      "additionalProperties": false,
+      "required": ["rule", "reason", "developer", "consultedApprover", "status"],
+      "properties": {
+        "rule": { "type": "string", "minLength": 1, "description": "Stabilny identyfikator reguły, od której przyznano wyjątek." },
+        "reason": { "type": "string", "minLength": 1, "description": "Konkretne biznesowe lub techniczne uzasadnienie odstępstwa." },
+        "developer": { "type": "string", "minLength": 1, "description": "Deweloper odpowiedzialny za zgłoszenie i utrzymanie wyjątku." },
+        "consultedApprover": { "type": "string", "minLength": 1, "description": "Przełożony, z którym deweloper skonsultował odstępstwo." },
+        "reference": { "type": "string", "description": "Opcjonalne odwołanie do zadania, decyzji lub dokumentacji wyjątku." },
+        "status": { "enum": ["active", "expired", "resolved"], "description": "Aktualny stan wyjątku używany przez guardraile i audyt." }
+      }
+    }
+  }
+}

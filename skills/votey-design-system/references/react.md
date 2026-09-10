@@ -4,6 +4,10 @@ Wczytaj tę referencję dla `votey-user-app` albo innego potwierdzonego konsumen
 React/Next używającego `@pleodigital/design-system-votey`.
 Nie stosuj jej do Angularowego CRM ani projektów bez tej paczki.
 
+Przed implementacją odczytaj też `design-system-contract.md`; dla tokenów, theme,
+assetów, responsywności i smoke testu użyj odpowiednio `tokens.md`, `theming.md`,
+`svg-assets.md`, `responsiveness.md` i `consumers.md`.
+
 ## Źródła prawdy
 
 | Zakres | Źródło |

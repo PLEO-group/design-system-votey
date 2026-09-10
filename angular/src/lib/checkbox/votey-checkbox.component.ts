@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   forwardRef,
+  inject,
   input,
   type InputSignal,
   model,
@@ -20,6 +21,11 @@ import {
   type MatCheckboxChange,
 } from "@angular/material/checkbox";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
+import {
+  getVoteySvgAssetUrl,
+  VOTEY_SVG_REGISTRY_CONFIG,
+  type VoteySvgRegistryConfig,
+} from "../votey-svg-registry.service";
 
 export type VoteyCheckboxLabelPosition = "before" | "after";
 
@@ -54,6 +60,12 @@ export class VoteyCheckboxComponent implements ControlValueAccessor {
 
   private readonly formDisabled: WritableSignal<boolean> =
     signal<boolean>(false);
+  private readonly svgRegistryConfig: VoteySvgRegistryConfig =
+    inject(VOTEY_SVG_REGISTRY_CONFIG, { optional: true }) ?? {};
+  protected readonly checkmarkMaskUrl: string = `url("${getVoteySvgAssetUrl(
+    "icons/special/icon_sp_check.svg",
+    this.svgRegistryConfig
+  )}")`;
   protected readonly effectiveDisabled: Signal<boolean> = computed<boolean>(
     () => this.disabled() || this.formDisabled()
   );

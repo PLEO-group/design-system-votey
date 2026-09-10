@@ -1,0 +1,32 @@
+{
+  "grid": {
+    "core": {
+      "default": {
+        "mobile": {
+          "columns": { "$type": "number", "$value": 4 },
+          "gutter": { "$type": "number", "$value": 8 },
+          "margin": { "$type": "number", "$value": 9 },
+          "margin-extra": { "$type": "number", "$value": 24 }
+        },
+        "tablet-small": {
+          "columns": { "$type": "number", "$value": 8 },
+          "gutter": { "$type": "number", "$value": 16 },
+          "margin": { "$type": "number", "$value": 44 },
+          "margin-extra": { "$type": "number", "$value": 32 }
+        },
+        "tablet": {
+          "columns": { "$type": "number", "$value": 8 },
+          "gutter": { "$type": "number", "$value": 16 },
+          "margin": { "$type": "number", "$value": 44 },
+          "margin-extra": { "$type": "number", "$value": 32 }
+        },
+        "desktop": {
+          "columns": { "$type": "number", "$value": 16 },
+          "gutter": { "$type": "number", "$value": 16 },
+          "margin": { "$type": "number", "$value": 16 },
+          "margin-extra": { "$type": "number", "$value": 56 }
+        }
+      }
+    }
+  }
+}

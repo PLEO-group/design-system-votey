@@ -1,6 +1,6 @@
 # Prompt Model Triage — EXTENDED (Full Mode)
 
-# WERSJA 2.7.3 — zsynchronizowana z SKILL.md 2.7.3
+# WERSJA 2.7.8 — zsynchronizowana z SKILL.md 2.7.8
 
 **Ładuj ten plik TYLKO gdy routing wymaga Full Mode** (co najmniej jeden warunek pre-checku z SKILL.md nie jest spełniony). Nie ładuj go dla Lightweight Mode.
 
@@ -25,7 +25,8 @@
 15. Jeśli `execution_gate: read_only_discovery`, wykonaj wyłącznie ograniczony odczyt zasobów już wskazanych przez użytkownika; po nim przelicz bramkę.
 16. Jeśli bramka ma wartość `continue` albo `continue_with_assumptions` i reasoning to `medium` albo niżej, kontynuuj workflow bez pytania o potwierdzenie.
 17. Jeśli bramka ma wartość `continue` albo `continue_with_assumptions`, ale reasoning jest wyższy niż `medium`, zatrzymaj się po routingu i czekaj na jasne potwierdzenie użytkownika, np. `ok`, `tak`, `go`, `start`, `zatwierdzam`.
-18. Jeśli runtime wymaga ręcznej zmiany modelu/reasoningu, połącz prośbę o zmianę z tą samą bramką potwierdzenia.
+18. Powiąż oczekiwane potwierdzenie z jednym konkretnym zadaniem i routingiem. Jasne potwierdzenie bez nowych wymagań zużyj jednorazowo: nie uruchamiaj ponownie preflightu ani routingu, tylko wznów oczekujące zadanie. Jeśli wiadomość zmienia scope lub jest niejednoznaczna, potraktuj ją jako nową merytoryczną turę.
+19. Jeśli runtime wymaga ręcznej zmiany modelu/reasoningu, połącz prośbę o zmianę z tą samą bramką potwierdzenia.
 
 ---
 
@@ -183,19 +184,19 @@ Używaj tych stawek jako przybliżenia. Dokładniejsze ceny w plikach provider-s
 
 | Provider  | Model                    | Input $/1M | Output $/1M | Reasoning/thinking |
 | --------- | ------------------------ | ---------- | ----------- | ------------------ |
-| OpenAI    | gpt-5.6-sol              | $5.00      | $30.00      | stawka output      |
-| OpenAI    | gpt-5.6-terra            | $2.50      | $15.00      | stawka output      |
-| OpenAI    | gpt-5.6-luna             | $1.00      | $6.00       | stawka output      |
+| OpenAI    | gpt-5.6-sol              | $4.00      | $20.00      | stawka output      |
+| OpenAI    | gpt-5.6-terra            | $2.00      | $12.00      | stawka output      |
+| OpenAI    | gpt-5.6-luna             | $0.20      | $1.20       | stawka output      |
 | Anthropic | claude-fable-5           | $10.00     | $50.00      | stawka output      |
-| Anthropic | claude-opus-4-8          | $5.00      | $25.00      | stawka output      |
-| Anthropic | claude-sonnet-5*         | $2.00      | $10.00      | stawka output      |
+| Anthropic | claude-opus-5            | $5.00      | $25.00      | stawka output      |
+| Anthropic | claude-sonnet-5          | $2.00      | $10.00      | stawka output      |
 | Anthropic | claude-haiku-4-5         | $1.00      | $5.00       | stawka output      |
-| Google    | gemini-3.6-flash         | $1.50      | $7.50       | zawarte w output   |
+| Google    | gemini-3.7-flash*        | $0.75      | $3.75       | zawarte w output   |
 | Google    | gemini-3.5-flash-lite    | $0.30      | $2.50       | zawarte w output   |
 | Google    | gemini-3.1-pro-preview <=200k** | $2.00 | $12.00 | zawarte w output |
 | Google    | gemini-3.1-pro-preview >200k**  | $4.00 | $18.00 | zawarte w output |
 
-`*` Cena promocyjna Sonnet 5 obowiązuje do 2026-08-31; potem $3/$15. `**` Cena Gemini 3.1 Pro Preview dotyczy promptów do 200k; powyżej: $4/$18.
+`*` Cena promocyjna Gemini 3.7 Flash obowiązuje do 2026-12-31; od 2027-01-01 wynosi $1.50/$7.50. `**` Cena Gemini 3.1 Pro Preview dotyczy promptów do 200k; powyżej: $4/$18. Cena Sonnet 5 $2/$10 jest standardowa — zapowiadana podwyżka została anulowana.
 
 Dla GPT-5.6 prompt powyżej 272k input tokens ma mnożnik `2×` input i `1.5×` output dla całej prośby.
 
@@ -342,6 +343,8 @@ Następny krok: po potwierdzeniu odczyt repo/logów wskazanych przez użytkownik
 Wymagane potwierdzenie: reasoning `max` jest powyżej `medium`. Odpisz `ok` albo innym jasnym potwierdzeniem, żebym kontynuował.
 ```
 
+Jeśli następna wiadomość użytkownika brzmi wyłącznie `ok`, nie generuj nowego routingu ani kolejnej prośby o potwierdzenie. Zużyj potwierdzenie i rozpocznij oczekującą analizę root cause. Wiadomość `ok, ale zrób też deploy na produkcję` zmienia scope i wymaga nowego routingu oraz osobnej oceny uprawnień.
+
 ---
 
 ### Przykład 4 — Nieznany runtime
@@ -350,7 +353,7 @@ Wymagane potwierdzenie: reasoning `max` jest powyżej `medium`. Odpisz `ok` albo
 
 ```
 Routing: tier deep | reasoning high | koszt pomyłki medium | pewność low
-Powód: Refaktor wymaga analizy kilku plików i zmiany architektury. Nie znam Twojego runtime — dobierz model z tieru deep (np. gpt-5.6-sol, claude-sonnet-5 + high, gemini-3.6-flash + high).
+Powód: Refaktor wymaga analizy kilku plików i zmiany architektury. Nie znam Twojego runtime — dobierz model z tieru deep (np. gpt-5.6-sol, claude-sonnet-5 + high, gemini-3.7-flash + high).
 
 💰 Cost estimate:
    Billing: unknown

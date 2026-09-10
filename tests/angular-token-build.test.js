@@ -191,6 +191,10 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     );
     assert.match(
         firstBuild,
+        /--color-shadow-overlay: rgba\(7, 6, 78, 0\.12\);/,
+    );
+    assert.match(
+        firstBuild,
         /--color-shadow-event-filter: rgba\(19, 18, 93, 0\.3\);/,
     );
     assert.match(

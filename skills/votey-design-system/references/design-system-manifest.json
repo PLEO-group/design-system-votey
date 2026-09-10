@@ -1,0 +1,150 @@
+{
+  "$schema": "https://pleodigital.com/schemas/design-system.schema.json",
+  "schemaVersion": 1,
+  "kind": "pleo-design-system",
+  "identity": {
+    "product": "Votey",
+    "packageName": "@pleodigital/design-system-votey",
+    "version": "1.0.153",
+    "registry": {
+      "type": "npmjs",
+      "access": "public",
+      "url": "https://registry.npmjs.org/"
+    }
+  },
+  "designSource": {
+    "type": "figma",
+    "projectUrl": "https://www.figma.com/design/voF94kJ9mqgENbzJBuw2Iv/Wyborek-%7C-Design-System?node-id=1613-221&t=ViF6g6Dlpkr5k5mY-0",
+    "exceptionReason": null
+  },
+  "repository": {
+    "topology": "standalone-repository",
+    "packageRoot": ".",
+    "consumerRoots": [],
+    "boundaryPolicy": {
+      "publicImportsOnly": true,
+      "packageImportsConsumer": false,
+      "packCheck": true,
+      "forbiddenPackageImportPrefixes": ["@app/", "src/app/"],
+      "localMiniDs": {
+        "mode": "forbid",
+        "baselineFile": null,
+        "heuristicFindings": "block",
+        "justification": null
+      }
+    }
+  },
+  "distribution": { "mode": "registry", "publishable": true },
+  "frameworks": {
+    "angular": { "enabled": true, "entryPoint": "./angular" },
+    "react": { "enabled": true, "entryPoint": "./dist/assets/react" }
+  },
+  "tokens": {
+    "sourceOfTruth": {
+      "type": "figma-variables",
+      "url": "https://www.figma.com/design/voF94kJ9mqgENbzJBuw2Iv/Wyborek-%7C-Design-System?node-id=1613-221&t=ViF6g6Dlpkr5k5mY-0"
+    },
+    "generator": "style-dictionary",
+    "namingContract": "pleo-design-system-tokens-v1",
+    "categories": {
+      "color": { "generate": ["core", "semantic"], "autocomplete": ["core", "semantic"], "allowedUsage": ["core", "semantic"] },
+      "spacing": { "generate": ["core", "semantic"], "autocomplete": ["core", "semantic"], "allowedUsage": ["core", "semantic"] },
+      "typography": { "generate": ["core", "semantic"], "autocomplete": ["core", "semantic"], "allowedUsage": ["core", "semantic"] },
+      "radius": { "generate": ["core", "semantic"], "autocomplete": ["core", "semantic"], "allowedUsage": ["core", "semantic"] },
+      "opacity": { "generate": ["core"], "autocomplete": ["core"], "allowedUsage": ["core"] }
+    },
+    "frameworkPolicies": {
+      "angular": { "categories": {}, "outputs": ["scss", "css-variables"] },
+      "react": { "categories": {}, "outputs": ["scss", "tailwind"] }
+    }
+  },
+  "themes": {
+    "modes": ["light", "dark"],
+    "semanticTokenFiles": {
+      "light": "tokens/color/semantic-CRM/Light.json",
+      "dark": "tokens/color/semantic-CRM/Dark.json"
+    },
+    "angular": {
+      "enabled": true,
+      "host": "html",
+      "attribute": "data-theme",
+      "storage": "none",
+      "storageKey": null,
+      "defaultTheme": "light",
+      "initialThemeInHtml": null,
+      "initialization": "consumer-owned",
+      "useViewTransitions": false,
+      "servicePath": null,
+      "contractScssPath": "styles/angular/_ds-device-mixins.scss"
+    }
+  },
+  "artifacts": {
+    "policy": "build-only",
+    "sources": ["tokens/**", "assets/icons/**", "assets/illustrations/**", "scripts/generate-asset-types.mjs"],
+    "generated": ["angular/src/lib/votey-assets.ts", "dist/**"],
+    "cleanBeforeBuild": true,
+    "verifyDeterminism": true
+  },
+  "assets": {
+    "namingContract": "pleo-design-system-assets-v1",
+    "iconsPath": "assets/icons",
+    "illustrationsPath": "assets/illustrations",
+    "angularSvgRegistry": true,
+    "generatorPath": "scripts/generate-asset-types.mjs",
+    "configPath": null,
+    "generatedTypesPath": "angular/src/lib/votey-assets.ts",
+    "reactBarrelPath": null
+  },
+  "responsive": {
+    "mode": "device-contract",
+    "generatedConfigScssPath": null,
+    "deviceTypes": ["mobile", "tablet", "desktop"],
+    "deviceBreakpointMap": { "mobile": "mobile", "tablet": "tablet", "desktop": "desktop" },
+    "breakpoints": {
+      "names": ["mobile-small", "mobile", "tablet-small", "tablet", "laptop", "desktop"],
+      "tokenFile": "tokens/space/semantic",
+      "tokenPath": "space.semantic"
+    },
+    "scaling": {
+      "enabled": true,
+      "deviceMultipliers": { "mobile": 1, "tablet": 1, "desktop": 1 },
+      "implicitBreakpointFallbacks": { "mobile-small": "mobile", "tablet-small": "tablet", "laptop": "desktop" }
+    },
+    "grid": {
+      "enabled": true,
+      "variants": ["default"],
+      "defaultVariant": "default",
+      "tokenFile": "tokens/grid/angular.json",
+      "tokenPath": "grid"
+    }
+  },
+  "preview": { "type": "storybook", "command": "npm run build-storybook" },
+  "commands": {
+    "buildTokens": "npm run build:tokens",
+    "buildAssets": "npm run generate:asset-types",
+    "checkAssets": "npm run check:asset-types",
+    "build": "npm run build",
+    "test": "npm run test:tokens",
+    "pack": "npm pack --dry-run",
+    "publish": null
+  },
+  "ci": { "providers": [] },
+  "designSystemSkill": {
+    "name": "votey-design-system",
+    "sourcePath": "skills/votey-design-system",
+    "verifiedPackageVersion": "1.0.153",
+    "companyStandardContracts": [
+      { "id": "repository-boundary", "version": "1.0.0" },
+      { "id": "foundation-tokens", "version": "1.0.0" },
+      { "id": "semantic-theming", "version": "1.0.0" },
+      { "id": "svg-assets-source-driven", "version": "1.0.0" },
+      { "id": "responsive-device", "version": "1.0.0" },
+      { "id": "grid-layout", "version": "1.0.0" },
+      { "id": "component-authoring", "version": "1.0.0" },
+      { "id": "preview-documentation", "version": "1.0.0" },
+      { "id": "consumer-integration", "version": "1.0.0" },
+      { "id": "framework-isolation", "version": "1.0.0" }
+    ]
+  },
+  "exceptions": []
+}

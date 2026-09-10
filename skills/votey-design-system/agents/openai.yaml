@@ -1,0 +1,4 @@
+interface:
+  display_name: "Votey Design System"
+  short_description: "Votey dla Angulara i React/Next"
+  default_prompt: "Użyj $votey-design-system, aby bezpiecznie zmienić Votey dla Angulara albo React/Next."

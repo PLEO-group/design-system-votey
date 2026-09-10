@@ -4,7 +4,7 @@
   [class.filled]="hasFile()"
 >
   @if (label()) {
-  <vt-text variant="label" color="secondary" [content]="label()" />
+  <vt-text variant="label" color="secondary" [content]="label() | vtTranslate" />
   }
 
   <div class="row">

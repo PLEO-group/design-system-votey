@@ -104,6 +104,9 @@ export class VoteyFilePickerComponent
 
   protected override handleFormControlDisabledChange(disabled: boolean): void {
     this.formDisabled.set(disabled);
+  }
+
+  protected override handleFormControlStateChange(): void {
     this.formControlStateVersion.update((version: number) => version + 1);
   }
 

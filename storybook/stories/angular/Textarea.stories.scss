@@ -1,0 +1,10 @@
+.angular-textarea-story {
+  width: 400px;
+  max-width: calc(100vw - (2 * var(--spacing-16)));
+
+  .preview,
+  vt-textarea {
+    display: block;
+    width: 100%;
+  }
+}

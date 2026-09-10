@@ -11,6 +11,7 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
 
   private valueChangesSubscription: Subscription | undefined;
   private statusChangesSubscription: Subscription | undefined;
+  private eventsSubscription: Subscription | undefined;
 
   public constructor() {
     this.observeFormControl();
@@ -37,6 +38,7 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
 
     this.valueChangesSubscription?.unsubscribe();
     this.statusChangesSubscription?.unsubscribe();
+    this.eventsSubscription?.unsubscribe();
     this.formControl = control;
     this.observeFormControl();
     this.handleFormControlValueChange(control.value);
@@ -70,11 +72,14 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
   public ngOnDestroy(): void {
     this.valueChangesSubscription?.unsubscribe();
     this.statusChangesSubscription?.unsubscribe();
+    this.eventsSubscription?.unsubscribe();
   }
 
   protected handleFormControlValueChange(_value: T | null): void {}
 
   protected handleFormControlDisabledChange(_disabled: boolean): void {}
+
+  protected handleFormControlStateChange(): void {}
 
   private observeFormControl(): void {
     this.valueChangesSubscription = this.formControl.valueChanges.subscribe(
@@ -82,6 +87,9 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
     );
     this.statusChangesSubscription = this.formControl.statusChanges.subscribe(
       () => this.handleFormControlDisabledChange(this.formControl.disabled)
+    );
+    this.eventsSubscription = this.formControl.events.subscribe(() =>
+      this.handleFormControlStateChange()
     );
   }
 }

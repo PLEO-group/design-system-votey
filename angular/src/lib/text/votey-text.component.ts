@@ -41,6 +41,7 @@ export const VoteyTextColors = [
   "muted",
   "inverse",
   "accent",
+  "error",
   "on-sidebar",
 ] as const;
 

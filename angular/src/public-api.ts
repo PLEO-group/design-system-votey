@@ -56,6 +56,7 @@ export type {
   VoteyRadioButtonLabelPosition,
   VtRadioOption,
 } from "./lib/radio-button/votey-radio-button.component";
+export { VoteyTextAreaComponent } from "./lib/textarea/votey-text-area.component";
 export {
   VoteyTextColors,
   VoteyTextComponent,

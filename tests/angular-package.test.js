@@ -89,6 +89,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonVariants,
     VoteyCheckboxComponent,
     VoteyFilePickerComponent,
+    VoteyFormControlApplyDirective,
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
@@ -122,11 +123,22 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.deepEqual(VoteyFilePickerComponent.ɵcmp.selectors, [
     ["vt-file-picker"],
   ]);
-  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.value[0], "value");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.value, undefined);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.initialValue[0],
+    "initialValue",
+  );
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.changed, "changed");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
+  assert.equal(typeof VoteyFormControlApplyDirective, "function");
+  assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
+    ["", "vtFormControlApply", ""],
+  ]);
   assert.equal(typeof VoteyRadioButtonComponent, "function");
   assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
     ["vt-radio-button"],

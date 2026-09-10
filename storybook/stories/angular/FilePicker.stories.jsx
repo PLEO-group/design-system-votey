@@ -8,21 +8,25 @@ const filePickerInputs = [
   "label",
   "emptyText",
   "actionText",
-  "showLabel",
   "disabled",
-  "required",
-  "id",
-  "name",
-  "accept",
-  "capture",
-  "ariaLabel",
-  "dataCy",
 ];
 
-function setFilePickerInputs(componentRef, props) {
+function createFile(filename) {
+  return filename ? new File([], filename) : undefined;
+}
+
+function setFilePickerInputs(componentRef, control, props) {
+  control.setValue(createFile(props.filename) ?? null, { emitEvent: false });
+  componentRef.setInput("control", control);
+
   for (const inputName of filePickerInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
+
+  componentRef.setInput("initialValue", createFile(props.initialFilename));
+  componentRef.setInput("staticValue", createFile(props.staticFilename));
+  componentRef.setInput("disable", props.disable);
+  componentRef.setInput("block", props.block);
 }
 
 function AngularFilePickerPreview(props) {
@@ -39,10 +43,12 @@ function AngularFilePickerPreview(props) {
       const [
         { createComponent },
         { createApplication },
+        { FormControl },
         { VoteyFilePickerComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
+        import("@angular/forms"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
 
@@ -69,17 +75,12 @@ function AngularFilePickerPreview(props) {
         componentRef.instance.cancelled.subscribe(() =>
           latestPropsRef.current.onCancelled()
         ),
-        componentRef.instance.focused.subscribe((event) =>
-          latestPropsRef.current.onFocused(event)
-        ),
-        componentRef.instance.blurred.subscribe((event) =>
-          latestPropsRef.current.onBlurred(event)
-        ),
       ];
+      const control = new FormControl(null);
 
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef };
-      setFilePickerInputs(componentRef, latestPropsRef.current);
+      angularRuntimeRef.current = { applicationRef, componentRef, control };
+      setFilePickerInputs(componentRef, control, latestPropsRef.current);
       applicationRef.tick();
 
       angularRuntimeRef.current.destroy = () => {
@@ -104,7 +105,11 @@ function AngularFilePickerPreview(props) {
 
     if (!angularRuntime) return;
 
-    setFilePickerInputs(angularRuntime.componentRef, props);
+    setFilePickerInputs(
+      angularRuntime.componentRef,
+      angularRuntime.control,
+      props
+    );
     angularRuntime.applicationRef.tick();
   }, [props]);
 
@@ -127,27 +132,23 @@ export default {
     },
     onChanged: { action: "changed", table: { category: "Events" } },
     onCancelled: { action: "cancelled", table: { category: "Events" } },
-    onFocused: { action: "focused", table: { category: "Events" } },
-    onBlurred: { action: "blurred", table: { category: "Events" } },
+    initialFilename: { description: "Value passed through initialValue." },
+    staticFilename: { description: "Value passed through staticValue." },
+    disable: { control: "boolean" },
+    block: { control: "boolean" },
   },
   args: {
     filename: "",
     label: "Załącznik",
     emptyText: "Nie wybrano pliku",
     actionText: "Wybierz plik",
-    showLabel: true,
     disabled: false,
-    required: false,
-    id: "storybook-file-picker",
-    name: "storybook-file-picker",
-    accept: "",
-    capture: "",
-    ariaLabel: "",
-    dataCy: "storybook-file-picker",
+    initialFilename: "",
+    staticFilename: "",
+    disable: undefined,
+    block: undefined,
     onChanged: fn(),
     onCancelled: fn(),
-    onFocused: fn(),
-    onBlurred: fn(),
   },
 };
 

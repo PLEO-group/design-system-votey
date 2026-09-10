@@ -20,6 +20,7 @@ import {
   MatCheckbox,
   type MatCheckboxChange,
 } from "@angular/material/checkbox";
+import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import {
   getVoteySvgAssetUrl,
@@ -44,7 +45,10 @@ export type VoteyCheckboxLabelPosition = "before" | "after";
     },
   ],
 })
-export class VoteyCheckboxComponent implements ControlValueAccessor {
+export class VoteyCheckboxComponent
+  extends VoteyFormControlApplyDirective<boolean>
+  implements ControlValueAccessor
+{
   public readonly checked: ModelSignal<boolean> = model<boolean>(false);
   public readonly indeterminate: ModelSignal<boolean> = model<boolean>(false);
   public readonly disabled: InputSignal<boolean> = input<boolean>(false);
@@ -92,11 +96,20 @@ export class VoteyCheckboxComponent implements ControlValueAccessor {
   protected handleChange(event: MatCheckboxChange): void {
     this.checked.set(event.checked);
     this.indeterminate.set(event.source.indeterminate);
+    this.formControl.setValue(event.checked);
     this.onChange(event.checked);
     this.changed.emit(event.checked);
   }
 
   protected markAsTouched(): void {
     this.onTouched();
+  }
+
+  protected override handleFormControlValueChange(value: boolean | null): void {
+    this.checked.set(Boolean(value));
+  }
+
+  protected override handleFormControlDisabledChange(disabled: boolean): void {
+    this.formDisabled.set(disabled);
   }
 }

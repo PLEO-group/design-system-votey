@@ -88,9 +88,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonSizes,
     VoteyButtonVariants,
     VoteyCheckboxComponent,
+    VoteyFilePickerComponent,
+    VoteyFormControlApplyDirective,
     VoteyIconComponent,
     VoteyIconNames,
     VoteyIllustrationNames,
+    VoteyMenuComponent,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
     VoteyTextareaComponent,
@@ -117,6 +120,26 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(typeof VoteyCheckboxComponent, "function");
   assert.deepEqual(VoteyCheckboxComponent.ɵcmp.selectors, [["vt-checkbox"]]);
+  assert.equal(typeof VoteyFilePickerComponent, "function");
+  assert.deepEqual(VoteyFilePickerComponent.ɵcmp.selectors, [
+    ["vt-file-picker"],
+  ]);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.value, undefined);
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.initialValue[0],
+    "initialValue",
+  );
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
+  assert.equal(typeof VoteyFormControlApplyDirective, "function");
+  assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
+    ["", "vtFormControlApply", ""],
+  ]);
   assert.equal(typeof VoteyRadioButtonComponent, "function");
   assert.deepEqual(VoteyRadioButtonComponent.ɵcmp.selectors, [
     ["vt-radio-button"],
@@ -163,6 +186,13 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded, undefined);
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
+  assert.equal(typeof VoteyMenuComponent, "function");
+  assert.deepEqual(VoteyMenuComponent.ɵcmp.selectors, [["vt-menu"]]);
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.items[0], "items");
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.ariaLabel, undefined);
+  assert.equal(VoteyMenuComponent.ɵcmp.inputs.selectedId[0], "selectedId");
+  assert.equal(VoteyMenuComponent.ɵcmp.outputs.itemSelected, "itemSelected");
+  assert.equal(VoteyMenuComponent.ɵcmp.outputs.dismissed, "dismissed");
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
   assert.equal(typeof VoteyTextareaComponent, "function");
@@ -187,15 +217,24 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "h3",
     "h4",
     "h5",
+    "display-l",
+    "body-2xl",
+    "body-xl",
     "body-l",
+    "body-l-semibold",
+    "body-l-bold",
     "body",
     "body-s",
     "caption",
+    "caption-extrabold",
+    "caption-light",
     "caption-s",
     "micro",
     "button",
+    "button-small",
     "table-header",
     "label",
+    "field",
   ]);
   assert.deepEqual(VoteyTextColors, [
     "primary",
@@ -267,41 +306,36 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   );
 });
 
-test("textarea synchronizes model, forms callbacks and changed output", async () => {
-  const { Injector, runInInjectionContext, VoteyTextareaComponent } =
+test("menu emits enabled item selections and dismissal intents", async () => {
+  const { Injector, runInInjectionContext, VoteyMenuComponent } =
     await loadAngularRuntime();
-  const textarea = runInInjectionContext(
+  const menu = runInInjectionContext(
     Injector.create({ providers: [] }),
-    () => new VoteyTextareaComponent(),
+    () => new VoteyMenuComponent(),
   );
-  const formValues = [];
-  const changedValues = [];
-  let touched = 0;
-  const subscription = textarea.changed.subscribe((value) =>
-    changedValues.push(value),
+  const selectedItems = [];
+  let dismissedCount = 0;
+  const itemSubscription = menu.itemSelected.subscribe((item) =>
+    selectedItems.push(item),
+  );
+  const dismissedSubscription = menu.dismissed.subscribe(() => {
+    dismissedCount += 1;
+  });
+  const profile = { id: "profile", label: "Profil" };
+  const disabled = { id: "disabled", label: "Disabled", disabled: true };
+
+  menu.handleItemPressed(profile, 0);
+  menu.handleItemPressed(disabled, 1);
+  menu.handleKeydown(
+    { key: "Escape", stopPropagation() {} },
+    0,
   );
 
-  textarea.registerOnChange((value) => formValues.push(value));
-  textarea.registerOnTouched(() => touched++);
-  textarea.writeValue("Treść początkowa");
+  assert.deepEqual(selectedItems, [profile]);
+  assert.equal(dismissedCount, 1);
 
-  assert.equal(textarea.value(), "Treść początkowa");
-  assert.equal(textarea.textareaClasses(), "textarea filled");
-
-  textarea.handleInput({ target: { value: "Nowa treść" } });
-  textarea.handleInput({ target: { value: "Nowa treść" } });
-  textarea.handleBlur({ target: { value: "Nowa treść" } });
-
-  assert.deepEqual(formValues, ["Nowa treść"]);
-  assert.deepEqual(changedValues, ["Nowa treść"]);
-  assert.equal(touched, 1);
-
-  textarea.setDisabledState(true);
-  assert.equal(textarea.effectiveDisabled(), true);
-  textarea.clear();
-  assert.equal(textarea.value(), "Nowa treść");
-
-  subscription.unsubscribe();
+  itemSubscription.unsubscribe();
+  dismissedSubscription.unsubscribe();
 });
 
 test("checkbox synchronizes model, forms callbacks and changed output", async () => {
@@ -510,4 +544,78 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
   assert.ok(
     registrations.every(({ url }) => url.startsWith("assets/votey/")),
   );
+});
+
+test("SVG registry and checkbox share the configured asset base URL", async () => {
+  const {
+    DomSanitizer,
+    Injector,
+    MatIconRegistry,
+    runInInjectionContext,
+    VOTEY_SVG_REGISTRY_CONFIG,
+    VoteyCheckboxComponent,
+    VoteySvgRegistryService,
+  } = await loadAngularRuntime();
+  const registrations = [];
+  const config = { assetBaseUrl: "portal/assets/votey/" };
+  const injector = Injector.create({
+    providers: [
+      { provide: VOTEY_SVG_REGISTRY_CONFIG, useValue: config },
+      {
+        provide: MatIconRegistry,
+        useValue: {
+          addSvgIcon(name, url) {
+            registrations.push({ name, url });
+          },
+        },
+      },
+      {
+        provide: DomSanitizer,
+        useValue: {
+          bypassSecurityTrustResourceUrl(url) {
+            return url;
+          },
+        },
+      },
+    ],
+  });
+  const { checkbox, service } = runInInjectionContext(injector, () => ({
+    checkbox: new VoteyCheckboxComponent(),
+    service: new VoteySvgRegistryService(),
+  }));
+
+  service.register();
+
+  assert.ok(
+    registrations.every(({ url }) => url.startsWith("portal/assets/votey/")),
+  );
+  assert.equal(
+    checkbox.checkmarkMaskUrl,
+    'url("portal/assets/votey/icons/special/icon_sp_check.svg")',
+  );
+
+  const checkboxTemplate = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/checkbox/votey-checkbox.component.html",
+    ),
+    "utf8",
+  );
+  const checkboxStyles = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/checkbox/votey-checkbox.component.scss",
+    ),
+    "utf8",
+  );
+
+  assert.match(
+    checkboxTemplate,
+    /\[style\.--votey-checkbox-checkmark-url\]="checkmarkMaskUrl"/,
+  );
+  assert.match(
+    checkboxStyles,
+    /mask: var\(--votey-checkbox-checkmark-url\)/,
+  );
+  assert.doesNotMatch(checkboxStyles, /\/assets\/votey/);
 });

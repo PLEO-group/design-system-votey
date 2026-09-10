@@ -1,0 +1,26 @@
+{
+  "spacing": {
+    "semantic": {
+      "content-gap": { "$type": "dimension", "$value": "{spacing.core.16}" }
+    }
+  },
+  "typography": {
+    "semantic": {
+      "body": {
+        "font-family": { "$type": "fontFamily", "$value": "{typography.core.font-family.sans}" },
+        "font-size": { "$type": "dimension", "$value": "{typography.core.font-size.md}" },
+        "font-weight": { "$type": "number", "$value": "{typography.core.font-weight.regular}" }
+      }
+    }
+  },
+  "radius": {
+    "semantic": {
+      "control": { "$type": "dimension", "$value": "{radius.core.md}" }
+    }
+  },
+  "opacity": {
+    "semantic": {
+      "control-disabled": { "$type": "number", "$value": "{opacity.core.disabled}" }
+    }
+  }
+}

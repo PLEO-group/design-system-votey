@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pleodigital.com/schemas/company-standard-contracts.schema.json",
+  "title": "Pleo company design-system contracts registry",
+  "description": "Maszynowy rejestr wersjonowanych kontraktów firmowych przypinanych przez manifesty design systemów.",
+  "x-typescript-type-name": "CompanyStandardContractsRegistry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "contracts"],
+  "properties": {
+    "$schema": { "type": "string", "description": "Ścieżka lub URI schemy rejestru." },
+    "schemaVersion": { "const": 1, "description": "Wersja struktury rejestru, niezależna od wersji kontraktów." },
+    "contracts": {
+      "type": "array",
+      "description": "Wersjonowane kontrakty dostępne skillom projektowym.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/contract" }
+    }
+  },
+  "$defs": {
+    "contract": {
+      "type": "object",
+      "description": "Jedna wersja kontraktu firmowego i jej polityka aktualizacji.",
+      "additionalProperties": false,
+      "required": ["id", "version", "status", "upgradePolicy", "reference", "summary"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "description": "Stabilny identyfikator funkcjonalnego kontraktu." },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Wersja kontraktu zgodna z SemVer." },
+        "status": { "enum": ["current", "superseded"], "description": "Czy jest to bieżąca, czy zastąpiona wersja kontraktu." },
+        "upgradePolicy": { "enum": ["review-on-stale", "block-on-stale"], "description": "Reakcja walidatora, gdy skill projektowy przypina starszą wersję." },
+        "reference": { "type": "string", "pattern": "^[^/\\\\]+\\.md$", "description": "Centralna referencja Markdown w tym samym katalogu references." },
+        "summary": { "type": "string", "minLength": 1, "description": "Krótki opis gwarancji dostarczanej przez kontrakt." }
+      }
+    }
+  }
+}

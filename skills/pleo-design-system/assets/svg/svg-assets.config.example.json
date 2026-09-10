@@ -1,0 +1,64 @@
+{
+  "projectRoot": ".",
+  "sourceRoot": "assets",
+  "typescriptOutput": "angular/src/lib/design-system-assets.generated.ts",
+  "typePrefix": "DesignSystem",
+  "react": {
+    "enabled": true,
+    "componentsRoot": "dist/assets/react",
+    "barrelOutput": "dist/assets/react/index.ts"
+  },
+  "allowedModifiers": ["thick", "v2"],
+  "allowedTerms": [
+    "action",
+    "arrow",
+    "background",
+    "brand",
+    "check",
+    "close",
+    "dashboard",
+    "empty",
+    "info",
+    "menu",
+    "no",
+    "results",
+    "search",
+    "sygnet",
+    "ui",
+    "visibility"
+  ],
+  "groups": [
+    {
+      "kind": "icon",
+      "sourceDir": "icons/ui",
+      "filePrefix": "icon_ui_",
+      "namespace": "ui",
+      "reactPrefix": "Icon",
+      "reactSubdir": "icons/ui"
+    },
+    {
+      "kind": "icon",
+      "sourceDir": "icons/menu",
+      "filePrefix": "icon_menu_",
+      "namespace": "menu",
+      "reactPrefix": "Icon",
+      "reactSubdir": "icons/menu"
+    },
+    {
+      "kind": "icon",
+      "sourceDir": "icons/logotypes",
+      "filePrefix": "logo_",
+      "namespace": "logo",
+      "reactPrefix": "Icon",
+      "reactSubdir": "icons/logotypes"
+    },
+    {
+      "kind": "illustration",
+      "sourceDir": "illustrations/info",
+      "filePrefix": "illu_info_",
+      "namespace": "info",
+      "reactPrefix": "",
+      "reactSubdir": "illustrations/info"
+    }
+  ]
+}

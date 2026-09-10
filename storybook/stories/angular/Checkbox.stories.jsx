@@ -16,10 +16,18 @@ const checkboxInputs = [
   "value",
 ];
 
-function setCheckboxInputs(componentRef, props) {
+function setCheckboxInputs(componentRef, control, props) {
+  control.setValue(props.checked, { emitEvent: false });
+  componentRef.setInput("control", control);
+
   for (const inputName of checkboxInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
+
+  componentRef.setInput("initialValue", props.initialValue);
+  componentRef.setInput("staticValue", props.staticValue);
+  componentRef.setInput("disable", props.disable);
+  componentRef.setInput("block", props.block);
 }
 
 function AngularCheckboxPreview(props) {
@@ -36,10 +44,12 @@ function AngularCheckboxPreview(props) {
       const [
         { createComponent },
         { createApplication },
+        { FormControl },
         { VoteyCheckboxComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
+        import("@angular/forms"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
 
@@ -64,10 +74,11 @@ function AngularCheckboxPreview(props) {
       const changedSubscription = componentRef.instance.changed.subscribe(
         (checked) => latestPropsRef.current.onChanged(checked)
       );
+      const control = new FormControl(false, { nonNullable: true });
 
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef };
-      setCheckboxInputs(componentRef, latestPropsRef.current);
+      angularRuntimeRef.current = { applicationRef, componentRef, control };
+      setCheckboxInputs(componentRef, control, latestPropsRef.current);
       applicationRef.tick();
 
       angularRuntimeRef.current.destroy = () => {
@@ -94,7 +105,11 @@ function AngularCheckboxPreview(props) {
       return;
     }
 
-    setCheckboxInputs(angularRuntime.componentRef, props);
+    setCheckboxInputs(
+      angularRuntime.componentRef,
+      angularRuntime.control,
+      props
+    );
     angularRuntime.applicationRef.tick();
   }, [props]);
 
@@ -120,6 +135,8 @@ export default {
       action: "changed",
       table: { category: "Events" },
     },
+    disable: { control: "boolean" },
+    block: { control: "boolean" },
   },
   args: {
     checked: false,
@@ -132,6 +149,10 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
+    initialValue: undefined,
+    staticValue: undefined,
+    disable: undefined,
+    block: undefined,
     onChanged: fn(),
   },
 };

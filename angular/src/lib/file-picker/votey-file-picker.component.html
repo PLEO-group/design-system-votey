@@ -1,0 +1,42 @@
+<div
+  class="file-picker-wrapper"
+  [class.disabled]="effectiveDisabled()"
+  [class.filled]="hasFile()"
+>
+  @if (label()) {
+  <vt-text variant="label" color="secondary" [content]="label()" />
+  }
+
+  <div class="row">
+    <div class="file-box" aria-live="polite" [attr.title]="resolvedFilename()">
+      <vt-text
+        variant="caption"
+        [color]="hasFile() ? 'primary' : 'muted'"
+        [content]="
+          resolvedFilename() ? resolvedFilename() : (emptyText() | vtTranslate)
+        "
+      />
+    </div>
+
+    <vt-button
+      variant="ghost"
+      [text]="actionText()"
+      [disabled]="effectiveDisabled()"
+      (pressed)="open()"
+    />
+
+    <input
+      #fileInput
+      type="file"
+      hidden
+      [name]="name()"
+      [disabled]="effectiveDisabled()"
+      [required]="isRequired()"
+      [attr.accept]="accept() || null"
+      [attr.capture]="capture() || null"
+      [attr.data-cy]="dataCy() || null"
+      (change)="handleChange($event)"
+      (cancel)="handleCancel()"
+    />
+  </div>
+</div>

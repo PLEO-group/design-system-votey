@@ -1,0 +1,32 @@
+<ul
+  class="menu"
+  role="menu"
+  [attr.data-cy]="dataCy()"
+>
+  @for (item of items(); track item.id; let index = $index) { @let selected =
+  item.id === selectedId(); @let disabled = item.disabled;
+  <li role="none">
+    <button
+      #menuItem
+      class="item"
+      type="button"
+      role="menuitem"
+      [class.disabled]="disabled"
+      [class.selected]="selected"
+      [disabled]="disabled"
+      [attr.data-item-id]="item.id"
+      [attr.tabindex]="index === resolvedActiveIndex() ? 0 : -1"
+      (click)="handleItemPressed(item, index)"
+      (focus)="handleItemFocus(index)"
+      (keydown)="handleKeydown($event, index)"
+    >
+      <!--        DO ZMIANY NA BODY-M-->
+      <vt-text
+        variant="body-l"
+        [content]="item.label | vtTranslate"
+        [color]="selected ? 'accent' : disabled ? 'muted' : 'primary'"
+      />
+    </button>
+  </li>
+  }
+</ul>

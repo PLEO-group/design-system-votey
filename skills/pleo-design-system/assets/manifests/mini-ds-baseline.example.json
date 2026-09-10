@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "pleo-mini-ds-baseline",
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "files": [
+    "apps/example-app/src/styles/legacy-tokens.scss",
+    "apps/example-app/src/app/shared/ui/button/button.component.ts"
+  ]
+}

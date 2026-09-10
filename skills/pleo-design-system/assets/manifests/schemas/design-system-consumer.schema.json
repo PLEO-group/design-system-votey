@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pleodigital.com/schemas/design-system-consumer.schema.json",
+  "title": "Pleo design system consumer manifest",
+  "description": "Maszynowy kontrakt integracji aplikacji konsumującej z paczką design systemu.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "application", "designSystem", "tokens", "assets", "runtime", "exceptions"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Ścieżka lub URI schemy używanej przez IDE i narzędzia walidujące manifest konsumenta."
+    },
+    "schemaVersion": {
+      "const": 1,
+      "description": "Wersja struktury manifestu konsumenta, niezależna od wersji aplikacji i paczki DS."
+    },
+    "kind": {
+      "const": "pleo-design-system-consumer",
+      "description": "Stały identyfikator odróżniający manifest konsumenta od manifestu paczki DS."
+    },
+    "application": {
+      "type": "object",
+      "description": "Identyfikacja aplikacji konsumującej i używanego przez nią frameworka.",
+      "additionalProperties": false,
+      "required": ["name", "framework", "root"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "description": "Czytelna i stabilna nazwa aplikacji konsumującej." },
+        "framework": { "enum": ["angular", "react"], "description": "Framework aplikacji wyznaczający właściwy entry point i instrukcję integracji." },
+        "root": { "type": "string", "minLength": 1, "description": "Ścieżka do katalogu głównego aplikacji względem repozytorium." }
+      }
+    },
+    "designSystem": {
+      "type": "object",
+      "description": "Paczka design systemu, jej zakres wersji i sposób podłączenia do aplikacji.",
+      "additionalProperties": false,
+      "required": ["packageName", "versionRange", "entryPoint", "integrationMode"],
+      "properties": {
+        "packageName": { "type": "string", "minLength": 1, "description": "Pełna nazwa konsumowanej paczki NPM design systemu." },
+        "versionRange": { "type": "string", "minLength": 1, "description": "Dozwolony zakres wersji paczki zgodny z regułami zależności NPM i SemVer." },
+        "entryPoint": { "type": "string", "minLength": 1, "description": "Publiczny frameworkowy entry point paczki używany przez aplikację." },
+        "integrationMode": { "enum": ["workspace", "registry"], "description": "Sposób rozwiązywania paczki: lokalny workspace albo zewnętrzny rejestr." }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Artefakty tokenowe podłączane do konfiguracji stylów i IDE aplikacji.",
+      "additionalProperties": false,
+      "required": ["styles"],
+      "properties": {
+        "styles": { "type": "array", "description": "Ścieżki do publicznych arkuszy stylów lub plików tokenowych importowanych przez aplikację.", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "description": "Integracja ikon, ilustracji i innych assetów paczki z buildem aplikacji.",
+      "additionalProperties": false,
+      "required": ["copy", "svgRegistry"],
+      "properties": {
+        "copy": {
+          "type": "array",
+          "description": "Jawne mapowania kopiowania publicznych assetów paczki do outputu aplikacji.",
+          "items": {
+            "type": "object",
+            "description": "Pojedyncze mapowanie źródła assetów na lokalizację docelową aplikacji.",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "type": "string", "minLength": 1, "description": "Źródłowa ścieżka do publicznych assetów w paczce design systemu." },
+              "to": { "type": "string", "minLength": 1, "description": "Docelowa ścieżka assetów w buildzie lub katalogu publicznym aplikacji." }
+            }
+          }
+        },
+        "svgRegistry": { "type": "boolean", "description": "Określa, czy aplikacja korzysta z frameworkowego rejestru SVG dostarczanego przez DS." }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "description": "Elementy integracji uruchomieniowej wymagane przez design system w aplikacji.",
+      "additionalProperties": false,
+      "required": ["providers"],
+      "properties": {
+        "providers": { "type": "array", "description": "Nazwy providerów lub inicjalizatorów DS skonfigurowanych w aplikacji.", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "description": "Jawnie zatwierdzone odstępstwa integracji; tylko status active wpływa na walidatory. Nie jest to historia findingów audytu.",
+      "items": { "$ref": "#/$defs/exception" }
+    }
+  },
+  "$defs": {
+    "exception": {
+      "type": "object",
+      "description": "Odstępstwo od reguły integracji zaakceptowane przez dewelopera po konsultacji z przełożonym, wraz ze statusem cyklu życia.",
+      "additionalProperties": false,
+      "required": ["rule", "reason", "developer", "consultedApprover", "status"],
+      "properties": {
+        "rule": { "type": "string", "minLength": 1, "description": "Stabilny identyfikator reguły integracji, od której przyznano wyjątek." },
+        "reason": { "type": "string", "minLength": 1, "description": "Konkretne biznesowe lub techniczne uzasadnienie odstępstwa." },
+        "developer": { "type": "string", "minLength": 1, "description": "Deweloper odpowiedzialny za zgłoszenie i utrzymanie wyjątku." },
+        "consultedApprover": { "type": "string", "minLength": 1, "description": "Przełożony, z którym deweloper skonsultował odstępstwo." },
+        "reference": { "type": "string", "description": "Opcjonalne odwołanie do zadania, decyzji lub dokumentacji wyjątku." },
+        "status": { "enum": ["active", "expired", "resolved"], "description": "Aktualny stan wyjątku używany przez guardraile i audyt." }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "./schemas/design-system-consumer.schema.json",
+  "schemaVersion": 1,
+  "kind": "pleo-design-system-consumer",
+  "application": {
+    "name": "example-app",
+    "framework": "angular",
+    "root": "apps/example-app"
+  },
+  "designSystem": {
+    "packageName": "@pleodigital/design-system-example",
+    "versionRange": "^1.0.0",
+    "entryPoint": "./angular",
+    "integrationMode": "workspace"
+  },
+  "tokens": {
+    "styles": ["node_modules/@pleodigital/design-system-example/dist/css/tokens.angular.css"]
+  },
+  "assets": {
+    "copy": [
+      {
+        "from": "node_modules/@pleodigital/design-system-example/dist/assets/angular/svg-raw",
+        "to": "assets/design-system"
+      }
+    ],
+    "svgRegistry": true
+  },
+  "runtime": {
+    "providers": ["provideDesignSystemDeviceDetection()", "provideDesignSystemSvgRegistry()"]
+  },
+  "exceptions": []
+}
+

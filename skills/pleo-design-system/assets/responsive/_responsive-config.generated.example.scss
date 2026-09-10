@@ -1,0 +1,56 @@
+// EXAMPLE OUTPUT SNAPSHOT. A real DS generates responsive.generatedConfigScssPath. DO NOT EDIT.
+$ds-device-types: ("mobile", "tablet", "desktop");
+$ds-breakpoint-order: ("mobile-small", "mobile", "tablet-small", "tablet", "laptop", "desktop");
+$ds-breakpoints: (
+  "mobile-small": 360,
+  "mobile": 375,
+  "tablet-small": 765,
+  "tablet": 1024,
+  "laptop": 1280,
+  "desktop": 1920
+);
+$ds-device-breakpoint-map: (
+  "mobile": "mobile",
+  "tablet": "tablet",
+  "desktop": "desktop"
+);
+$ds-device-multipliers: (
+  "mobile": 0.8,
+  "tablet": 1.2,
+  "desktop": 1
+);
+$ds-implicit-breakpoint-fallbacks: (
+  "mobile-small": "mobile",
+  "tablet-small": "tablet",
+  "laptop": "desktop"
+);
+$ds-grid-variants: ("default",);
+$ds-grid-default-variant: "default";
+$ds-grid-values: (
+  "default": (
+    "mobile": (
+      "columns": 4,
+      "gutter": 8,
+      "margin": 9,
+      "margin-extra": 24
+    ),
+    "tablet-small": (
+      "columns": 8,
+      "gutter": 16,
+      "margin": 44,
+      "margin-extra": 32
+    ),
+    "tablet": (
+      "columns": 8,
+      "gutter": 16,
+      "margin": 44,
+      "margin-extra": 32
+    ),
+    "desktop": (
+      "columns": 16,
+      "gutter": 16,
+      "margin": 16,
+      "margin-extra": 56
+    )
+  )
+);

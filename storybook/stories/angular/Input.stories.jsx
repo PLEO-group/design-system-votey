@@ -1,25 +1,32 @@
 import React, { useEffect, useRef } from "react";
 import { useArgs } from "@storybook/preview-api";
 import { fn } from "@storybook/test";
-import "./Textarea.stories.scss";
+import "./Input.stories.scss";
 
-const textareaInputs = [
+const inputNames = [
+  "variant",
+  "type",
   "label",
   "placeholder",
-  "helper",
   "disabled",
-  "spellcheck",
+  "id",
+  "name",
+  "inputMode",
+  "min",
+  "max",
   "minLength",
   "maxLength",
+  "pattern",
   "ignoredErrors",
   "dataCy",
 ];
 
-function setTextareaInputs(componentRef, control, Validators, props) {
+function setInputProperties(componentRef, control, Validators, props) {
   const validators = [
     props.required || props.showError ? Validators.required : null,
     props.minLength === null ? null : Validators.minLength(props.minLength),
     props.maxLength === null ? null : Validators.maxLength(props.maxLength),
+    props.pattern ? Validators.pattern(props.pattern) : null,
   ].filter(Boolean);
 
   control.setValidators(validators);
@@ -34,12 +41,12 @@ function setTextareaInputs(componentRef, control, Validators, props) {
 
   componentRef.setInput("control", control);
 
-  for (const inputName of textareaInputs) {
+  for (const inputName of inputNames) {
     componentRef.setInput(inputName, props[inputName]);
   }
 }
 
-function AngularTextareaPreview(props) {
+function AngularInputPreview(props) {
   const hostRef = useRef(null);
   const angularRuntimeRef = useRef(null);
   const latestPropsRef = useRef(props);
@@ -48,13 +55,13 @@ function AngularTextareaPreview(props) {
   useEffect(() => {
     let isMounted = true;
 
-    async function mountAngularTextarea() {
+    async function mountAngularInput() {
       await import("@angular/compiler");
       const [
         { createComponent },
         { createApplication },
         { FormControl, Validators },
-        { VoteyTextAreaComponent },
+        { VoteyInputComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
@@ -71,22 +78,22 @@ function AngularTextareaPreview(props) {
         return;
       }
 
-      const textareaHost = document.createElement("vt-text-area");
-      hostRef.current.replaceChildren(textareaHost);
+      const inputHost = document.createElement("vt-input");
+      hostRef.current.replaceChildren(inputHost);
 
-      const componentRef = createComponent(VoteyTextAreaComponent, {
+      const componentRef = createComponent(VoteyInputComponent, {
         environmentInjector: applicationRef.injector,
-        hostElement: textareaHost,
+        hostElement: inputHost,
       });
+      const control = new FormControl("", { nonNullable: true });
       const subscriptions = [
-        componentRef.instance.changed.subscribe((value) =>
+        control.valueChanges.subscribe((value) =>
           latestPropsRef.current.onChanged(value)
         ),
         componentRef.instance.keyDown.subscribe((event) =>
           latestPropsRef.current.onKeyDown(event)
         ),
       ];
-      const control = new FormControl("", { nonNullable: true });
 
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = {
@@ -95,7 +102,7 @@ function AngularTextareaPreview(props) {
         control,
         Validators,
       };
-      setTextareaInputs(
+      setInputProperties(
         componentRef,
         control,
         Validators,
@@ -111,7 +118,7 @@ function AngularTextareaPreview(props) {
       };
     }
 
-    void mountAngularTextarea();
+    void mountAngularInput();
 
     return () => {
       isMounted = false;
@@ -125,7 +132,7 @@ function AngularTextareaPreview(props) {
 
     if (!angularRuntime) return;
 
-    setTextareaInputs(
+    setInputProperties(
       angularRuntime.componentRef,
       angularRuntime.control,
       angularRuntime.Validators,
@@ -134,40 +141,62 @@ function AngularTextareaPreview(props) {
     angularRuntime.applicationRef.tick();
   }, [props]);
 
-  return (
-    <div className="angular-textarea-story">
-      <div className="preview" ref={hostRef} />
-    </div>
-  );
+  return <div className="angular-input-story" ref={hostRef} />;
 }
 
 export default {
-  title: "ANGULAR COMPONENTS/Textarea",
-  component: AngularTextareaPreview,
-  parameters: {
-    layout: "centered",
-  },
+  title: "ANGULAR COMPONENTS/Input",
+  component: AngularInputPreview,
+  parameters: { layout: "centered" },
   argTypes: {
-    onChanged: { action: "changed", table: { category: "Events" } },
-    onKeyDown: { action: "keyDown", table: { category: "Events" } },
+    variant: {
+      options: ["boxed", "underline"],
+      control: { type: "inline-radio" },
+    },
+    type: {
+      options: ["text", "email", "password", "search", "tel", "url", "number"],
+      control: { type: "select" },
+    },
+    inputMode: {
+      options: [
+        "",
+        "none",
+        "text",
+        "decimal",
+        "numeric",
+        "tel",
+        "search",
+        "email",
+        "url",
+      ],
+      control: { type: "select" },
+    },
     required: {
       description: "Adds Validators.required to the preview FormControl.",
     },
     showError: {
-      description: "Shows the required error state for an empty textarea.",
+      description: "Shows the required error state for an empty input.",
     },
+    onChanged: { action: "changed", table: { category: "Events" } },
+    onKeyDown: { action: "keyDown", table: { category: "Events" } },
   },
   args: {
     text: "",
-    label: "Opis wydarzenia",
-    placeholder: "Wpisz opis…",
-    helper: "Maks. 2000 znaków",
+    variant: "boxed",
+    type: "text",
+    label: "Nazwa wydarzenia",
+    placeholder: "Wpisz nazwę…",
     disabled: false,
     required: false,
     showError: false,
-    spellcheck: true,
+    id: "storybook-input",
+    name: "storybook-input",
+    inputMode: "",
+    min: null,
+    max: null,
     minLength: null,
-    maxLength: 2000,
+    maxLength: 100,
+    pattern: "",
     ignoredErrors: [],
     dataCy: "",
     onChanged: fn(),
@@ -180,7 +209,7 @@ export const Playground = {
     const [, updateArgs] = useArgs();
 
     return (
-      <AngularTextareaPreview
+      <AngularInputPreview
         {...args}
         onChanged={(value) => {
           args.onChanged(value);

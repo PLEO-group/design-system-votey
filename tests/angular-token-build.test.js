@@ -169,6 +169,7 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         }
     }
     assert.match(firstBuild, /--space-page-margin: 0px;/);
+    assert.match(firstBuild, /--space-field-padding-x: 0px;/);
     assert.match(
         firstBuild,
         /body\[data-device=mobile\] \{\n  --grid-columns: 4;/,

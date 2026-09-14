@@ -1,0 +1,41 @@
+@let translatedLabel = label() | vtTranslate;
+
+<div
+  class="input-wrapper"
+  [class.underline]="variant() === 'underline'"
+  [class.disabled]="disabled() || formControl.disabled"
+  [class.error]="hasError"
+  [class.filled]="hasValue"
+>
+  @if (label()) {
+    <label class="label" [for]="id()">
+      <vt-text variant="label" color="secondary" [content]="translatedLabel" />
+    </label>
+  }
+
+  <div class="field">
+    <input
+      class="control"
+      [id]="id()"
+      [name]="name()"
+      [type]="type()"
+      [formControl]="formControl"
+      [placeholder]="placeholder()"
+      [attr.disabled]="disabled() ? '' : null"
+      [required]="isRequired"
+      [attr.inputmode]="inputMode() || null"
+      [attr.min]="min()"
+      [attr.max]="max()"
+      [attr.minlength]="minLength()"
+      [attr.maxlength]="maxLength()"
+      [attr.pattern]="pattern() || null"
+      [attr.aria-invalid]="hasError ? true : null"
+      [attr.data-cy]="dataCy() || null"
+    />
+  </div>
+
+  <vt-form-error
+    [errors]="errorKeys"
+    [ignoredErrors]="ignoredErrors()"
+  />
+</div>

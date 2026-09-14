@@ -20,6 +20,8 @@
 vt-radio-button {
   $radio-control-size: 20px;
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
 
   .radio-group-wrapper {
     display: inline-flex;

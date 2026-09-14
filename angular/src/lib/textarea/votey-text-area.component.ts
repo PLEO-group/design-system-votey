@@ -10,15 +10,21 @@ import {
 } from "@angular/core";
 import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
+import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
 @Component({
-  selector: "vt-textarea",
+  selector: "vt-text-area",
   templateUrl: "./votey-text-area.component.html",
   styleUrl: "./votey-text-area.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, VoteyTextComponent, VoteyTranslatePipe],
+  imports: [
+    ReactiveFormsModule,
+    VoteyFormErrorComponent,
+    VoteyTextComponent,
+    VoteyTranslatePipe,
+  ],
 })
 export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<string> {
   public readonly label: InputSignal<string> = input<string>("");
@@ -38,6 +44,7 @@ export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<strin
     null
   );
   public readonly dataCy: InputSignal<string> = input<string>("");
+  public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
   public readonly changed: OutputEmitterRef<string> = output<string>();
   public readonly keyDown: OutputEmitterRef<KeyboardEvent> =
@@ -51,12 +58,8 @@ export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<strin
     return this.formControl.invalid && this.formControl.touched;
   }
 
-  protected get errorTranslationKey(): string | null {
-    if (!this.hasError) return null;
-
-    const [errorName]: string[] = Object.keys(this.formControl.errors ?? {});
-
-    return errorName ? `ERRORS.${errorName.toUpperCase()}` : null;
+  protected get errorKeys(): string[] {
+    return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
   }
 
   protected handleInput(event: Event): void {

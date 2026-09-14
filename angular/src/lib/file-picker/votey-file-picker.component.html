@@ -39,4 +39,9 @@
       (cancel)="handleCancel()"
     />
   </div>
+
+  <vt-form-error
+    [errors]="errorKeys"
+    [ignoredErrors]="ignoredErrors()"
+  />
 </div>

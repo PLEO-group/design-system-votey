@@ -97,6 +97,11 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyIconNames,
     VoteyIllustrationNames,
     VoteyMenuComponent,
+    VoteyInputComponent,
+    VoteyInputModes,
+    VoteyInputTypeNames,
+    VoteyInputTypes,
+    VoteyInputVariants,
     VoteyRadioButtonComponent,
     VoteyRadioOptionContentDirective,
     VoteyTextAreaComponent,
@@ -199,7 +204,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaLabel, undefined);
   assert.equal(VoteyCheckboxComponent.ɵcmp.inputs.ariaDescribedby, undefined);
   assert.equal(typeof VoteyTextAreaComponent, "function");
-  assert.deepEqual(VoteyTextAreaComponent.ɵcmp.selectors, [["vt-textarea"]]);
+  assert.deepEqual(VoteyTextAreaComponent.ɵcmp.selectors, [["vt-text-area"]]);
   assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.value, undefined);
   assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.control[0], "control");
   assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.label[0], "label");
@@ -209,6 +214,41 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.focused, undefined);
   assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.blurred, undefined);
   assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.keyDown, "keyDown");
+  assert.equal(typeof VoteyInputComponent, "function");
+  assert.deepEqual(VoteyInputComponent.ɵcmp.selectors, [["vt-input"]]);
+  assert.deepEqual(VoteyInputVariants, ["boxed", "underline"]);
+  assert.deepEqual(VoteyInputTypes, [
+    "text",
+    "email",
+    "password",
+    "search",
+    "tel",
+    "url",
+    "number",
+  ]);
+  assert.deepEqual(VoteyInputTypeNames, {
+    text: "text",
+    email: "email",
+    password: "password",
+    search: "search",
+    tel: "tel",
+    url: "url",
+    number: "number",
+  });
+  assert.deepEqual(VoteyInputModes, [
+    "none",
+    "text",
+    "decimal",
+    "numeric",
+    "tel",
+    "search",
+    "email",
+    "url",
+  ]);
+  assert.equal(typeof VoteyInputComponent.prototype.focus, "undefined");
+  assert.equal(typeof VoteyInputComponent.prototype.blur, "undefined");
+  assert.equal(typeof VoteyInputComponent.prototype.select, "undefined");
+  assert.equal(typeof VoteyInputComponent.prototype.clear, "undefined");
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
   assert.equal(VoteyTextComponent.ɵcmp.inputs.content[0], "content");
@@ -375,6 +415,158 @@ test("checkbox applies a passed form control and emits changed output", async ()
   assert.equal(checkbox.formControl.disabled, true);
 
   subscription.unsubscribe();
+});
+
+test.skip("legacy input CVA contract", async () => {
+  const { Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const formValues = [];
+  const changedValues = [];
+  let touched = false;
+  const subscription = input.changed.subscribe((value) =>
+    changedValues.push(value),
+  );
+
+  input.registerOnChange((value) => formValues.push(value));
+  input.registerOnTouched(() => {
+    touched = true;
+  });
+  input.writeValue("Wartość");
+
+  assert.equal(input.value(), "Wartość");
+  assert.equal(input.inputClasses(), "input boxed");
+
+  input.handleInput({ target: { value: "Nowa wartość" } });
+  input.handleBlur({ target: { value: "Nowa wartość" } });
+
+  assert.equal(input.value(), "Nowa wartość");
+  assert.deepEqual(formValues, ["Nowa wartość"]);
+  assert.deepEqual(changedValues, ["Nowa wartość"]);
+  assert.equal(touched, true);
+
+  input.setDisabledState(true);
+  assert.equal(input.effectiveDisabled(), true);
+  assert.equal(input.inputClasses(), "input boxed disabled");
+
+  subscription.unsubscribe();
+});
+
+test.skip("legacy input interaction contract", async () => {
+  const { Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const values = [];
+  const focusEvents = [];
+  const blurEvents = [];
+  const keyEvents = [];
+
+  input.registerOnChange((value) => values.push(value));
+  input.type = () => "number";
+  input.handleInput({ target: { value: "12", valueAsNumber: 12 } });
+  input.handleInput({ target: { value: "12", valueAsNumber: 12 } });
+  input.handleInput({ target: { value: "invalid", valueAsNumber: NaN } });
+  input.handleInput({ target: { value: "", valueAsNumber: NaN } });
+
+  assert.deepEqual(values, [12, null]);
+  assert.equal(input.value(), null);
+
+  input.type = () => "text";
+  input.trimOnBlur = () => true;
+  const blurEvent = { target: { value: "  tekst  " } };
+  input.handleBlur(blurEvent);
+
+  assert.equal(blurEvent.target.value, "tekst");
+  assert.equal(input.value(), "tekst");
+
+  input.showLabel = () => false;
+  input.ariaLabel = () => "Nazwa użytkownika";
+  input.showHelper = () => true;
+  input.ariaDescribedby = () => "external-description";
+
+  assert.equal(input.resolvedAriaLabel(), "Nazwa użytkownika");
+  assert.equal(
+    input.resolvedAriaDescribedby(),
+    `external-description ${input.helperId()}`,
+  );
+
+  const focusEvent = { type: "focus" };
+  const keyEvent = { key: "Enter" };
+  const focusSubscription = input.focused.subscribe((event) =>
+    focusEvents.push(event),
+  );
+  const blurSubscription = input.blurred.subscribe((event) =>
+    blurEvents.push(event),
+  );
+  const keySubscription = input.keyDown.subscribe((event) =>
+    keyEvents.push(event),
+  );
+
+  input.handleFocus(focusEvent);
+  input.handleBlur({ target: { value: "tekst" } });
+  input.handleKeyDown(keyEvent);
+
+  assert.deepEqual(focusEvents, [focusEvent]);
+  assert.equal(blurEvents.length, 1);
+  assert.deepEqual(keyEvents, [keyEvent]);
+
+  input.readOnly = () => false;
+  input.clear();
+  assert.equal(input.value(), "");
+
+  input.writeValue("Nie zmieniaj");
+  input.readOnly = () => true;
+  input.clear();
+  assert.equal(input.value(), "Nie zmieniaj");
+
+  const elementCalls = [];
+  input.inputElement = () => ({
+    nativeElement: {
+      blur: () => elementCalls.push("blur"),
+      focus: (options) => elementCalls.push(["focus", options]),
+      select: () => elementCalls.push("select"),
+    },
+  });
+  const focusOptions = { preventScroll: true };
+
+  input.focus(focusOptions);
+  input.select();
+  input.blur();
+
+  assert.deepEqual(elementCalls, [
+    ["focus", focusOptions],
+    "select",
+    "blur",
+  ]);
+
+  input.setDisabledState(true);
+  input.focus();
+  input.select();
+  assert.equal(elementCalls.length, 3);
+
+  focusSubscription.unsubscribe();
+  blurSubscription.unsubscribe();
+  keySubscription.unsubscribe();
+});
+
+test("input uses the shared form control contract", async () => {
+  const { Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+
+  assert.equal(input.formControl.value, null);
+  assert.equal(input.keyDown !== undefined, true);
+  assert.equal(input.changed, undefined);
+  assert.equal(input.registerOnChange, undefined);
 });
 
 test("radio button emits MatRadioChange", async () => {

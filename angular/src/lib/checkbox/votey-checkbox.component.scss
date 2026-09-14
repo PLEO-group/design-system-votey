@@ -1,5 +1,7 @@
 vt-checkbox {
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
 
   .mat-mdc-checkbox {
     --checkbox-label-font-family: var(--typo-body-font-family);

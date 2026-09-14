@@ -1,51 +1,49 @@
 import React, { useEffect, useRef } from "react";
 import { useArgs } from "@storybook/preview-api";
 import { fn } from "@storybook/test";
-import { getIconList } from "../../utils/assetLoader";
 import "./Input.stories.scss";
 
-const iconOptions = [
-  "none",
-  ...getIconList()
-    .map((icon) => icon.angularRegistryName)
-    .sort((first, second) => first.localeCompare(second)),
-];
 const inputNames = [
-  "value",
   "variant",
   "type",
   "label",
   "placeholder",
-  "helper",
-  "showLabel",
-  "showHelper",
   "disabled",
-  "required",
-  "readOnly",
-  "error",
-  "trimOnBlur",
-  "autofocus",
   "id",
   "name",
-  "autocomplete",
   "inputMode",
   "min",
   "max",
-  "step",
   "minLength",
   "maxLength",
   "pattern",
-  "ariaLabel",
-  "ariaDescribedby",
+  "ignoredErrors",
   "dataCy",
 ];
 
-function setInputProperties(componentRef, props) {
+function setInputProperties(componentRef, control, Validators, props) {
+  const validators = [
+    props.required || props.showError ? Validators.required : null,
+    props.minLength === null ? null : Validators.minLength(props.minLength),
+    props.maxLength === null ? null : Validators.maxLength(props.maxLength),
+    props.pattern ? Validators.pattern(props.pattern) : null,
+  ].filter(Boolean);
+
+  control.setValidators(validators);
+  control.setValue(props.text, { emitEvent: false });
+  control.updateValueAndValidity({ emitEvent: false });
+
+  if (props.showError) {
+    control.markAsTouched();
+  } else {
+    control.markAsUntouched();
+  }
+
+  componentRef.setInput("control", control);
+
   for (const inputName of inputNames) {
     componentRef.setInput(inputName, props[inputName]);
   }
-
-  componentRef.setInput("icon", props.icon === "none" ? "" : props.icon);
 }
 
 function AngularInputPreview(props) {
@@ -62,18 +60,18 @@ function AngularInputPreview(props) {
       const [
         { createComponent },
         { createApplication },
-        { provideVoteySvgRegistry, VoteyInputComponent },
+        { FormControl, Validators },
+        { VoteyInputComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
+        import("@angular/forms"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
 
       if (!isMounted || !hostRef.current) return;
 
-      const applicationRef = await createApplication({
-        providers: [provideVoteySvgRegistry()],
-      });
+      const applicationRef = await createApplication();
 
       if (!isMounted || !hostRef.current) {
         applicationRef.destroy();
@@ -87,29 +85,33 @@ function AngularInputPreview(props) {
         environmentInjector: applicationRef.injector,
         hostElement: inputHost,
       });
-      const changedSubscription = componentRef.instance.changed.subscribe(
-        (value) => latestPropsRef.current.onChanged(value)
-      );
-      const focusedSubscription = componentRef.instance.focused.subscribe(
-        (event) => latestPropsRef.current.onFocused(event)
-      );
-      const blurredSubscription = componentRef.instance.blurred.subscribe(
-        (event) => latestPropsRef.current.onBlurred(event)
-      );
-      const keyDownSubscription = componentRef.instance.keyDown.subscribe(
-        (event) => latestPropsRef.current.onKeyDown(event)
-      );
+      const control = new FormControl("", { nonNullable: true });
+      const subscriptions = [
+        control.valueChanges.subscribe((value) =>
+          latestPropsRef.current.onChanged(value)
+        ),
+        componentRef.instance.keyDown.subscribe((event) =>
+          latestPropsRef.current.onKeyDown(event)
+        ),
+      ];
 
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef };
-      setInputProperties(componentRef, latestPropsRef.current);
+      angularRuntimeRef.current = {
+        applicationRef,
+        componentRef,
+        control,
+        Validators,
+      };
+      setInputProperties(
+        componentRef,
+        control,
+        Validators,
+        latestPropsRef.current
+      );
       applicationRef.tick();
 
       angularRuntimeRef.current.destroy = () => {
-        changedSubscription.unsubscribe();
-        focusedSubscription.unsubscribe();
-        blurredSubscription.unsubscribe();
-        keyDownSubscription.unsubscribe();
+        subscriptions.forEach((subscription) => subscription.unsubscribe());
         applicationRef.detachView(componentRef.hostView);
         componentRef.destroy();
         applicationRef.destroy();
@@ -130,7 +132,12 @@ function AngularInputPreview(props) {
 
     if (!angularRuntime) return;
 
-    setInputProperties(angularRuntime.componentRef, props);
+    setInputProperties(
+      angularRuntime.componentRef,
+      angularRuntime.control,
+      angularRuntime.Validators,
+      props
+    );
     angularRuntime.applicationRef.tick();
   }, [props]);
 
@@ -150,27 +157,6 @@ export default {
       options: ["text", "email", "password", "search", "tel", "url", "number"],
       control: { type: "select" },
     },
-    icon: {
-      options: iconOptions,
-      control: { type: "select" },
-      table: { category: "Appearance" },
-    },
-    onChanged: {
-      action: "changed",
-      table: { category: "Events" },
-    },
-    onFocused: {
-      action: "focused",
-      table: { category: "Events" },
-    },
-    onBlurred: {
-      action: "blurred",
-      table: { category: "Events" },
-    },
-    onKeyDown: {
-      action: "keyDown",
-      table: { category: "Events" },
-    },
     inputMode: {
       options: [
         "",
@@ -185,39 +171,35 @@ export default {
       ],
       control: { type: "select" },
     },
+    required: {
+      description: "Adds Validators.required to the preview FormControl.",
+    },
+    showError: {
+      description: "Shows the required error state for an empty input.",
+    },
+    onChanged: { action: "changed", table: { category: "Events" } },
+    onKeyDown: { action: "keyDown", table: { category: "Events" } },
   },
   args: {
-    value: "",
+    text: "",
     variant: "boxed",
     type: "text",
-    label: "Etykieta",
-    placeholder: "Wpisz…",
-    helper: "Tekst pomocniczy",
-    showLabel: true,
-    showHelper: false,
-    icon: "none",
+    label: "Nazwa wydarzenia",
+    placeholder: "Wpisz nazwę…",
     disabled: false,
     required: false,
-    readOnly: false,
-    error: false,
-    trimOnBlur: false,
-    autofocus: false,
+    showError: false,
     id: "storybook-input",
     name: "storybook-input",
-    autocomplete: "off",
     inputMode: "",
     min: null,
     max: null,
-    step: null,
     minLength: null,
-    maxLength: null,
+    maxLength: 100,
     pattern: "",
-    ariaLabel: "",
-    ariaDescribedby: "",
+    ignoredErrors: [],
     dataCy: "",
     onChanged: fn(),
-    onFocused: fn(),
-    onBlurred: fn(),
     onKeyDown: fn(),
   },
 };
@@ -229,13 +211,10 @@ export const Playground = {
     return (
       <AngularInputPreview
         {...args}
-        onBlurred={args.onBlurred}
         onChanged={(value) => {
           args.onChanged(value);
-          updateArgs({ value });
+          updateArgs({ text: value });
         }}
-        onFocused={args.onFocused}
-        onKeyDown={args.onKeyDown}
       />
     );
   },

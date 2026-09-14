@@ -113,11 +113,10 @@
   --color-text-primary: var(--color-navy-blue-800);
   --color-text-secondary: var(--color-gray-700);
   --color-text-muted: var(--color-gray-500);
-  --color-text-placeholder: var(--color-gray-blue-200);
+  --color-text-placeholder: var(--color-blue-gray-200);
   --color-text-inverse: var(--color-white);
   --color-text-accent: var(--color-mint-green-600);
   --color-text-on-sidebar: var(--color-white);
-  --color-text-placeholder: var(--color-blue-gray-200);
   --color-text-inverse-secondary: var(--color-navy-blue-100);
   --color-accent-primary: var(--color-mint-green-400);
   --color-accent-strong: var(--color-mint-green-600);
@@ -156,10 +155,10 @@
   --color-text-primary: var(--color-white);
   --color-text-secondary: var(--color-navy-blue-100);
   --color-text-muted: var(--color-navy-blue-100);
+  --color-text-placeholder: var(--color-navy-blue-100);
   --color-text-inverse: var(--color-white);
   --color-text-accent: var(--color-mint-green-500);
   --color-text-on-sidebar: var(--color-white);
-  --color-text-placeholder: var(--color-navy-blue-100);
   --color-text-inverse-secondary: var(--color-navy-blue-100);
   --color-accent-primary: var(--color-mint-green-500);
   --color-accent-strong: var(--color-mint-green-500);

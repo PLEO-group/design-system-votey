@@ -38,12 +38,8 @@
   />
   }
 
-  @if (errorTranslationKey; as errorKey) {
-  <vt-text
-    role="alert"
-    variant="caption-s"
-    color="error"
-    [content]="errorKey | vtTranslate"
+  <vt-form-error
+    [errors]="errorKeys"
+    [ignoredErrors]="ignoredErrors()"
   />
-  }
 </div>

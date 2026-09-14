@@ -16,6 +16,7 @@ import {
   type MatCheckboxChange,
 } from "@angular/material/checkbox";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
+import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import {
   getVoteySvgAssetUrl,
@@ -31,7 +32,12 @@ export type VoteyCheckboxLabelPosition = "before" | "after";
   styleUrl: "./votey-checkbox.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [MatCheckbox, ReactiveFormsModule, VoteyTranslatePipe],
+  imports: [
+    MatCheckbox,
+    ReactiveFormsModule,
+    VoteyFormErrorComponent,
+    VoteyTranslatePipe,
+  ],
 })
 export class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<boolean> {
   public readonly indeterminate: ModelSignal<boolean> = model<boolean>(false);
@@ -44,7 +50,14 @@ export class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<boole
   public readonly id: InputSignal<string> = input<string>("");
   public readonly name: InputSignal<string> = input<string>("");
   public readonly value: InputSignal<string> = input<string>("");
+  public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly changed: OutputEmitterRef<boolean> = output<boolean>();
+
+  protected get errorKeys(): string[] {
+    return this.formControl.invalid && this.formControl.touched
+      ? Object.keys(this.formControl.errors ?? {})
+      : [];
+  }
 
   private readonly svgRegistryConfig: VoteySvgRegistryConfig =
     inject(VOTEY_SVG_REGISTRY_CONFIG, { optional: true }) ?? {};

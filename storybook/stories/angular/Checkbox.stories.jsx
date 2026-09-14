@@ -13,6 +13,7 @@ const checkboxInputs = [
   "id",
   "name",
   "value",
+  "ignoredErrors",
 ];
 
 function setCheckboxInputs(componentRef, control, props) {
@@ -140,6 +141,7 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
+    ignoredErrors: [],
     onChanged: fn(),
   },
 };

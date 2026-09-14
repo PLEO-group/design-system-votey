@@ -26,6 +26,7 @@ import {
   type VoteyTranslator,
 } from "../translation/votey-translation";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
+import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyRadioOptionContentDirective } from "./votey-radio-option-content.directive";
 
 export type VoteyRadioButtonLabelPosition = "before" | "after";
@@ -54,6 +55,7 @@ export interface VtRadioOption<T = unknown> {
     MatTooltip,
     NgTemplateOutlet,
     ReactiveFormsModule,
+    VoteyFormErrorComponent,
     VoteyTextComponent,
     VoteyTranslatePipe,
   ],
@@ -76,6 +78,7 @@ export class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<un
   public readonly groupClass: InputSignal<string> = input<string>("");
   public readonly tooltip: InputSignal<string> = input<string>("");
   public readonly disabledNote: InputSignal<string> = input<string>("");
+  public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
   public readonly change: OutputEmitterRef<MatRadioChange> =
     output<MatRadioChange>();
@@ -100,6 +103,12 @@ export class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<un
 
     return templates;
   });
+
+  protected get errorKeys(): string[] {
+    return this.formControl.invalid && this.formControl.touched
+      ? Object.keys(this.formControl.errors ?? {})
+      : [];
+  }
 
   protected handleChange(event: MatRadioChange): void {
     this.change.emit(event);

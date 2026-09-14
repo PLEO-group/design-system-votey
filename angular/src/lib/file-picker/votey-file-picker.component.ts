@@ -19,6 +19,7 @@ import { Validators, type FormControl } from "@angular/forms";
 import type { Subscription } from "rxjs";
 import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
+import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
@@ -27,7 +28,12 @@ import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
   templateUrl: "./votey-file-picker.component.html",
   styleUrl: "./votey-file-picker.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [VoteyTextComponent, VoteyTranslatePipe, VoteyButtonComponent],
+  imports: [
+    VoteyFormErrorComponent,
+    VoteyTextComponent,
+    VoteyTranslatePipe,
+    VoteyButtonComponent,
+  ],
 })
 export class VoteyFilePickerComponent
   extends VoteyFormControlApplyDirective<File>
@@ -47,6 +53,7 @@ export class VoteyFilePickerComponent
   public readonly accept: InputSignal<string> = input<string>("");
   public readonly capture: InputSignal<string> = input<string>("");
   public readonly dataCy: InputSignal<string> = input<string>("");
+  public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
   public readonly changed: OutputEmitterRef<File | null> =
     output<File | null>();
@@ -76,6 +83,11 @@ export class VoteyFilePickerComponent
 
     return this.formControl.hasValidator(Validators.required);
   });
+  protected get errorKeys(): string[] {
+    return this.formControl.invalid && this.formControl.touched
+      ? Object.keys(this.formControl.errors ?? {})
+      : [];
+  }
 
   public constructor() {
     super();

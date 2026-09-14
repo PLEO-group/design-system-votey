@@ -9,6 +9,7 @@ const filePickerInputs = [
   "emptyText",
   "actionText",
   "disabled",
+  "ignoredErrors",
 ];
 
 function createFile(filename) {
@@ -143,6 +144,7 @@ export default {
     emptyText: "Nie wybrano pliku",
     actionText: "Wybierz plik",
     disabled: false,
+    ignoredErrors: [],
     initialFilename: "",
     staticFilename: "",
     disable: undefined,

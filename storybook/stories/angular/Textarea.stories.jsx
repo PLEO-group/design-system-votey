@@ -11,6 +11,7 @@ const textareaInputs = [
   "spellcheck",
   "minLength",
   "maxLength",
+  "ignoredErrors",
   "dataCy",
 ];
 
@@ -70,7 +71,7 @@ function AngularTextareaPreview(props) {
         return;
       }
 
-      const textareaHost = document.createElement("vt-textarea");
+      const textareaHost = document.createElement("vt-text-area");
       hostRef.current.replaceChildren(textareaHost);
 
       const componentRef = createComponent(VoteyTextAreaComponent, {
@@ -167,6 +168,7 @@ export default {
     spellcheck: true,
     minLength: null,
     maxLength: 2000,
+    ignoredErrors: [],
     dataCy: "",
     onChanged: fn(),
     onKeyDown: fn(),

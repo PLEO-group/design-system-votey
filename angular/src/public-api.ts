@@ -50,6 +50,7 @@ export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component"
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
 export { VoteyFilePickerComponent } from "./lib/file-picker/votey-file-picker.component";
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
+export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
 export { VoteyRadioOptionContentDirective } from "./lib/radio-button/votey-radio-option-content.directive";
 export type {
@@ -76,6 +77,5 @@ export {
 export type {
   VoteyInputMode,
   VoteyInputType,
-  VoteyInputValue,
   VoteyInputVariant,
 } from "./lib/input/votey-input.component";

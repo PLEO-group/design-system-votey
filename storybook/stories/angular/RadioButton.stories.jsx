@@ -11,6 +11,7 @@ const radioButtonInputs = [
   "groupClass",
   "tooltip",
   "disabledNote",
+  "ignoredErrors",
 ];
 
 function setRadioButtonInputs(componentRef, control, props) {
@@ -258,6 +259,7 @@ export default {
     groupClass: "",
     tooltip: "Wybierz jedną z opcji",
     disabledNote: "Ta grupa jest obecnie niedostępna",
+    ignoredErrors: [],
     initialValue: undefined,
     staticValue: undefined,
     disable: undefined,

@@ -1,0 +1,36 @@
+:host {
+  display: contents;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  padding-left: var(--spacing-12);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-accent-soft);
+  border: 2px solid var(--color-accent-hover);
+  white-space: nowrap;
+  transition: background-color 180ms ease, border 180ms ease;
+  height: 21px;
+
+  .remove {
+    flex: 0 0 auto;
+  }
+
+  &.disabled {
+    background-color: var(--color-bg-surface-tint);
+    border: 2px solid var(--color-border-subtle);
+  }
+
+  ::ng-deep vt-text span {
+    line-height: unset !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}

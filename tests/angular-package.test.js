@@ -90,6 +90,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyButtonComponent,
     VoteyButtonSizes,
     VoteyButtonVariants,
+    VoteyChipComponent,
     VoteyCheckboxComponent,
     VoteyFilePickerComponent,
     VoteyFormControlApplyDirective,
@@ -290,9 +291,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "on-sidebar",
   ]);
   const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
+  const chipDependencies = VoteyChipComponent.ɵcmp.dependencies();
   const radioButtonDependencies =
     VoteyRadioButtonComponent.ɵcmp.dependencies();
   assert.ok(buttonDependencies.includes(VoteyTextComponent));
+  assert.ok(chipDependencies.includes(VoteyButtonComponent));
+  assert.ok(chipDependencies.includes(VoteyTextComponent));
   assert.ok(radioButtonDependencies.includes(VoteyTextComponent));
   assert.equal(typeof VoteyDeviceService, "function");
   assert.equal(typeof provideVoteyDeviceDetection, "function");
@@ -602,6 +606,25 @@ test("text resolves its default token-backed presentation", async () => {
   assert.equal(text.maxLines(), 0);
   assert.equal(text.lineClampEnabled(), false);
   assert.equal(text.textClasses(), "text body primary");
+});
+
+test("chip exposes removable and disabled defaults", async () => {
+  const { Injector, runInInjectionContext, VoteyChipComponent } =
+    await loadAngularRuntime();
+  const chip = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyChipComponent(),
+  );
+  const removedEvents = [];
+  const subscription = chip.removed.subscribe(() => removedEvents.push(true));
+
+  assert.equal(chip.showRemove(), true);
+  assert.equal(chip.disabled(), false);
+
+  chip.removed.emit();
+  assert.deepEqual(removedEvents, [true]);
+
+  subscription.unsubscribe();
 });
 
 test("device service initializes responsive document attributes and viewport unit", async () => {

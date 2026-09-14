@@ -1,8 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
-  forwardRef,
   inject,
   input,
   type InputSignal,
@@ -10,12 +8,9 @@ import {
   type ModelSignal,
   output,
   type OutputEmitterRef,
-  type Signal,
-  signal,
-  type WritableSignal,
   ViewEncapsulation,
 } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import {
   MatCheckbox,
   type MatCheckboxChange,
@@ -36,20 +31,9 @@ export type VoteyCheckboxLabelPosition = "before" | "after";
   styleUrl: "./votey-checkbox.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [MatCheckbox, VoteyTranslatePipe],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => VoteyCheckboxComponent),
-      multi: true,
-    },
-  ],
+  imports: [MatCheckbox, ReactiveFormsModule, VoteyTranslatePipe],
 })
-export class VoteyCheckboxComponent
-  extends VoteyFormControlApplyDirective<boolean>
-  implements ControlValueAccessor
-{
-  public readonly checked: ModelSignal<boolean> = model<boolean>(false);
+export class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<boolean> {
   public readonly indeterminate: ModelSignal<boolean> = model<boolean>(false);
   public readonly disabled: InputSignal<boolean> = input<boolean>(false);
   public readonly required: InputSignal<boolean> = input<boolean>(false);
@@ -62,54 +46,13 @@ export class VoteyCheckboxComponent
   public readonly value: InputSignal<string> = input<string>("");
   public readonly changed: OutputEmitterRef<boolean> = output<boolean>();
 
-  private readonly formDisabled: WritableSignal<boolean> =
-    signal<boolean>(false);
   private readonly svgRegistryConfig: VoteySvgRegistryConfig =
     inject(VOTEY_SVG_REGISTRY_CONFIG, { optional: true }) ?? {};
   protected readonly checkmarkMaskUrl: string = `url("${getVoteySvgAssetUrl(
     "icons/special/icon_sp_check.svg",
     this.svgRegistryConfig
   )}")`;
-  protected readonly effectiveDisabled: Signal<boolean> = computed<boolean>(
-    () => this.disabled() || this.formDisabled()
-  );
-
-  private onChange: (value: boolean) => void = () => undefined;
-  private onTouched: () => void = () => undefined;
-
-  public writeValue(value: boolean | null): void {
-    this.checked.set(Boolean(value));
-  }
-
-  public registerOnChange(callback: (value: boolean) => void): void {
-    this.onChange = callback;
-  }
-
-  public registerOnTouched(callback: () => void): void {
-    this.onTouched = callback;
-  }
-
-  public setDisabledState(isDisabled: boolean): void {
-    this.formDisabled.set(isDisabled);
-  }
-
   protected handleChange(event: MatCheckboxChange): void {
-    this.checked.set(event.checked);
-    this.indeterminate.set(event.source.indeterminate);
-    this.formControl.setValue(event.checked);
-    this.onChange(event.checked);
     this.changed.emit(event.checked);
-  }
-
-  protected markAsTouched(): void {
-    this.onTouched();
-  }
-
-  protected override handleFormControlValueChange(value: boolean | null): void {
-    this.checked.set(Boolean(value));
-  }
-
-  protected override handleFormControlDisabledChange(disabled: boolean): void {
-    this.formDisabled.set(disabled);
   }
 }

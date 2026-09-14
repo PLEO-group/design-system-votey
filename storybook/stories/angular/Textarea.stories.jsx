@@ -8,10 +8,10 @@ const textareaInputs = [
   "placeholder",
   "helper",
   "disabled",
-  "trimOnBlur",
   "spellcheck",
   "minLength",
   "maxLength",
+  "dataCy",
 ];
 
 function setTextareaInputs(componentRef, control, Validators, props) {
@@ -36,11 +36,6 @@ function setTextareaInputs(componentRef, control, Validators, props) {
   for (const inputName of textareaInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
-
-  componentRef.setInput("initialValue", props.initialValue);
-  componentRef.setInput("staticValue", props.staticValue);
-  componentRef.setInput("disable", props.disable);
-  componentRef.setInput("block", props.block);
 }
 
 function AngularTextareaPreview(props) {
@@ -85,12 +80,6 @@ function AngularTextareaPreview(props) {
       const subscriptions = [
         componentRef.instance.changed.subscribe((value) =>
           latestPropsRef.current.onChanged(value)
-        ),
-        componentRef.instance.focused.subscribe((event) =>
-          latestPropsRef.current.onFocused(event)
-        ),
-        componentRef.instance.blurred.subscribe((event) =>
-          latestPropsRef.current.onBlurred(event)
         ),
         componentRef.instance.keyDown.subscribe((event) =>
           latestPropsRef.current.onKeyDown(event)
@@ -159,8 +148,6 @@ export default {
   },
   argTypes: {
     onChanged: { action: "changed", table: { category: "Events" } },
-    onFocused: { action: "focused", table: { category: "Events" } },
-    onBlurred: { action: "blurred", table: { category: "Events" } },
     onKeyDown: { action: "keyDown", table: { category: "Events" } },
     required: {
       description: "Adds Validators.required to the preview FormControl.",
@@ -168,8 +155,6 @@ export default {
     showError: {
       description: "Shows the required error state for an empty textarea.",
     },
-    disable: { control: "boolean" },
-    block: { control: "boolean" },
   },
   args: {
     text: "",
@@ -179,17 +164,11 @@ export default {
     disabled: false,
     required: false,
     showError: false,
-    trimOnBlur: false,
     spellcheck: true,
     minLength: null,
     maxLength: 2000,
-    initialValue: undefined,
-    staticValue: undefined,
-    disable: undefined,
-    block: undefined,
+    dataCy: "",
     onChanged: fn(),
-    onFocused: fn(),
-    onBlurred: fn(),
     onKeyDown: fn(),
   },
 };

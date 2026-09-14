@@ -1,48 +1,30 @@
-import { Directive, Input, OnDestroy } from "@angular/core";
+import { Directive, Input } from "@angular/core";
 import { FormControl } from "@angular/forms";
-import type { Subscription } from "rxjs";
 
 @Directive({
   selector: "[vtFormControlApply]",
   standalone: true,
 })
-export class VoteyFormControlApplyDirective<T> implements OnDestroy {
+export class VoteyFormControlApplyDirective<T> {
   public formControl: FormControl<T | null> = new FormControl<T | null>(null);
-
-  private valueChangesSubscription: Subscription | undefined;
-  private statusChangesSubscription: Subscription | undefined;
-  private eventsSubscription: Subscription | undefined;
-
-  public constructor() {
-    this.observeFormControl();
-  }
 
   @Input() set staticValue(value: T | null | undefined) {
     if (value === undefined) return;
 
     this.formControl.setValue(value);
     this.formControl.disable();
-    this.handleFormControlValueChange(value);
-    this.handleFormControlDisabledChange(true);
   }
 
   @Input() set initialValue(value: T | null | undefined) {
     if (value === undefined) return;
 
     this.formControl.setValue(value);
-    this.handleFormControlValueChange(value);
   }
 
   @Input() set control(control: FormControl<T | null> | null | undefined) {
     if (!control) return;
 
-    this.valueChangesSubscription?.unsubscribe();
-    this.statusChangesSubscription?.unsubscribe();
-    this.eventsSubscription?.unsubscribe();
     this.formControl = control;
-    this.observeFormControl();
-    this.handleFormControlValueChange(control.value);
-    this.handleFormControlDisabledChange(control.disabled);
   }
 
   @Input() set disable(disabled: boolean | undefined) {
@@ -54,7 +36,6 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
       this.formControl.enable();
     }
 
-    this.handleFormControlDisabledChange(disabled);
   }
 
   @Input() set block(blocked: boolean) {
@@ -69,27 +50,4 @@ export class VoteyFormControlApplyDirective<T> implements OnDestroy {
     return this.formControl.touched;
   }
 
-  public ngOnDestroy(): void {
-    this.valueChangesSubscription?.unsubscribe();
-    this.statusChangesSubscription?.unsubscribe();
-    this.eventsSubscription?.unsubscribe();
-  }
-
-  protected handleFormControlValueChange(_value: T | null): void {}
-
-  protected handleFormControlDisabledChange(_disabled: boolean): void {}
-
-  protected handleFormControlStateChange(): void {}
-
-  private observeFormControl(): void {
-    this.valueChangesSubscription = this.formControl.valueChanges.subscribe(
-      (value: T | null) => this.handleFormControlValueChange(value)
-    );
-    this.statusChangesSubscription = this.formControl.statusChanges.subscribe(
-      () => this.handleFormControlDisabledChange(this.formControl.disabled)
-    );
-    this.eventsSubscription = this.formControl.events.subscribe(() =>
-      this.handleFormControlStateChange()
-    );
-  }
 }

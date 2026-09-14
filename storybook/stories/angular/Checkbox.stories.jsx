@@ -4,7 +4,6 @@ import { fn } from "@storybook/test";
 import "./Checkbox.stories.scss";
 
 const checkboxInputs = [
-  "checked",
   "indeterminate",
   "disabled",
   "required",
@@ -23,11 +22,6 @@ function setCheckboxInputs(componentRef, control, props) {
   for (const inputName of checkboxInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
-
-  componentRef.setInput("initialValue", props.initialValue);
-  componentRef.setInput("staticValue", props.staticValue);
-  componentRef.setInput("disable", props.disable);
-  componentRef.setInput("block", props.block);
 }
 
 function AngularCheckboxPreview(props) {
@@ -75,7 +69,6 @@ function AngularCheckboxPreview(props) {
         (checked) => latestPropsRef.current.onChanged(checked)
       );
       const control = new FormControl(false, { nonNullable: true });
-
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = { applicationRef, componentRef, control };
       setCheckboxInputs(componentRef, control, latestPropsRef.current);
@@ -135,8 +128,6 @@ export default {
       action: "changed",
       table: { category: "Events" },
     },
-    disable: { control: "boolean" },
-    block: { control: "boolean" },
   },
   args: {
     checked: false,
@@ -149,10 +140,6 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
-    initialValue: undefined,
-    staticValue: undefined,
-    disable: undefined,
-    block: undefined,
     onChanged: fn(),
   },
 };

@@ -1,8 +1,8 @@
 <div
   class="text-area-wrapper"
-  [class.disabled]="effectiveDisabled()"
-  [class.error]="hasError()"
-  [class.filled]="textValue().length > 0"
+  [class.disabled]="disabled() || formControl.disabled"
+  [class.error]="hasError"
+  [class.filled]="(formControl.value ?? '').length > 0"
 >
   @if (label()) {
   <vt-text
@@ -14,21 +14,18 @@
 
   <div class="field">
     <textarea
-      #textareaElement
       class="control"
-      [value]="textValue()"
       [placeholder]="placeholder()"
-      [disabled]="effectiveDisabled()"
-      [required]="isRequired()"
+      [formControl]="formControl"
+      [attr.disabled]="disabled() ? '' : null"
+      [required]="isRequired"
       [spellcheck]="spellcheck()"
       [attr.minlength]="minLength()"
       [attr.maxlength]="maxLength()"
       [attr.aria-label]="(label() | vtTranslate) || null"
-      [attr.aria-invalid]="hasError() ? true : null"
+      [attr.aria-invalid]="hasError ? true : null"
       [attr.data-cy]="dataCy() || null"
       (input)="handleInput($event)"
-      (focus)="handleFocus($event)"
-      (blur)="handleBlur($event)"
       (keydown)="handleKeyDown($event)"
     ></textarea>
   </div>
@@ -41,12 +38,12 @@
   />
   }
 
-  @if (errorTranslationKey()) {
+  @if (errorTranslationKey; as errorKey) {
   <vt-text
     role="alert"
     variant="caption-s"
     color="error"
-    [content]="errorTranslationKey() | vtTranslate"
+    [content]="errorKey | vtTranslate"
   />
   }
 </div>

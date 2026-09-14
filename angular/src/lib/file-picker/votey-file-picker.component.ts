@@ -5,6 +5,7 @@ import {
   computed,
   ElementRef,
   input,
+  OnDestroy,
   type InputSignal,
   type InputSignalWithTransform,
   output,
@@ -14,7 +15,8 @@ import {
   viewChild,
   type WritableSignal,
 } from "@angular/core";
-import { Validators } from "@angular/forms";
+import { Validators, type FormControl } from "@angular/forms";
+import type { Subscription } from "rxjs";
 import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
 import { VoteyTextComponent } from "../text/votey-text.component";
@@ -29,6 +31,7 @@ import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 })
 export class VoteyFilePickerComponent
   extends VoteyFormControlApplyDirective<File>
+  implements OnDestroy
 {
   public readonly filename: InputSignal<string> = input<string>("");
   public readonly label: InputSignal<string> = input<string>("");
@@ -58,6 +61,7 @@ export class VoteyFilePickerComponent
     signal<number>(0);
   private readonly selectedFile: WritableSignal<File | null> =
     signal<File | null>(null);
+  private formControlEventsSubscription: Subscription | undefined;
   protected readonly hasFile: Signal<boolean> = computed<boolean>(
     () => this.selectedFile() !== null || this.filename().trim().length > 0
   );
@@ -72,6 +76,23 @@ export class VoteyFilePickerComponent
 
     return this.formControl.hasValidator(Validators.required);
   });
+
+  public constructor() {
+    super();
+    this.observeFormControl();
+  }
+
+  public override set control(
+    control: FormControl<File | null> | null | undefined
+  ) {
+    super.control = control;
+
+    if (control) this.observeFormControl();
+  }
+
+  public ngOnDestroy(): void {
+    this.formControlEventsSubscription?.unsubscribe();
+  }
 
   public open(): void {
     if (this.effectiveDisabled()) return;
@@ -96,18 +117,22 @@ export class VoteyFilePickerComponent
     this.cancelled.emit();
   }
 
-  protected override handleFormControlValueChange(value: File | null): void {
+  private observeFormControl(): void {
+    this.formControlEventsSubscription?.unsubscribe();
+    this.formControlEventsSubscription = this.formControl.events.subscribe(() =>
+      this.syncFormControlState()
+    );
+    this.syncFormControlState();
+  }
+
+  private syncFormControlState(): void {
+    const value: File | null = this.formControl.value;
+
     this.selectedFile.set(value);
+    this.formDisabled.set(this.formControl.disabled);
+    this.formControlStateVersion.update((version: number) => version + 1);
 
     if (!value) this.resetNativeInput();
-  }
-
-  protected override handleFormControlDisabledChange(disabled: boolean): void {
-    this.formDisabled.set(disabled);
-  }
-
-  protected override handleFormControlStateChange(): void {
-    this.formControlStateVersion.update((version: number) => version + 1);
   }
 
   private resetNativeInput(): void {

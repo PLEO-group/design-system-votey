@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.5.0
+version: 1.5.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -62,6 +62,21 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
   kopiować komponentu, SVG ani omijać publicznego entry pointu. Brakującą rolę,
   wariant lub asset zgłoś jako `gap`.
 
+### Kontrolki formularzowe Angulara
+
+- Dla każdej kontrolki formularzowej Angulara preferuj
+  `VoteyFormControlApplyDirective`. Stosuj wspólny input `control` i odziedziczony
+  stan formularza jako domyślny kontrakt.
+- Wiąż natywną kontrolkę lub Angular Material z odziedziczonym `formControl`
+  przez `[formControl]`. Nie dodawaj subskrypcji ani hooków synchronizujących do
+  dyrektywy bazowej.
+- Użyj innego modelu integracji tylko wtedy, gdy ograniczenie platformy lub
+  kontrakt komponentu uniemożliwia to wiązanie. Wyjątkiem jest
+  `VoteyFilePickerComponent`: przeglądarka blokuje programowe ustawienie wartości
+  natywnego `input[type=file]`, więc komponent utrzymuje lokalną synchronizację.
+- Każdy wyjątek udokumentuj w kodzie lub dokumentacji komponentu, ogranicz go do
+  tego komponentu i przetestuj programową zmianę wartości oraz stan `disabled`.
+
 ## Codzienny workflow
 
 1. Dla Figmy odbierz zweryfikowany handoff ze skilla `figma`: target, struktura,
@@ -107,6 +122,10 @@ return-to: references/<plik>.md
   potwierdzonych w handoffie.
 
 ## Historia zmian
+
+- 1.5.1 — Dodano preferowany kontrakt `VoteyFormControlApplyDirective` dla
+  Angularowych kontrolek formularzowych oraz ograniczony wyjątek dla natywnego
+  inputu pliku.
 
 - 1.5.0 — Dodano referencję synchronizacji tokenów Figma Variables: źródło URL z
   manifestu, dwa eksporty JSON, walidację w pamięci bieżącego zadania oraz

@@ -13,18 +13,21 @@ async function loadAngularRuntime() {
     angularCore,
     { MatIconRegistry },
     { DomSanitizer },
+    { FormControl },
     voteyAngular,
   ] = await Promise.all([
     import("@angular/common"),
     import("@angular/core"),
     import("@angular/material/icon"),
     import("@angular/platform-browser"),
+    import("@angular/forms"),
     import("@pleodigital/design-system-votey/angular"),
   ]);
 
   return {
     DOCUMENT,
     DomSanitizer,
+    FormControl,
     MatIconRegistry,
     ...angularCore,
     ...voteyAngular,
@@ -203,8 +206,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.error, undefined);
   assert.equal(VoteyTextAreaComponent.ɵcmp.inputs.maxLength[0], "maxLength");
   assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.changed, "changed");
-  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.focused, "focused");
-  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.blurred, "blurred");
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.focused, undefined);
+  assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.blurred, undefined);
   assert.equal(VoteyTextAreaComponent.ɵcmp.outputs.keyDown, "keyDown");
   assert.equal(typeof VoteyTextComponent, "function");
   assert.deepEqual(VoteyTextComponent.ɵcmp.selectors, [["vt-text"]]);
@@ -340,37 +343,36 @@ test("menu emits enabled item selections and dismissal intents", async () => {
   dismissedSubscription.unsubscribe();
 });
 
-test("checkbox synchronizes model, forms callbacks and changed output", async () => {
-  const { Injector, runInInjectionContext, VoteyCheckboxComponent } =
-    await loadAngularRuntime();
+test("checkbox applies a passed form control and emits changed output", async () => {
+  const {
+    FormControl,
+    Injector,
+    runInInjectionContext,
+    VoteyCheckboxComponent,
+  } = await loadAngularRuntime();
   const checkbox = runInInjectionContext(
     Injector.create({ providers: [] }),
     () => new VoteyCheckboxComponent(),
   );
-  const formValues = [];
   const changedValues = [];
   const subscription = checkbox.changed.subscribe((value) =>
     changedValues.push(value),
   );
+  const control = new FormControl(true, { nonNullable: true });
 
-  checkbox.registerOnChange((value) => formValues.push(value));
-  checkbox.writeValue(true);
+  checkbox.control = control;
 
-  assert.equal(checkbox.checked(), true);
+  assert.equal(checkbox.formControl, control);
+  assert.equal(checkbox.formControl.value, true);
 
-  checkbox.indeterminate.set(true);
-  checkbox.handleChange({
-    checked: false,
-    source: { indeterminate: false },
-  });
+  control.setValue(false);
+  checkbox.handleChange({ checked: false });
 
-  assert.equal(checkbox.checked(), false);
-  assert.equal(checkbox.indeterminate(), false);
-  assert.deepEqual(formValues, [false]);
+  assert.equal(checkbox.formControl.value, false);
   assert.deepEqual(changedValues, [false]);
 
-  checkbox.setDisabledState(true);
-  assert.equal(checkbox.effectiveDisabled(), true);
+  checkbox.disable = true;
+  assert.equal(checkbox.formControl.disabled, true);
 
   subscription.unsubscribe();
 });

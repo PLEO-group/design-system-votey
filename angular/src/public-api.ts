@@ -44,8 +44,13 @@ export type {
   VoteyButtonType,
   VoteyButtonVariant,
 } from "./lib/button/votey-button.component";
+export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
+export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
+export { VoteyFilePickerComponent } from "./lib/file-picker/votey-file-picker.component";
+export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
+export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyChipComponent } from "./lib/chip/votey-chip.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
 export { VoteyRadioOptionContentDirective } from "./lib/radio-button/votey-radio-option-content.directive";
@@ -53,6 +58,7 @@ export type {
   VoteyRadioButtonLabelPosition,
   VtRadioOption,
 } from "./lib/radio-button/votey-radio-button.component";
+export { VoteyTextAreaComponent } from "./lib/textarea/votey-text-area.component";
 export {
   VoteyTextColors,
   VoteyTextComponent,
@@ -62,3 +68,15 @@ export type {
   VoteyTextColor,
   VoteyTextVariant,
 } from "./lib/text/votey-text.component";
+export {
+  VoteyInputComponent,
+  VoteyInputModes,
+  VoteyInputTypeNames,
+  VoteyInputTypes,
+  VoteyInputVariants,
+} from "./lib/input/votey-input.component";
+export type {
+  VoteyInputMode,
+  VoteyInputType,
+  VoteyInputVariant,
+} from "./lib/input/votey-input.component";

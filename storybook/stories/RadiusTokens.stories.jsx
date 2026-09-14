@@ -1,21 +1,29 @@
 import React from 'react';
 import {StoryPageHeader} from '../components/StoryPageHeader';
+import semanticRadiusTokens from '../../tokens/radius/semantic/Default.json';
 import './RadiusTokens.stories.scss';
 
 const coreTokens = ['3', '6', '8', '10', '12', '16', '20', '24', '30', 'pill'];
 
-const semanticTokens = [
-    ['button', 'Button'],
-    ['input', 'Input'],
-    ['control', 'Control'],
-    ['badge', 'Badge'],
-    ['card', 'Card'],
-    ['card-s', 'Card small'],
-    ['modal', 'Modal'],
-    ['tooltip', 'Tooltip'],
-    ['table-row', 'Table row'],
-    ['avatar', 'Avatar'],
-];
+const semanticRadiusLabels = {
+    button: 'Button',
+    input: 'Input',
+    control: 'Control',
+    badge: 'Badge',
+    card: 'Card',
+    'card-s': 'Card small',
+    'card-m': 'Card medium',
+    modal: 'Modal',
+    tooltip: 'Tooltip',
+    'table-row': 'Table row',
+    avatar: 'Avatar',
+    'icon-tile': 'Icon tile',
+};
+
+const semanticTokens = Object.keys(semanticRadiusTokens.radius).map((token) => [
+    token,
+    semanticRadiusLabels[token] || token,
+]);
 
 function readToken(name) {
     return getComputedStyle(document.body).getPropertyValue(name).trim() || '—';

@@ -1,0 +1,7 @@
+@if (visibleErrors().length > 0) {
+  <div class="form-error" role="alert">
+    @for (error of visibleErrors(); track error) {
+      <vt-text variant="caption-s" color="error" [content]="error | vtTranslate" />
+    }
+  </div>
+}

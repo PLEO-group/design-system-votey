@@ -1,17 +1,22 @@
 <mat-checkbox
   [class.checkbox-error]="error()"
-  [checked]="checked()"
-  [disabled]="effectiveDisabled()"
+  disableRipple
+  [formControl]="formControl"
+  [disabled]="disabled() || formControl.disabled"
   [indeterminate]="indeterminate()"
   [required]="required()"
   [labelPosition]="labelPosition()"
   [id]="id()"
   [name]="name()"
   [value]="value()"
-  [disableRipple]="true"
+  [style.--votey-checkbox-checkmark-url]="checkmarkMaskUrl"
   (change)="handleChange($event)"
   (indeterminateChange)="indeterminate.set($event)"
-  (focusout)="markAsTouched()"
 >
   <ng-content>{{ label() | vtTranslate }}</ng-content>
 </mat-checkbox>
+
+<vt-form-error
+  [errors]="errorKeys"
+  [ignoredErrors]="ignoredErrors()"
+/>

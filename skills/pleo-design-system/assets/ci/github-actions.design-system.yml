@@ -1,0 +1,33 @@
+name: design-system-contract
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: node tools/pleo-design-system/validate-design-system.mjs --manifest design-system.manifest.json
+      - run: node tools/pleo-design-system/validate-company-standard-contracts.mjs --registry tools/pleo-design-system/references/company-standard-contracts.json
+      - run: node tools/pleo-design-system/generate-manifest-types.mjs --schema tools/pleo-design-system/references/company-standard-contracts.schema.json --output tools/pleo-design-system/references/company-standard-contracts.generated.ts --check
+      - run: node tools/pleo-design-system/validate-design-system-skill.mjs --project . --manifest design-system.manifest.json --contracts tools/pleo-design-system/references/company-standard-contracts.json
+      - run: node tools/pleo-design-system/generate-manifest-types.mjs --schema schemas/design-system.schema.json --output src/types/design-system-manifest.generated.ts --check
+      - run: node tools/pleo-design-system/generate-manifest-types.mjs --schema schemas/design-system-consumer.schema.json --validate-only
+      - run: node tools/pleo-design-system/verify-responsive-config.mjs --project . --manifest design-system.manifest.json
+      - run: node tools/pleo-design-system/validate-repository-boundary.mjs --project . --manifest design-system.manifest.json
+      - run: npm run build:assets
+      - run: npm run check:assets
+      - run: npm run build
+      - run: npm test
+      - run: npm run build-storybook
+      - run: npm pack --dry-run
+      - name: Verify tracked generated artifacts
+        run: git diff --exit-code

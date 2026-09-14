@@ -1,0 +1,113 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "./responsive-config.generated" as config;
+
+@function responsive-token-size($sizes, $breakpoint) {
+  $size: map.get($sizes, $breakpoint);
+  @if $size != null {
+    @return $size;
+  }
+
+  $fallback: map.get(config.$ds-implicit-breakpoint-fallbacks, $breakpoint);
+  @if $fallback != null {
+    $size: map.get($sizes, $fallback);
+  }
+
+  @if $size == null {
+    @error "Missing responsive token size for breakpoint #{$breakpoint}.";
+  }
+  @return $size;
+}
+
+@function explicit-responsive-breakpoints($sizes) {
+  $result: ();
+  @each $breakpoint in config.$ds-breakpoint-order {
+    @if map.has-key($sizes, $breakpoint) {
+      $result: list.append($result, $breakpoint);
+    }
+  }
+  @if list.length($result) < 2 {
+    @error "A responsive token requires at least two explicit breakpoint values.";
+  }
+  @return $result;
+}
+
+@function device-for-breakpoint($breakpoint) {
+  @each $device, $reference-breakpoint in config.$ds-device-breakpoint-map {
+    @if $reference-breakpoint == $breakpoint {
+      @return $device;
+    }
+  }
+
+  $fallback: map.get(config.$ds-implicit-breakpoint-fallbacks, $breakpoint);
+  @if $fallback != null {
+    @return device-for-breakpoint($fallback);
+  }
+  @error "Breakpoint #{$breakpoint} is not assigned to a device type.";
+}
+
+@function scaled-responsive-token-size($size, $breakpoint, $active-device) {
+  $source-device: device-for-breakpoint($breakpoint);
+  $source-multiplier: map.get(config.$ds-device-multipliers, $source-device);
+  $active-multiplier: map.get(config.$ds-device-multipliers, $active-device);
+  @if $source-multiplier == null or $active-multiplier == null {
+    @error "Missing responsive multiplier for #{$source-device} or #{$active-device}.";
+  }
+  @return math.div($size, $source-multiplier) * $active-multiplier;
+}
+
+// Emit one CSS custom property whose value changes fluidly between each pair
+// of explicitly defined breakpoints. Use numeric reference-pixel token values.
+@mixin responsive-size-token($name, $active-device, $sizes) {
+  $token-breakpoints: explicit-responsive-breakpoints($sizes);
+  $first-breakpoint: list.nth($token-breakpoints, 1);
+  $last-breakpoint: list.nth($token-breakpoints, list.length($token-breakpoints));
+  $first-width: map.get(config.$ds-breakpoints, $first-breakpoint);
+  $last-width: map.get(config.$ds-breakpoints, $last-breakpoint);
+  $first-size: responsive-token-size($sizes, $first-breakpoint);
+  $last-size: responsive-token-size($sizes, $last-breakpoint);
+
+  @media (max-width: #{$first-width}px) {
+    --#{$name}: #{$first-size}px;
+  }
+
+  @for $index from 1 through list.length($token-breakpoints) - 1 {
+    $min-breakpoint: list.nth($token-breakpoints, $index);
+    $max-breakpoint: list.nth($token-breakpoints, $index + 1);
+    $min-width: map.get(config.$ds-breakpoints, $min-breakpoint);
+    $max-width: map.get(config.$ds-breakpoints, $max-breakpoint);
+    $min-size: responsive-token-size($sizes, $min-breakpoint);
+    $max-size: responsive-token-size($sizes, $max-breakpoint);
+
+    @if $index != 1 {
+      $min-size: scaled-responsive-token-size($min-size, $min-breakpoint, $active-device);
+    }
+    $max-size: scaled-responsive-token-size($max-size, $max-breakpoint, $active-device);
+
+    @media (min-width: #{$min-width}px) and (max-width: #{$max-width - 1}px) {
+      $slope: math.div($max-size - $min-size, $max-width - $min-width);
+      $intercept: ($min-size - $slope * $min-width) * 1px;
+      --#{$name}: calc(#{$slope * 100}vw + #{$intercept});
+    }
+  }
+
+  @media (min-width: #{$last-width}px) {
+    --#{$name}: #{$last-size}px;
+  }
+}
+
+@mixin responsive-size-token-contract($name, $sizes) {
+  @each $device in config.$ds-device-types {
+    body[data-device="#{$device}"] {
+      @include responsive-size-token($name, $device, $sizes);
+    }
+  }
+}
+
+// Example integration for a generated semantic token map:
+// @include responsive-size-token-contract("space-card-padding", (
+//   "mobile": 16,
+//   "tablet": 16,
+//   "desktop": 32,
+// ));

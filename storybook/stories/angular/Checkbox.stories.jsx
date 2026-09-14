@@ -4,7 +4,6 @@ import { fn } from "@storybook/test";
 import "./Checkbox.stories.scss";
 
 const checkboxInputs = [
-  "checked",
   "indeterminate",
   "disabled",
   "required",
@@ -14,9 +13,13 @@ const checkboxInputs = [
   "id",
   "name",
   "value",
+  "ignoredErrors",
 ];
 
-function setCheckboxInputs(componentRef, props) {
+function setCheckboxInputs(componentRef, control, props) {
+  control.setValue(props.checked, { emitEvent: false });
+  componentRef.setInput("control", control);
+
   for (const inputName of checkboxInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
@@ -36,10 +39,12 @@ function AngularCheckboxPreview(props) {
       const [
         { createComponent },
         { createApplication },
+        { FormControl },
         { VoteyCheckboxComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
+        import("@angular/forms"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
 
@@ -64,10 +69,10 @@ function AngularCheckboxPreview(props) {
       const changedSubscription = componentRef.instance.changed.subscribe(
         (checked) => latestPropsRef.current.onChanged(checked)
       );
-
+      const control = new FormControl(false, { nonNullable: true });
       applicationRef.attachView(componentRef.hostView);
-      angularRuntimeRef.current = { applicationRef, componentRef };
-      setCheckboxInputs(componentRef, latestPropsRef.current);
+      angularRuntimeRef.current = { applicationRef, componentRef, control };
+      setCheckboxInputs(componentRef, control, latestPropsRef.current);
       applicationRef.tick();
 
       angularRuntimeRef.current.destroy = () => {
@@ -94,7 +99,11 @@ function AngularCheckboxPreview(props) {
       return;
     }
 
-    setCheckboxInputs(angularRuntime.componentRef, props);
+    setCheckboxInputs(
+      angularRuntime.componentRef,
+      angularRuntime.control,
+      props
+    );
     angularRuntime.applicationRef.tick();
   }, [props]);
 
@@ -132,6 +141,7 @@ export default {
     id: "storybook-checkbox",
     name: "storybook-checkbox",
     value: "accepted",
+    ignoredErrors: [],
     onChanged: fn(),
   },
 };

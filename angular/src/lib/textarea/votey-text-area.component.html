@@ -1,0 +1,45 @@
+<div
+  class="text-area-wrapper"
+  [class.disabled]="disabled() || formControl.disabled"
+  [class.error]="hasError"
+  [class.filled]="(formControl.value ?? '').length > 0"
+>
+  @if (label()) {
+  <vt-text
+    variant="label"
+    color="secondary"
+    [content]="label() | vtTranslate"
+  />
+  }
+
+  <div class="field">
+    <textarea
+      class="control"
+      [placeholder]="placeholder()"
+      [formControl]="formControl"
+      [attr.disabled]="disabled() ? '' : null"
+      [required]="isRequired"
+      [spellcheck]="spellcheck()"
+      [attr.minlength]="minLength()"
+      [attr.maxlength]="maxLength()"
+      [attr.aria-label]="(label() | vtTranslate) || null"
+      [attr.aria-invalid]="hasError ? true : null"
+      [attr.data-cy]="dataCy() || null"
+      (input)="handleInput($event)"
+      (keydown)="handleKeyDown($event)"
+    ></textarea>
+  </div>
+
+  @if (helper()) {
+  <vt-text
+    variant="caption-s"
+    color="muted"
+    [content]="helper() | vtTranslate"
+  />
+  }
+
+  <vt-form-error
+    [errors]="errorKeys"
+    [ignoredErrors]="ignoredErrors()"
+  />
+</div>

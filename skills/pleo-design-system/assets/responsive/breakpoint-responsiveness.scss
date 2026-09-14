@@ -1,0 +1,12 @@
+@use "sass:map";
+@use "./responsive-config.generated" as config;
+
+@mixin breakpoint($name) {
+  @if not map.has-key(config.$ds-breakpoints, $name) {
+    @error "Unknown design-system breakpoint: #{$name}";
+  }
+
+  @media (min-width: #{map.get(config.$ds-breakpoints, $name)}px) {
+    @content;
+  }
+}

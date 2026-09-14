@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "designSystems": [
+    {
+      "package": "@pleodigital/design-system-votey",
+      "skill": "votey-design-system",
+      "frameworks": ["angular", "react"],
+      "aliases": [],
+      "status": "active",
+      "distribution": "SHARED"
+    },
+    {
+      "package": "@design-system/design-system",
+      "skill": "boxes-design-system",
+      "frameworks": ["angular"],
+      "aliases": [],
+      "status": "active",
+      "distribution": "SHARED"
+    }
+  ]
+}

@@ -74,6 +74,16 @@
     }
   },
   "font-size": {
+    "10": {
+      "value": 10,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
     "11": {
       "value": 11,
       "type": "number",
@@ -203,6 +213,36 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "33": {
+      "value": 33,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "37": {
+      "value": 37,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "42": {
+      "value": 42,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
     }
   },
   "line-height": {
@@ -246,6 +286,16 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "19": {
+      "value": 19,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
     "20": {
       "value": 20,
       "type": "number",
@@ -256,10 +306,30 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "21": {
+      "value": 21,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
     "22": {
       "value": 22,
       "type": "number",
       "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "23": {
+      "value": 23,
+      "type": "number",
+      "": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -326,10 +396,40 @@
         "com.figma.hiddenFromPublishing": false
       }
     },
+    "43": {
+      "value": 43,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
     "45": {
       "value": 45,
       "type": "number",
       "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "50": {
+      "value": 50,
+      "type": "number",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "57": {
+      "value": 57,
+      "type": "number",
+      "": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],

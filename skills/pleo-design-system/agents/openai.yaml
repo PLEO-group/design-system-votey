@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pleo Design System"
+  short_description: "Audytuj i wdrażaj firmowe design systemy"
+  default_prompt: "Użyj $pleo-design-system, wybierz właściwy tryb i przeprowadź audyt albo zaplanuj wdrożenie design systemu."

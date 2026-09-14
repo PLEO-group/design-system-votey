@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.14.2
+version: 1.15.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -295,6 +295,16 @@ W zmienianym i nowym kodzie TypeScript zawsze dodawaj jawne typy dla:
 - lokalnych zmiennych przechowujących strumienie albo wynik selectorów.
 
 Nie zostawiaj typu do samej inferencji, jeśli symbol jest częścią klasy, serwisu, effectu, komponentu, selectora, factory kolumn albo helpera używanego poza lokalnym callbackiem.
+
+### [3.2a] Błędy typów w API frameworka i bibliotek
+
+Gdy TypeScript zgłasza błąd dla wywołania API frameworka lub biblioteki, nie usuwaj ani nie podmieniaj argumentu, opcji albo query tylko po to, by błąd zniknął. Najpierw:
+
+1. odczytaj publiczną deklarację z faktycznie zainstalowanej wersji paczki i ustal właściwy overload, generyki oraz obsługiwane opcje;
+2. potwierdź, jaki obiekt i zachowanie runtime zapewnia każde rozważane wywołanie;
+3. zachowaj dotychczasową semantykę albo nazwij użytkownikowi świadomą zmianę zachowania przed jej wprowadzeniem.
+
+Dotyczy to w szczególności query, referencji do elementów, callbacków, eventów i opcji API. Błąd typów jest sygnałem do sprawdzenia kontraktu, nie zgodą na uproszczenie go kosztem działania widoku.
 
 ### [3.3] Modale
 

@@ -1,0 +1,13 @@
+{
+  "color": {
+    "semantic": {
+      "bg": {
+        "page": { "$type": "color", "$value": "{color.core.neutral.900}" }
+      },
+      "text": {
+        "primary": { "$type": "color", "$value": "{color.core.neutral.0}" },
+        "action": { "$type": "color", "$value": "{color.core.brand.500}" }
+      }
+    }
+  }
+}

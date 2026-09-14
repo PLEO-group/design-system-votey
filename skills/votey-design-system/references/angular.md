@@ -4,6 +4,10 @@ Wczytaj tę referencję dla `design-system-votey`, `wyborek-crm` albo innego
 potwierdzonego konsumenta Angular używającego `@pleodigital/design-system-votey`.
 Nie stosuj jej do BoxEs ani Reactowego `votey-user-app`.
 
+Przed implementacją odczytaj też `design-system-contract.md`; dla tokenów, theme,
+assetów, responsywności i smoke testu użyj odpowiednio `tokens.md`, `theming.md`,
+`svg-assets.md`, `responsiveness.md` i `consumers.md`.
+
 ## Źródła prawdy
 
 | Zakres | Źródło |

@@ -12,7 +12,7 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { NgTemplateOutlet } from "@angular/common";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import {
   MatRadioButton,
   type MatRadioChange,
@@ -25,6 +25,8 @@ import {
   injectVoteyTranslator,
   type VoteyTranslator,
 } from "../translation/votey-translation";
+import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
+import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyRadioOptionContentDirective } from "./votey-radio-option-content.directive";
 
 export type VoteyRadioButtonLabelPosition = "before" | "after";
@@ -53,11 +55,12 @@ export interface VtRadioOption<T = unknown> {
     MatTooltip,
     NgTemplateOutlet,
     ReactiveFormsModule,
+    VoteyFormErrorComponent,
     VoteyTextComponent,
     VoteyTranslatePipe,
   ],
 })
-export class VoteyRadioButtonComponent {
+export class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<unknown> {
   private readonly translator: VoteyTranslator = injectVoteyTranslator();
   private readonly optionContents: Signal<
     readonly VoteyRadioOptionContentDirective[]
@@ -67,8 +70,6 @@ export class VoteyRadioButtonComponent {
 
   public readonly options: InputSignal<readonly VtRadioOption[]> =
     input.required<readonly VtRadioOption[]>();
-  public readonly control: InputSignal<FormControl> =
-    input.required<FormControl>();
 
   public readonly groupLabelPosition: InputSignal<VoteyRadioButtonLabelPosition> =
     input<VoteyRadioButtonLabelPosition>("after");
@@ -77,6 +78,7 @@ export class VoteyRadioButtonComponent {
   public readonly groupClass: InputSignal<string> = input<string>("");
   public readonly tooltip: InputSignal<string> = input<string>("");
   public readonly disabledNote: InputSignal<string> = input<string>("");
+  public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
   public readonly change: OutputEmitterRef<MatRadioChange> =
     output<MatRadioChange>();
@@ -101,6 +103,12 @@ export class VoteyRadioButtonComponent {
 
     return templates;
   });
+
+  protected get errorKeys(): string[] {
+    return this.formControl.invalid && this.formControl.touched
+      ? Object.keys(this.formControl.errors ?? {})
+      : [];
+  }
 
   protected handleChange(event: MatRadioChange): void {
     this.change.emit(event);

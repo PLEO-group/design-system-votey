@@ -1,0 +1,47 @@
+{
+  "color": {
+    "core": {
+      "neutral": {
+        "0": { "$type": "color", "$value": "#ffffff" },
+        "900": { "$type": "color", "$value": "#111827" }
+      },
+      "brand": {
+        "500": { "$type": "color", "$value": "#4f46e5" }
+      }
+    }
+  },
+  "spacing": {
+    "core": {
+      "4": { "$type": "dimension", "$value": "4px" },
+      "8": { "$type": "dimension", "$value": "8px" },
+      "16": { "$type": "dimension", "$value": "16px" }
+    }
+  },
+  "typography": {
+    "core": {
+      "font-family": {
+        "sans": { "$type": "fontFamily", "$value": "Inter" }
+      },
+      "font-size": {
+        "sm": { "$type": "dimension", "$value": "14px" },
+        "md": { "$type": "dimension", "$value": "16px" }
+      },
+      "font-weight": {
+        "regular": { "$type": "number", "$value": 400 },
+        "semibold": { "$type": "number", "$value": 600 }
+      }
+    }
+  },
+  "radius": {
+    "core": {
+      "sm": { "$type": "dimension", "$value": "4px" },
+      "md": { "$type": "dimension", "$value": "8px" }
+    }
+  },
+  "opacity": {
+    "core": {
+      "disabled": { "$type": "number", "$value": 0.48 },
+      "overlay": { "$type": "number", "$value": 0.72 }
+    }
+  }
+}

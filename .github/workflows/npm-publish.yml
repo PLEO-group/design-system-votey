@@ -2,16 +2,17 @@ name: 📦 NPM Publish on Merge
 
 on:
   push:
-    # Wyzwalaj TYLKO po zmergowaniu do gałęzi main
+    # Release uruchamia się po każdym pushu do main. Warunek joba poniżej
+    # pomija commit utworzony przez ten workflow, aby uniknąć pętli.
     branches:
       - main
   workflow_dispatch: # Ręczne uruchamianie z zakładki Actions w GitHub
 
 jobs:
   publish:
-    # Uruchom tylko wtedy, gdy w commitach, które złożyły się na merge,
-    # pojawiła się fraza 'chore(tokens):' (zwykle używana w auto-PR) lub 'publish'
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'chore(tokens):') || contains(github.event.head_commit.message, 'publish')
+    # Nie uruchamiaj ponownie workflow dla commita wersji utworzonego poniżej.
+    # Dzięki temu merge z dowolnym tytułem (np. "up") nadal uruchamia release.
+    if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'chore(release):')
 
     runs-on: ubuntu-latest
 
@@ -32,7 +33,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
 
       - name: 🔧 Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: ✅ Validate Token Sources
         run: npm run validate:tokens && npm run test:tokens
@@ -44,26 +45,26 @@ jobs:
         run: npm run build
 
       # 2. Zwiększenie wersji paczki (Automatyczne wersjonowanie)
-      # Używamy npm version patch, co zmieni 1.0.0 na 1.0.1
       - name: 📈 Increment Package Version
         run: npm version patch --no-git-tag-version
 
-      # 3. Konfiguracja Git dla commita (wymagane dla 'npm version')
+      # 3. Publikuj przed commitem wersji. Jeśli token jest niepoprawny,
+      # workflow zakończy się bez wypchnięcia kolejnego numeru wersji.
+      - name: 🚀 Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 4. Konfiguracja Git dla commita
       - name: ⚙️ Configure Git User
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # 4. Commit nowej wersji (np. 1.0.1) i wypchnięcie do 'main'
+      # 5. Commituj oba manifesty: npm version aktualizuje package.json
+      # oraz package-lock.json.
       - name: 💾 Commit new version
         run: |
-          git add package.json
+          git add package.json package-lock.json
           git commit -m "chore(release): new version $(node -p "require('./package.json').version")"
-          git push
-
-      # 5. Publikacja paczki
-      - name: 🚀 Publish to NPM
-        run: npm publish --access public # Zmień na --access restricted dla paczek prywatnych
-        env:
-          # Token dostępu do NPM (ustawiony w GitHub Secrets)
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          git push origin HEAD:main

@@ -1,6 +1,6 @@
 # OpenAI / Codex — Provider Reference
 
-- `doc_date`: `2026-07-22`
+- `doc_date`: `2026-08-24`
 - `stale_after_days`: `14`
 - `source_scope`: oficjalne dokumenty OpenAI
 
@@ -52,9 +52,9 @@ To mapowanie jest inferencją opartą o oficjalne pozycjonowanie capability i ce
 
 | Model            | Input $/1M tok. | Output $/1M tok. | Reasoning w kosztorysie |
 | ---------------- | --------------- | ---------------- | ----------------------- |
-| gpt-5.6-sol      | $5.00           | $30.00           | stawka output           |
-| gpt-5.6-terra    | $2.50           | $15.00           | stawka output           |
-| gpt-5.6-luna     | $1.00           | $6.00            | stawka output           |
+| gpt-5.6-sol      | $4.00           | $20.00           | stawka output           |
+| gpt-5.6-terra    | $2.00           | $12.00           | stawka output           |
+| gpt-5.6-luna     | $0.20           | $1.20            | stawka output           |
 
 Reasoning tokens są częścią płatnego outputu. Przy rozbiciu kosztu na reasoning i widoczny output używaj rozłącznych estymacji, żeby nie naliczyć outputu dwukrotnie. Pro mode agreguje dodatkowe użycie i rozlicza je standardowymi stawkami wybranego modelu.
 

@@ -1,14 +1,13 @@
-# Angular Boxes / Design System Implementation From Figma
+# Angular Implementation From Figma
 
-Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w `angular-design-system`, projekcie Boxes albo konsumencie `@design-system/design-system`.
-Nie stosuj wartości, tokenów ani ścieżek z tego pliku w `design-system-votey` ani `wyborek-crm`.
-Nie używaj tej referencji do React/Next.
+Wczytuj ten plik po `references/mcp-guard.md`, gdy Figma ma prowadzić do zmian w projekcie Angular.
+Nie używaj tej referencji do React/Next ani do projektu, który używa Design Systemu bez Angulara.
 
 ## Pipeline
 
 1. Odczytaj dokładny node wskazany przez użytkownika, a nie cały ekran, jeśli `node-id` wskazuje konkretny element.
 2. Zbierz potwierdzone wartości: rozmiary, paddingi, gapy, typography, kolory, border, radius, auto-layout i pozycję dzieci względem parenta.
-3. Zmapuj wartości na istniejący Angular/SCSS/Design System, nie na Tailwind ani Reactowe komponenty.
+3. Zmapuj wartości na istniejące prymitywy Angulara, style projektu i Design System, jeśli ten projekt go używa; nie przenoś utility ani komponentów z innego stacku.
 4. Sprawdź, czy widok ma istniejący komponent DS albo lokalny komponent projektowy, który powinien być rozszerzony zamiast odtwarzany ręcznie.
 5. Przed edycją kodu wypisz kontrakt layoutu i interakcji: kontener, dzieci, display model, szerokości/wysokości, overflow, stany, trigger kliknięć i payload.
 6. Po edycji uruchom walidację runtime przez `chrome-debug` albo uczciwie opisz, że dostępny był tylko fallback.

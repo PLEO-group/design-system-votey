@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from "react";
+import desktopTypographyTokens from "../../../tokens/type/semantic/Desktop 1920.json";
 import "./Text.stories.scss";
+
+const textVariants = Object.keys(desktopTypographyTokens);
 
 const textInputs = [
   "content",
@@ -105,22 +108,7 @@ export default {
   },
   argTypes: {
     variant: {
-      options: [
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "body-l",
-        "body",
-        "body-s",
-        "caption",
-        "caption-s",
-        "micro",
-        "button",
-        "table-header",
-        "label",
-      ],
+      options: textVariants,
       control: { type: "select" },
     },
     color: {

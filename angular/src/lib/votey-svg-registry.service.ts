@@ -22,6 +22,17 @@ export const VOTEY_SVG_REGISTRY_CONFIG =
 
 const DEFAULT_ASSET_BASE_URL = "assets/votey";
 
+export function getVoteySvgAssetUrl(
+  assetPath: string,
+  config: VoteySvgRegistryConfig = {}
+): string {
+  const assetBaseUrl: string = (
+    config.assetBaseUrl ?? DEFAULT_ASSET_BASE_URL
+  ).replace(/\/+$/, "");
+
+  return assetBaseUrl ? `${assetBaseUrl}/${assetPath}` : assetPath;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -35,17 +46,11 @@ export class VoteySvgRegistryService {
   public register(): void {
     if (this.registered) return;
 
-    const assetBaseUrl: string = (
-      this.config.assetBaseUrl ?? DEFAULT_ASSET_BASE_URL
-    ).replace(/\/+$/, "");
-
     for (const asset of [
       ...VoteyIconRegistryEntries,
       ...VoteyIllustrationRegistryEntries,
     ]) {
-      const assetUrl: string = assetBaseUrl
-        ? `${assetBaseUrl}/${asset.path}`
-        : asset.path;
+      const assetUrl: string = getVoteySvgAssetUrl(asset.path, this.config);
 
       this.matIconRegistry.addSvgIcon(
         asset.name,

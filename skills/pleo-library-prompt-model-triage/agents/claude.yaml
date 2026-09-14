@@ -5,7 +5,7 @@ interface:
 
 provider:
   name: "claude"
-  catalog_verified_on: "2026-07-22"
+  catalog_verified_on: "2026-08-24"
   reference: "references/claude.md"
   default_tier: "balanced"
   default_model: "claude-sonnet-5"
@@ -13,19 +13,19 @@ provider:
   reasoning_levels: ["low", "medium", "high", "xhigh", "max"]
   model_status:
     claude-fable-5: "ga"
-    claude-opus-4-8: "ga"
+    claude-opus-5: "ga"
     claude-sonnet-5: "ga"
     claude-haiku-4-5: "ga"
   aliases: {}
   notes:
-    - "Fable 5, Opus 4.8 i Sonnet 5 wspierają xhigh i max."
+    - "Fable 5, Opus 5 i Sonnet 5 wspierają xhigh i max."
     - "Haiku 4.5 nie ma udokumentowanego parametru effort."
     - "Thinking tokens są rozliczane stawką output."
   tier_map:
     cheap: ["claude-haiku-4-5"]
     balanced: ["claude-sonnet-5"]
-    deep: ["claude-sonnet-5", "claude-opus-4-8"]
-    max: ["claude-fable-5", "claude-opus-4-8"]
+    deep: ["claude-sonnet-5", "claude-opus-5"]
+    max: ["claude-fable-5", "claude-opus-5"]
   pricing_metadata:
     currency: "USD"
     unit: "per_1m_tokens"
@@ -35,7 +35,7 @@ provider:
       input_per_1m: 10.00
       output_per_1m: 50.00
       reasoning_per_1m: 50.00
-    claude-opus-4-8:
+    claude-opus-5:
       input_per_1m: 5.00
       output_per_1m: 25.00
       reasoning_per_1m: 25.00
@@ -43,9 +43,6 @@ provider:
       input_per_1m: 2.00
       output_per_1m: 10.00
       reasoning_per_1m: 10.00
-      promotional_through: "2026-08-31"
-      standard_input_after_promotion: 3.00
-      standard_output_after_promotion: 15.00
     claude-haiku-4-5:
       input_per_1m: 1.00
       output_per_1m: 5.00

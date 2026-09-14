@@ -1,4 +1,4 @@
 interface:
   display_name: "Pleo Guard Wersji Skilli"
-  short_description: "Sprawdza skill i synchronizuje manifest wersji"
-  default_prompt: "Użyj pleo-library-skill-version-guard jako target-only check skilli użytych w aktualnym procesie. Nie raportuj tego checku w telemetryce. Przed pełnym syncem sprawdź, czy backendowy manifest projektu jest z dzisiaj; synchronizuj manifest tylko gdy nie jest świeży albo liczba skilli się nie zgadza."
+  short_description: "Sprawdza i bezpiecznie aktualizuje jeden skill"
+  default_prompt: "Użyj pleo-library-skill-version-guard do target-only checku wskazanego skilla i lekkiego checku statusu manifestu. Pełny sync wykonaj tylko dla nieświeżego manifestu, zmiany liczby skilli albo po aktualizacji targetu. Wykryte outdated skille z czystymi katalogami Git zaktualizuj automatycznie bez pytania. Nie raportuj tego checku w telemetryce."

@@ -15,15 +15,24 @@ export const VoteyTextVariants = [
   "h3",
   "h4",
   "h5",
+  "display-l",
+  "body-2xl",
+  "body-xl",
   "body-l",
+  "body-l-semibold",
+  "body-l-bold",
   "body",
   "body-s",
   "caption",
+  "caption-extrabold",
+  "caption-light",
   "caption-s",
   "micro",
   "button",
+  "button-small",
   "table-header",
   "label",
+  "field",
 ] as const;
 
 export const VoteyTextColors = [
@@ -32,6 +41,7 @@ export const VoteyTextColors = [
   "muted",
   "inverse",
   "accent",
+  "error",
   "on-sidebar",
 ] as const;
 

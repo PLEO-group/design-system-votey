@@ -1,0 +1,30 @@
+@mixin device($device) {
+  :host-context([data-device="#{$device}"]) & {
+    @content;
+  }
+
+  :where(html, body)[data-device="#{$device}"] & {
+    @content;
+  }
+}
+
+@mixin orientation($orientation) {
+  :host-context([data-orientation="#{$orientation}"]) & {
+    @content;
+  }
+
+  :where(html, body)[data-orientation="#{$orientation}"] & {
+    @content;
+  }
+}
+
+@mixin theme($theme) {
+  :host-context(body[data-theme="#{$theme}"]) & {
+    @content;
+  }
+
+  body[data-theme="#{$theme}"] & {
+    @content;
+  }
+}
+

@@ -5,6 +5,10 @@ Wczytaj tę referencję przy tworzeniu, migracji albo review komponentu w
 zamiast niej `angular.md`; przy migracji z CRM możesz użyć obu zgodnie z routingiem
 w `SKILL.md`.
 
+To szczegółowe uzupełnienie `components.md`: najpierw potwierdź publiczny API,
+ownership wrappera i wymagania preview w referencji wspólnej, a następnie zastosuj
+poniższy kontrakt źródłowego komponentu Angular.
+
 ## Spis treści
 
 - Granice komponentu

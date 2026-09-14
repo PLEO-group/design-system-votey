@@ -1,45 +1,33 @@
 ---
 name: figma
 description: >
-  Kompletny pipeline pracy z Figmą: sprawdzenie połączenia MCP, odczyt makiet pixel-perfect,
-  projektowy routing implementacji Angular/SCSS i React/Next/Tailwind dla Boxes i Votey,
-  praca z macierzą wariantów komponentów i orkiestracja tworzenia wpisów CMS na podstawie Figmy.
+  Pipeline odczytu makiet Figma do pixel-perfect implementacji frontendowej,
+  w tym sprawdzenie połączenia MCP i praca z macierzą wariantów komponentów.
   Używaj ZAWSZE gdy zaczynasz pracę nad nowym modułem lub komponentem i masz linki do Figmy,
-  przed napisaniem jakichkolwiek klas CSS/Tailwind, przy pracy z wariantami komponentów
-  (color/size/state) lub gdy chcesz stworzyć wpis CMS na podstawie makiety.
+  przed napisaniem jakiegokolwiek kodu UI albo stylów, przy pracy z wariantami komponentów
+  (color/size/state).
   Triggery: link do Figmy, pixel-perfect, "odczytaj z Figmy", "zmień hover", "dodaj wariant",
-  "stwórz wpis na podstawie speca", "component set", "macierz wariantów", figma-to-code,
-  get_design_context, get_screenshot, get_metadata. Pomiń przy zmianach niezwiązanych z Figmą,
-  gdy użytkownik nie oczekuje zgodności z makietą, odczytu wariantów ani treści z Figmy.
-version: 1.16.0
+  "component set", "macierz wariantów", figma-to-code,
+  get_design_context, get_screenshot, get_metadata.
+version: 1.25.2
 author: s.stawowy@pleodigital.com
 scope: SHARED
 category: Frontend
-tags: [FE]
+tags:
+  - FE
 ---
 
 # Figma
 
-Skill obejmuje cały pipeline pracy z Figmą: od sprawdzenia połączenia, przez odczyt makiet, po tworzenie wpisów CMS.
-
-# CHANGELOG
-# 1.16.0 — Rozdzielono reference’y implementacyjne dla Boxes, Angular Votey i React Votey PWA; ujednolicono zakres odczytu, baseline discovery i walidację.
-# 1.15.0 — Dodano obowiązkowy handoff do grid contractu dla sekcji implementowanych z Figmy.
-# 1.14.0 — Dodano route placement, macierz kolekcji, szybki follow-up, bounded tuning i preflight credentiali Sanity.
-# 1.13.0 — Dodano topologię i allowlistę mutacji CMS oraz ledger sekwencyjnej akceptacji breakpointów runtime.
-# 1.12.0 — Dodano target scope verification i follow-up breakpoint diff dla iteracyjnych poprawek layoutu z Figmy.
-# 1.11.0 — Dodano Sanity workflow dla content-to-CMS: target preflight, Unicode-safe mutation i read-after-write audit.
-# 1.10.0 — Dodano commit-aware mutacje CMS, deterministyczny fallback JSONL dla bridge'a Codex oraz freshness contract runtime.
-# 1.9.0 — Runtime pixel-perfect loop wymaga pełnego preflightu chrome-debug: dev server reuse, route status i sandbox-aware Playwright CLI.
-# 1.8.0 — Dodano runtime pixel-perfect loop z chrome-debug, route contract i stabilnymi selektorami modułów.
-# 1.7.0 — Dodano obowiązkowy kontrakt struktury layoutu przed kodowaniem.
-# 1.6.0 — Dodano zbiorczy status odczytu Figmy i fallback dla częściowo niedostępnych danych.
-# 1.5.1 — Doprecyzowano Angular/Design System reference i obowiązek walidacji runtime dla implementacji UI z Figmy.
-# 1.5.0 — Dodano Angular/Design System reference i obowiązek walidacji runtime dla implementacji UI z Figmy.
-
+Skill obejmuje odczyt makiet Figma i wdrożenie zgodnego UI frontendowego. Nie obejmuje programowej edycji canvasu Figmy.
 ## Obowiązkowy pre-check: MCP Guard
 
 **Przed każdą operacją Figma** wczytaj i wykonaj `references/mcp-guard.md`. Nie pomijaj tego kroku nawet gdy URL Figmy jest oczywisty.
+Jeśli guard został już skutecznie wykonany w tej samej sesji i środowisko MCP się nie zmieniło, kolejne operacje Figma wymagają potwierdzenia aktywnego połączenia, nie powtarzania pełnego flow inicjalizacyjnego. Stosuj skrócony tryb opisany w `references/mcp-guard.md`.
+
+## Kiedy pominąć ten skill
+
+Pomiń `figma`, jeżeli zadanie frontendowe nie zawiera linku do Figmy, danych z Figmy, nodeId, screenshotu makiety ani wymagania odczytu / porównania z Figmą. Samo "dodaj komponent", "zmień komponent" albo "nowy moduł" bez makiety nie uruchamia MCP Guard; wtedy użyj właściwych skilli frontendowych, np. `styling-guide`, `engineering-rules` albo `forms`.
 
 ## Referencje — decision tree
 
@@ -49,33 +37,24 @@ Wczytaj **tylko** te referencje, które pasują do bieżącego zadania:
 Dowolna operacja Figma
   → ZAWSZE wczytaj references/mcp-guard.md (pre-check)
 
-Odczyt makiety → implementacja CSS/komponentu (pixel-perfect)
+Odczyt makiety → implementacja UI/komponentu (pixel-perfect)
   → Instrukcje są w tym SKILL.md (poniżej)
 
-Odczyt makiety → implementacja CSS/komponentu + runtime walidacja / pixel-perfect loop
+Odczyt makiety → implementacja UI/komponentu + runtime walidacja / pixel-perfect loop
   → Wczytaj references/runtime-pixel-perfect-loop.md po MCP Guardzie i przed edycją kodu
 
-Odczyt makiety → implementacja Angular / SCSS / Design System
-  → Najpierw rozpoznaj rodzinę projektu:
-    - angular-design-system / Boxes / @design-system/design-system
-      → Wczytaj references/angular-boxes-implementation.md po MCP Guardzie i przed edycją kodu
-    - design-system-votey / wyborek-crm / Angular + @pleodigital/design-system-votey
-      → Wczytaj references/angular-votey-implementation.md po MCP Guardzie i przed edycją kodu
-    - inny albo niejednoznaczny projekt Angular
-      → Odczytaj AGENTS.md i package.json; nie stosuj reference Boxes ani Votey na ślepo
+Odczyt makiety → implementacja w projekcie Angular
+  → Wczytaj references/angular-implementation.md po MCP Guardzie i przed edycją kodu
 
-Odczyt makiety → implementacja React / Next.js / Tailwind
-  → Najpierw rozpoznaj rodzinę projektu:
-    - votey-user-app / React lub Next.js + @pleodigital/design-system-votey
-      → Wczytaj references/react-votey-implementation.md po MCP Guardzie i przed edycją kodu
-    - inny albo niejednoznaczny projekt React
-      → Odczytaj AGENTS.md, package.json i konfigurację stylów; nie stosuj reference Votey PWA na ślepo
+Odczyt makiety → implementacja z użyciem Design Systemu w innym stacku
+  → Zostań przy neutralnych regułach z tego SKILL.md i wczytaj lokalny guide projektu / Design Systemu, jeśli istnieje;
+    nie ładuj references/angular-implementation.md bez potwierdzonego Angulara
 
 Komponent z macierzą wariantów (color × size × state)
   → Wczytaj references/component-variants.md
 
 Tworzenie albo aktualizacja wpisu CMS na podstawie Figmy
-  → Wczytaj references/content-to-cms.md
+  → Tylko wtedy wczytaj references/content-to-cms.md; nie wczytuj jej dla implementacji UI ani zwykłego odczytu makiety
 ```
 
 Nie ładuj wszystkich referencji naraz.
@@ -85,19 +64,24 @@ Nie ładuj wszystkich referencji naraz.
 ## Priorytet: najpierw Figma, potem kod
 
 Nigdy nie zgaduj wartości paddingów, marginów, gapów ani rozmiarów. Każda wartość musi pochodzić z makiety.
-Jeśli nie możesz odczytać danych — powiedz o tym użytkownikowi i poczekaj na instrukcje.
+Jeśli nie możesz odczytać danych krytycznych dla całego wymaganego zakresu albo krytycznych wartości zakresu, który masz implementować — powiedz o tym użytkownikowi i poczekaj na instrukcje. Możesz kontynuować implementację zakresów oznaczonych jako `verified`; zakresy `partial` i `blocked` pomiń albo nazwij fallbackiem, zgodnie z Krokiem 0.6.
 
-Po odczycie danych z Figmy rozpoznaj framework i rodzinę Design Systemu po ścieżce repo, `package.json`, importowanej paczce, konfiguracji stylów i `AGENTS.md`.
+### Korekta bez zmiany designu
 
-- Rozpoznany Boxes / `@design-system/design-system` → wczytaj tylko `references/angular-boxes-implementation.md`.
-- Rozpoznany Angular Votey / `@pleodigital/design-system-votey` → wczytaj tylko `references/angular-votey-implementation.md`.
-- Rozpoznany React/Next Votey PWA / `@pleodigital/design-system-votey` → wczytaj tylko `references/react-votey-implementation.md`.
-- Inny albo niejednoznaczny projekt Angular → nie wczytuj żadnego z tych dwóch reference; stosuj lokalne `AGENTS.md`, `package.json`, istniejący kod i publiczne API używanej biblioteki.
-- Inny albo niejednoznaczny projekt React → nie wczytuj reference Votey PWA; stosuj lokalne `AGENTS.md`, konfigurację stylów, istniejące prymitywy i publiczne API używanej biblioteki.
+Odczyt Figmy nie blokuje zmiany, która wyłącznie usuwa lokalne nadpisanie albo zbędny kod, gdy jednocześnie:
 
-Nie przenoś nazw tokenów, breakpointów, komponentów ani ścieżek importu pomiędzy Boxes i Votey.
-Nie przenoś Angularowego runtime’u Votey ani `tokens.angular.css` do Reacta. Nie przenoś lokalnych klas `rv-*`, providerów device/viewport ani arkuszy light/dark PWA do CRM.
-Nie implementuj layoutu Angular/SCSS z użyciem domyślnych założeń React/Next ani klas Tailwind, jeśli projekt używa SCSS i Design Systemu.
+- nie wybierasz ani nie zmieniasz wartości wizualnej,
+- zachowujesz istniejący wariant komponentu Design Systemu i projektowe tokeny,
+- nie dodajesz klasy, stylu inline ani fallbacku wizualnego,
+- zakres potwierdzają obecny kod i API komponentu.
+
+Przykłady: usunięcie ręcznego nadpisania typografii przy zachowaniu wariantu, usunięcie wrappera bez zmiany layoutu albo zastąpienie ręcznego typu typem generowanym.
+
+Jeśli korekta wymaga wyboru wariantu, tokenu, koloru, spacingu, rozmiaru lub zachowania responsywnego, wróć do odczytu Figmy przed edycją.
+
+Jeśli repo ma dedykowaną referencję stackową w tym skillu, po odczycie danych z Figmy wczytaj ją przed implementacją.
+`references/angular-implementation.md` jest wyłącznie dla projektów Angular; sam fakt użycia Design Systemu nie jest triggerem tej referencji.
+Nie przenoś założeń składniowych ani utility z jednego stacku do drugiego; bazowy skill opisuje kontrakt Figmy, a konkretna referencja projektu decyduje o sposobie zapisu kodu.
 
 ## Twarda zasada jakości danych
 
@@ -109,7 +93,7 @@ Jeśli dane z Figmy dzielą się na:
 
 to do implementacji pixel-perfect kwalifikują się wyłącznie wartości **potwierdzone**.
 
-Jeśli lista `inferowane` albo `brakujące` nie jest pusta dla właściwości krytycznych **dla żądanego zakresu**:
+Jeśli lista `inferowane` albo `brakujące` nie jest pusta dla właściwości krytycznych:
 
 - padding
 - gap
@@ -118,6 +102,63 @@ Jeśli lista `inferowane` albo `brakujące` nie jest pusta dla właściwości kr
 - state-specific colors
 
 to **nie wolno** przechodzić do implementacji jako "pixel-perfect". Zatrzymaj się i zgłoś brak danych.
+
+## Figma UI Implementation Gate
+
+Przed pierwszą edycją komponentu, template'u, stylów, klas Design Systemu albo treści widocznej w UI z linku do Figmy agent musi
+wypisać krótki kontrakt wejściowy. Brak kontraktu oznacza, że nie wolno kodować implementacji z makiety.
+
+Kontrakt musi zawierać tylko pola istotne dla realnego zakresu zmiany:
+
+- `Status odczytu Figmy`: zakresy `verified`, `partial`, `blocked` zgodnie z Krokiem 0.6.
+- `Target scope verification`: wynik z Kroku 0.7, jeśli layout zależy od szerokości, paddingu, tła albo pozycji w gridzie.
+- `Layout contract`: struktura DOM/flow dla głównych obszarów, jeśli implementacja zmienia układ.
+- `Critical values`: 4-8 krytycznych wartości z Kroku 5.1 z oznaczeniem `[P]`, `[I]`, `[B]`, jeśli zmiana dotyczy layoutu, stylu, wariantu komponentu albo stanu wizualnego.
+- `Token mapping`: kolory, typografia, border/radius/shadow z Figmy zmapowane na token albo klasę projektu, jeśli zmiana dotyczy stylu.
+- `Class mapping`: wartości spacingu/size z Figmy zmapowane na utility albo prymitywy właściwe dla projektu, np. grid/container, responsive helpers albo komponent DS, jeśli zmiana dotyczy layoutu albo rozmiaru.
+- `DS mapping gate`: jeśli projekt używa Design Systemu, potwierdź dla każdego krytycznego elementu mapowanie `Figma value -> DS token/grid/component/asset`; brak mapowania oznacza gap albo fallback bez deklaracji pixel-perfect.
+- `Icon asset mapping`: nazwy ikon, wariant rozmiaru i źródło assetu z Figmy zmapowane na publiczny asset projektu albo DS, jeśli UI zawiera ikony.
+- `Visible text parity`: widoczne teksty/CTA/tab labels z Figmy porównane z CMS, specem albo aktualnym kodem.
+- `Runtime validation plan`: route, breakpointy i sposób screenshot/DOM validation albo jawny status `blocked`.
+
+Jeśli zadanie dotyczy wyłącznie zmiany treści widocznej, np. tekstu CTA, nagłówka, labela albo opisu, nie wymagaj `Critical values`, `Token mapping` ani `Class mapping`. W takim zakresie wystarczy `Status odczytu Figmy`, `Visible text parity`, źródło treści docelowej i minimalny plan walidacji, że zmiana nie narusza istniejącego layoutu.
+
+Jeśli `Token mapping`, `Class mapping` albo `Visible text parity` ma braki dla elementu, który implementujesz, nie zgaduj.
+Zatrzymaj się albo oznacz wynik jako fallback z jasnym zakresem, bez deklaracji pixel-perfect.
+
+Minimalny format:
+
+```text
+Figma UI implementation gate:
+- figma read: desktop verified, tablet verified, mobile partial
+- target scope: parent node
+- layout contract: root panel -> header/content/actions, actions as sibling group
+- critical values: padding [P], gap [P], title type [P], body type [P], bg color [P], CTA order [P]
+- token mapping: #07064E -> text/bg token ..., font style -> DS variant ...
+- class mapping: 24px padding -> project spacing utility, 48px height -> project size utility, content bounds -> grid/container primitive
+- ds mapping: grid=user 4/8/16, spacing token ..., typo token ..., status color token ...
+- icon assets: calendar-small -> public DS asset ..., city-small -> public DS asset ...
+- visible text parity: CTA labels from CMS match Figma / mismatch listed
+- runtime validation: /pl route, desktop/tablet/mobile screenshots
+```
+
+### Bramka Design System Przed Implementacją Stylów
+
+Jeśli repo używa Design Systemu, po odczycie Figmy i przed pierwszą edycją kodu UI albo stylów wykonaj krótkie mapowanie:
+
+```text
+Figma -> Design System:
+- layout: <auto-layout/grid/bounds> -> <grid/container/component>
+- spacing: <wartości z Figmy> -> <tokeny spacingu albo gap>
+- typography: <style/size/weight/line-height> -> <token/variant>
+- colors: <rola/status/stan> -> <semantic token>
+- icons/assets: <nazwa i rozmiar z Figmy> -> <publiczny asset/variant>
+```
+
+Nie przenoś wartości pixelowych z Figmy bezpośrednio do implementacji stylów, jeśli istnieje token, grid primitive, komponent albo wariant
+assetu. Gdy nie ma jednoznacznego mapowania, wpisz to jako `gap` i wybierz jedną z dwóch ścieżek: zatrzymaj zakres
+krytyczny albo zastosuj jawnie opisany fallback bez deklaracji pixel-perfect. W projektach z Design Systemem ta bramka ma
+pierwszeństwo przed mechanicznym kopiowaniem wygenerowanych stylów z Figmy.
 
 ## Zakres odczytu: target dokładnie tego co user pokazał
 
@@ -146,19 +187,28 @@ Nie zakładaj automatycznie, że każdy link Figmy oznacza komplet desktop / tab
 
 Jeśli task obejmuje mobile/tablet/desktop albo user podaje kolejne nodeId dla breakpointów, zrób porównanie różnic przed kodowaniem.
 
-Dla każdego breakpointu porównaj tylko właściwości istniejące i istotne dla danego komponentu:
+Dla każdego breakpointu wypisz:
 
-- liczbę kolumn / rzędów, kolejność, wrapping i hierarchię,
-- padding, gap, alignment oraz horizontal bounds kontenera,
-- rozmiar i zachowanie elementów layout-driving,
-- typografię i stany, jeśli zmieniają się między breakpointami,
-- dla modułu krokowego: układ kroków, linie i markery `KROK`,
-- dla modułu z ilustracją i CTA: fit/wysokość ilustracji oraz spacing obraz → tekst → CTA.
+- liczbę kolumn / rzędów
+- układ kroków (np. 1 rząd x4 vs 2 rzędy x2)
+- pozycję i styl linii między krokami
+- rozmiar i pozycję markerów `KROK`
+- wysokość i zachowanie kontenera ilustracji
+- spacing: obraz->tytuł, tytuł->opis, opis->CTA
 
 Jeśli którykolwiek punkt różni się między breakpointami:
 
 - NIE dziedzicz layoutu z innego breakpointu "na oko"
 - implementuj osobny wariant layoutu dla breakpointu z różnicą
+
+#### Kontrakt zachowania responsywnego
+
+Breakpoint diff interaktywnego komponentu obejmuje też `orientation`, `pointer`, trigger, przejście stanu, DOM owner,
+focus target oraz skutek zamknięcia lub nawigacji. Użyj `Interaction Acceptance Contract` z
+`references/runtime-pixel-perfect-loop.md`.
+
+Wspólny DOM stosuj dla różnic layoutowych. Przy różnej semantyce, tab order, interakcji lub mount/unmount rozważ osobną
+kompozycję. Nie dziedzicz desktop hovera na touch. Motion wymaga ustalonych primary action, keyboard flow i focus target.
 
 #### Tryb follow-up breakpoint
 
@@ -227,7 +277,7 @@ Dla zakresów `partial` i `blocked`:
 
 Przed kodowaniem wypisz krótki status po polsku w generycznym formacie. Statusy techniczne `verified`, `partial`, `blocked` zostaw bez tłumaczenia.
 
-Raport dotyczy wyłącznie odczytu Figmy. Nie dopisuj sekcji o implementacji w repo, finalnym CSS, lokalnych prymitywach ani mapowaniu kodu, chyba że użytkownik wyraźnie prosi o przejście do implementacji.
+Raport dotyczy wyłącznie odczytu Figmy. Nie dopisuj sekcji o implementacji w repo, finalnych stylach, lokalnych prymitywach ani mapowaniu kodu, chyba że użytkownik wyraźnie prosi o przejście do implementacji.
 
 Nie wypisuj osobno każdego narzędzia ani oczywistych szczegółów technicznych, jeśli nie wpływają na jakość odczytu Figmy:
 
@@ -254,7 +304,7 @@ Nie rozszerzaj automatycznie targetu do całej strony. Najpierw ustal, czy:
 
 Jeśli target node jest zbyt wąski, odczytaj najbliższy layout-driving parent albo poproś o właściwy node. Nie implementuj full-width, paddingów ani background bandów na podstawie samego fill target node.
 
-Przed edycją CSS wypisz:
+Przed edycją kodu layoutu lub stylów wypisz:
 
 ```text
 Target scope verification:
@@ -268,14 +318,14 @@ Jeśli `layout-driving scope` to `missing`, nie deklaruj pixel-perfect i nie zga
 
 ### Krok 0.8 — Grid contract handoff dla sekcji z Figmy (OBOWIĄZKOWY)
 
-Jeśli implementujesz całą sekcję, moduł strony albo content block na podstawie Figmy, przed pierwszą klasą CSS ustal, czy potrzebny jest grid contract per breakpoint.
+Jeśli implementujesz całą sekcję, moduł strony albo content block na podstawie Figmy, przed pierwszą zmianą kodu UI lub stylów ustal, czy potrzebny jest grid contract per breakpoint.
 
-Figma odpowiada tu za odczyt kontekstu layoutu: scope sekcji, właściwy breakpoint, relację target node'a do parenta oraz to, czy szerokość wynika z kolumn, content boxa, full-bleed czy stałej wartości. Nie traktuj szerokości root node'a jako automatycznej klasy `w-*` / `rv-w-*`.
+Figma odpowiada tu za odczyt kontekstu layoutu: scope sekcji, właściwy breakpoint, relację target node'a do parenta oraz to, czy szerokość wynika z kolumn, content boxa, full-bleed czy stałej wartości. Nie traktuj szerokości root node'a jako automatycznej klasy szerokości albo stałej wartości w stylach.
 
 `figma` nie jest źródłem prawdy dla składni klas projektu;
 
 Minimum handoffu z Figmy:
-
+.
 - `section scope`: target node, parent node albo missing,
 - breakpointy wymagające osobnego kontraktu,
 - horizontal bounds z makiety: full-bleed, content box albo kolumny,
@@ -289,21 +339,22 @@ W Codexie i podobnych klientach nie każde narzędzie Figma jest tak samo stabil
 Używaj tej kolejności:
 
 1. `whoami` albo najlżejszy check połączenia
-2. `get_metadata`
+2. `get_metadata` — działa dla dowolnego `fileKey`, również gdy plik nie jest otwartą zakładką Figma Desktop; preferuj je przy odczycie kilku plików lub breakpointów
 3. `get_design_context`
 4. dopiero na końcu `use_figma`, jeśli poprzednie narzędzia nie wystarczyły
 
 Jeśli `use_figma` zawodzi, ale `get_metadata` i `get_design_context` działają, kontynuuj odczyt nimi. Nie traktuj awarii `use_figma` jako automatycznej blokady całej pracy.
+### Warunek mostu `use_figma` w Figma Desktop
+
+Most pluginowy `use_figma` działa tylko dla pliku otwartego w aktywnej zakładce Figma Desktop. Próba użycia go dla innego pliku zwykle kończy się timeoutem po około 300 sekundach, a nie czytelnym błędem uprawnień.
+
+Przed użyciem `use_figma` poproś użytkownika o przełączenie na właściwą zakładkę i potwierdź target. Przy samym odczycie innych plików, breakpointów albo wariantów nie wymagaj przełączania zakładek — najpierw użyj `get_metadata` po `fileKey`.
 
 ### Krok 2 — wczytaj wszystkie potrzebne node'y, ale nie szerzej niż trzeba
 
-Zakres z Kroku 0 jest nadrzędny:
+Stosuj ten krok tylko dla zakresów, które rzeczywiście wynikają z promptu, specyfikacji albo planu odczytu z Kroku 0. Jeżeli task zawiera jeden precyzyjny `nodeId` bez breakpointów, wczytaj wyłącznie ten node.
 
-- jeden podany nodeId bez jawnych wariantów breakpointowych → czytaj tylko ten node,
-- kilka podanych linków lub jawny zakres breakpointów w specyfikacji → czytaj wszystkie **podane** node'y równolegle,
-- nie wyszukuj i nie inferuj niepodanych breakpointów tylko dlatego, że implementowany jest moduł responsywny.
-
-Dla każdego node'a objętego zakresem wywołaj `get_design_context`:
+Jeżeli specyfikacja zawiera linki do Figmy dla desktop, tablet i mobile albo user podał osobne node'y per breakpoint, wczytaj wymagane breakpointy naraz (równolegle) przez `get_design_context`:
 
 ```
 fileKey: wyciągnij z URL figma.com/design/<fileKey>/...
@@ -317,23 +368,28 @@ Jeśli wskazany node:
 
 Nie rozszerzaj zakresu do całego ekranu tylko dlatego, że target node ma słabe metadane.
 
-### Krok 3 — zgłoś problemy z dostępem
+### Krok 3 — fallback i zgłoszenie problemów z dostępem
 
-Jeśli `get_design_context` zawiedzie, rozróżnij rodzaj błędu:
+Jeśli `get_design_context` zwróci błąd 403, błąd autoryzacji, pusty wynik albo niepełne dane, nie zatrzymuj się przed wykonaniem fallbacku z Kroku 0.6 dla tego samego zakresu.
 
-- 403 / błąd autoryzacji obejmujący wszystkie narzędzia Figma → natychmiast zgłoś problem i oznacz zależny target jako `blocked`,
-- timeout, pusty albo niekompletny wynik → najpierw wykonaj fallback dla tego samego node'a z Kroku 0.6, a potem pokaż zbiorczy status `verified` / `partial` / `blocked`.
+Najpierw:
 
-Komunikat dla zablokowanego targetu:
+1. spróbuj `get_metadata` dla tego samego node'a,
+2. jeśli metadata nie wystarcza, spróbuj screenshot albo najbliższy layout-driving parent / child w obrębie wskazanego komponentu,
+3. sklasyfikuj zakres jako `verified`, `partial` albo `blocked` według Kroku 0.6.
+
+Zgłoś użytkownikowi problem dopiero po fallbacku, z rozróżnieniem zakresu:
 
 ```
 ⚠️ Nie mogę odczytać danych z Figmy dla [desktop/tablet/mobile]:
 - Link: <url>
 - Błąd: <opis błędu>
+- Fallback: <co próbowano>
+- Status zakresu: <partial|blocked>
 Czy możesz sprawdzić uprawnienia lub podać dane ręcznie?
 ```
 
-Nie próbuj kodować z pamięci ani zgadywać wartości. Zatrzymaj całą implementację tylko wtedy, gdy zablokowany jest jedyny żądany target albo brakuje danych krytycznych dla bieżącej edycji. Przy kilku niezależnych zakresach kontynuuj wyłącznie zakresy `verified`, zgodnie z Krokiem 0.6.
+Nie próbuj kodować z pamięci ani zgadywać wartości. Możesz kontynuować wyłącznie dla zakresów `verified`; zakresy `partial` i `blocked` pomiń albo oznacz jako fallback, bez deklaracji pixel-perfect. Jeżeli cały wymagany zakres zadania jest `partial` albo `blocked`, zatrzymaj implementację i poproś o dane / uprawnienia.
 
 ### Krok 4 — przełącz na tryb developerski jeśli potrzeba
 
@@ -341,7 +397,7 @@ Jeśli `get_design_context` zwraca kod bez szczegółowych wymiarów, spróbuj `
 
 ### Krok 5 — wypisz zebrane wartości przed kodowaniem
 
-Zanim napiszesz pierwszą klasę CSS, wypisz dane w trzech sekcjach:
+Zanim napiszesz pierwszy kod UI lub stylów, wypisz dane w trzech sekcjach:
 
 ```text
 Potwierdzone
@@ -366,18 +422,19 @@ tablet      | pt-25 px-58 pb-34 | ?     | 10 / 20 / 14                | 500 / 70
 mobile      | pt-28 pr-25 ...   | 15px  | 10 / 22 / 14                | 500 / 700 / 400
 ```
 
-Jeśli sekcja `inferowane` albo `brakujące` nie jest pusta dla wartości krytycznych dla żądanego zakresu, nie implementuj bez dodatkowej weryfikacji. Braki niekrytyczne zaznacz `?` i zaraportuj, ale nie blokuj nimi niezależnej części zadania.
+Jeśli sekcja `inferowane` nie jest pusta dla wartości krytycznych, nie implementuj bez dodatkowej weryfikacji. Jeśli sekcja `brakujące` nie jest pusta, zaznacz `?` i wróć do usera.
 
-### Krok 5.1 — Lista krytycznych wartości (max 8, obowiązkowa)
+### Krok 5.1 — Checklist krytycznych wartości dobrana do modułu (max 8, obowiązkowa)
 
-Przed pierwszą edycją kodu wypisz do 8 wartości krytycznych dobranych do typu komponentu i żądanego zakresu. Gdy komponent ma co najmniej 5 istotnych właściwości, wybierz 5–8. Dla węższego zadania wypisz wszystkie istotne właściwości, ale nie dodawaj nieistniejących pozycji tylko po to, aby osiągnąć minimum.
+Przed pierwszą edycją kodu wypisz 4-8 krytycznych wartości dobranych do typu modułu. Nie wymagaj danych o elementach, których dany moduł nie ma.
 
-Przykładowe zestawy:
+Dobierz checklistę według realnej struktury:
 
-- button / pojedynczy stan: state-specific bg, border, text, icon, wysokość/padding, radius, typografia,
-- formularz: układ pól, gap, wysokość i padding inputu, label/error typography, border/radius, kolory stanów,
-- moduł krokowy z ilustracją: wysokość i fit ilustracji, linie, badge `KROK`, spacing obraz → tekst → CTA, typografia,
-- sekcja layoutowa: horizontal bounds, grid/kolumny, padding, gap, hierarchy, rozmiary elementów layout-driving.
+- **Przycisk / link / prosty control**: padding, gap ikona->tekst, height/min-height, border width/radius, typografia labela, kolory per stan.
+- **Karta / tile / panel**: padding, gap sekcji, border/radius/shadow, media bounds jeśli występuje, typografia tytułu i opisu, pozycja CTA.
+- **Sekcja z ilustracją**: wysokość/bounds kontenera ilustracji, proporcja/fit ilustracji, gap obraz->tekst, padding sekcji, typografia, zachowanie breakpointów.
+- **Stepper / proces / timeline**: układ kroków, linia między krokami, marker/badge, gap opis->CTA, typografia, różnice breakpointów.
+- **Formularz**: wysokość pól, padding pól, gap label->field i field->error, border/focus state, typografia label/error, layout breakpointów.
 
 Każdą pozycję oznacz jako:
 
@@ -385,11 +442,26 @@ Każdą pozycję oznacz jako:
 - [I] inferowana
 - [B] brakująca
 
-Jeśli którakolwiek **wybrana wartość krytyczna potrzebna do żądanego zakresu** ma status [I] lub [B], zatrzymaj tylko zależną od niej część implementacji i dopytaj usera. Nie blokuj niezależnych, potwierdzonych części zadania.
+Jeśli pozycja jest krytyczna dla layoutu albo stanu, który implementujesz, i ma status [I] lub [B], zatrzymaj implementację pixel-perfect dla tego zakresu i dopytaj usera. Nie zgłaszaj blockerów dla ilustracji, linii kroków, badge `KROK` ani innych elementów, które nie występują w module.
 
-## Tłumaczenie wartości Figma na klasy
+## Tłumaczenie wartości Figma na prymitywy projektu
 
-Konwersja konkretnych jednostek (px → klasy projektu, vw dla ilustracji itp.) jest opisana w skillu `styling-guide` — przeczytaj go jeśli nie wiesz jak tłumaczyć wartości z Figmy na klasy.
+Przed implementacją stylów, utility classes albo Design System z Figmy wczytaj właściwy styling/design-system guide, jeśli jest dostępny w projekcie. Figma
+daje wartości i strukturę, ale `styling-guide` decyduje, jak przełożyć je na lokalne utility, tokeny, breakpointy,
+grid/container i helpery typu `cn()`.
+
+Jeśli projekt ma własne responsive utilities, design tokens, spacing scale, grid/container albo komponenty Design Systemu,
+wartości px z Figmy mapuj najpierw na te lokalne prymitywy. Użycie frameworkowych defaultów, arbitralnych px albo stylu
+inline wymaga krótkiego uzasadnienia w kontrakcie `Class mapping`.
+
+Kolory, typografia, radius, border i shadow muszą przejść przez `Token mapping`. Nie wybieraj tokenu po podobieństwie
+"na oko", jeśli istnieje semantyczny token albo wariant DS. Jeśli nie ma mapowania, zgłoś brak tokenu albo użyj jawnie
+opisanego fallbacku bez deklaracji pixel-perfect.
+
+Ikony traktuj jak wariant komponentu/assetu, nie jak dekoracyjny szczegół. Odczytaj z Figmy nazwę lub semantyczną rolę
+ikony, jej rozmiar i stan, a następnie użyj publicznej nazwy assetu projektu. Jeżeli Design System rozróżnia warianty
+rozmiaru, np. `small`, `regular`, `large` albo suffix w nazwie assetu, wariant musi znaleźć się w `Icon asset mapping`
+przed edycją template'u, komponentu albo stylów.
 
 ## Stany interaktywne (hover / active / focus / disabled)
 
@@ -399,16 +471,7 @@ Komponenty w Figmie mają najczęściej osobne warianty per stan (property `Stat
 
 1. Jeśli user wskazał konkretny stan (np. "zmień hover") — wywołaj `get_design_context` na nodeId tego wariantu.
 2. Jeśli user nie wskazał wprost, ale zadanie dotyczy interakcji — poproś o link do wariantu stanu lub do całego component setu.
-3. Dobierz tabelę do zakresu:
-   - pojedynczy stan/wariant → target + baseline tego samego wariantu; opcjonalnie peer tylko do sprawdzenia konwencji,
-   - kilka wskazanych stanów lub wariantów → wszystkie i tylko wskazane komórki,
-   - pełna macierz → wyłącznie gdy user prosi o audyt całego component setu albo dodanie wariantu wpływa na wiele stanów.
-4. Jeśli user podał tylko node targetu, znajdź baseline przez metadata-only discovery:
-   - odczytaj `get_metadata` targetu i najbliższego parenta typu `COMPONENT_SET`,
-   - znajdź sibling node z tymi samymi wartościami pozostałych properties i `State=Default`,
-   - dopiero dla znalezionego nodeId wywołaj `get_design_context`,
-   - jeśli metadata nie pozwala jednoznacznie ustalić baseline'u, poproś o link do baseline'u albo component setu; nie zgaduj nodeId.
-5. Wypisz tabelę żądanego zakresu przed kodowaniem:
+3. Wypisz tabelę roboczą przed kodowaniem. Dla prostych zmian stanu bez osobnej referencji wystarczy tabela zakresu, który implementujesz. Dla komponentów z macierzą wariantów użyj `references/component-variants.md`: tabela ma być kompletna dla odczytanych komórek target / baseline / peer, a nie dla całego component setu, chyba że user jawnie prosi o pełny audyt macierzy.
 
 ```
 Komponent: ButtonCommon (color-quaternary, size-regular)
@@ -418,28 +481,24 @@ hover     | ?           | ?                   | ?                  | ?
 disabled  | gray-100    | gray-100            | gray-500           | white
 ```
 
-6. Dopiero po uzupełnieniu komórek potrzebnych do żądanego zakresu pisz CSS — nie zgaduj brakujących wartości.
+4. Dopiero po uzupełnieniu tabeli implementuj stan — nie zgaduj brakujących komórek.
 
 Jeśli masz tylko `default`, nie wolno implementować `hover`, `active`, `focus` ani `disabled` na podstawie intuicji albo istniejącego kodu.
 
-### Mapowanie stanów Figma → CSS
+### Mapowanie stanów Figma → Semantyka UI
 
-| Variant property w Figmie | Selector CSS |
+| Variant property w Figmie | Semantyka implementacyjna |
 |---|---|
-| `State=Default` | (baza, bez selektora stanu) |
-| `State=Hover` | `&:hover` (owiń w `@media (pointer: fine)` jeśli projekt tak robi) |
-| `State=Active` / `Pressed` | `&:active` |
-| `State=Focus` | `&:focus-visible` |
-| `State=Disabled` | `&:disabled, &[aria-disabled="true"]` |
-| `State=Loading` | `&[aria-busy="true"]` |
+| `State=Default` | stan bazowy komponentu |
+| `State=Hover` | hover tylko dla urządzeń z precyzyjnym wskaźnikiem, jeśli projekt tak robi |
+| `State=Active` / `Pressed` | stan naciśnięcia/aktywacji |
+| `State=Focus` | widoczny focus klawiaturowy |
+| `State=Disabled` | stan niedostępny semantycznie i wizualnie |
+| `State=Loading` | stan zajętości/ładowania |
 
 ### Zasada hover-only-on-pointer-fine
 
-Najpierw sprawdź `AGENTS.md` i istniejący kod komponentu:
-
-- jeśli projekt używa `@media (pointer: fine)`, zachowaj ten wzorzec dla każdego nowego `&:hover`,
-- jeśli projekt ma inny, świadomie ustanowiony wzorzec obsługi hover, stosuj lokalną konwencję zamiast ją nadpisywać,
-- jeśli lokalnej reguły nie ma, użyj `@media (pointer: fine) { ... }` jako bezpiecznego defaultu, aby hover nie uruchamiał się na urządzeniach dotykowych.
+Hover nie powinien odpalać się na urządzeniach dotykowych, jeśli projekt rozdziela pointer coarse/fine. Sprawdź istniejący wzorzec projektu i zachowaj jego semantykę zamiast narzucać konkretną składnię selektora.
 
 ## Analiza mechaniki layoutu — NIE tylko wartości wizualne
 
@@ -450,24 +509,24 @@ Padding, gap, font-size, **font-weight**, kolory, border-radius, border-width �
 
 **Grubość czcionki (font-weight)** to subtelna właściwość którą łatwo przeoczyć. Zawsze odczytuj ją jawnie z Figmy — nie zakładaj domyślnej wartości.
 
-| Wartość Figma | Klasa Tailwind |
+| Wartość Figma | Przykładowy token/utility |
 |---|---|
-| Thin 100 | `font-thin` |
-| ExtraLight 200 | `font-extralight` |
-| Light 300 | `font-light` |
-| Regular 400 | `font-normal` |
-| Medium 500 | `font-medium` |
-| SemiBold 600 | `font-semibold` |
-| Bold 700 | `font-bold` |
-| ExtraBold 800 | `font-extrabold` |
-| Black 900 | `font-black` |
+| Thin 100 | token/utility dla thin |
+| ExtraLight 200 | token/utility dla extra-light |
+| Light 300 | token/utility dla light |
+| Regular 400 | token/utility dla regular |
+| Medium 500 | token/utility dla medium |
+| SemiBold 600 | token/utility dla semi-bold |
+| Bold 700 | token/utility dla bold |
+| ExtraBold 800 | token/utility dla extra-bold |
+| Black 900 | token/utility dla black |
 
 ### Warstwa 2: mechanika layoutu (jak to jest zbudowane)
 
 Dla każdego elementu zadaj sobie pytanie:
-**"Dlaczego ten element jest tam gdzie jest — dzięki jakiemu mechanizmowi CSS?"**
+**"Dlaczego ten element jest tam gdzie jest — dzięki jakiemu mechanizmowi layoutu?"**
 
-| Obserwacja w Figmie | Pytanie do zadania | Mechanizm CSS |
+| Obserwacja w Figmie | Pytanie do zadania | Mechanizm layoutu |
 |---|---|---|
 | Element "przyklejony" do dołu kontenera | Czy rodzic jest flex-col? | `mt-auto` na elemencie lub `justify-between` na rodzicu |
 | Kilka elementów w rzędzie | Auto-layout horizontal czy ręczna pozycja? | `flex items-center gap-*` |
@@ -475,7 +534,7 @@ Dla każdego elementu zadaj sobie pytanie:
 | Elementy jeden pod drugim z równymi odstępami | Auto-layout vertical? | `flex flex-col gap-*` |
 | Element rozciągnięty do pełnej szerokości | Fill container? | `w-full` |
 
-**Zasada:** absolutna pozycja w Figmie (`top: X, left: Y`) to tylko wynik końcowy — Twój kod musi osiągnąć ten sam efekt przez poprawny flow CSS, nie przez `position: absolute` (chyba że element jest dekoracyjny).
+**Zasada:** absolutna pozycja w Figmie (`top: X, left: Y`) to tylko wynik końcowy — Twój kod musi osiągnąć ten sam efekt przez właściwy flow/layout projektu, nie przez pozycjonowanie absolutne, chyba że element jest dekoracyjny.
 
 ### Checklist mechaniki layoutu przed kodowaniem
 
@@ -486,7 +545,7 @@ Dla każdego elementu zadaj sobie pytanie:
 
 ### Kontrakt struktury layoutu przed kodowaniem
 
-Zanim zaczniesz pisać JSX albo klasy CSS, zapisz krótki kontrakt struktury layoutu dla głównych obszarów makiety.
+Zanim zaczniesz pisać komponent, template albo style, zapisz krótki kontrakt struktury layoutu dla głównych obszarów makiety.
 Kontrakt ma opisywać strukturę, nie wartości wizualne:
 
 ```text
@@ -508,7 +567,7 @@ Reguły:
 Figma często podaje pozycję elementów jako `inset` lub jako `left/top` względem rodzica. Przy absolutnie pozycjonowanych elementach (ilustracje, dekoracje):
 
 1. Oblicz offset od krawędzi rodzica na podstawie danych inset
-2. Przelicz na odpowiednie klasy projektu
+2. Przelicz na odpowiednie tokeny, utility albo właściwości projektu
 
 Nie używaj tej techniki do odtwarzania głównego flow layoutu, jeśli element powinien być rozwiązany przez auto-layout / flex.
 
@@ -520,7 +579,24 @@ Nie używaj wartości hex z Figmy bezpośrednio — mapuj na tokeny projektu. Je
 
 ## Reużycie istniejących komponentów projektu
 
-Przed napisaniem nowego JSX albo HTML sprawdź publiczne API biblioteki oraz istniejące komponenty i prymitywy projektu. W `votey-user-app` stosuj routing z `references/react-votey-implementation.md` i lokalny skill `project-primitives`; nie zakładaj, że paczka Votey publikuje gotowy komponent tylko dlatego, że podobny element istnieje w Figmie.
+Przed napisaniem nowego komponentu sprawdź, czy projekt ma już gotowy komponent lokalny albo komponent Design Systemu. Patrz właściwy skill/przewodnik dla prymitywów projektu, jeśli istnieje.
+
+## Zgodność treści widocznej
+
+W implementacji UI z Figmy sprawdź teksty, które użytkownik widzi: headingi, opisy, CTA, etykiety tabów, komunikaty,
+placeholdery i aria-labels, jeśli wynikają z makiety. Nie zastępuj ich przykładowym copy ani parafrazą, jeśli treść
+ma pochodzić z CMS/speca.
+
+Przed końcem zadania wypisz różnice:
+
+```text
+Visible text parity:
+- heading: Figma == CMS
+- primary CTA: Figma "Akceptuj" / CMS "Accept" -> mismatch, wymaga decyzji albo aktualizacji CMS
+```
+
+Jeśli treści są zarządzane przez CMS i nie wolno ich lokalnie zmienić, oznacz rozbieżność jako content issue. Nie
+maskuj jej zmianą layoutu ani typografii.
 
 ## Weryfikacja po implementacji
 
@@ -530,5 +606,8 @@ Po zakończeniu implementacji modułu zawsze:
 2. Wymień osobno wartości **inferowane** i osobno **brakujące**.
 3. Zaznacz w kodzie komentarzem `// TODO: verify in Figma` tylko te miejsca, które naprawdę wymagają późniejszej weryfikacji.
 4. Nie nazywaj implementacji pixel-perfect, jeśli krytyczne wartości layoutowe nie były potwierdzone.
-5. Dla każdej zmiany uruchom najwęższą właściwą walidację repo, np. lint, typecheck, test albo build obejmujący zmieniony zakres. Jeśli środowisko jej nie umożliwia, jawnie wymień pominiętą komendę i powód.
-6. Dla zmian wizualnych zweryfikuj runtime, jeśli jest dostępny. Dla Angular/Design System użyj `chrome-debug`: screenshot, console errors, overflow, interakcje stanów i computed styles krytycznych elementów.
+5. Uruchom najwęższą dostępną walidację techniczną dla dotkniętych plików: dedykowany test, typecheck, lint dla changed files albo najbliższy command z repo. Jeśli repo nie ma sensownego commandu albo środowisko blokuje uruchomienie, zgłoś to jawnie w podsumowaniu.
+6. Dla zmian React/Next, Angular albo Design System opartych o Figmę zweryfikuj runtime przez `chrome-debug` albo
+   Playwright: screenshot, console errors, overflow, interakcje stanów i computed styles krytycznych elementów.
+7. Dla bannerów, modali, dialogów, toastów i overlayów z Figmy waliduj wszystkie breakpointy podane w zadaniu. Jeśli
+   walidacja runtime jest niemożliwa, wpisz `blocked` i nie deklaruj pixel-perfect.

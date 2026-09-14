@@ -1,4 +1,10 @@
 node_modules
 .idea
 storybook-static/
+out-tsc/
+
+# TypeScript emit must not be written beside Angular sources.
+angular/src/**/*.js
+angular/src/**/*.d.ts
+angular/src/**/*.d.ts.map
 .tmp/

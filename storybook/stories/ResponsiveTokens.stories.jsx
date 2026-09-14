@@ -1,24 +1,39 @@
 import React, {useEffect, useState} from 'react';
 import {StoryPageHeader} from '../components/StoryPageHeader';
 import responsiveEngineSource from '../../styles/angular/_responsive-token-engine.scss?raw';
+import desktopTypographyTokens from '../../tokens/type/semantic/Desktop 1920.json';
 import './ResponsiveTokens.stories.scss';
 
-const typographyRoles = [
-    ['h1', 'Heading 1'],
-    ['h2', 'Heading 2'],
-    ['h3', 'Heading 3'],
-    ['h4', 'Heading 4'],
-    ['h5', 'Heading 5'],
-    ['body-l', 'Body large'],
-    ['body', 'Body'],
-    ['body-s', 'Body small'],
-    ['button', 'Button'],
-    ['label', 'Label'],
-    ['caption', 'Caption'],
-    ['caption-s', 'Caption small'],
-    ['table-header', 'Table header'],
-    ['micro', 'Micro'],
-];
+const typographyRoleLabels = {
+    h1: 'Heading 1',
+    h2: 'Heading 2',
+    h3: 'Heading 3',
+    h4: 'Heading 4',
+    h5: 'Heading 5',
+    'display-l': 'Display large',
+    'body-2xl': 'Body 2XL',
+    'body-xl': 'Body XL',
+    'body-l': 'Body large',
+    'body-l-semibold': 'Body large semibold',
+    'body-l-bold': 'Body large bold',
+    body: 'Body',
+    'body-s': 'Body small',
+    caption: 'Caption',
+    'caption-extrabold': 'Caption extra bold',
+    'caption-light': 'Caption light',
+    'caption-s': 'Caption small',
+    micro: 'Micro',
+    button: 'Button',
+    'button-small': 'Button small',
+    'table-header': 'Table header',
+    label: 'Label',
+    field: 'Field',
+};
+
+const typographyRoles = Object.keys(desktopTypographyTokens).map((role) => [
+    role,
+    typographyRoleLabels[role] || role,
+]);
 
 const spacingTokens = [
     'page-margin',

@@ -1,7 +1,7 @@
 {
   "bg": {
     "page": {
-      "value": "{color.gray-100}",
+      "value": "{color.blue-10}",
       "type": "color",
       "$extensions": {
         "com.figma.scopes": [
@@ -31,7 +31,7 @@
       }
     },
     "surface-tint": {
-      "value": "{color.navy-blue-25}",
+      "value": "{color.blue-50}",
       "type": "color",
       "$extensions": {
         "com.figma.scopes": [
@@ -135,6 +135,26 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "placeholder": {
+      "value": "{color.blue-gray-200}",
+      "type": "color",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "inverse-secondary": {
+      "value": "{color.navy-blue-100}",
+      "type": "color",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
     }
   },
   "accent": {
@@ -187,6 +207,16 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "nav-gradient-end": {
+      "value": "{color.mint-green-1000}",
+      "type": "color",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
     }
   },
   "border": {
@@ -221,8 +251,14 @@
       }
     },
     "field": {
-      "value": "{color.gray-blue-100}",
-      "type": "color"
+      "value": "{color.blue-gray-100}",
+      "type": "color",
+      "": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      }
     }
   },
   "state": {
@@ -280,6 +316,10 @@
   "shadow": {
     "soft": {
       "value": "rgba({color.navy-blue-900}, {opacity.8})",
+      "type": "color"
+    },
+    "overlay": {
+      "value": "rgba({color.navy-blue-800}, {opacity.12})",
       "type": "color"
     },
     "event-filter": {

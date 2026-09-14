@@ -1,7 +1,7 @@
 ---
 name: pleo-library-spec-workflow-helper
 description: Operacyjnie sprawdza, pobiera i publikuje workflow spec-review w PleoAI/DO Spaces oraz obsługuje kontekst i start prespecki. Używaj wyłącznie przy jawnych operacjach storage, publish, update albo pull dla `docs/sdd/versioning.md`, `specification.md`, `story-<jira>.md` i `affectedSpecifications` oraz przy `prespec-context` lub potwierdzonym `prespec-start`; nie używaj do zwykłego pisania specyfikacji.
-version: 2.5.0
+version: 2.6.0
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
@@ -23,7 +23,7 @@ Skill obsługuje następujące klasy zadań:
 - publikację lub aktualizację workflow przez `specification.md`, opcjonalny `story-<jira>.md` oraz opcjonalne `affectedSpecifications`,
 - pobranie kontekstu taska `[SPEC]` do aktualizacji specyfikacji na podstawie zaakceptowanego story.
 - pobranie kontekstu Jira i stanu prespecki przed analizą albo authoringiem,
-- uruchomienie nowej rewizji prespecki z walidowanego, lokalnego payloadu pytań.
+- uruchomienie nowej rewizji prespecki z walidowanego payloadu pytań albo import zakończonej konwersacji Astrei z odpowiedziami, pytaniami uzupełniającymi i wynikiem rewalidacji.
 
 Centralnym źródłem prawdy do selekcji specyfikacji do pobrania jest faktyczny stan repozytorium specyfikacji w PleoAI dla danego `projectSlug`.
 `docs/sdd/versioning.md` pozostaje lokalnym rejestrem wersji i pomocniczym indeksem do porównań wersji już istniejących lokalnie, ale nie może ograniczać listy specyfikacji, które mają zostać pobrane z PleoAI.
@@ -86,10 +86,14 @@ python skills/pleo-library-spec-workflow-helper/scripts/run.py status \
 Wynik zawiera:
 
 - listę lokalnych wpisów z `versioning.md`,
+- dla każdego feature’a `localPresent` i `localFilePath` ustalone przez fizyczną obecność `specification.md` albo `spec.md` w katalogu obok wskazanego `versioning.md`,
 - ich lokalną wersję,
 - najnowszą wersję obecną w storage,
 - ścieżkę do najnowszej wersji w storage,
-- listę `outdatedSpecs`.
+- listę `outdatedSpecs`,
+- pełną listę `remoteSpecs` odkrytą dla projektu niezależnie od lokalnego indeksu,
+- listę `missingLocalSpecs` wraz z `latestRemotePath`,
+- łączną listę `specsToPull` obejmującą pozycje nieaktualne i brakujące lokalnie.
 
 ### 2. Jednorazowy bootstrap DO Spaces z lokalnych specek
 
@@ -145,9 +149,10 @@ Reguły:
 ```bash
 python skills/pleo-library-spec-workflow-helper/scripts/run.py get \
   --jira-key INPOS-123 \
-  --output .\tmp\current-workflow-file.md \
-  --confirm-local-write
+  --output .\tmp\current-workflow-file.md
 ```
+
+`get` respektuje dokładnie `--output`: obecność `Feature slug` w pobranym markdownzie nie przenosi pliku do `docs/sdd/**` ani nie podmienia istniejącego `spec.md` lub `specification.md`. Jeśli `--output` wskazuje katalog, helper dopisuje do niego nazwę pobranego pliku. Dodaj `--confirm-local-write` tylko wtedy, gdy wyznaczony cel już istnieje albo sam jawnie wskazuje kanoniczną ścieżkę `docs/sdd/**`.
 
 ### 4. Pobranie kompletu plików workflow po Jira
 
@@ -161,9 +166,12 @@ python skills/pleo-library-spec-workflow-helper/scripts/run.py workflow-pull \
 Komenda:
 
 - pobiera `specification.md` i `story-<jira>.md` dla zwykłego workflow,
-- pobiera tylko `specification.md` dla workflow z TESTEREM,
+- dla workflow z TESTEREM wymaga tylko metadanych `currentFile`, wywołuje tylko endpoint `current-spec` i zapisuje wyłącznie bieżący plik do kanonicznej ścieżki głównej specyfikacji `docs/sdd/<featureSlug>/specification.md` albo do istniejącego `spec.md`,
+- dla zwykłego workflow, gdy `sourceFile` i `currentFile` wskazują tę samą ścieżkę docelową, zapisuje odpowiedź `current-spec`, a nie starszą odpowiedź `source-spec`,
 - zapisuje pliki do kanonicznych ścieżek `docs/sdd/<featureSlug>/...`, jeśli rozpozna `Feature slug`,
 - przy `--with-affected` w zwykłym workflow pobiera najnowsze archiwalne wersje specyfikacji wskazanych w `affectedSpecifications` i aktualizuje `docs/sdd/versioning.md`,
+- po `workflow-pull --with-affected` sprawdza `affectedSpecifications.skipped`; każdą pozycję z powodem `affected spec belongs to different project: <projectSlug>` raportuje użytkownikowi jawnie jako pominiętą i nadal niesynchronizowaną, podając co najmniej `label` oraz obcy `projectSlug`,
+- nie uznaje całego zestawu `affectedSpecifications` za zsynchronizowany, jeżeli choć jedna zależność została pominięta z powodu innego `projectSlug`; helper celowo pobiera zależności wyłącznie dla lokalnego projektu,
 - w workflow z TESTEREM nie pobiera `affectedSpecifications`, nawet jeśli podasz `--with-affected`.
 
 ### 5. Pobranie kontekstu taska `[SPEC]`
@@ -182,10 +190,11 @@ Używaj tego w trybie `spec-update-from-story` skilla od pisania specyfikacji.
 python skills/pleo-library-spec-workflow-helper/scripts/run.py pull-storage \
   --path specs/SkillBox/payments-ledger/versions/specification-1.2.0.md \
   --output .\docs\sdd\payments-ledger\spec.md \
+  --versioning-file .\docs\sdd\versioning.md \
   --confirm-local-write
 ```
 
-Używaj tego po `status`, gdy użytkownik zgodzi się pobrać nowszą wersję.
+Używaj tego po `status`, gdy użytkownik zgodzi się pobrać nowszą wersję. Przy zapisie dokładnie do `<sdd-root>/<featureSlug>/specification.md` albo istniejącego `spec.md` helper odczytuje `featureSlug` i wersję z `--path`, a następnie aktualizuje lub dopisuje wpis w `--versioning-file` (domyślnie `docs/sdd/versioning.md`). Wynik zwraca `versioningUpdated`, `versioningFile`, `featureSlug` i `specificationVersion`. Przy zapisie do ścieżki tymczasowej helper nie modyfikuje rejestru i zwraca `versioningUpdated=false`.
 
 ### 6a. Pobranie kontekstu prespecki
 
@@ -206,7 +215,7 @@ python skills/pleo-library-spec-workflow-helper/scripts/run.py prespec-start \
   --confirm-start
 ```
 
-Plik JSON może zawierać wyłącznie `questions`, `analysisLimitations` i `analyzedRepositories`. Helper waliduje pytania, odrzuca dodatkowe pola oraz lokalne ścieżki repozytoriów, a `jiraKey`, `projectSlug` i `libraryUserId` dołącza samodzielnie.
+Legacy payload zawiera `questions`, `analysisLimitations` i `analyzedRepositories`. Konwersacyjny flow Astrei najpierw ustawia `astreaConversationManaged: true` i `astreaConversationCompleted: false`, aby utworzyć standardowy root prespecki na kanale speckowym i przepiąć do niego rozmowę. Import zakończonej rozmowy przesyła oba pola jako `true`, a pytania mogą zawierać `finalAnswer`, `answerType`, `parentQuestionId`, `revalidationNote` i `answeredBySlackUserId`. Helper wymaga odpowiedzi dla wszystkich pytań importowanych z Astrei, waliduje relacje pytań uzupełniających, wymaga notatki dla `OUTDATED`, odrzuca dodatkowe pola oraz lokalne ścieżki repozytoriów. `jiraKey`, `projectSlug` i `libraryUserId` dołącza samodzielnie. `prespec-context` domyślnie nie zwraca pytań `OUTDATED`, aby nie trafiały do skilla tworzącego specyfikację; wyłącznie skill prowadzący prespeckę używa `--include-outdated` do audytu wcześniejszych rewizji.
 
 ### 7. Publikacja nowego workflow
 
@@ -226,6 +235,13 @@ W zwykłym workflow wysyłaj oba pliki:
 
 W workflow z TESTEREM wysyłaj tylko:
 - `specification.md`
+
+Przed zbudowaniem komendy `publish` ustal typ nowego workflow z jawnego kontekstu skilla authoringowego albo zlecenia:
+
+- tryb `specification`, tryb `spec-update-from-story` albo task Jira `[SPEC]` oznacza workflow z TESTEREM,
+- tryb `story` oznacza zwykły workflow,
+- jeżeli żaden z tych sygnałów nie jest dostępny lub sygnały są sprzeczne, zapytaj użytkownika o typ workflow przed pokazaniem komendy i przed `--confirm-publish`,
+- nie rozpoznawaj typu workflow wyłącznie po tym, które pliki istnieją lokalnie; brak albo obecność `story-<jira>.md` nie jest wystarczającym dowodem.
 
 ### 8. Aktualizacja istniejącego workflow
 
@@ -253,6 +269,9 @@ To służy zarówno do głównej specki i story dla aktywnego taska, jak i do po
    - zrobić jednorazowy bootstrap DO Spaces,
    - pobrać nową wersję,
    - pobrać komplet plików aktywnego workflow,
+   - pobrać kontekst taska `[SPEC]` przez `spec-task-context`,
+   - pobrać kontekst prespecki przez `prespec-context`, opcjonalnie z `--include-outdated` dla audytu prowadzonego przez skill prespecki,
+   - uruchomić albo wznowić prespeckę przez `prespec-start`,
    - opublikować nowy workflow,
    - zaktualizować istniejący workflow.
 2. Dla pytań typu "czy wszystkie specki są najnowsze" albo "pobierz / zaktualizuj specyfikacje dla projektu" traktuj repozytorium PleoAI dla danego `projectSlug` jako źródło prawdy o pełnej liście dostępnych specyfikacji.
@@ -265,14 +284,16 @@ To służy zarówno do głównej specki i story dla aktywnego taska, jak i do po
 6. Dla pytań typu "czy wszystkie specki są najnowsze" uruchom `status`, ale interpretuj wynik razem ze zdalną listą dostępnych specyfikacji dla projektu.
 7. Dla jednorazowego zasiania storage albo selektywnego uploadu do archiwum uruchom `bootstrap-storage` dopiero po jawnej zgodzie użytkownika.
 8. Jeśli zdalny stan projektu pokaże nowsze lub brakujące lokalnie specyfikacje, wypisz użytkownikowi różnice tylko wtedy, gdy pytanie dotyczy audytu stanu; przy poleceniu aktualizacji pobierz je bez dodatkowej selekcji, chyba że użytkownik zawęził zakres do konkretnej specyfikacji.
-9. Po zgodzie użyj `pull-storage` dla konkretnych ścieżek `latestRemotePath`.
+9. Po zgodzie użyj `pull-storage` dla konkretnych ścieżek `latestRemotePath` i zapisz każdą speckę do jej kanonicznego `specification.md` albo `spec.md`; sprawdź w wyniku `versioningUpdated=true`, aby potwierdzić, że odpowiadający wpis w `versioning.md` został zaktualizowany razem z plikiem.
 10. Po każdym pobraniu albo aktualizacji lokalnych plików specyfikacji uznaj wcześniej zaczytaną w czacie treść tych specyfikacji oraz `docs/sdd/versioning.md` za nieaktualną.
 11. Jeśli dalsza praca zależy od pobranych lub zaktualizowanych specyfikacji, odczytaj je ponownie z dysku i kontynuuj wyłącznie na świeżo pobranej treści.
 12. Dla `publish` albo `update` najpierw ustal `jiraKey` z metadanych publikowanej specyfikacji; jeśli jest jednoznaczny, użyj go bez pytania o klucz, a pytaj tylko o brakujący albo wieloznaczny `jiraKey`.
-13. Jeśli aktualizacja dotyczy zależności workflow, przekaż plik `affectedSpecifications` razem z plikami aktualizowanymi w danym wywołaniu.
-14. Nie łącz automatycznie pobrania lokalnego pliku z publikacją do workflow bez osobnej zgody użytkownika.
-15. Przed `prespec-start` pokaż użytkownikowi podgląd pytań i wykonaj komendę dopiero po jednoznacznym potwierdzeniu.
-16. Po `prespec-context` interpretuj status zgodnie ze skillem wywołującym; helper nie podejmuje decyzji biznesowych ani nie generuje pytań.
+13. Przed `publish` ustal typ nowego workflow z jawnego trybu authoringu lub taska `[SPEC]`; jeżeli typ nie jest jednoznaczny, zapytaj użytkownika i nie przygotowuj finalnego payloadu przez zgadywanie na podstawie dostępnych plików.
+14. Jeśli aktualizacja dotyczy zależności workflow, przekaż plik `affectedSpecifications` razem z plikami aktualizowanymi w danym wywołaniu.
+15. Nie łącz automatycznie pobrania lokalnego pliku z publikacją do workflow bez osobnej zgody użytkownika.
+16. Przed `prespec-start` pokaż użytkownikowi podgląd pytań i wykonaj komendę dopiero po jednoznacznym potwierdzeniu.
+17. Po `prespec-context` interpretuj status zgodnie ze skillem wywołującym; helper nie podejmuje decyzji biznesowych ani nie generuje pytań.
+18. Po `workflow-pull --with-affected` przejrzyj `affectedSpecifications.skipped`. Pozycje pominięte z powodu innego `projectSlug` wypisz w wyniku jako niesynchronizowane i wymagające osobnej synchronizacji w ich projekcie; nie przedstawiaj operacji jako pełnej synchronizacji wszystkich zależności.
 
 ## Zasady użycia
 
@@ -280,7 +301,9 @@ To służy zarówno do głównej specki i story dla aktywnego taska, jak i do po
 - `bootstrap-storage` wymaga `--confirm-upload`.
 - `--expected-version` działa tylko razem z `--feature-slug`.
 - `--specification-only` i `--include-stories` działają tylko razem z `--feature-slug`.
-- `pull-storage` wymaga zgody, jeśli ma nadpisać istniejący plik albo wejść w kanoniczną ścieżkę repo.
+- `pull-storage` wymaga `--confirm-local-write`, jeśli ma nadpisać istniejący plik albo wejść w katalog wskazanego `--versioning-file`. Kanoniczny zapis jest dozwolony wyłącznie do `<sdd-root>/<featureSlug>/specification.md` albo `spec.md` zgodnego z `--path` i automatycznie aktualizuje rejestr; zapis tymczasowy nie zmienia `versioning.md`.
+- `get` zawsze respektuje jawne `--output` i nigdy nie relokuje pliku na podstawie `Feature slug`. Wymaga `--confirm-local-write`, gdy wyznaczony cel już istnieje albo użytkownik sam wskazał kanoniczną ścieżkę `docs/sdd/**`; flaga jest opcjonalna przy zapisie nowego pliku do jawnie wskazanej, niekanonicznej ścieżki tymczasowej.
+- `workflow-pull` wymaga `--confirm-local-write`, gdy co najmniej jeden wynik ma nadpisać istniejący plik albo zostać zapisany w kanonicznej ścieżce `docs/sdd/**`. Dotyczy to domyślnego zapisu bez `--output-dir` po rozpoznaniu `featureSlug` oraz plików aktualizowanych przez `--with-affected`. Flaga jest opcjonalna wyłącznie wtedy, gdy wszystkie pliki trafią jako nowe do jawnie wskazanego, niekanonicznego `--output-dir` i nie nastąpi kanoniczny zapis zależności.
 - `publish` wymaga `--confirm-publish`.
 - `update` wymaga `--confirm-update`.
 - `prespec-start` wymaga `--confirm-start`.
@@ -310,6 +333,7 @@ Bazowy URL zawsze pochodzi z `libraryBaseUrl` w `.agent-library.yaml`.
 ## Kontrola jakości
 
 - `status` czyta `docs/sdd/versioning.md` i waliduje format `featureSlug: version`.
+- `status` nie traktuje wpisu w `versioning.md` jako dowodu obecności specyfikacji: sprawdza fizyczny plik `<sdd-root>/<featureSlug>/specification.md` albo `spec.md`; brak pliku ustawia `localPresent=false` i, jeśli istnieje wersja zdalna, dodaje pozycję do `missingLocalSpecs` oraz `specsToPull` nawet przy zgodnej wersji w rejestrze.
 - Przy aktualizacji projektu selekcja do pobrania wynika ze zdalnego repozytorium PleoAI dla `projectSlug`, a nie z samej lokalnej listy w `docs/sdd/versioning.md`.
 - Jeśli zdalna specyfikacja istnieje dla projektu, a lokalnie brakuje katalogu lub wpisu w `versioning.md`, skill traktuje ją jako pozycję do pobrania.
 - Po pobraniu lub aktualizacji lokalnych specek i `docs/sdd/versioning.md` dalsze decyzje muszą opierać się na ponownie odczytanej treści z dysku, a nie na starszym kontekście czatu.
@@ -319,10 +343,14 @@ Bazowy URL zawsze pochodzi z `libraryBaseUrl` w `.agent-library.yaml`.
 - `bootstrap-storage --feature-slug` rozwiązuje pliki względem stałego `docs/sdd`, a nie względem lokalizacji `versioning.md`.
 - `bootstrap-storage` pomija feature’y, których wersja w storage jest taka sama albo nowsza.
 - `status` zwraca `latestRemotePath`, jeśli w storage istnieje nowsza wersja.
-- `pull-storage` pobiera dokładnie jeden plik ze storage i zwraca końcową ścieżkę lokalną.
+- `status` zwraca wszystkie zdalne pozycje w `remoteSpecs`, brakujące lokalnie w `missingLocalSpecs` oraz kompletną kolejkę aktualizacji w `specsToPull`.
+- `pull-storage` pobiera dokładnie jeden plik ze storage i zwraca końcową ścieżkę lokalną; przy kanonicznym zapisie aktualizuje wpis `featureSlug: version` w `versioning.md`, a `versioningUpdated=true` potwierdza spójność pliku z rejestrem.
 - `publish` wysyła `projectSlug`, `specificationFile`, opcjonalny `storyFile` i opcjonalnie `affectedSpecifications`.
+- Przed `publish` typ workflow jest potwierdzony przez jawny tryb `story` / `specification` / `spec-update-from-story`, task `[SPEC]` albo odpowiedź użytkownika; dostępność lokalnych plików nie zastępuje tej decyzji.
 - `update` wysyła `projectSlug`, jeden lub oba z `specificationFile` / `storyFile` oraz opcjonalnie `affectedSpecifications`.
-- `get` pobiera aktualny plik workflow wskazany przez backend dla danego `jiraKey`.
+- `get` pobiera aktualny plik workflow wskazany przez backend dla danego `jiraKey` dokładnie pod `--output`; `Feature slug` nie może zmienić ścieżki docelowej ani spowodować niejawnego zapisu do głównej specyfikacji.
 - `workflow-pull` pobiera komplet plików aktywnego workflow i może dociągnąć najnowsze archiwalne wersje `affectedSpecifications` tylko dla zwykłego workflow.
+- `workflow-pull` dla workflow z TESTEREM nie wymaga `sourceFile`, nie wywołuje `source-spec` i mapuje `currentFile` na główną specyfikację feature’a zamiast do katalogu `task`; przy kolizji ścieżek w zwykłym workflow pierwszeństwo ma `current-spec`.
+- `workflow-pull --with-affected` pozostawia zależności z innych projektów w `affectedSpecifications.skipped`; agent raportuje je jako pominięte i niesynchronizowane, nigdy jako część zakończonej synchronizacji.
 - `publish` i `update` kończą się błędem bez odpowiedniego flag-confirm.
 - Skrypt nie próbuje publikować bez jawnej decyzji użytkownika.

@@ -20,6 +20,11 @@ function setRadioButtonInputs(componentRef, control, props) {
   for (const inputName of radioButtonInputs) {
     componentRef.setInput(inputName, props[inputName]);
   }
+
+  componentRef.setInput("initialValue", props.initialValue);
+  componentRef.setInput("staticValue", props.staticValue);
+  componentRef.setInput("disable", props.disable);
+  componentRef.setInput("block", props.block);
 }
 
 function AngularRadioButtonPreview(props) {
@@ -230,6 +235,8 @@ export default {
       action: "change",
       table: { category: "Events" },
     },
+    disable: { control: "boolean" },
+    block: { control: "boolean" },
   },
   args: {
     options: [
@@ -251,6 +258,10 @@ export default {
     groupClass: "",
     tooltip: "Wybierz jedną z opcji",
     disabledNote: "Ta grupa jest obecnie niedostępna",
+    initialValue: undefined,
+    staticValue: undefined,
+    disable: undefined,
+    block: undefined,
     onChange: fn(),
   },
 };

@@ -57,10 +57,9 @@ vt-checkbox {
       width: 14px;
       height: 14px;
       background-color: var(--mat-checkbox-selected-checkmark-color);
-      -webkit-mask: url("/assets/votey/icons/special/icon_sp_check.svg") center /
-        20px 20px no-repeat;
-      mask: url("/assets/votey/icons/special/icon_sp_check.svg") center / 20px
-        20px no-repeat;
+      -webkit-mask: var(--votey-checkbox-checkmark-url) center / 20px 20px
+        no-repeat;
+      mask: var(--votey-checkbox-checkmark-url) center / 20px 20px no-repeat;
       transform-origin: center;
       translate: -50% -50%;
     }

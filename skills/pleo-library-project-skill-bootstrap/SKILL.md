@@ -1,7 +1,7 @@
 ---
 name: pleo-library-project-skill-bootstrap
 description: Operacyjnie bootstrapuje repo pod pracę ze skillami bibliotecznymi. Używaj wyłącznie przy onboardingu repo, naprawie struktury `skills`, `.agent-library.yaml` albo sekcji skilli w `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`; nie używaj jako pre-response.
-version: 1.3.8
+version: 1.3.9
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
@@ -53,7 +53,7 @@ Skrypt wypisuje wynik jako JSON.
 - Przy poprawie sekcji `## Skille` bootstrap ma dopilnować flow: `pleo-library-skill-version-guard` jako target-only check aktualności skilli użytych w aktualnym procesie, routing, potem skille wykonawcze.
 - Przy poprawie sekcji `## Skille` bootstrap ma dopilnować bramki triage: reasoning `medium` albo niżej kontynuuje bez pytania, a reasoning powyżej `medium` wymaga potwierdzenia użytkownika przed dalszą pracą.
 - Przy poprawie sekcji `## Skille` bootstrap ma dopilnować, żeby żaden skill `pleo-library-*` nie był raportowany w telemetryce.
-- Przy poprawie sekcji `## Skille` bootstrap ma dopilnować, żeby `pleo-library-skill-version-guard` był opisany jako infrastrukturalny target-only check aktualności skilli bez telemetryki, który robi pełny sync manifestu tylko wtedy, gdy backendowy manifest nie jest z dzisiaj albo liczba skilli się nie zgadza.
+- Przy poprawie sekcji `## Skille` bootstrap ma dopilnować, żeby `pleo-library-skill-version-guard` był opisany jako infrastrukturalny check bez telemetryki: sprawdza target i status manifestu, robi pełny sync tylko dla nieświeżego manifestu, zmiany liczby skilli albo po aktualizacji targetu oraz automatycznie aktualizuje wykryte nieaktualne skille z czystymi katalogami Git.
 - Przy poprawie sekcji `## Skille` bootstrap ma dopilnować reguły braku utraty informacji przy refaktorze, tłumaczeniu albo porządkowaniu skilli.
 - Bootstrap ma także utrzymywać sekcję `## Zgoda Na Pleo Library`, która mówi, że obecność `.agent-library.yaml` oznacza zgodę na wywołania do skonfigurowanego `libraryBaseUrl`, w tym sync manifestu wersji projektu i telemetrykę.
 - Bootstrap ma raportować, czy bieżące środowisko ma ustawione `TELEMETRY_USER_ID`; gdy go brakuje, agent powinien zapytać użytkownika, czy chce skonfigurować tę zmienną na poziomie użytkownika systemu, i podpowiedzieć, że wartość identyfikatora jest dostępna w sekcji profilu w PleoAI.

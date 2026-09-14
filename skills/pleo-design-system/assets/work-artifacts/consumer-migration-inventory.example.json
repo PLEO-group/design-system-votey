@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "runId": "00000000-0000-0000-0000-000000000000",
+  "packageName": "@pleodigital/design-system-example",
+  "releaseCandidate": "2.0.0-rc.1",
+  "packageArtifact": "<local-design-system-root>/dist/pleodigital-design-system-example-2.0.0-rc.1.tgz",
+  "packageArtifactSha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "sourceImplementationArtifact": "<local-design-system-root>/.tmp/design-system-implementation.md",
+  "consumerRegistry": "<local-design-system-root>/design-system-consumers.json",
+  "consumers": [
+    {
+      "id": "example-angular-app",
+      "repositoryId": "example-angular-app-repository",
+      "repositoryRoot": "<resolved-local-repository-root>",
+      "applicationRoot": ".",
+      "framework": "angular",
+      "planPath": ".tmp/design-system-consumer-migration.md"
+    }
+  ]
+}

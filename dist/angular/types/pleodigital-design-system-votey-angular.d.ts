@@ -212,16 +212,6 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyFilePickerComponent, "vt-file-picker", never, { "filename": { "alias": "filename"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "actionText": { "alias": "actionText"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "accept": { "alias": "accept"; "required": false; "isSignal": true; }; "capture": { "alias": "capture"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "cancelled": "cancelled"; }, never, never, true, never>;
 }
 
-declare class VoteyChipComponent {
-    readonly label: InputSignal<string>;
-    readonly removeTooltip: InputSignal<string>;
-    readonly showRemove: InputSignal<boolean>;
-    readonly disabled: InputSignal<boolean>;
-    readonly removed: OutputEmitterRef<void>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyChipComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyChipComponent, "vt-chip", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": true; "isSignal": true; }; "showRemove": { "alias": "showRemove"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; }, { "removed": "removed"; }, never, never, true, never>;
-}
-
 type VoteyRadioButtonLabelPosition = "before" | "after";
 interface VtRadioOption<T = unknown> {
     readonly label: string;
@@ -298,5 +288,5 @@ declare class VoteyTextComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextComponent, "vt-text", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; "uppercase": { "alias": "uppercase"; "required": false; "isSignal": true; }; "italic": { "alias": "italic"; "required": false; "isSignal": true; }; "wrap": { "alias": "wrap"; "required": false; "isSignal": true; }; "maxLines": { "alias": "maxLines"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFormControlApplyDirective, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFormControlApplyDirective, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyMenuItem, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

@@ -20,7 +20,7 @@
       [name]="name()"
       [type]="type()"
       [formControl]="formControl"
-      [placeholder]="placeholder()"
+      [placeholder]="placeholder() | vtTranslate"
       [attr.disabled]="disabled() ? '' : null"
       [required]="isRequired"
       [attr.inputmode]="inputMode() || null"
@@ -31,6 +31,7 @@
       [attr.pattern]="pattern() || null"
       [attr.aria-invalid]="hasError ? true : null"
       [attr.data-cy]="dataCy() || null"
+      (blur)="blur.emit($event)"
     />
   </div>
 

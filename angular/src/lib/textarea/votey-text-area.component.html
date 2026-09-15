@@ -30,12 +30,23 @@
     ></textarea>
   </div>
 
+  @let maxLengthValue = maxLength();
+
   @if (helper()) {
-  <vt-text
-    variant="caption-s"
-    color="muted"
-    [content]="helper() | vtTranslate"
-  />
+    <vt-text
+      variant="caption-s"
+      color="muted"
+      [content]="helper() | vtTranslate"
+    />
+  } @else if (maxLengthValue !== null) {
+    @let currentLength = (formControl.value ?? '').length;
+    @let translationParams = { current: currentLength, max: maxLengthValue };
+
+    <vt-text
+      variant="caption-s"
+      color="muted"
+      [content]="'CHARACTER_LIMIT' | vtTranslate: translationParams"
+    />
   }
 
   <vt-form-error

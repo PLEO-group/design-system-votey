@@ -9,6 +9,21 @@ const filePickerInputs = [
   "emptyText",
   "actionText",
   "disabled",
+  "loading",
+  "progress",
+  "multiple",
+  "dropEnabled",
+  "clearable",
+  "clearText",
+  "loadingText",
+  "allowedExtensions",
+  "allowedMimeTypes",
+  "maxFileSizeBytes",
+  "maxTotalSizeBytes",
+  "currentTotalSizeBytes",
+  "maxFiles",
+  "currentFilesCount",
+  "validationErrorKeys",
   "ignoredErrors",
 ];
 
@@ -73,8 +88,17 @@ function AngularFilePickerPreview(props) {
         componentRef.instance.changed.subscribe((file) =>
           latestPropsRef.current.onChanged(file)
         ),
+        componentRef.instance.filesChanged.subscribe((files) =>
+          latestPropsRef.current.onFilesChanged(files)
+        ),
+        componentRef.instance.cleared.subscribe(() =>
+          latestPropsRef.current.onCleared()
+        ),
         componentRef.instance.cancelled.subscribe(() =>
           latestPropsRef.current.onCancelled()
+        ),
+        componentRef.instance.rejected.subscribe((rejection) =>
+          latestPropsRef.current.onRejected(rejection)
         ),
       ];
       const control = new FormControl(null);
@@ -132,7 +156,13 @@ export default {
       description: "Controlled filename for an existing or previewed file.",
     },
     onChanged: { action: "changed", table: { category: "Events" } },
+    onFilesChanged: {
+      action: "filesChanged",
+      table: { category: "Events" },
+    },
+    onCleared: { action: "cleared", table: { category: "Events" } },
     onCancelled: { action: "cancelled", table: { category: "Events" } },
+    onRejected: { action: "rejected", table: { category: "Events" } },
     initialFilename: { description: "Value passed through initialValue." },
     staticFilename: { description: "Value passed through staticValue." },
     disable: { control: "boolean" },
@@ -144,13 +174,31 @@ export default {
     emptyText: "Nie wybrano pliku",
     actionText: "Wybierz plik",
     disabled: false,
+    loading: false,
+    progress: null,
+    multiple: false,
+    dropEnabled: true,
+    clearable: true,
+    clearText: "Usuń plik",
+    loadingText: "Przesyłanie",
+    allowedExtensions: [],
+    allowedMimeTypes: [],
+    maxFileSizeBytes: null,
+    maxTotalSizeBytes: null,
+    currentTotalSizeBytes: 0,
+    maxFiles: null,
+    currentFilesCount: 0,
+    validationErrorKeys: {},
     ignoredErrors: [],
     initialFilename: "",
     staticFilename: "",
     disable: undefined,
     block: undefined,
     onChanged: fn(),
+    onFilesChanged: fn(),
+    onCleared: fn(),
     onCancelled: fn(),
+    onRejected: fn(),
   },
 };
 

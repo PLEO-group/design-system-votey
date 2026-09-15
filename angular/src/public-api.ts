@@ -48,7 +48,15 @@ export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
 export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
-export { VoteyFilePickerComponent } from "./lib/file-picker/votey-file-picker.component";
+export {
+  VoteyFilePickerComponent,
+  VoteyFilePickerValidationErrors,
+} from "./lib/file-picker/votey-file-picker.component";
+export type {
+  VoteyFilePickerRejection,
+  VoteyFilePickerValidationError,
+  VoteyFilePickerValidationErrorKeys,
+} from "./lib/file-picker/votey-file-picker.component";
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
 export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyChipComponent } from "./lib/chip/votey-chip.component";

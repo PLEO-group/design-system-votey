@@ -179,26 +179,54 @@ declare class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<bool
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyCheckboxComponent, "vt-checkbox", never, { "indeterminate": { "alias": "indeterminate"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "required": { "alias": "required"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "labelPosition": { "alias": "labelPosition"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "value": { "alias": "value"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "indeterminate": "indeterminateChange"; "changed": "changed"; }, never, ["*"], true, never>;
 }
 
+declare const VoteyFilePickerValidationErrors: readonly ["invalidType", "fileTooLarge", "totalTooLarge", "tooManyFiles"];
+type VoteyFilePickerValidationError = (typeof VoteyFilePickerValidationErrors)[number];
+type VoteyFilePickerValidationErrorKeys = Readonly<Partial<Record<VoteyFilePickerValidationError, string>>>;
+interface VoteyFilePickerRejection {
+    readonly files: readonly File[];
+    readonly errors: readonly VoteyFilePickerValidationError[];
+}
 declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<File> implements OnDestroy {
     readonly filename: InputSignal<string>;
     readonly label: InputSignal<string>;
     readonly emptyText: InputSignal<string>;
     readonly actionText: InputSignal<string>;
     readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly loading: InputSignalWithTransform<boolean, unknown>;
+    readonly progress: InputSignalWithTransform<number | null, unknown>;
     readonly name: InputSignal<string>;
     readonly accept: InputSignal<string>;
     readonly capture: InputSignal<string>;
     readonly dataCy: InputSignal<string>;
+    readonly multiple: InputSignalWithTransform<boolean, unknown>;
+    readonly dropEnabled: InputSignalWithTransform<boolean, unknown>;
+    readonly clearable: InputSignalWithTransform<boolean, unknown>;
+    readonly clearText: InputSignal<string>;
+    readonly loadingText: InputSignal<string>;
+    readonly allowedExtensions: InputSignal<readonly string[]>;
+    readonly allowedMimeTypes: InputSignal<readonly string[]>;
+    readonly maxFileSizeBytes: InputSignalWithTransform<number | null, unknown>;
+    readonly maxTotalSizeBytes: InputSignalWithTransform<number | null, unknown>;
+    readonly currentTotalSizeBytes: InputSignalWithTransform<number, unknown>;
+    readonly maxFiles: InputSignalWithTransform<number | null, unknown>;
+    readonly currentFilesCount: InputSignalWithTransform<number, unknown>;
+    readonly validationErrorKeys: InputSignal<VoteyFilePickerValidationErrorKeys>;
     readonly ignoredErrors: InputSignal<string[]>;
     readonly changed: OutputEmitterRef<File | null>;
+    readonly filesChanged: OutputEmitterRef<readonly File[]>;
+    readonly cleared: OutputEmitterRef<void>;
     readonly cancelled: OutputEmitterRef<void>;
+    readonly rejected: OutputEmitterRef<VoteyFilePickerRejection>;
     protected readonly fileInput: Signal<ElementRef<HTMLInputElement> | undefined>;
     private readonly formDisabled;
     private readonly formControlStateVersion;
-    private readonly selectedFile;
+    private readonly selectedFiles;
+    private readonly dragDepth;
     private formControlEventsSubscription;
     protected readonly hasFile: Signal<boolean>;
     protected readonly resolvedFilename: Signal<string>;
+    protected readonly isDragging: Signal<boolean>;
+    protected readonly isLoading: Signal<boolean>;
     protected readonly effectiveDisabled: Signal<boolean>;
     protected readonly isRequired: Signal<boolean>;
     protected get errorKeys(): string[];
@@ -207,13 +235,26 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     ngOnDestroy(): void;
     open(): void;
     protected handleChange(event: Event): void;
+    protected handleDragEnter(event: DragEvent): void;
+    protected handleDragOver(event: DragEvent): void;
+    protected handleDragLeave(event: DragEvent): void;
+    protected handleDrop(event: DragEvent): void;
+    clear(): void;
     protected handleCancel(): void;
     private observeFormControl;
     private syncFormControlState;
     private resetNativeInput;
-    private commitValue;
+    private canHandleFileDrag;
+    private selectFiles;
+    private getValidationErrors;
+    private isAllowedFile;
+    private applyValidationErrors;
+    private clearValidationErrors;
+    private withoutFilePickerErrors;
+    private getValidationErrorKey;
+    private commitFiles;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyFilePickerComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyFilePickerComponent, "vt-file-picker", never, { "filename": { "alias": "filename"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "actionText": { "alias": "actionText"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "accept": { "alias": "accept"; "required": false; "isSignal": true; }; "capture": { "alias": "capture"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "cancelled": "cancelled"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyFilePickerComponent, "vt-file-picker", never, { "filename": { "alias": "filename"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "actionText": { "alias": "actionText"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "loading": { "alias": "loading"; "required": false; "isSignal": true; }; "progress": { "alias": "progress"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "accept": { "alias": "accept"; "required": false; "isSignal": true; }; "capture": { "alias": "capture"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "multiple": { "alias": "multiple"; "required": false; "isSignal": true; }; "dropEnabled": { "alias": "dropEnabled"; "required": false; "isSignal": true; }; "clearable": { "alias": "clearable"; "required": false; "isSignal": true; }; "clearText": { "alias": "clearText"; "required": false; "isSignal": true; }; "loadingText": { "alias": "loadingText"; "required": false; "isSignal": true; }; "allowedExtensions": { "alias": "allowedExtensions"; "required": false; "isSignal": true; }; "allowedMimeTypes": { "alias": "allowedMimeTypes"; "required": false; "isSignal": true; }; "maxFileSizeBytes": { "alias": "maxFileSizeBytes"; "required": false; "isSignal": true; }; "maxTotalSizeBytes": { "alias": "maxTotalSizeBytes"; "required": false; "isSignal": true; }; "currentTotalSizeBytes": { "alias": "currentTotalSizeBytes"; "required": false; "isSignal": true; }; "maxFiles": { "alias": "maxFiles"; "required": false; "isSignal": true; }; "currentFilesCount": { "alias": "currentFilesCount"; "required": false; "isSignal": true; }; "validationErrorKeys": { "alias": "validationErrorKeys"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "filesChanged": "filesChanged"; "cleared": "cleared"; "cancelled": "cancelled"; "rejected": "rejected"; }, never, never, true, never>;
 }
 
 declare class VoteyFormErrorComponent {
@@ -356,5 +397,5 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "blur": "blur"; "keyDown": "keyDown"; }, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyRadioButtonLabelPosition, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtRadioOption };

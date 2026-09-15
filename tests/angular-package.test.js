@@ -143,8 +143,27 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.multiple[0], "multiple");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.allowedExtensions[0],
+    "allowedExtensions",
+  );
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.maxFileSizeBytes[0],
+    "maxFileSizeBytes",
+  );
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.inputs.maxTotalSizeBytes[0],
+    "maxTotalSizeBytes",
+  );
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.changed, "changed");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.outputs.filesChanged,
+    "filesChanged",
+  );
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cleared, "cleared");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.rejected, "rejected");
   assert.equal(typeof VoteyFormControlApplyDirective, "function");
   assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
     ["", "vtFormControlApply", ""],
@@ -419,6 +438,99 @@ test("checkbox applies a passed form control and emits changed output", async ()
   assert.equal(checkbox.formControl.disabled, true);
 
   subscription.unsubscribe();
+});
+
+test("file picker supports drops, batches, validation and clearing", async () => {
+  const {
+    FormControl,
+    Injector,
+    runInInjectionContext,
+    VoteyFilePickerComponent,
+  } = await loadAngularRuntime();
+  const picker = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyFilePickerComponent(),
+  );
+  const control = new FormControl(null);
+  const changed = [];
+  const fileBatches = [];
+  const rejections = [];
+  let cleared = 0;
+  const firstFile = new File(["first"], "first.pdf", {
+    type: "application/pdf",
+  });
+  const secondFile = new File(["second"], "second.pdf", {
+    type: "application/pdf",
+  });
+  const invalidFile = new File(["invalid"], "invalid.png", {
+    type: "image/png",
+  });
+
+  picker.control = control;
+  picker.multiple = () => true;
+  picker.allowedExtensions = () => ["pdf"];
+  picker.maxFileSizeBytes = () => 10;
+  picker.maxTotalSizeBytes = () => 20;
+  picker.validationErrorKeys = () => ({
+    invalidType: "ERRORS.FILE_UPLOAD_INVALID_TYPE",
+  });
+
+  const changedSubscription = picker.changed.subscribe((value) =>
+    changed.push(value),
+  );
+  const filesChangedSubscription = picker.filesChanged.subscribe((files) =>
+    fileBatches.push(files),
+  );
+  const rejectedSubscription = picker.rejected.subscribe((rejection) =>
+    rejections.push(rejection),
+  );
+  const clearedSubscription = picker.cleared.subscribe(() => {
+    cleared += 1;
+  });
+
+  picker.handleChange({ target: { files: [firstFile, secondFile] } });
+
+  assert.equal(control.value, firstFile);
+  assert.deepEqual(changed, [firstFile]);
+  assert.deepEqual(fileBatches, [[firstFile, secondFile]]);
+
+  picker.handleChange({ target: { files: [invalidFile] } });
+
+  assert.equal(control.value, firstFile);
+  assert.deepEqual(control.errors, {
+    "ERRORS.FILE_UPLOAD_INVALID_TYPE": true,
+  });
+  assert.deepEqual(rejections, [
+    {
+      files: [invalidFile],
+      errors: ["invalidType"],
+    },
+  ]);
+
+  let prevented = false;
+  picker.handleDrop({
+    preventDefault() {
+      prevented = true;
+    },
+    dataTransfer: { files: [firstFile], types: ["Files"] },
+  });
+
+  assert.equal(prevented, true);
+  assert.equal(control.errors, null);
+  assert.deepEqual(fileBatches.at(-1), [firstFile]);
+
+  picker.clear();
+
+  assert.equal(control.value, null);
+  assert.equal(changed.at(-1), null);
+  assert.deepEqual(fileBatches.at(-1), []);
+  assert.equal(cleared, 1);
+
+  changedSubscription.unsubscribe();
+  filesChangedSubscription.unsubscribe();
+  rejectedSubscription.unsubscribe();
+  clearedSubscription.unsubscribe();
+  picker.ngOnDestroy();
 });
 
 test.skip("legacy input CVA contract", async () => {

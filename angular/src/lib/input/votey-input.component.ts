@@ -79,11 +79,15 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     null
   );
   public readonly maxLength: InputSignal<number | null> = input<number | null>(
-    null
+    500
   );
   public readonly pattern: InputSignal<string> = input<string>("");
   public readonly dataCy: InputSignal<string> = input<string>("");
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
+  public readonly showErrors: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly blur: OutputEmitterRef<FocusEvent> =
+    output<FocusEvent>();
   public readonly keyDown: OutputEmitterRef<KeyboardEvent> =
     output<KeyboardEvent>();
 
@@ -92,7 +96,9 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   }
 
   protected get hasError(): boolean {
-    return this.formControl.invalid && this.formControl.touched;
+    return (
+      this.showErrors() && this.formControl.invalid && this.formControl.touched
+    );
   }
 
   protected get hasValue(): boolean {

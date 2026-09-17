@@ -24,10 +24,45 @@
       align-items: center;
       min-width: 0;
       height: 50px;
+      box-sizing: border-box;
       padding: 0 var(--spacing-16);
       overflow: hidden;
+      border: 2px dashed transparent;
       border-radius: var(--radius-input);
       background-color: var(--color-bg-surface-tint);
+
+      &.dragging {
+        border-color: var(--color-accent-primary);
+      }
+
+      .loading-state {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-8);
+        min-width: 0;
+      }
+
+      .loading-spinner {
+        flex: 0 0 16px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--color-border-subtle);
+        border-top-color: var(--color-accent-primary);
+        border-radius: 50%;
+        animation: file-picker-spin 700ms linear infinite;
+      }
     }
+  }
+}
+
+@keyframes file-picker-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .file-picker-wrapper .row .file-box .loading-spinner {
+    animation: none;
   }
 }

@@ -7,8 +7,30 @@
   <vt-text variant="label" color="secondary" [content]="label() | vtTranslate" />
   }
 
-  <div class="row">
-    <div class="file-box" aria-live="polite" [attr.title]="resolvedFilename()">
+  <div
+    class="row"
+    [class.loading]="isLoading()"
+    [attr.aria-busy]="isLoading()"
+  >
+    <div
+      class="file-box"
+      [class.dragging]="isDragging()"
+      aria-live="polite"
+      [attr.title]="resolvedFilename()"
+      (dragenter)="handleDragEnter($event)"
+      (dragover)="handleDragOver($event)"
+      (dragleave)="handleDragLeave($event)"
+      (drop)="handleDrop($event)"
+    >
+      @if (isLoading()) {
+      <div class="loading-state" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <vt-text variant="caption" color="secondary" [content]="loadingText() | vtTranslate" />
+        @if (progress() !== null) {
+        <vt-text variant="caption" color="secondary" [content]="progress() + '%'" />
+        }
+      </div>
+      } @else {
       <vt-text
         variant="caption"
         [color]="hasFile() ? 'primary' : 'muted'"
@@ -16,6 +38,7 @@
           resolvedFilename() ? resolvedFilename() : (emptyText() | vtTranslate)
         "
       />
+      }
     </div>
 
     <vt-button
@@ -24,6 +47,17 @@
       [disabled]="effectiveDisabled()"
       (pressed)="open()"
     />
+
+    @if (clearable() && hasFile() && !isLoading()) {
+    <vt-button
+      variant="ghost"
+      size="small"
+      ico="ui-delete"
+      [tooltipText]="clearText()"
+      [disabled]="effectiveDisabled()"
+      (pressed)="clear()"
+    />
+    }
 
     <input
       #fileInput
@@ -35,6 +69,7 @@
       [attr.accept]="accept() || null"
       [attr.capture]="capture() || null"
       [attr.data-cy]="dataCy() || null"
+      [multiple]="multiple()"
       (change)="handleChange($event)"
       (cancel)="handleCancel()"
     />

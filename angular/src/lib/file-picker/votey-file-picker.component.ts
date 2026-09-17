@@ -23,6 +23,57 @@ import { VoteyFormErrorComponent } from "../form-error/votey-form-error.componen
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
+export const VoteyFilePickerValidationErrors = [
+  "invalidType",
+  "fileTooLarge",
+  "totalTooLarge",
+  "tooManyFiles",
+] as const;
+
+const defaultMaxFileSizeBytes = 25 * 1024 * 1024;
+const defaultMaxTotalSizeBytes = 250 * 1024 * 1024;
+
+export type VoteyFilePickerValidationError =
+  (typeof VoteyFilePickerValidationErrors)[number];
+
+export type VoteyFilePickerValidationErrorKeys = Readonly<
+  Partial<Record<VoteyFilePickerValidationError, string>>
+>;
+
+export interface VoteyFilePickerRejection {
+  readonly files: readonly File[];
+  readonly errors: readonly VoteyFilePickerValidationError[];
+}
+
+const defaultValidationErrorKeys: Readonly<
+  Record<VoteyFilePickerValidationError, string>
+> = {
+  invalidType: "ERRORS.FILE_PICKER_INVALID_TYPE",
+  fileTooLarge: "ERRORS.FILE_PICKER_FILE_TOO_LARGE",
+  totalTooLarge: "ERRORS.FILE_PICKER_TOTAL_TOO_LARGE",
+  tooManyFiles: "ERRORS.FILE_PICKER_TOO_MANY_FILES",
+};
+
+function optionalNonNegativeNumber(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+
+  const numericValue = Number(value);
+
+  return Number.isFinite(numericValue) && numericValue >= 0
+    ? numericValue
+    : null;
+}
+
+function nonNegativeNumber(value: unknown): number {
+  return optionalNonNegativeNumber(value) ?? 0;
+}
+
+function progressNumber(value: unknown): number | null {
+  const numericValue = optionalNonNegativeNumber(value);
+
+  return numericValue === null ? null : Math.min(numericValue, 100);
+}
+
 @Component({
   selector: "vt-file-picker",
   templateUrl: "./votey-file-picker.component.html",
@@ -49,15 +100,67 @@ export class VoteyFilePickerComponent
     boolean,
     unknown
   >(false, { transform: booleanAttribute });
+  public readonly loading: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, { transform: booleanAttribute });
+  public readonly progress: InputSignalWithTransform<number | null, unknown> =
+    input<number | null, unknown>(null, { transform: progressNumber });
   public readonly name: InputSignal<string> = input<string>("");
   public readonly accept: InputSignal<string> = input<string>("");
   public readonly capture: InputSignal<string> = input<string>("");
   public readonly dataCy: InputSignal<string> = input<string>("");
+  public readonly multiple: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, { transform: booleanAttribute });
+  public readonly dropEnabled: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly clearable: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly clearText: InputSignal<string> =
+    input<string>("BUTTON.DELETE");
+  public readonly loadingText: InputSignal<string> = input<string>("LOADING");
+  public readonly allowedExtensions: InputSignal<readonly string[]> = input<
+    readonly string[]
+  >([]);
+  public readonly allowedMimeTypes: InputSignal<readonly string[]> = input<
+    readonly string[]
+  >([]);
+  public readonly maxFileSizeBytes: InputSignalWithTransform<
+    number | null,
+    unknown
+  > = input<number | null, unknown>(defaultMaxFileSizeBytes, {
+    transform: optionalNonNegativeNumber,
+  });
+  public readonly maxTotalSizeBytes: InputSignalWithTransform<
+    number | null,
+    unknown
+  > = input<number | null, unknown>(defaultMaxTotalSizeBytes, {
+    transform: optionalNonNegativeNumber,
+  });
+  public readonly currentTotalSizeBytes: InputSignalWithTransform<
+    number,
+    unknown
+  > = input<number, unknown>(0, { transform: nonNegativeNumber });
+  public readonly maxFiles: InputSignalWithTransform<number | null, unknown> =
+    input<number | null, unknown>(null, {
+      transform: optionalNonNegativeNumber,
+    });
+  public readonly currentFilesCount: InputSignalWithTransform<number, unknown> =
+    input<number, unknown>(0, { transform: nonNegativeNumber });
+  public readonly validationErrorKeys: InputSignal<VoteyFilePickerValidationErrorKeys> =
+    input<VoteyFilePickerValidationErrorKeys>({});
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
   public readonly changed: OutputEmitterRef<File | null> =
     output<File | null>();
+  public readonly filesChanged: OutputEmitterRef<readonly File[]> =
+    output<readonly File[]>();
+  public readonly cleared: OutputEmitterRef<void> = output<void>();
   public readonly cancelled: OutputEmitterRef<void> = output<void>();
+  public readonly rejected: OutputEmitterRef<VoteyFilePickerRejection> =
+    output<VoteyFilePickerRejection>();
 
   protected readonly fileInput: Signal<
     ElementRef<HTMLInputElement> | undefined
@@ -66,17 +169,28 @@ export class VoteyFilePickerComponent
     signal<boolean>(false);
   private readonly formControlStateVersion: WritableSignal<number> =
     signal<number>(0);
-  private readonly selectedFile: WritableSignal<File | null> =
-    signal<File | null>(null);
+  private readonly selectedFiles: WritableSignal<readonly File[]> = signal<
+    readonly File[]
+  >([]);
+  private readonly dragDepth: WritableSignal<number> = signal<number>(0);
   private formControlEventsSubscription: Subscription | undefined;
   protected readonly hasFile: Signal<boolean> = computed<boolean>(
-    () => this.selectedFile() !== null || this.filename().trim().length > 0
+    () => this.selectedFiles().length > 0 || this.filename().trim().length > 0
   );
   protected readonly resolvedFilename: Signal<string> = computed<string>(
-    () => this.selectedFile()?.name || this.filename().trim()
+    () =>
+      this.selectedFiles()
+        .map((file: File) => file.name)
+        .join(", ") || this.filename().trim()
+  );
+  protected readonly isDragging: Signal<boolean> = computed<boolean>(
+    () => this.dragDepth() > 0
+  );
+  protected readonly isLoading: Signal<boolean> = computed<boolean>(
+    () => this.loading() || this.progress() !== null
   );
   protected readonly effectiveDisabled: Signal<boolean> = computed<boolean>(
-    () => this.disabled() || this.formDisabled()
+    () => this.disabled() || this.formDisabled() || this.isLoading()
   );
   protected readonly isRequired: Signal<boolean> = computed<boolean>(() => {
     this.formControlStateVersion();
@@ -120,9 +234,49 @@ export class VoteyFilePickerComponent
 
   protected handleChange(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
-    const selectedFile: File | null = inputElement.files?.item(0) ?? null;
+    this.selectFiles(Array.from(inputElement.files ?? []));
+  }
 
-    this.commitValue(selectedFile);
+  protected handleDragEnter(event: DragEvent): void {
+    if (!this.canHandleFileDrag(event)) return;
+
+    event.preventDefault();
+    this.dragDepth.update((depth: number) => depth + 1);
+  }
+
+  protected handleDragOver(event: DragEvent): void {
+    if (!this.canHandleFileDrag(event)) return;
+
+    event.preventDefault();
+
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+  }
+
+  protected handleDragLeave(event: DragEvent): void {
+    if (!this.canHandleFileDrag(event)) return;
+
+    event.preventDefault();
+    this.dragDepth.update((depth: number) => Math.max(depth - 1, 0));
+  }
+
+  protected handleDrop(event: DragEvent): void {
+    if (!this.dropEnabled() || this.effectiveDisabled()) return;
+
+    event.preventDefault();
+    this.dragDepth.set(0);
+    this.selectFiles(Array.from(event.dataTransfer?.files ?? []));
+  }
+
+  public clear(): void {
+    if (this.effectiveDisabled() || !this.hasFile()) return;
+
+    this.clearValidationErrors();
+    this.selectedFiles.set([]);
+    this.formControl.setValue(null);
+    this.resetNativeInput();
+    this.changed.emit(null);
+    this.filesChanged.emit([]);
+    this.cleared.emit();
   }
 
   protected handleCancel(): void {
@@ -140,7 +294,7 @@ export class VoteyFilePickerComponent
   private syncFormControlState(): void {
     const value: File | null = this.formControl.value;
 
-    this.selectedFile.set(value);
+    this.selectedFiles.set(value ? [value] : []);
     this.formDisabled.set(this.formControl.disabled);
     this.formControlStateVersion.update((version: number) => version + 1);
 
@@ -154,10 +308,173 @@ export class VoteyFilePickerComponent
     if (inputElement) inputElement.value = "";
   }
 
-  private commitValue(value: File | null): void {
-    if (this.formControl.value === value) return;
+  private canHandleFileDrag(event: DragEvent): boolean {
+    return (
+      this.dropEnabled() &&
+      !this.effectiveDisabled() &&
+      Array.from(event.dataTransfer?.types ?? []).includes("Files")
+    );
+  }
 
-    this.formControl.setValue(value);
-    this.changed.emit(value);
+  private selectFiles(files: readonly File[]): void {
+    const selectedFiles: readonly File[] = this.multiple()
+      ? files
+      : files.slice(0, 1);
+
+    if (!selectedFiles.length) {
+      this.commitFiles([]);
+      return;
+    }
+
+    const validationErrors = this.getValidationErrors(selectedFiles);
+
+    if (validationErrors.length) {
+      this.applyValidationErrors(validationErrors);
+      this.resetNativeInput();
+      this.rejected.emit({ files: selectedFiles, errors: validationErrors });
+      return;
+    }
+
+    this.clearValidationErrors();
+    this.commitFiles(selectedFiles);
+  }
+
+  private getValidationErrors(
+    files: readonly File[]
+  ): VoteyFilePickerValidationError[] {
+    const errors = new Set<VoteyFilePickerValidationError>();
+    const allowedExtensions = this.allowedExtensions()
+      .map((extension: string) => extension.trim().toLowerCase().replace(/^\./, ""))
+      .filter(Boolean);
+    const allowedMimeTypes = this.allowedMimeTypes()
+      .map((mimeType: string) => mimeType.trim().toLowerCase())
+      .filter(Boolean);
+    const hasTypeRestriction =
+      allowedExtensions.length > 0 || allowedMimeTypes.length > 0;
+    const maxFileSizeBytes = this.maxFileSizeBytes();
+    const maxTotalSizeBytes = this.maxTotalSizeBytes();
+    const maxFiles = this.maxFiles();
+
+    if (
+      hasTypeRestriction &&
+      files.some(
+        (file: File) =>
+          !this.isAllowedFile(file, allowedExtensions, allowedMimeTypes)
+      )
+    ) {
+      errors.add("invalidType");
+    }
+
+    if (
+      maxFileSizeBytes !== null &&
+      files.some((file: File) => file.size > maxFileSizeBytes)
+    ) {
+      errors.add("fileTooLarge");
+    }
+
+    const selectedFilesSizeBytes = files.reduce(
+      (total: number, file: File) => total + file.size,
+      0
+    );
+
+    if (
+      maxTotalSizeBytes !== null &&
+      this.currentTotalSizeBytes() + selectedFilesSizeBytes > maxTotalSizeBytes
+    ) {
+      errors.add("totalTooLarge");
+    }
+
+    if (
+      maxFiles !== null &&
+      this.currentFilesCount() + files.length > Math.floor(maxFiles)
+    ) {
+      errors.add("tooManyFiles");
+    }
+
+    return [...errors];
+  }
+
+  private isAllowedFile(
+    file: File,
+    allowedExtensions: readonly string[],
+    allowedMimeTypes: readonly string[]
+  ): boolean {
+    const extension = file.name.trim().toLowerCase().split(".").pop() ?? "";
+    const mimeType = file.type.trim().toLowerCase();
+
+    return (
+      allowedExtensions.includes(extension) ||
+      allowedMimeTypes.some(
+        (allowedMimeType: string) =>
+          allowedMimeType === mimeType ||
+          (allowedMimeType.endsWith("/*") &&
+            mimeType.startsWith(allowedMimeType.slice(0, -1)))
+      )
+    );
+  }
+
+  private applyValidationErrors(
+    errors: readonly VoteyFilePickerValidationError[]
+  ): void {
+    const formErrors = this.withoutFilePickerErrors(this.formControl.errors);
+
+    for (const error of errors) {
+      formErrors[this.getValidationErrorKey(error)] = true;
+    }
+
+    this.formControl.setErrors(formErrors);
+    this.formControl.markAsTouched();
+  }
+
+  private clearValidationErrors(): void {
+    const formErrors = this.withoutFilePickerErrors(this.formControl.errors);
+
+    this.formControl.setErrors(
+      Object.keys(formErrors).length > 0 ? formErrors : null
+    );
+  }
+
+  private withoutFilePickerErrors(
+    errors: Record<string, unknown> | null
+  ): Record<string, unknown> {
+    const filePickerErrorKeys = new Set<string>([
+      ...Object.values(defaultValidationErrorKeys),
+      ...Object.values(this.validationErrorKeys()).filter(
+        (errorKey: string | undefined): errorKey is string => Boolean(errorKey)
+      ),
+    ]);
+
+    return Object.entries(errors ?? {}).reduce<Record<string, unknown>>(
+      (
+        filteredErrors: Record<string, unknown>,
+        [errorKey, errorValue]: [string, unknown]
+      ) => {
+        if (!filePickerErrorKeys.has(errorKey)) {
+          filteredErrors[errorKey] = errorValue;
+        }
+
+        return filteredErrors;
+      },
+      {}
+    );
+  }
+
+  private getValidationErrorKey(
+    error: VoteyFilePickerValidationError
+  ): string {
+    return this.validationErrorKeys()[error] ?? defaultValidationErrorKeys[error];
+  }
+
+  private commitFiles(files: readonly File[]): void {
+    const value: File | null = files[0] ?? null;
+    const hasValueChanged = this.formControl.value !== value;
+
+    if (hasValueChanged) this.formControl.setValue(value);
+
+    this.selectedFiles.set(files);
+
+    if (hasValueChanged) this.changed.emit(value);
+
+    this.filesChanged.emit(files);
   }
 }

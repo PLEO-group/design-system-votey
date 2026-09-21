@@ -201,11 +201,11 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
       );
     });
   protected readonly resolvedTooltip: Signal<string> = computed(
-    (): string =>
-      (this.disabled() || this.formControl.disabled
+    (): string => this.toTrimmedString(
+      this.disabled() || this.formControl.disabled
         ? this.disabledNote()
         : this.tooltip()
-      ).trim()
+    )
   );
 
   public ngOnInit(): void {
@@ -531,6 +531,10 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     if (typeof value === "number") return value;
 
     return null;
+  }
+
+  private toTrimmedString(value: unknown): string {
+    return typeof value === "string" ? value.trim() : "";
   }
 
   private emitChange(value: unknown): void {

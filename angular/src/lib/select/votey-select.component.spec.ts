@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormControl, Validators } from "@angular/forms";
 import { MatSelect } from "@angular/material/select";
-import { VoteySelectComponent } from "./votey-select.component";
+import { VoteySelectComponent, type VtOption } from "./votey-select.component";
 
 describe("VoteySelectComponent", () => {
   let component: VoteySelectComponent;
@@ -24,6 +24,7 @@ describe("VoteySelectComponent", () => {
     const control: FormControl<string[] | null> = new FormControl(["first"]);
 
     fixture.componentRef.setInput("control", control);
+    fixture.componentRef.setInput("bindValue", "value");
     fixture.componentRef.setInput("multiple", true);
     fixture.detectChanges();
 
@@ -44,6 +45,17 @@ describe("VoteySelectComponent", () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain("SECOND");
+  });
+
+  it("should preserve the complete option when bindValue is not configured", (): void => {
+    const option: VtOption<string> = { label: "FIRST", value: "first" };
+    const control: FormControl<VtOption<string> | null> = new FormControl(option);
+
+    fixture.componentRef.setInput("control", control);
+    fixture.componentRef.setInput("options", [option]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain("FIRST");
   });
 
   it("should render the error state for a touched invalid control", (): void => {
@@ -84,6 +96,7 @@ describe("VoteySelectComponent", () => {
     const control: FormControl<string | null> = new FormControl("first");
 
     fixture.componentRef.setInput("control", control);
+    fixture.componentRef.setInput("bindValue", "value");
     fixture.componentRef.setInput("clearable", true);
     fixture.detectChanges();
 

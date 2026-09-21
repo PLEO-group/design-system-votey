@@ -364,7 +364,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
       return this.getBoundOptionProperty(option, this.bindValue());
     }
 
-    return this.isVtOption(option) ? option.value : option;
+    return option;
   }
 
   private getOptionText(option: unknown, property: string): string {

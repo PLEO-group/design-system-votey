@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.15.0
+version: 1.16.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -404,6 +404,37 @@ Używaj `effect()` tylko dla realnych efektów ubocznych, np. synchronizacji z z
 - ręczne przepychanie state'u między signalami, jeśli wystarczy `computed()`.
 
 Nie zapisuj do signali wewnątrz `effect()` bez wyraźnego powodu i ochrony przed pętlą aktualizacji.
+
+Wyjątek: gdy komponent ma lokalny, mutowalny signal reprezentujący wybór lub
+stan interakcji, a wartość źródłowa przychodzi z `input()`, użyj `effect()` do
+resetowania albo synchronizacji lokalnego stanu po zmianie inputu. Taki efekt
+jest uzasadniony tylko wtedy, gdy użytkownik może zmieniać lokalny signal
+niezależnie od inputu i samo `computed()` nie wystarcza. W callbacku efektu
+odczytaj aktualny input, ustaw lokalny stan na wartość pochodną od tego inputu
+i nie modyfikuj inputu ani źródła rodzica.
+
+Przed zapisaniem do signala w `effect()` sprawdź:
+
+- czy signal jest lokalnym stanem interakcji, a nie tylko wartością do
+  wyświetlenia,
+- czy input może zmienić się po utworzeniu komponentu,
+- czy synchronizacja nie tworzy pętli aktualizacji,
+- czy efekt powinien reagować tylko na input źródłowy, a nie na własny signal.
+
+Przykładowy wzorzec:
+
+```ts
+protected readonly selectedId = signal<number | null>(null);
+
+public constructor() {
+  effect((): void => {
+    this.selectedId.set(this.valueFromParent()?.id ?? null);
+  });
+}
+```
+
+Nie stosuj tego wyjątku do zwykłego mapowania danych pod template — tam nadal
+preferuj `computed()`.
 
 ### [3.8] Czyszczenie subskrypcji i zasobów
 

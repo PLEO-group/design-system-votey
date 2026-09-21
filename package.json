@@ -51,6 +51,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "flag-icons": "^7.5.0",
     "node-device-detector": "^2.2.6",
     "tslib": "^2.8.1"
   },

@@ -1,4 +1,5 @@
 import React, {useLayoutEffect} from 'react';
+import 'flag-icons/css/flag-icons.min.css';
 import '../dist/css/tokens.angular.css';
 import './preview-styles.css';
 

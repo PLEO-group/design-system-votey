@@ -1,0 +1,166 @@
+@let translatedLabel = label() | vtTranslate; @let selectDisabled = disabled()
+|| formControl.disabled;
+@let translatedTooltip = resolvedTooltip() | vtTranslate;
+
+<div
+  class="select-wrapper"
+  [class.compact]="variant() === 'compact'"
+  [class.disabled]="selectDisabled"
+  [class.error]="hasError"
+>
+  @if (label()) {
+  <label class="label" [for]="id()">
+    <vt-text
+      variant="label"
+      [color]="selectDisabled ? 'muted' : 'primary'"
+      [content]="translatedLabel"
+    />
+  </label>
+  }
+
+  <div
+    class="field"
+    [class.open]="isOpen()"
+    matTooltipPosition="above"
+    [matTooltipDisabled]="!translatedTooltip"
+    [matTooltipShowDelay]="500"
+    [matTooltip]="translatedTooltip"
+    (click)="openSelect($event)"
+  >
+    <mat-select
+      class="control"
+      panelClass="vt-select-panel"
+      panelWidth="auto"
+      [id]="id()"
+      [multiple]="multiple()"
+      [disabled]="selectDisabled"
+      [required]="isRequired"
+      [formControl]="selectionControl"
+      [placeholder]="placeholder() | vtTranslate"
+      [attr.data-cy]="dataCy() || null"
+      [attr.name]="name() || null"
+      (selectionChange)="handleSelectionChange($event)"
+      (openedChange)="handleOpenedChange($event)"
+    >
+      @if (!multiple() && selectedOption; as option) {
+      <mat-select-trigger>
+        <span class="selected-option">
+          @if (flagSelect() && option.flagClass) {
+          <span class="option-flag" [class]="flagClass() + ' ' + option.flagClass"></span>
+          }
+          @if (option.avatarUrl) {
+          <img
+            class="option-avatar"
+            [src]="option.avatarUrl"
+            [alt]="option.label"
+          />
+          }
+          <span class="option-label">
+            @if (translateOptions()) {
+            {{ option.label | vtTranslate }}
+            } @else {
+            {{ option.label }}
+            }
+          </span>
+        </span>
+      </mat-select-trigger>
+      }
+
+      @if (isSearchEnabled) {
+      <div class="panel-search" (click)="stopPanelEvent($event)">
+        <input
+          aria-label="Search"
+          autocomplete="off"
+          class="panel-search-input"
+          type="search"
+          [placeholder]="searchPlaceholder() | vtTranslate"
+          [value]="searchTerm()"
+          (input)="handleSearchInput($event)"
+          (keydown)="stopPanelEvent($event)"
+        />
+      </div>
+      }
+
+      @for (option of filteredOptionViews(); track option.value) {
+      <mat-option
+        [value]="option.value"
+        [disabled]="option.disabled"
+      >
+        <div class="option-content">
+          @if (flagSelect() && option.flagClass) {
+          <span class="option-flag" [class]="flagClass() + ' ' + option.flagClass"></span>
+          }
+          @if (option.avatarUrl) {
+          <img
+            class="option-avatar"
+            [src]="option.avatarUrl"
+            [alt]="option.label"
+          />
+          }
+          <span class="option-copy">
+            <span class="option-label">
+              @if (translateOptions()) {
+              {{ option.label | vtTranslate }}
+              } @else {
+              {{ option.label }}
+              }
+            </span>
+            @if (option.description) {
+            <span class="option-description">{{ option.description }}</span>
+            }
+          </span>
+        </div>
+      </mat-option>
+      }
+
+      @if (isSelectionActionMode) {
+      <div
+        class="selection-actions"
+        (click)="stopPanelEvent($event)"
+        (mousedown)="stopPanelEvent($event)"
+      >
+        <vt-button
+          variant="secondary"
+          [text]="selectionCancelText()"
+          (pressed)="cancelSelectionActions()"
+        />
+        <vt-button
+          [text]="selectionUpdateText()"
+          (pressed)="updateSelectionActions()"
+        />
+      </div>
+      }
+    </mat-select>
+    @if (canClear) {
+    <button
+      class="clear"
+      type="button"
+      [attr.aria-label]="clearTooltip() | vtTranslate"
+      [attr.title]="clearTooltip() | vtTranslate"
+      (click)="clearSelection($event)"
+    >
+      <vt-icon ico="ui-close" />
+    </button>
+    }
+    <vt-icon
+      class="arrow"
+      ico="ui-chevron-down"
+      [class.open]="isOpen()"
+    />
+  </div>
+
+  @if (multiple() && showSelectionChips() && selectedOptions.length) {
+  <div class="chips">
+    @for (option of selectedOptions; track option.value) {
+    <vt-chip
+      [label]="translateOptions() ? (option.label | vtTranslate) : option.label"
+      [removeTooltip]="removeTooltip()"
+      [disabled]="selectDisabled || option.disabled || !isOptionRemovable(option)"
+      (removed)="removeSelection(option)"
+    />
+    }
+  </div>
+  }
+
+  <vt-form-error [errors]="errorKeys" [ignoredErrors]="ignoredErrors()" />
+</div>

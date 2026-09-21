@@ -1,7 +1,7 @@
 ---
 name: pleo-library-spec-workflow-helper
 description: Operacyjnie sprawdza, pobiera i publikuje workflow spec-review w PleoAI/DO Spaces oraz obsługuje kontekst i start prespecki. Używaj wyłącznie przy jawnych operacjach storage, publish, update albo pull dla `docs/sdd/versioning.md`, `specification.md`, `story-<jira>.md` i `affectedSpecifications` oraz przy `prespec-context` lub potwierdzonym `prespec-start`; nie używaj do zwykłego pisania specyfikacji.
-version: 2.6.0
+version: 2.6.6
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
@@ -58,7 +58,7 @@ Dokument z kontraktem dla Codexa, który ma pisać specki w innym projekcie, zna
 - `projectSlug` helper bierze z argumentu CLI i przekazuje go dalej:
   - jako osobne pole requestu do `publish` i `update`,
   - jako identyfikator projektu w payloadzie `affectedSpecifications`.
-- Każda publikowana `specification.md` nadal musi mieć `# WERSJA x.y.z`.
+- Każdy publikowany dokument, również `--story-file`, musi mieć własny nagłówek `# WERSJA x.y.z`. Wersja story nie aktualizuje wpisu głównej specki w `versioning.md`.
 - `Feature slug` w markdownzie nadal jest wymagany do prawidłowego mapowania storage.
 - Przy `publish` albo `update` workflow agent musi najpierw spróbować ustalić `jiraKey` z publikowanego `specification.md`, zanim zapyta użytkownika o podanie klucza.
 - Źródła `jiraKey` w specyfikacji sprawdzaj w tej kolejności:
@@ -154,7 +154,7 @@ python skills/pleo-library-spec-workflow-helper/scripts/run.py get \
 
 `get` respektuje dokładnie `--output`: obecność `Feature slug` w pobranym markdownzie nie przenosi pliku do `docs/sdd/**` ani nie podmienia istniejącego `spec.md` lub `specification.md`. Jeśli `--output` wskazuje katalog, helper dopisuje do niego nazwę pobranego pliku. Dodaj `--confirm-local-write` tylko wtedy, gdy wyznaczony cel już istnieje albo sam jawnie wskazuje kanoniczną ścieżkę `docs/sdd/**`.
 
-### 4. Pobranie kompletu plików workflow po Jira
+### 4. Pobranie bieżącego dokumentu i opcjonalnie kontekstu zależności
 
 ```bash
 python skills/pleo-library-spec-workflow-helper/scripts/run.py workflow-pull \
@@ -165,14 +165,15 @@ python skills/pleo-library-spec-workflow-helper/scripts/run.py workflow-pull \
 
 Komenda:
 
-- pobiera `specification.md` i `story-<jira>.md` dla zwykłego workflow,
-- dla workflow z TESTEREM wymaga tylko metadanych `currentFile`, wywołuje tylko endpoint `current-spec` i zapisuje wyłącznie bieżący plik do kanonicznej ścieżki głównej specyfikacji `docs/sdd/<featureSlug>/specification.md` albo do istniejącego `spec.md`,
-- dla zwykłego workflow, gdy `sourceFile` i `currentFile` wskazują tę samą ścieżkę docelową, zapisuje odpowiedź `current-spec`, a nie starszą odpowiedź `source-spec`,
-- zapisuje pliki do kanonicznych ścieżek `docs/sdd/<featureSlug>/...`, jeśli rozpozna `Feature slug`,
-- przy `--with-affected` w zwykłym workflow pobiera najnowsze archiwalne wersje specyfikacji wskazanych w `affectedSpecifications` i aktualizuje `docs/sdd/versioning.md`,
-- po `workflow-pull --with-affected` sprawdza `affectedSpecifications.skipped`; każdą pozycję z powodem `affected spec belongs to different project: <projectSlug>` raportuje użytkownikowi jawnie jako pominiętą i nadal niesynchronizowaną, podając co najmniej `label` oraz obcy `projectSlug`,
-- nie uznaje całego zestawu `affectedSpecifications` za zsynchronizowany, jeżeli choć jedna zależność została pominięta z powodu innego `projectSlug`; helper celowo pobiera zależności wyłącznie dla lokalnego projektu,
-- w workflow z TESTEREM nie pobiera `affectedSpecifications`, nawet jeśli podasz `--with-affected`.
+- gdy `documentType` jest obecny, pobiera wyłącznie `currentFile` przez `current-spec`; nie pobiera `sourceFile`, który może być wcześniejszą iteracją tego samego dokumentu, a nie główną specką;
+- `SPECIFICATION` zapisuje jako główną speckę (`specification.md` albo istniejący `spec.md`), a `STORY` pod `task/`, niezależnie od roli TESTER;
+- tylko dla legacy bez `documentType` stosuje dawny fallback: z TESTEREM pobiera jeden `currentFile` jako główną speckę; bez TESTERA pobiera `sourceFile` i `currentFile`, przy kolizji ścieżek pierwszeństwo ma `current-spec`;
+- rozpoznany `Feature slug` wyznacza kanoniczne ścieżki `docs/sdd/<featureSlug>/...`; `--output-dir` pozwala wskazać inny katalog dokumentów workflow;
+- z `--with-affected` dla `STORY` (także z TESTEREM) pobiera brakujące lub starsze lokalne główne specki wskazane w `affectedSpecifications` i aktualizuje ich wpisy w `versioning.md`; zapis zależności pozostaje kanoniczny również przy `--output-dir`;
+- dla `SPECIFICATION` pomija zależności; bez typu zachowuje legacy fallback według obecności TESTERA;
+- nie gwarantuje pełnego kontekstu feature: jeśli głównej specki nie ma lokalnie i nie figuruje w `affectedSpecifications`, ustal jej właściwy projekt, slug i wersję przez `status`, następnie użyj `pull-storage` z konkretną zwróconą ścieżką;
+- po pobraniu sprawdź `files`, `affectedSpecifications.updated`, `affectedSpecifications.skipped` i fizyczną obecność potrzebnych dokumentów; pustej listy zależności nie traktuj jako dowodu kompletności kontekstu;
+- pozycje z powodem `affected spec belongs to different project: <projectSlug>` raportuj jako pominięte i niesynchronizowane (z `label` i obcym `projectSlug`); wymagają pobrania w kontekście właściwego projektu. Nie przedstawiaj ich jako zsynchronizowanych.
 
 ### 5. Pobranie kontekstu taska `[SPEC]`
 
@@ -223,18 +224,20 @@ Legacy payload zawiera `questions`, `analysisLimitations` i `analyzedRepositorie
 python skills/pleo-library-spec-workflow-helper/scripts/run.py publish \
   --jira-key INPOS-123 \
   --project-slug skillbox/frontend \
-  --specification-file .\docs\sdd\checkout\specification.md \
+  --document-type STORY \
   --story-file .\docs\sdd\checkout\task\story-inpos-123.md \
   --affected-specifications-file .\tmp\affected-specifications.json \
   --confirm-publish
 ```
 
-W zwykłym workflow wysyłaj oba pliki:
-- `specification.md` jako Story
-- `story-<jira>.md` jako Specyfikację
+Wysyłaj dokładnie jeden dokument i jawne `--document-type`:
+- story istniejącego feature: `--document-type STORY --story-file .../task/story-<jira>.md`;
+- pierwsze story nowego feature, stanowiące główną speckę: `--document-type SPECIFICATION --specification-file .../specification.md`;
+- `AS_IS`, główna specyfikacja oraz `[SPEC]`: `--document-type SPECIFICATION --specification-file .../specification.md`.
 
-W workflow z TESTEREM wysyłaj tylko:
-- `specification.md`
+Historyczny wariant dwóch plików (źródłowa specyfikacja oraz bieżące story, dawniej opisane odwróconymi
+etykietami Story/Specyfikacja) nie jest kontraktem zapisu. Helper odrzuca oba pliki przed requestem.
+Typ dokumentu jest niezależny od obecności TESTERA; backend utrwala go i używa do wyboru ścieżki w Spaces.
 
 Przed zbudowaniem komendy `publish` ustal typ nowego workflow z jawnego kontekstu skilla authoringowego albo zlecenia:
 
@@ -249,16 +252,29 @@ Przed zbudowaniem komendy `publish` ustal typ nowego workflow z jawnego kontekst
 python skills/pleo-library-spec-workflow-helper/scripts/run.py update \
   --jira-key INPOS-123 \
   --project-slug skillbox/frontend \
-  --specification-file .\docs\sdd\checkout\specification.md \
+  --document-type STORY \
   --story-file .\docs\sdd\checkout\task\story-inpos-123.md \
   --affected-specifications-file .\tmp\affected-specifications.json \
   --confirm-update
 ```
 
-`update` może podmienić:
-- tylko `specification.md`
-- tylko `story-<jira>.md`
-- oba pliki naraz
+`update` podmienia dokładnie jeden plik: `specification.md` albo `story-<jira>.md`.
+Podaj `--document-type` zgodne z `documentType` istniejącego workflow. Jeśli nie znasz typu,
+najpierw odczytaj same metadane — ta komenda wykonuje tylko GET workflow-files, bez pobierania
+załączników i bez zapisu lokalnych plików:
+
+```bash
+python skills/pleo-library-spec-workflow-helper/scripts/run.py workflow-info --jira-key <JIRA-KEY>
+```
+
+Użyj zwróconego `documentType` (`SPECIFICATION` albo `STORY`) w `update`.
+Jeśli pole jest puste, nieobecne lub nieznane, nie wykonuj aktualizacji i nie zgaduj typu z nazwy
+pliku ani ról reviewerów. Zgłoś niesklasyfikowany workflow i ustal właściwy typ dokumentu
+z właścicielem zadania przed jego jawnym sklasyfikowaniem. Nie uruchamiaj `workflow-pull` tylko
+po to, żeby poznać typ; służy on do świadomego pobierania plików.
+Historyczna opcja wysłania obu plików naraz nie jest już obsługiwana. `AS_IS` używa SPECIFICATION,
+a pierwsze story nowego feature ma SPECIFICATION od początku workflow i po zatwierdzeniu
+tworzy główną speckę wraz z pierwszą wersją historii. Kolejne story mają STORY.
 
 To służy zarówno do głównej specki i story dla aktywnego taska, jak i do pobocznych specek, jeśli użytkownik aktualizuje ich własny workflow.
 
@@ -268,7 +284,7 @@ To służy zarówno do głównej specki i story dla aktywnego taska, jak i do po
    - sprawdzić aktualność specek,
    - zrobić jednorazowy bootstrap DO Spaces,
    - pobrać nową wersję,
-   - pobrać komplet plików aktywnego workflow,
+   - pobrać bieżący dokument workflow i opcjonalnie główne specki stanowiące kontekst,
    - pobrać kontekst taska `[SPEC]` przez `spec-task-context`,
    - pobrać kontekst prespecki przez `prespec-context`, opcjonalnie z `--include-outdated` dla audytu prowadzonego przez skill prespecki,
    - uruchomić albo wznowić prespeckę przez `prespec-start`,
@@ -308,7 +324,7 @@ To służy zarówno do głównej specki i story dla aktywnego taska, jak i do po
 - `update` wymaga `--confirm-update`.
 - `prespec-start` wymaga `--confirm-start`.
 - `prespec-context` nie modyfikuje stanu i nie wymaga potwierdzenia.
-- `publish` i `update` odrzucają `specification.md`, jeśli nie zawiera `# WERSJA`.
+- `publish` i `update` odrzucają każdy przekazany plik bez `# WERSJA`, zarówno `--specification-file`, jak i `--story-file`.
 - `affectedSpecifications` przekazuj tylko jako poprawny JSON array bez `expectedVersion`.
 - Nie loguj sekretów ani pełnych wartości auth.
 
@@ -345,12 +361,35 @@ Bazowy URL zawsze pochodzi z `libraryBaseUrl` w `.agent-library.yaml`.
 - `status` zwraca `latestRemotePath`, jeśli w storage istnieje nowsza wersja.
 - `status` zwraca wszystkie zdalne pozycje w `remoteSpecs`, brakujące lokalnie w `missingLocalSpecs` oraz kompletną kolejkę aktualizacji w `specsToPull`.
 - `pull-storage` pobiera dokładnie jeden plik ze storage i zwraca końcową ścieżkę lokalną; przy kanonicznym zapisie aktualizuje wpis `featureSlug: version` w `versioning.md`, a `versioningUpdated=true` potwierdza spójność pliku z rejestrem.
-- `publish` wysyła `projectSlug`, `specificationFile`, opcjonalny `storyFile` i opcjonalnie `affectedSpecifications`.
+- `publish` wysyła `projectSlug`, jawne `documentType`, dokładnie jeden z `specificationFile` / `storyFile` i opcjonalnie `affectedSpecifications`.
 - Przed `publish` typ workflow jest potwierdzony przez jawny tryb `story` / `specification` / `spec-update-from-story`, task `[SPEC]` albo odpowiedź użytkownika; dostępność lokalnych plików nie zastępuje tej decyzji.
-- `update` wysyła `projectSlug`, jeden lub oba z `specificationFile` / `storyFile` oraz opcjonalnie `affectedSpecifications`.
+- `update` wysyła `projectSlug`, jawne `documentType`, dokładnie jeden z `specificationFile` / `storyFile` oraz opcjonalnie `affectedSpecifications`.
 - `get` pobiera aktualny plik workflow wskazany przez backend dla danego `jiraKey` dokładnie pod `--output`; `Feature slug` nie może zmienić ścieżki docelowej ani spowodować niejawnego zapisu do głównej specyfikacji.
-- `workflow-pull` pobiera komplet plików aktywnego workflow i może dociągnąć najnowsze archiwalne wersje `affectedSpecifications` tylko dla zwykłego workflow.
-- `workflow-pull` dla workflow z TESTEREM nie wymaga `sourceFile`, nie wywołuje `source-spec` i mapuje `currentFile` na główną specyfikację feature’a zamiast do katalogu `task`; przy kolizji ścieżek w zwykłym workflow pierwszeństwo ma `current-spec`.
+- `workflow-pull` dla jawnego `documentType` pobiera tylko `currentFile`. Główne specki do kontekstu STORY pobiera osobno przez `--with-affected`; zakres i fallback legacy opisuje sekcja CLI 4.
+- Dla nowego workflow `workflow-pull` kieruje się `documentType`: pobiera tylko currentFile, SPECIFICATION zapisuje jako główną speckę, a STORY w task/, także przy reviewerze TESTER. Pierwsze story nowego feature ma SPECIFICATION i wraca do głównej ścieżki specification.md. Dla starszego workflow bez typu zachowuje zgodność: workflow z TESTEREM nie wymaga `sourceFile`, nie wywołuje `source-spec` i mapuje `currentFile` na główną specyfikację feature’a zamiast do katalogu `task`; przy kolizji ścieżek w zwykłym workflow pierwszeństwo ma `current-spec`.
 - `workflow-pull --with-affected` pozostawia zależności z innych projektów w `affectedSpecifications.skipped`; agent raportuje je jako pominięte i niesynchronizowane, nigdy jako część zakończonej synchronizacji.
 - `publish` i `update` kończą się błędem bez odpowiedniego flag-confirm.
 - Skrypt nie próbuje publikować bez jawnej decyzji użytkownika.
+
+### Obecność lokalnej zależności
+
+`workflow-pull --with-affected` pomija aktualną zależność tylko wtedy, gdy istnieje fizyczny
+plik `specification.md` lub `spec.md` i wpis w `versioning.md` ma co najmniej wersję archiwalną.
+Jeżeli pliku nie ma, pobiera najnowszą dostępną wersję archiwalną i zapisuje jej rzeczywisty numer
+w rejestrze (również gdy poprzedni wpis wskazywał wyższą, nieobecną lokalnie wersję).
+Zapis nadal wymaga `--confirm-local-write`; zależności innych projektów pozostają pominięte.
+
+### Ponowienie archiwizacji zatwierdzonego workflow legacy
+
+Po wdrożeniu backendu obsługującego retry APPROVED nie używaj `publish` do naprawy błędu
+brakującego documentType. Odczytaj `workflow-info`, potwierdź status APPROVED, projekt i rolę
+dokumentu z jego treści oraz kontekstu zadania. Nie zgaduj typu z nazwy pliku lub reviewerów.
+Pobierz `get --jira-key <JIRA> --output <TEMP_FILE>` i zachowaj dokładne bajty pliku.
+Następnie użyj `update --jira-key <JIRA> --project-slug <PROJECT> --document-type <TYPE>
+--specification-file <TEMP_FILE> --confirm-update` (dla pliku story można użyć --story-file).
+Nie podawaj affected-specifications-file. Ta operacja klasyfikuje nieznany dokument i ponawia
+archiwizację; nie podmienia pliku, nie zmienia hasha ani akceptacji i nie tworzy nowego review.
+Backend odrzuca zmienioną treść, projekt oraz zmianę już zapisanego typu. Konflikt historii
+nadal blokuje zapis i wymaga osobnego wyjaśnienia. Po sukcesie sprawdź workflow-info i storage.
+Jeśli istnieje aktywny workflow o tym samym kluczu, nie używaj tego sposobu do naprawy starszego
+review — update wybiera aktywny workflow.

@@ -97,9 +97,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Required safety switch for writing into the final local spec path.",
     )
 
+    workflow_info_parser = subparsers.add_parser(
+        "workflow-info", help="Read workflow metadata, including documentType, without downloading or writing files."
+    )
+    workflow_info_parser.add_argument("--jira-key", required=True, help="Jira key of the spec-review workflow.")
+
     workflow_pull_parser = subparsers.add_parser(
         "workflow-pull",
-        help="Download all active workflow files and optionally update affected specs to latest archived versions.",
+        help="Download currentFile for typed workflows; optionally fetch affected main specs. Legacy untyped workflows may also fetch sourceFile.",
     )
     workflow_pull_parser.add_argument("--jira-key", required=True, help="Jira key of the active spec-review workflow.")
     workflow_pull_parser.add_argument(
@@ -171,10 +176,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Required safety switch for overwriting local files.",
     )
 
-    publish_parser = subparsers.add_parser("publish", help="Publish specification.md and optional story file into a workflow.")
+    publish_parser = subparsers.add_parser("publish", help="Publish exactly one explicitly typed workflow document.")
     add_publish_like_arguments(publish_parser, confirm_flag="--confirm-publish")
 
-    update_parser = subparsers.add_parser("update", help="Replace one or both workflow files in an active workflow.")
+    update_parser = subparsers.add_parser("update", help="Replace exactly one document in an active workflow, preserving its type.")
     add_publish_like_arguments(update_parser, confirm_flag="--confirm-update")
 
     return parser
@@ -183,8 +188,10 @@ def build_parser() -> argparse.ArgumentParser:
 def add_publish_like_arguments(parser: argparse.ArgumentParser, *, confirm_flag: str) -> None:
     parser.add_argument("--jira-key", required=True, help="Workflow Jira key.")
     parser.add_argument("--project-slug", help="Project slug for publish/update. Defaults to .agent-library.yaml projectSlug.")
+    parser.add_argument("--document-type", required=True, choices=("SPECIFICATION", "STORY"),
+                        help="Explicit document type, independent of profile, filename and reviewer roles.")
     parser.add_argument("--specification-file", help="Path to local specification.md.")
-    parser.add_argument("--story-file", help="Path to local story-<jira>.md when the workflow uses two files.")
+    parser.add_argument("--story-file", help="Path to the story document; do not also pass specification-file.")
     parser.add_argument(
         "--affected-specifications-file",
         help="Optional JSON file with affectedSpecifications payload.",
@@ -244,6 +251,13 @@ def main() -> int:
                 headers=headers,
                 timeout=args.timeout,
             )
+        elif args.command == "workflow-info":
+            result = fetch_workflow_files_metadata(
+                base_url=base_url,
+                jira_key=normalize_jira_key(args.jira_key),
+                headers=headers,
+                timeout=args.timeout,
+            )
         elif args.command == "workflow-pull":
             result = download_workflow_bundle(
                 base_url=base_url,
@@ -287,6 +301,7 @@ def main() -> int:
                 specification_file=args.specification_file,
                 story_file=args.story_file,
                 affected_specifications_file=args.affected_specifications_file,
+                document_type=args.document_type,
                 confirm_remote=args.confirm_publish,
                 headers=headers,
                 timeout=args.timeout,
@@ -299,6 +314,7 @@ def main() -> int:
                 specification_file=args.specification_file,
                 story_file=args.story_file,
                 affected_specifications_file=args.affected_specifications_file,
+                document_type=args.document_type,
                 confirm_remote=args.confirm_update,
                 headers=headers,
                 timeout=args.timeout,
@@ -594,6 +610,10 @@ def download_workflow_bundle(
     )
 
     tester_workflow = bool(metadata.get("testerWorkflow"))
+    document_type = metadata.get("documentType")
+    if document_type not in {None, "SPECIFICATION", "STORY"}:
+        raise SkillError("Unknown workflow documentType; refusing to choose a local destination.")
+    main_specification = document_type == "SPECIFICATION" if document_type else tester_workflow
     current_file = require_workflow_file_metadata(metadata, "currentFile")
     current_response = send_request(
         method="GET",
@@ -608,10 +628,10 @@ def download_workflow_bundle(
         output_dir_arg=output_dir_arg,
         feature_slug=feature_slug,
         filename=current_filename,
-        main_specification_file=tester_workflow,
+        main_specification_file=main_specification,
     )
 
-    if tester_workflow:
+    if document_type is not None or tester_workflow:
         saved_files = [save_downloaded_workflow_file(
             body=current_response.body,
             output_path=current_output_path,
@@ -682,13 +702,13 @@ def download_workflow_bundle(
         "skipped": [],
     }
     if with_affected:
-        if tester_workflow:
+        if main_specification:
             affected_result = {
                 "enabled": True,
                 "updated": [],
                 "skipped": [
                     {
-                        "reason": "affectedSpecifications are not pulled for tester workflow",
+                        "reason": "affectedSpecifications are not pulled for main specification workflow",
                     }
                 ],
             }
@@ -707,6 +727,7 @@ def download_workflow_bundle(
         "projectSlug": metadata.get("projectSlug"),
         "workflowStatus": metadata.get("workflowStatus"),
         "testerWorkflow": tester_workflow,
+        "documentType": document_type,
         "featureSlug": feature_slug,
         "files": saved_files,
         "affectedSpecifications": affected_result,
@@ -858,8 +879,14 @@ def pull_affected_specifications(
             continue
         remote_version, remote_path = remote_candidate
 
+        output_path = resolve_workflow_output_path(
+            output_dir_arg=None,
+            feature_slug=feature_slug,
+            filename="specification.md",
+            main_specification_file=True,
+        )
         local_version = local_version_map.get(feature_slug)
-        if local_version is not None and compare_versions(local_version, remote_version) >= 0:
+        if output_path.is_file() and local_version is not None and compare_versions(local_version, remote_version) >= 0:
             skipped.append({
                 "label": label,
                 "reason": f"local version {local_version} is already up to date",
@@ -872,12 +899,6 @@ def pull_affected_specifications(
             url=with_library_user_id(build_storage_file_url(base_url, remote_path)),
             headers=headers,
             timeout=timeout,
-        )
-        output_path = resolve_workflow_output_path(
-            output_dir_arg=None,
-            feature_slug=feature_slug,
-            filename="specification.md",
-            main_specification_file=True,
         )
         saved = save_downloaded_workflow_file(
             body=response.body,
@@ -1302,12 +1323,13 @@ def publish_spec(
     confirm_remote: bool,
     headers: Dict[str, str],
     timeout: int,
+    document_type: str,
 ) -> Dict[str, object]:
     ensure_remote_confirmed(confirm_remote, "--confirm-publish")
     spec_path, story_path = validate_spec_files(
         specification_file,
         story_file,
-        specification_required=True,
+        specification_required=False,
         story_required=False,
         require_any=True,
     )
@@ -1319,6 +1341,7 @@ def publish_spec(
         specification_path=spec_path,
         story_path=story_path,
         affected_specifications_payload=affected_payload,
+        document_type=document_type,
     )
     request_headers = dict(headers)
     request_headers["Content-Type"] = content_type
@@ -1351,6 +1374,7 @@ def update_current_spec(
     confirm_remote: bool,
     headers: Dict[str, str],
     timeout: int,
+    document_type: str,
 ) -> Dict[str, object]:
     ensure_remote_confirmed(confirm_remote, "--confirm-update")
     spec_path, story_path = validate_spec_files(
@@ -1369,6 +1393,7 @@ def update_current_spec(
         specification_path=spec_path,
         story_path=story_path,
         affected_specifications_payload=affected_payload,
+        document_type=document_type,
         include_jira_field=False,
     )
     request_headers = dict(headers)
@@ -1401,10 +1426,11 @@ def validate_spec_files(
 ) -> Tuple[Optional[Path], Optional[Path]]:
     spec_path = validate_markdown_file(specification_file, "specificationFile", required=specification_required)
     story_path = validate_markdown_file(story_file, "storyFile", required=story_required)
-    if require_any and spec_path is None and story_path is None:
-        raise SkillError("Provide at least one of --specification-file or --story-file.")
-    if spec_path is not None and extract_spec_version(spec_path.read_text(encoding="utf-8")) is None:
-        raise SkillError(f"Missing '# WERSJA x.y.z' in {spec_path}")
+    if require_any and (spec_path is None) == (story_path is None):
+        raise SkillError("Provide exactly one of --specification-file or --story-file.")
+    for document_path in (spec_path, story_path):
+        if document_path is not None and extract_spec_version(document_path.read_text(encoding="utf-8")) is None:
+            raise SkillError(f"Missing '# WERSJA x.y.z' in {document_path}")
     return spec_path, story_path
 
 
@@ -1449,12 +1475,22 @@ def build_publish_multipart_payload(
     specification_path: Optional[Path],
     story_path: Optional[Path],
     affected_specifications_payload: Optional[str],
+    document_type: str,
     include_jira_field: bool = True,
 ) -> Tuple[bytes, str]:
+    if document_type not in {"SPECIFICATION", "STORY"}:
+        raise SkillError("documentType must be SPECIFICATION or STORY.")
+    if (specification_path is None) == (story_path is None):
+        raise SkillError("Provide exactly one of --specification-file or --story-file.")
+    if document_type == "SPECIFICATION" and (
+        specification_path is None or specification_path.name.lower().startswith("story-")
+    ):
+        raise SkillError("SPECIFICATION requires specificationFile and cannot upload a story file.")
     boundary = f"----pleo-spec-workflow-{uuid.uuid4().hex}"
     line_break = b"\r\n"
     parts: List[bytes] = []
 
+    parts.extend(build_text_part(boundary, "documentType", document_type))
     if include_jira_field:
         parts.extend(build_text_part(boundary, "jiraKey", jira_key))
     parts.extend(build_text_part(boundary, "projectSlug", project_slug))

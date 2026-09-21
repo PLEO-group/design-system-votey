@@ -2,6 +2,13 @@
 
 Wczytuj ten plik tylko przy audycie wersji, analizie regresji zachowania skilla albo przygotowaniu publikacji.
 
+## 1.16.0
+
+Doprecyzowano wyjątek dla `effect()` zapisującego do lokalnego signala, gdy
+komponent utrzymuje interaktywny stan zależny od wartości dostarczanej przez
+`input()`. Dodano checklistę ochrony przed pętlą aktualizacji i wskazano, że
+`computed()` nadal jest właściwym wyborem dla zwykłych wartości pochodnych.
+
 ## 1.14.2
 
 Doprecyzowano zakaz metod w template'ach: rozróżniono niedozwolone obliczenia

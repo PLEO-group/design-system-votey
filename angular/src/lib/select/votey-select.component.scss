@@ -1,0 +1,109 @@
+vt-select {
+  display: block;
+  width: 100%;
+
+  .select-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-8);
+    width: 100%;
+
+    .label {
+      display: contents;
+    }
+
+    .field {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 50px;
+      padding: 0 var(--spacing-16);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-input);
+      background-color: var(--color-bg-surface);
+      transition: background-color 180ms ease, border-color 180ms ease,
+        box-shadow 180ms ease;
+
+      &:focus-within {
+        border-color: var(--color-accent-primary);
+        box-shadow: inset 0 0 0 1px var(--color-accent-primary);
+      }
+
+      .control {
+        width: 100%;
+        color: var(--color-text-primary);
+        font-family: var(--typo-field-font-family);
+        font-size: var(--typo-field-font-size);
+        font-weight: var(--typo-field-font-weight);
+        letter-spacing: var(--typo-field-letter-spacing);
+        line-height: var(--typo-field-line-height);
+
+        .mat-mdc-select-placeholder,
+        .mat-mdc-select-arrow {
+          color: var(--color-text-muted);
+        }
+      }
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-8);
+    }
+
+    &.compact {
+      .field {
+        height: 30px;
+        padding: 0 var(--spacing-12);
+        border-radius: var(--radius-pill);
+      }
+    }
+
+    &.error {
+      .field,
+      .field:focus-within {
+        border-color: var(--color-state-error);
+        box-shadow: none;
+      }
+    }
+
+    &.disabled {
+      .field,
+      .field:focus-within {
+        border-color: var(--color-border-subtle);
+        background-color: var(--color-bg-surface-tint);
+        box-shadow: none;
+
+        .control {
+          color: var(--color-text-muted);
+        }
+      }
+    }
+  }
+}
+
+.vt-select-panel {
+  border-radius: var(--radius-input) !important;
+  background-color: var(--color-bg-surface) !important;
+
+  .mat-mdc-option {
+    color: var(--color-text-primary);
+    font-family: var(--typo-field-font-family);
+    font-size: var(--typo-field-font-size);
+    font-weight: var(--typo-field-font-weight);
+    letter-spacing: var(--typo-field-letter-spacing);
+    line-height: var(--typo-field-line-height);
+
+    &:hover:not(.mdc-list-item--disabled),
+    &.mat-mdc-option-active:not(.mdc-list-item--disabled),
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background-color: var(--color-accent-soft);
+    }
+
+    &.mdc-list-item--disabled {
+      color: var(--color-text-muted);
+    }
+  }
+}

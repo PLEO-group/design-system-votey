@@ -1,0 +1,52 @@
+@let translatedLabel = label() | vtTranslate; @let selectDisabled = disabled()
+|| formControl.disabled;
+
+<div
+  class="select-wrapper"
+  [class.compact]="variant() === 'compact'"
+  [class.disabled]="selectDisabled"
+  [class.error]="hasError"
+>
+  @if (label()) {
+  <label class="label" [for]="id()">
+    <vt-text variant="label" color="secondary" [content]="translatedLabel" />
+  </label>
+  }
+
+  <div class="field">
+    <mat-select
+      class="control"
+      panelClass="vt-select-panel"
+      [id]="id()"
+      [multiple]="multiple()"
+      [disabled]="selectDisabled"
+      [required]="isRequired"
+      [formControl]="formControl"
+      [placeholder]="placeholder() | vtTranslate"
+      [attr.data-cy]="dataCy() || null"
+      [attr.name]="name() || null"
+      (selectionChange)="handleSelectionChange($event)"
+    >
+      @for (option of options(); track option.value) {
+      <mat-option [value]="option.value" [disabled]="option.disabled ?? false">
+        {{ option.label | vtTranslate }}
+      </mat-option>
+      }
+    </mat-select>
+  </div>
+
+  @if (multiple() && showSelectionChips() && selectedOptions.length) {
+  <div class="chips">
+    @for (option of selectedOptions; track option.value) {
+    <vt-chip
+      [label]="option.label | vtTranslate"
+      [removeTooltip]="removeTooltip()"
+      [disabled]="selectDisabled || (option.disabled ?? false)"
+      (removed)="removeSelection(option)"
+    />
+    }
+  </div>
+  }
+
+  <vt-form-error [errors]="errorKeys" [ignoredErrors]="ignoredErrors()" />
+</div>

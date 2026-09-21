@@ -65,6 +65,7 @@ export {
   VoteySelectVariants,
 } from "./lib/select/votey-select.component";
 export type {
+  VoteySelectSearchFn,
   VoteySelectVariant,
   VtOption,
 } from "./lib/select/votey-select.component";

@@ -15,7 +15,26 @@ const selectInputs = [
   "dataCy",
   "multiple",
   "disabled",
+  "flagSelect",
+  "clearable",
+  "clearTooltip",
   "showSelectionChips",
+  "searchable",
+  "searchPlaceholder",
+  "customSearchFn",
+  "withSelectionActions",
+  "withSelectionSearch",
+  "selectionCancelText",
+  "selectionUpdateText",
+  "nonRemovableValues",
+  "optionAvatarField",
+  "optionDescriptionField",
+  "optionFlagField",
+  "flagClass",
+  "translateOptions",
+  "closeOnSelect",
+  "tooltip",
+  "disabledNote",
   "removeTooltip",
   "ignoredErrors",
 ];
@@ -100,6 +119,9 @@ function AngularSelectPreview(props) {
         componentRef.instance.selectionChange.subscribe((event) =>
           latestPropsRef.current.onSelectionChange(event)
         );
+      const changeSubscription = componentRef.instance.change.subscribe((event) =>
+        latestPropsRef.current.onChange(event)
+      );
 
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = {
@@ -118,6 +140,7 @@ function AngularSelectPreview(props) {
 
       angularRuntimeRef.current.destroy = () => {
         selectionSubscription.unsubscribe();
+        changeSubscription.unsubscribe();
         applicationRef.detachView(componentRef.hostView);
         componentRef.destroy();
         applicationRef.destroy();
@@ -171,6 +194,10 @@ export default {
       action: "selectionChange",
       table: { category: "Events" },
     },
+    onChange: {
+      action: "change",
+      table: { category: "Events" },
+    },
   },
   args: {
     options: [
@@ -189,12 +216,32 @@ export default {
     dataCy: "",
     multiple: false,
     disabled: false,
+    flagSelect: false,
+    clearable: false,
+    clearTooltip: "BUTTON.CLEAR",
     showSelectionChips: true,
+    searchable: false,
+    searchPlaceholder: "COMMON.SEARCH",
+    customSearchFn: null,
+    withSelectionActions: false,
+    withSelectionSearch: false,
+    selectionCancelText: "BUTTON.CANCEL",
+    selectionUpdateText: "BUTTON.SAVE",
+    nonRemovableValues: [],
+    optionAvatarField: "avatarUrl",
+    optionDescriptionField: "email",
+    optionFlagField: "flagClass",
+    flagClass: "fi language-flag",
+    translateOptions: true,
+    closeOnSelect: false,
+    tooltip: "",
+    disabledNote: "",
     removeTooltip: "Usuń wybór",
     ignoredErrors: [],
     required: false,
     showError: false,
     onSelectionChange: fn(),
+    onChange: fn(),
   },
 };
 

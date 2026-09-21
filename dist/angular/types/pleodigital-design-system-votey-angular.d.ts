@@ -376,6 +376,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected isOptionRemovable(option: SelectOptionView): boolean;
     private resolveValueWithNonRemovable;
     private normalizeOptionValue;
+    private toTrimmedString;
     private emitChange;
     private isVtOption;
     private toDisplayValue;

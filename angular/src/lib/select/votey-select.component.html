@@ -66,6 +66,16 @@
       </mat-select-trigger>
       }
 
+      @if (multiple() && showSelectionChips()) {
+      <mat-select-trigger>
+        @if (!selectedOptions.length) {
+        <span class="selected-option placeholder">
+          {{ placeholder() | vtTranslate }}
+        </span>
+        }
+      </mat-select-trigger>
+      }
+
       @if (isSearchEnabled) {
       <div class="panel-search" (click)="stopPanelEvent($event)">
         <input

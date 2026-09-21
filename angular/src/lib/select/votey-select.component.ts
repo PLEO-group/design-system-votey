@@ -1,8 +1,11 @@
+import { DOCUMENT } from "@angular/common";
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  inject,
   input,
   signal,
   viewChild,
@@ -78,6 +81,15 @@ type SelectOptionView = {
   ],
 })
 export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown> {
+  private readonly document: Document = inject(DOCUMENT);
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly outsidePointerDownListener = (event: PointerEvent): void =>
+    this.closeOnOutsidePointerDown(event);
+  private readonly backdropPointerDownListener = (): void =>
+    this.matSelect()?.close();
+  private backdropListenerTimeout: ReturnType<typeof setTimeout> | null = null;
+  private overlayBackdrop: HTMLElement | null = null;
+
   public readonly options: InputSignal<readonly unknown[]> = input.required<
     readonly unknown[]
   >();
@@ -196,6 +208,22 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
       ).trim()
   );
 
+  public ngOnInit(): void {
+    this.document.addEventListener(
+      "pointerdown",
+      this.outsidePointerDownListener,
+      true
+    );
+    this.destroyRef.onDestroy((): void => {
+      this.document.removeEventListener(
+        "pointerdown",
+        this.outsidePointerDownListener,
+        true
+      );
+      this.removeBackdropListener();
+    });
+  }
+
   protected get isRequired(): boolean {
     return this.formControl.hasValidator(Validators.required);
   }
@@ -271,8 +299,11 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
 
     if (!isOpen) {
       this.searchTerm.set("");
+      this.removeBackdropListener();
       return;
     }
+
+    this.scheduleBackdropListener();
 
     if (this.isSelectionActionMode) {
       this.selectionActionControl.setValue(
@@ -287,8 +318,67 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     this.searchTerm.set(inputElement.value);
   }
 
-  protected openSelect(): void {
+  protected openSelect(event: MouseEvent): void {
+    const target: EventTarget | null = event.target;
+
+    if (target instanceof Element && target.closest(".cdk-overlay-popover")) {
+      return;
+    }
+
     this.matSelect()?.open();
+  }
+
+  private closeOnOutsidePointerDown(event: PointerEvent): void {
+    const target: EventTarget | null = event.target;
+
+    if (!this.isOpen() || !(target instanceof Element)) return;
+    if (
+      target.closest(
+        ".mat-mdc-select-trigger, .vt-select-panel, vt-icon.arrow, button.clear"
+      )
+    ) {
+      return;
+    }
+
+    this.matSelect()?.close();
+  }
+
+  private addBackdropListener(): void {
+    this.removeBackdropListener();
+
+    const backdrop: HTMLElement | null = this.document.querySelector(
+      ".cdk-overlay-backdrop-showing"
+    );
+
+    if (!backdrop) return;
+
+    this.overlayBackdrop = backdrop;
+    backdrop.addEventListener("pointerdown", this.backdropPointerDownListener);
+  }
+
+  private scheduleBackdropListener(): void {
+    this.clearBackdropListenerTimeout();
+    this.backdropListenerTimeout = setTimeout((): void => {
+      this.backdropListenerTimeout = null;
+
+      if (this.isOpen()) this.addBackdropListener();
+    });
+  }
+
+  private removeBackdropListener(): void {
+    this.clearBackdropListenerTimeout();
+    this.overlayBackdrop?.removeEventListener(
+      "pointerdown",
+      this.backdropPointerDownListener
+    );
+    this.overlayBackdrop = null;
+  }
+
+  private clearBackdropListenerTimeout(): void {
+    if (this.backdropListenerTimeout === null) return;
+
+    clearTimeout(this.backdropListenerTimeout);
+    this.backdropListenerTimeout = null;
   }
 
   protected stopPanelEvent(event: Event): void {

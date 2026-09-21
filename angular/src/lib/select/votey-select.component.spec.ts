@@ -115,4 +115,35 @@ describe("VoteySelectComponent", () => {
 
     expect(openSpy).toHaveBeenCalled();
   });
+
+  it("should not reopen when the overlay backdrop click bubbles to the field", (): void => {
+    const openSpy: jasmine.Spy = spyOn(MatSelect.prototype, "open");
+    const overlay: HTMLDivElement = document.createElement("div");
+    const backdrop: HTMLDivElement = document.createElement("div");
+
+    overlay.classList.add("cdk-overlay-popover");
+    overlay.append(backdrop);
+    fixture.nativeElement.querySelector(".field").append(overlay);
+    fixture.detectChanges();
+    backdrop.click();
+
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("should close when the user clicks outside the select", (): void => {
+    const closeSpy: jasmine.Spy = spyOn(MatSelect.prototype, "close");
+    const backdrop: HTMLDivElement = document.createElement("div");
+
+    backdrop.classList.add("cdk-overlay-backdrop-showing");
+    document.body.append(backdrop);
+    fixture.detectChanges();
+    component["isOpen"].set(true);
+    component["addBackdropListener"]();
+    backdrop.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true })
+    );
+    backdrop.remove();
+
+    expect(closeSpy).toHaveBeenCalled();
+  });
 });

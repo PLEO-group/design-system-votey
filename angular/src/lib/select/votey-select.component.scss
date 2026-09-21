@@ -83,6 +83,12 @@ vt-select {
             flex: 0 0 auto;
           }
 
+          .option-flag {
+            display: inline-block;
+            width: 20px;
+            height: 14px;
+          }
+
           .option-avatar {
             width: 24px;
             height: 24px;
@@ -267,6 +273,12 @@ vt-select {
       .option-flag,
       .option-avatar {
         flex: 0 0 auto;
+      }
+
+      .option-flag {
+        display: inline-block;
+        width: 20px;
+        height: 14px;
       }
 
       .option-avatar {

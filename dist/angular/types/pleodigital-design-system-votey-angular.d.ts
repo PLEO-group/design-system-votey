@@ -295,6 +295,12 @@ type SelectOptionView = {
     readonly value: unknown;
 };
 declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown> {
+    private readonly document;
+    private readonly destroyRef;
+    private readonly outsidePointerDownListener;
+    private readonly backdropPointerDownListener;
+    private backdropListenerTimeout;
+    private overlayBackdrop;
     readonly options: InputSignal<readonly unknown[]>;
     readonly variant: InputSignal<VoteySelectVariant>;
     readonly label: InputSignal<string>;
@@ -337,6 +343,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected readonly optionViews: Signal<readonly SelectOptionView[]>;
     protected readonly filteredOptionViews: Signal<readonly SelectOptionView[]>;
     protected readonly resolvedTooltip: Signal<string>;
+    ngOnInit(): void;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get errorKeys(): string[];
@@ -349,7 +356,12 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected handleSelectionChange(event: MatSelectChange): void;
     protected handleOpenedChange(isOpen: boolean): void;
     protected handleSearchInput(event: Event): void;
-    protected openSelect(): void;
+    protected openSelect(event: MouseEvent): void;
+    private closeOnOutsidePointerDown;
+    private addBackdropListener;
+    private scheduleBackdropListener;
+    private removeBackdropListener;
+    private clearBackdropListenerTimeout;
     protected stopPanelEvent(event: Event): void;
     protected clearSelection(event: Event): void;
     protected cancelSelectionActions(): void;

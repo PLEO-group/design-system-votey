@@ -32,6 +32,8 @@ vt-select {
       }
 
       .control {
+        flex: 1;
+        min-width: 0;
         width: 100%;
         color: var(--color-text-primary);
         font-family: var(--typo-field-font-family);
@@ -40,9 +42,25 @@ vt-select {
         letter-spacing: var(--typo-field-letter-spacing);
         line-height: var(--typo-field-line-height);
 
-        .mat-mdc-select-placeholder,
-        .mat-mdc-select-arrow {
+        .mat-mdc-select-placeholder {
           color: var(--color-text-muted);
+        }
+
+        .mat-mdc-select-arrow-wrapper {
+          display: none;
+        }
+      }
+
+      .arrow {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        color: var(--color-text-muted);
+        pointer-events: none;
+        transition: transform 180ms ease;
+
+        &.open {
+          transform: rotate(180deg);
         }
       }
     }

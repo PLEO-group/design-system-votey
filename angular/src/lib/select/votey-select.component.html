@@ -26,22 +26,31 @@
       [attr.data-cy]="dataCy() || null"
       [attr.name]="name() || null"
       (selectionChange)="handleSelectionChange($event)"
+      (openedChange)="handleOpenedChange($event)"
     >
-      @for (option of options(); track option.value) {
-      <mat-option [value]="option.value" [disabled]="option.disabled ?? false">
+      @for (option of optionViews(); track option.value) {
+      <mat-option
+        [value]="option.value"
+        [disabled]="option.disabled"
+      >
         {{ option.label | vtTranslate }}
       </mat-option>
       }
     </mat-select>
+    <vt-icon
+      class="arrow"
+      ico="ui-chevron-down"
+      [class.open]="isOpen()"
+    />
   </div>
 
-  @if (multiple() && showSelectionChips() && selectedOptions.length) {
+  @if (multiple() && showSelectionChips() && selectedOptions().length) {
   <div class="chips">
-    @for (option of selectedOptions; track option.value) {
+    @for (option of selectedOptions(); track option.value) {
     <vt-chip
       [label]="option.label | vtTranslate"
       [removeTooltip]="removeTooltip()"
-      [disabled]="selectDisabled || (option.disabled ?? false)"
+      [disabled]="selectDisabled || option.disabled"
       (removed)="removeSelection(option)"
     />
     }

@@ -30,6 +30,21 @@ describe("VoteySelectComponent", () => {
     expect(fixture.nativeElement.querySelectorAll("vt-chip").length).toBe(1);
   });
 
+  it("should use configured properties for option labels and values", (): void => {
+    const control: FormControl<number | null> = new FormControl(2);
+
+    fixture.componentRef.setInput("control", control);
+    fixture.componentRef.setInput("bindLabel", "name");
+    fixture.componentRef.setInput("bindValue", "id");
+    fixture.componentRef.setInput("options", [
+      { id: 1, name: "FIRST" },
+      { id: 2, name: "SECOND" },
+    ]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain("SECOND");
+  });
+
   it("should render the error state for a touched invalid control", (): void => {
     const control: FormControl<string | null> = new FormControl(null, {
       validators: [Validators.required],

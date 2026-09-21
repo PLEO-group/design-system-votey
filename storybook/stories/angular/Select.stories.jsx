@@ -8,6 +8,8 @@ const selectInputs = [
   "variant",
   "label",
   "placeholder",
+  "bindLabel",
+  "bindValue",
   "id",
   "name",
   "dataCy",
@@ -180,6 +182,8 @@ export default {
     variant: "boxed",
     label: "Język wydarzenia",
     placeholder: "Wybierz język",
+    bindLabel: "",
+    bindValue: "",
     id: "storybook-select",
     name: "storybook-select",
     dataCy: "",
@@ -203,7 +207,7 @@ export const Playground = {
         {...args}
         onSelectionChange={(event) => {
           args.onSelectionChange(event);
-          updateArgs({ selectedValue: event.value });
+          updateArgs({ selectedValue: event });
         }}
       />
     );

@@ -66,8 +66,7 @@ export {
 } from "./lib/select/votey-select.component";
 export type {
   VoteySelectVariant,
-  VtSelectChange,
-  VtSelectOption,
+  VtOption,
 } from "./lib/select/votey-select.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
 export { VoteyRadioOptionContentDirective } from "./lib/radio-button/votey-radio-option-content.directive";

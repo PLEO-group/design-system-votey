@@ -41,11 +41,14 @@ export {
 } from "./lib/button/votey-button.component";
 export type {
   VoteyButtonSize,
+  VoteyButtonAriaHasPopup,
   VoteyButtonType,
   VoteyButtonVariant,
 } from "./lib/button/votey-button.component";
 export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
 export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
+export { VoteyMultiSelectPopoverComponent } from "./lib/multi-select-popover/votey-multi-select-popover.component";
+export type { VoteyMultiSelectItem } from "./lib/multi-select-popover/votey-multi-select-popover.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
 export {

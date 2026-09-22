@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.5.1
+version: 1.6.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -76,6 +76,11 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
   natywnego `input[type=file]`, więc komponent utrzymuje lokalną synchronizację.
 - Każdy wyjątek udokumentuj w kodzie lub dokumentacji komponentu, ogranicz go do
   tego komponentu i przetestuj programową zmianę wartości oraz stan `disabled`.
+- Każdy komponent formularzowy musi spełniać wspólny kontrakt opisany w
+  `references/angular-components.md`: odziedziczony `control`, jawna semantyka
+  `label`, stany formularza, dostępność i brak równoległego `ngModel`.
+- Dla komponentów z panelem lub overlayem zweryfikuj pozycjonowanie, szerokość,
+  zamykanie poza komponentem, klawiaturę i widoczność akcji w Storybooku.
 
 ## Codzienny workflow
 
@@ -126,6 +131,8 @@ return-to: references/<plik>.md
 - 1.5.1 — Dodano preferowany kontrakt `VoteyFormControlApplyDirective` dla
   Angularowych kontrolek formularzowych oraz ograniczony wyjątek dla natywnego
   inputu pliku.
+- 1.6.0 — Dodano wspólny kontrakt komponentów formularzowych, bramkę zachowania
+  overlayów oraz macierz obowiązkowych stanów i interakcji w Storybooku.
 
 - 1.5.0 — Dodano referencję synchronizacji tokenów Figma Variables: źródło URL z
   manifestu, dwa eksporty JSON, walidację w pamięci bieżącego zadania oraz

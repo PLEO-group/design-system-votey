@@ -1,0 +1,14 @@
+.angular-multi-select-popover-story {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 420px;
+  min-height: 480px;
+  padding: var(--spacing-48);
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-surface);
+}
+
+.preview {
+  display: inline-flex;
+}

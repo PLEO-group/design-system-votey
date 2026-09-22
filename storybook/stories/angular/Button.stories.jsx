@@ -23,6 +23,9 @@ const buttonInputs = [
   "badge",
   "tooltipText",
   "disabledNote",
+  "ariaExpanded",
+  "ariaHasPopup",
+  "ariaControls",
 ];
 
 function setButtonInputs(componentRef, props) {
@@ -151,6 +154,19 @@ export default {
     badge: {
       control: { type: "text" },
     },
+    ariaExpanded: {
+      control: { type: "boolean" },
+      table: { category: "Accessibility" },
+    },
+    ariaHasPopup: {
+      options: [null, "dialog", "grid", "listbox", "menu", "tree"],
+      control: { type: "select" },
+      table: { category: "Accessibility" },
+    },
+    ariaControls: {
+      control: { type: "text" },
+      table: { category: "Accessibility" },
+    },
     onPressed: {
       action: "pressed",
       table: { category: "Events" },
@@ -166,6 +182,9 @@ export default {
     badge: null,
     tooltipText: "Dodaj uczestnika",
     disabledNote: "Ta akcja jest obecnie niedostępna",
+    ariaExpanded: null,
+    ariaHasPopup: null,
+    ariaControls: null,
     onPressed: fn(),
   },
 };

@@ -1,8 +1,8 @@
 import * as i0 from '@angular/core';
 import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FormControl } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatRadioChange } from '@angular/material/radio';
 
@@ -104,6 +104,7 @@ declare const VoteyButtonSizes: readonly ["large", "small"];
 type VoteyButtonVariant = (typeof VoteyButtonVariants)[number];
 type VoteyButtonSize = (typeof VoteyButtonSizes)[number];
 type VoteyButtonType = "button" | "submit" | "reset";
+type VoteyButtonAriaHasPopup = "dialog" | "grid" | "listbox" | "menu" | "tree" | boolean | null;
 declare class VoteyButtonComponent {
     readonly disabled: InputSignal<boolean>;
     readonly type: InputSignal<VoteyButtonType>;
@@ -114,12 +115,15 @@ declare class VoteyButtonComponent {
     readonly badge: InputSignal<string | number | null>;
     readonly tooltipText: InputSignal<string>;
     readonly disabledNote: InputSignal<string>;
+    readonly ariaExpanded: InputSignal<boolean | null>;
+    readonly ariaHasPopup: InputSignal<VoteyButtonAriaHasPopup>;
+    readonly ariaControls: InputSignal<string | null>;
     readonly pressed: OutputEmitterRef<void>;
     protected readonly buttonClasses: Signal<string>;
     protected readonly isIconButton: Signal<boolean>;
     protected readonly resolvedTooltipText: Signal<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyButtonComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "ariaExpanded": { "alias": "ariaExpanded"; "required": false; "isSignal": true; }; "ariaHasPopup": { "alias": "ariaHasPopup"; "required": false; "isSignal": true; }; "ariaControls": { "alias": "ariaControls"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
 }
 
 interface VoteyMenuItem {
@@ -144,6 +148,47 @@ declare class VoteyMenuComponent {
     private focusEnabledItem;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyMenuComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyMenuComponent, "vt-menu", never, { "items": { "alias": "items"; "required": false; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "itemSelected": "itemSelected"; "dismissed": "dismissed"; }, never, never, true, never>;
+}
+
+interface VoteyMultiSelectItem {
+    readonly id: string;
+    readonly label: string;
+    readonly disabled?: boolean;
+}
+declare class VoteyMultiSelectPopoverComponent {
+    private readonly document;
+    private readonly host;
+    private readonly destroyRef;
+    readonly items: InputSignal<readonly VoteyMultiSelectItem[]>;
+    readonly selectedIds: InputSignal<readonly string[]>;
+    readonly triggerText: InputSignal<string>;
+    readonly triggerIcon: InputSignal<VoteyIcon | "">;
+    readonly triggerVariant: InputSignal<VoteyButtonVariant>;
+    readonly confirmText: InputSignal<string>;
+    readonly cancelText: InputSignal<string>;
+    readonly emptyText: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly dataCy: InputSignal<string | null>;
+    readonly confirmed: OutputEmitterRef<readonly string[]>;
+    readonly dismissed: OutputEmitterRef<void>;
+    protected readonly isOpen: WritableSignal<boolean>;
+    protected readonly itemControls: WritableSignal<Readonly<Record<string, FormControl<boolean>>>>;
+    protected readonly hasItems: Signal<boolean>;
+    protected readonly currentTriggerIcon: Signal<VoteyIcon | "">;
+    private readonly draftSelectedIds;
+    private readonly handlePointerDown;
+    constructor();
+    protected toggle(): void;
+    protected toggleItem(item: VoteyMultiSelectItem, checked: boolean): void;
+    protected confirm(): void;
+    protected dismiss(): void;
+    protected handlePanelKeydown(event: KeyboardEvent): void;
+    private open;
+    private close;
+    private createItemControls;
+    private handleOutsidePointerDown;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyMultiSelectPopoverComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyMultiSelectPopoverComponent, "vt-multi-select-popover", never, { "items": { "alias": "items"; "required": false; "isSignal": true; }; "selectedIds": { "alias": "selectedIds"; "required": false; "isSignal": true; }; "triggerText": { "alias": "triggerText"; "required": true; "isSignal": true; }; "triggerIcon": { "alias": "triggerIcon"; "required": false; "isSignal": true; }; "triggerVariant": { "alias": "triggerVariant"; "required": false; "isSignal": true; }; "confirmText": { "alias": "confirmText"; "required": true; "isSignal": true; }; "cancelText": { "alias": "cancelText"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "confirmed": "confirmed"; "dismissed": "dismissed"; }, never, never, true, never>;
 }
 
 declare class VoteyFormControlApplyDirective<T> {
@@ -506,5 +551,5 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "blur": "blur"; "keyDown": "keyDown"; }, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

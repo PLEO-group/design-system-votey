@@ -1,0 +1,61 @@
+<div class="multi-select-popover-wrapper" (keydown)="handlePanelKeydown($event)">
+  <vt-button
+    ariaHasPopup="dialog"
+    [text]="triggerText()"
+    [ico]="currentTriggerIcon()"
+    [variant]="triggerVariant()"
+    [ariaExpanded]="isOpen()"
+    (pressed)="toggle()"
+  />
+
+  @if (isOpen()) {
+  <div
+    class="panel"
+    role="dialog"
+    [attr.aria-label]="ariaLabel() | vtTranslate"
+    [attr.data-cy]="dataCy()"
+  >
+    @if (hasItems()) {
+    <ul
+      class="items"
+      role="group"
+      [attr.aria-label]="ariaLabel() | vtTranslate"
+    >
+      @for (item of items(); track item.id) {
+      <li class="item" [class.disabled]="item.disabled === true">
+        <vt-checkbox
+          [control]="itemControls()[item.id]"
+          (changed)="toggleItem(item, $event)"
+        >
+          {{ item.label }}
+        </vt-checkbox>
+      </li>
+      }
+    </ul>
+    } @else if (emptyText()) {
+    <div class="empty">
+      <vt-text
+        variant="body"
+        color="muted"
+        [content]="emptyText() | vtTranslate"
+      />
+    </div>
+    }
+
+    <div class="actions">
+      @if (cancelText()) {
+      <vt-button
+        variant="secondary"
+        [text]="cancelText()"
+        (pressed)="dismiss()"
+      />
+      }
+      <vt-button
+        [disabled]="!hasItems()"
+        [text]="confirmText()"
+        (pressed)="confirm()"
+      />
+    </div>
+  </div>
+  }
+</div>

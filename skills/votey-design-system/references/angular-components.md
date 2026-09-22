@@ -16,7 +16,9 @@ poniższy kontrakt źródłowego komponentu Angular.
 - Tokenizacja
 - Bramka tokenizacji SCSS
 - Kontrakt Angulara
+- Wspólny kontrakt formularza
 - HTML, dostępność i stany
+- Kontrakt overlayu
 - Style i integracje bibliotek
 - Publiczne API i pakowanie
 - Storybook
@@ -112,6 +114,34 @@ poniższy kontrakt źródłowego komponentu Angular.
 - Używaj zależności Angular/Material jako peer dependencies paczki. Nie przenoś
   zależności aplikacyjnych do biblioteki.
 
+### Wspólny kontrakt formularza
+
+Każdy komponent formularzowy `vt-*` musi przejść poniższą checklistę przed
+publikacją. Kontrakt dotyczy zarówno implementacji komponentu, jak i jego użycia
+w konsumencie.
+
+- Komponent korzysta z `VoteyFormControlApplyDirective` i wspólnego inputu
+  `control`; nie tworzy równoległego `ngModel`, ręcznej synchronizacji ani drugiego
+  źródła wartości bez udokumentowanego wyjątku.
+- Komponent, który renderuje pojedyncze pole, udostępnia `label` i traktuje je jako
+  klucz tłumaczenia zgodnie z lokalnym adapterem translatora. Konsument przekazuje
+  etykietę przez API komponentu, a nie przez zewnętrzny `<label>` zastępujący jego
+  etykietę.
+- `label` musi wpływać na semantyczną nazwę pola albo właściwe ARIA. Pusty label
+  jest poprawnym stanem dla pól pomocniczych, tabelarycznych i kompozycji, które mają
+  osobny opis grupy.
+- Stan `disabled`, `required`, `touched`, `error` i wartość kontrolki musi być
+  spójny między wartością z formularza a inputami komponentu. Komponent nie może
+  emitować akcji dla stanu disabled.
+- Placeholder, helper, tooltip, komunikaty błędów i akcje czyszczenia są częścią
+  publicznego kontraktu tylko wtedy, gdy mają testowalne zachowanie i właściwą
+  semantykę dostępności.
+- Komponenty grupowe, takie jak radio-group, mogą mieć opis grupy zamiast
+  pojedynczego `label`; wyjątek musi być jawny w API, template i historii Storybooka.
+- Każda nowa kontrolka formularzowa dostaje test programowej zmiany wartości,
+  stanu disabled oraz touched/error, a jej publiczne typy są eksportowane przez
+  `@pleodigital/design-system-votey/angular`.
+
 ## HTML, dostępność i stany
 
 - Zachowuj natywną semantykę elementu (`button`, `input`, etykieta) i obsługę klawiatury.
@@ -124,6 +154,22 @@ poniższy kontrakt źródłowego komponentu Angular.
   znaczenie dla danego komponentu.
 - Nie zwiększaj obszaru klikalnego ani nie zmieniaj payloadu zdarzenia podczas migracji
   bez jawnej decyzji funkcjonalnej.
+
+### Kontrakt overlayu
+
+Dla komponentu otwierającego panel, menu albo dropdown sprawdź dodatkowo:
+
+- panel jest zakotwiczony do właściwego triggera, pojawia się pod nim lub zgodnie
+  z jawną regułą fallbacku i ma szerokość triggera, jeśli kontrakt tego wymaga;
+- cały wizualny trigger, w tym ikona i obszar chevrona, jest klikalny;
+- kliknięcie poza komponentem zamyka panel, a Escape i nawigacja klawiaturą
+  zachowują się zgodnie z natywnym kontraktem;
+- akcje panelu, np. zaznacz wszystko, wyczyść i zatwierdź, pozostają dostępne bez
+  przewijania do końca listy albo mają jawnie udokumentowane zachowanie sticky;
+- animacja otwarcia i stan ikony nie zmieniają geometrii triggera ani nie powodują
+  nachodzenia panelu na pole;
+- zachowanie jest pokryte historią interaktywną lub testem Storybooka, a nie tylko
+  screenshotem stanu początkowego.
 
 ## Style i integracje bibliotek
 
@@ -155,6 +201,13 @@ poniższy kontrakt źródłowego komponentu Angular.
   przedstawienia kontrolkami.
 - Udostępnij kontrolki dla wszystkich sensownych publicznych inputów, a outputy pokaż
   jako actions. Synchronizuj kontrolkę wartości po interakcji użytkownika.
+- Dla komponentu formularzowego Playground musi umożliwiać sprawdzenie co najmniej:
+  `label`, reactive `control`, pustej i ustawionej wartości, disabled, error,
+  required, wariantu oraz konfiguracji pojedynczej i wielokrotnej, jeśli komponent
+  ją obsługuje. Dla opcji obiektowych pokaż także mapowanie `bindLabel`/`bindValue`.
+- Dla overlayów dodaj interakcje: otwarcie przez cały trigger, kliknięcie poza,
+  Escape, klawiaturę, zmianę viewportu oraz widoczność akcji panelu. Actions muszą
+  pokazywać outputy i zmianę wartości kontrolki.
 - Montując Angular w Reactowym Storybooku, utwórz rzeczywisty element hosta zgodny
   z selektorem `vt-*`; nie montuj komponentu na anonimowym `div`, bo style ograniczone
   do selektora hosta nie zadziałają.
@@ -165,7 +218,8 @@ poniższy kontrakt źródłowego komponentu Angular.
 
 1. Zamknij bramkę tokenizacji SCSS.
 2. Sprawdź automatycznie prefiks `vt-` dla wszystkich komponentów Angular w paczce.
-3. Dodaj test zachowania komponentu, w tym outputy, disabled i CVA dla kontrolek formularza.
+3. Dodaj test zachowania komponentu, w tym outputy, disabled, touched/error i CVA dla
+   kontrolek formularza; dla overlayu sprawdź geometrię, outside click, Escape i akcje.
 4. Potwierdź eksport z `@pleodigital/design-system-votey/angular` bez deep importu.
 5. Uruchom testy paczki, build Angulara i build Storybooka.
 6. Wykonaj smoke-test Playground w przeglądarce: render, console, klawiatura, focus,

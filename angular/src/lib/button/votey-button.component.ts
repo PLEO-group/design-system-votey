@@ -28,6 +28,14 @@ export const VoteyButtonSizes = ["large", "small"] as const;
 export type VoteyButtonVariant = (typeof VoteyButtonVariants)[number];
 export type VoteyButtonSize = (typeof VoteyButtonSizes)[number];
 export type VoteyButtonType = "button" | "submit" | "reset";
+export type VoteyButtonAriaHasPopup =
+  | "dialog"
+  | "grid"
+  | "listbox"
+  | "menu"
+  | "tree"
+  | boolean
+  | null;
 
 @Component({
   selector: "vt-button",
@@ -56,6 +64,14 @@ export class VoteyButtonComponent {
   >(null);
   public readonly tooltipText: InputSignal<string> = input<string>("");
   public readonly disabledNote: InputSignal<string> = input<string>("");
+  public readonly ariaExpanded: InputSignal<boolean | null> = input<
+    boolean | null
+  >(null);
+  public readonly ariaHasPopup: InputSignal<VoteyButtonAriaHasPopup> =
+    input<VoteyButtonAriaHasPopup>(null);
+  public readonly ariaControls: InputSignal<string | null> = input<
+    string | null
+  >(null);
 
   public readonly pressed: OutputEmitterRef<void> = output<void>();
 

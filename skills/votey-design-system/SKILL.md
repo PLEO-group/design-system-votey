@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.6.0
+version: 1.9.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -40,6 +40,7 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
 | Źródłowy SVG albo integracja opublikowanego assetu | [svg-assets.md](references/svg-assets.md), [assets.md](references/assets.md) oraz referencję frameworka |
 | Device, grid, breakpoint albo layout z Figmy | [responsiveness.md](references/responsiveness.md) |
 | Publiczny komponent, wariant, wrapper lub authoring | [components.md](references/components.md); dla źródła Angular także [angular-components.md](references/angular-components.md) |
+| Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |
 | Instalacja, upgrade lub smoke test aplikacji | [consumers.md](references/consumers.md) oraz referencję frameworka |
 | `design-system-votey` albo konsument Angular | [angular.md](references/angular.md) |
@@ -97,9 +98,12 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
    referencje potrzebne w zadaniu. Dla widoku z Figmy wczytaj też `consumers.md`.
 3. Zmapuj role UI kolejno na publiczny komponent lub lokalny prymityw, token,
    responsywność i asset. Przed nowym wrapperem sprawdź jeden najbliższy przykład.
-4. Zastosuj lokalny standard frameworka. Zachowaj zachowanie, payloady, dostępność,
+4. Przy migracji istniejącego konsumenta wczytaj `angular-consumer-migration.md`,
+   porównaj baseline historyczny, zapisz kontrakt przed zmianą i oddziel logikę
+   domenową od mapowania publicznego API Votey.
+5. Zastosuj lokalny standard frameworka. Zachowaj zachowanie, payloady, dostępność,
    stany i granicę Server/Client albo Angular Forms.
-5. Uruchom najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
+6. Uruchom najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
    testu, builda, Storybooka ani smoke testu bez dowodu z tej sesji.
 
 Rutynowa zmiana tokenu, assetu, komponentu, story lub eksportu pozostaje w tym
@@ -122,6 +126,8 @@ return-to: references/<plik>.md
   wersji paczki.
 - Zachowaj izolację Angular ↔ React; zmiana `shared` wymaga sprawdzenia obu outputów.
 - Dla komponentu sprawdź dostępność, wymagane stany, publiczne API i preview.
+- Dla migracji konsumenta sprawdź mapowanie legacy → publiczne API, walidację
+  formularza, brak globalnych wycieków SCSS oraz świeżość zbudowanego artefaktu.
 - Dla zmian wizualnych sprawdź route/story, theme, viewport, console, overflow oraz
   krytyczne computed values. Pixel-perfect wymaga screenshotu runtime i wartości
   potwierdzonych w handoffie.
@@ -133,6 +139,13 @@ return-to: references/<plik>.md
   inputu pliku.
 - 1.6.0 — Dodano wspólny kontrakt komponentów formularzowych, bramkę zachowania
   overlayów oraz macierz obowiązkowych stanów i interakcji w Storybooku.
+- 1.7.0 — Dodano referencję migracji istniejących konsumentów Angular/CRM:
+  baseline historyczny, mapowanie legacy API, zachowanie formularzy, audyt wycieków
+  SCSS oraz przepływ świeżości artefaktów `dist` → tarball → konsument.
+- 1.8.0 — Dodano tryb `light` i bramki decyzji użytkownika przed kosztownym
+  baseline'em historycznym, szerokim skanem SCSS, buildem paczki, testami i runtime.
+- 1.9.0 — Doprecyzowano hierarchię walidacji: tryb `light` ogranicza opcjonalną
+  eksplorację, ale nie omija obowiązkowego minimum z `angular.md` po implementacji.
 
 - 1.5.0 — Dodano referencję synchronizacji tokenów Figma Variables: źródło URL z
   manifestu, dwa eksporty JSON, walidację w pamięci bieżącego zadania oraz

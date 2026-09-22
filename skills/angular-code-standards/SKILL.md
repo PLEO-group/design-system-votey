@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.16.0
+version: 1.17.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -71,6 +71,9 @@ Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 - TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [playbook 3.16](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe), nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], przed validatorem lub checkerem potwierdź konieczność reguły i osiągalność błędnego stanu, dopiero potem wykonaj discovery → [playbook 3.17](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi), ocena wpływu na testy → [3.11].
 - Tłumaczenia: w każdym edytowanym pliku usuń zauważone, nietłumaczone polskie teksty UI; użyj wyłącznie istniejących prefiksów grup i wypisz użytkownikowi klucze z polskimi tekstami → [3.12].
 - Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [playbook 3.13](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu).
+- Refaktor istniejącego widoku: jeśli użytkownik wskazuje wersję historyczną, porównaj najpierw commit bazowy z bieżącym kodem i oddziel zmiany domenowe od prezentacyjnych; nie przenoś przypadkowych zmian do reguł UI.
+- Migracja kontrolek: przed podmianą komponentu zinwentaryzuj jego inputy, outputy, walidację, stan disabled/touched/error, reset, tryb edycji i selektory testowe; po podmianie sprawdź payload parity i kontrakt interakcji.
+- Style po migracji: przeskanuj zmienione pliki pod kątem globalnych selektorów (`label`, `.input`, `.select`), klas legacy, utility classes i magicznych wartości; style komponentu muszą być lokalne, zgodne z hierarchią HTML i oparte na dostępnych tokenach.
 - Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [playbook 3.15](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki).
 - Animacje: dla nowego kodu CSS + `animate.enter` / `animate.leave`, bez nowych legacy triggerów → [4].
 
@@ -499,6 +502,42 @@ Gotowy format:
 ```text
 Testy: zaktualizowano `<plik>.spec.ts` / brak testów w pobliżu — rekomenduję dodać `<zakres>` / nie wymagało zmian, bo dotyczyło wyłącznie SCSS.
 ```
+
+### [3.11a] Migracja istniejącego widoku bez utraty kontraktu
+
+Przy migracji istniejącego widoku do innego komponentu UI albo Design Systemu
+najpierw zapisz kontrakt przed zmianą:
+
+- dane wejściowe i wyjściowe oraz payloady requestów,
+- lokalny state otwarcia, zaznaczenia, edycji, resetu i zapisu,
+- walidację, `required`, `disabled`, `touched`, błędy i komunikaty,
+- selektory `data-cy`, semantykę HTML, ARIA i obsługę klawiatury,
+- stany pustej listy, duplikatów, błędów i braku danych.
+
+Jeśli dostępna jest wersja historyczna, użyj jej jako baseline'u i oddziel zmiany
+domenowe od zmian wyglądu lub integracji. Nie przenoś do wspólnego skilla
+jednorazowych kluczy tłumaczeń, nazw endpointów ani reguł właściwych dla jednej
+aplikacji.
+
+Po migracji sprawdź równoważność zachowania: wartości formularza, eventy,
+payloady, zamykanie, reset i warunki blokowania akcji. Dla zmienionej logiki
+zaktualizuj testy obok komponentu; dla samego SCSS testy jednostkowe nie są
+wymagane.
+
+### [3.11b] Audyt stylów po migracji komponentu
+
+Po wymianie kontrolki lub layoutu przeskanuj cały zmieniony zakres, a nie tylko
+nowe linie. Usuń albo zgłoś:
+
+- globalne selektory `label`, `.input`, `.select` i podobne override'y,
+- klasy legacy, które przestały mieć właściciela,
+- utility classes mieszające odpowiedzialność layoutu z komponentem,
+- selektory z `&`, które po kompilacji nie wskazują zamierzonego elementu,
+- korekty `transform` użyte do maskowania problemu z gridem lub wysokością pola.
+
+Wartości spacingu, typografii, koloru i radiusu mapuj na tokeny lokalnego Design
+Systemu. Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
+uzasadnione przez kontrakt komponentu albo istniejący wzorzec projektu.
 
 ### [3.12] Tłumaczenia i nowe klucze
 

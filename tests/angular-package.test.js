@@ -142,6 +142,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(
     VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.variant[0], "variant");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.files[0], "files");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.multiple[0], "multiple");
   assert.equal(
@@ -164,6 +166,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cleared, "cleared");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.rejected, "rejected");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.fileRemoved, "fileRemoved");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.fileRetry, "fileRetry");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.outputs.fileCancelled,
+    "fileCancelled",
+  );
   assert.equal(typeof VoteyFormControlApplyDirective, "function");
   assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
     ["", "vtFormControlApply", ""],
@@ -469,6 +477,7 @@ test("file picker supports drops, batches, validation and clearing", async () =>
 
   picker.control = control;
   picker.multiple = () => true;
+  picker.variant = () => "dropzone";
   picker.allowedExtensions = () => ["pdf"];
   picker.maxFileSizeBytes = () => 10;
   picker.maxTotalSizeBytes = () => 20;
@@ -484,6 +493,18 @@ test("file picker supports drops, batches, validation and clearing", async () =>
   );
   const rejectedSubscription = picker.rejected.subscribe((rejection) =>
     rejections.push(rejection),
+  );
+  const removedFiles = [];
+  const retriedFiles = [];
+  const cancelledFiles = [];
+  const removedSubscription = picker.fileRemoved.subscribe((file) =>
+    removedFiles.push(file),
+  );
+  const retrySubscription = picker.fileRetry.subscribe((file) =>
+    retriedFiles.push(file),
+  );
+  const cancelledSubscription = picker.fileCancelled.subscribe((file) =>
+    cancelledFiles.push(file),
   );
   const clearedSubscription = picker.cleared.subscribe(() => {
     cleared += 1;
@@ -518,7 +539,7 @@ test("file picker supports drops, batches, validation and clearing", async () =>
 
   assert.equal(prevented, true);
   assert.equal(control.errors, null);
-  assert.deepEqual(fileBatches.at(-1), [firstFile]);
+  assert.deepEqual(fileBatches.at(-1), [firstFile, firstFile]);
 
   picker.clear();
 
@@ -527,9 +548,36 @@ test("file picker supports drops, batches, validation and clearing", async () =>
   assert.deepEqual(fileBatches.at(-1), []);
   assert.equal(cleared, 1);
 
+  const uploadingFile = {
+    id: "uploading-file",
+    filename: "uploading.pdf",
+    state: "uploading",
+  };
+  const doneFile = {
+    id: "done-file",
+    filename: "first.pdf",
+    state: "done",
+  };
+  const erroredFile = {
+    id: "errored-file",
+    filename: "errored.pdf",
+    state: "error",
+  };
+
+  picker.handleFileRemoved(doneFile);
+  picker.handleFileRetry(erroredFile);
+  picker.handleFileCancelled(uploadingFile);
+
+  assert.deepEqual(removedFiles, [doneFile]);
+  assert.deepEqual(retriedFiles, [erroredFile]);
+  assert.deepEqual(cancelledFiles, [uploadingFile]);
+
   changedSubscription.unsubscribe();
   filesChangedSubscription.unsubscribe();
   rejectedSubscription.unsubscribe();
+  removedSubscription.unsubscribe();
+  retrySubscription.unsubscribe();
+  cancelledSubscription.unsubscribe();
   clearedSubscription.unsubscribe();
   picker.ngOnDestroy();
 });

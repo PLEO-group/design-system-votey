@@ -128,34 +128,55 @@
         border-bottom: 1px solid var(--color-border-subtle);
 
         .file-preview-trigger {
-          padding: 0;
-          border: 0;
-          color: inherit;
-          background: transparent;
-          font: inherit;
-          cursor: pointer;
+          min-width: 0;
 
-          &:focus-visible {
-            outline: 2px solid var(--color-border-focus);
-            outline-offset: var(--spacing-2);
+          &.file-tile {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+
+            ::ng-deep button {
+              width: 44px;
+              height: 44px;
+              padding: 0;
+              border-radius: var(--radius-icon-tile);
+              background-color: var(--color-bg-surface-tint);
+            }
+          }
+
+          &.file-preview-name {
+            flex: 1 1 0;
+            overflow: hidden;
+
+            ::ng-deep .button-wrapper,
+            ::ng-deep button,
+            ::ng-deep .label {
+              min-width: 0;
+              max-width: 100%;
+            }
+
+            ::ng-deep .button-wrapper,
+            ::ng-deep button {
+              width: 100%;
+              justify-content: flex-start;
+            }
+
+            ::ng-deep .label {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            &:hover {
+              text-decoration: underline;
+            }
           }
         }
 
-        .file-tile {
-          display: flex;
-          flex: 0 0 44px;
-          align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          border-radius: var(--radius-icon-tile);
-          background-color: var(--color-bg-surface-tint);
-
-          vt-icon {
-            display: block;
-            width: 28px;
-            height: 28px;
-          }
+        .file-tile vt-icon {
+          display: block;
+          width: 28px;
+          height: 28px;
         }
 
         .file-content {
@@ -182,17 +203,6 @@
             flex: 1 1 0;
             min-width: 0;
 
-            .file-preview-name {
-              display: block;
-              width: 100%;
-              min-width: 0;
-              overflow: hidden;
-              text-align: left;
-
-              &:hover {
-                text-decoration: underline;
-              }
-            }
           }
         }
 

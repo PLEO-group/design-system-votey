@@ -19,7 +19,9 @@
     [attr.aria-busy]="isLoading()"
     [attr.aria-disabled]="effectiveDisabled()"
     [attr.aria-label]="dropzoneTitle() | vtTranslate"
+    [attr.tabindex]="effectiveDisabled() ? -1 : 0"
     (click)="handleDropzoneClick($event)"
+    (keydown)="handleDropzoneKeydown($event)"
     (dragenter)="handleDragEnter($event)"
     (dragover)="handleDragOver($event)"
     (dragleave)="handleDragLeave($event)"
@@ -32,34 +34,25 @@
         class="file-row"
         [class.uploading]="file.state === fileStateNames.uploading"
       >
-        <button
+        <vt-button
           class="file-preview-trigger file-tile"
-          type="button"
-          [attr.title]="(previewText() | vtTranslate) + ': ' + file.filename"
-          [attr.aria-label]="
-            (previewText() | vtTranslate) + ': ' + file.filename
-          "
-          (click)="handleFilePreview(file)"
-        >
-          <vt-icon [ico]="file.icon || 'ui-file-txt'" />
-        </button>
+          variant="ghost"
+          [ico]="file.icon || 'ui-file-txt'"
+          [tooltipText]="previewText()"
+          (pressed)="handleFilePreview(file)"
+        />
 
         <div class="file-content">
           <div class="file-heading">
             <span class="file-name">
-              <button
+              <vt-button
                 class="file-preview-trigger file-preview-name"
-                type="button"
-                [attr.title]="file.filename"
-                (click)="handleFilePreview(file)"
-              >
-                <vt-text
-                  variant="body"
-                  color="primary"
-                  [content]="file.filename | vtTranslate"
-                  [maxLines]="1"
-                />
-              </button>
+                variant="link"
+                size="small"
+                [text]="file.filename"
+                [tooltipText]="previewText()"
+                (pressed)="handleFilePreview(file)"
+              />
             </span>
             @if (file.meta) {
             <vt-text
@@ -168,7 +161,7 @@
       <vt-text
         variant="caption"
         color="muted"
-        [content]="dropzoneHint() | vtTranslate"
+        [content]="dropzoneHint() | vtTranslate: dropzoneHintParams()"
       />
       <vt-button
         variant="secondary"

@@ -24,6 +24,7 @@ import { VoteyIconComponent } from "../icon/votey-icon.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import type { VoteyIcon } from "../votey-assets";
+import type { VoteyTranslationParams } from "../translation/votey-translation";
 
 export const VoteyFilePickerValidationErrors = [
   "invalidType",
@@ -296,6 +297,11 @@ export class VoteyFilePickerComponent
   protected readonly isDropzone: Signal<boolean> = computed<boolean>(
     () => this.variant() === this.variantNames.dropzone
   );
+  protected readonly dropzoneHintParams: Signal<VoteyTranslationParams> =
+    computed<VoteyTranslationParams>(() => ({
+      formats: this.resolvedAcceptedFormats(),
+      maxSize: this.resolvedMaxFileSize(),
+    }));
   protected readonly effectiveMultiple: Signal<boolean> = computed<boolean>(
     () => this.isDropzone()
   );
@@ -318,6 +324,44 @@ export class VoteyFilePickerComponent
 
     return this.formControl.hasValidator(Validators.required);
   });
+
+  private readonly resolvedAcceptedFormats: Signal<string> = computed<string>(
+    () => {
+      const acceptedValues: string[] = [
+        ...this.allowedExtensions(),
+        ...this.allowedMimeTypes(),
+        ...this.accept().split(","),
+      ];
+      const formats = new Set<string>();
+
+      for (const value of acceptedValues) {
+        const normalizedValue: string = value.trim();
+        if (!normalizedValue) continue;
+
+        const mimeParts: string[] = normalizedValue.split("/");
+        const format: string = mimeParts[1] === "*"
+          ? normalizedValue.toUpperCase()
+          : (mimeParts[mimeParts.length - 1] ?? normalizedValue)
+              .replace(/^\./, "")
+              .toUpperCase();
+        if (format) formats.add(format);
+      }
+
+      return [...formats].join(", ") || "*";
+    }
+  );
+
+  private readonly resolvedMaxFileSize: Signal<string> = computed<string>(
+    () => {
+      const maxFileSizeBytes = this.maxFileSizeBytes();
+      if (maxFileSizeBytes === null) return "—";
+
+      const megabytes = maxFileSizeBytes / (1024 * 1024);
+      return megabytes >= 1
+        ? `${Number(megabytes.toFixed(1)).toString().replace(".", ",")} MB`
+        : `${Math.round(maxFileSizeBytes / 1024)} KB`;
+    }
+  );
   protected get errorKeys(): string[] {
     return this.formControl.invalid && this.formControl.touched
       ? Object.keys(this.formControl.errors ?? {})
@@ -445,6 +489,15 @@ export class VoteyFilePickerComponent
 
     if (target.closest("button")) return;
 
+    this.open();
+  }
+
+  protected handleDropzoneKeydown(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.closest("button")) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
     this.open();
   }
 

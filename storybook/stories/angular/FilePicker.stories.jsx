@@ -9,7 +9,8 @@ const filePickerTranslations = {
   "MESSAGE.FILE_UPLOAD_IN_PROGRESS": "Przesyłanie",
   "MESSAGE.FILE_PICKER_DROPZONE_PROMPT":
     "Przeciągnij pliki tutaj lub kliknij, aby wybrać",
-  "MESSAGE.FILE_PICKER_DROPZONE_HINT": "PDF, JPG, PNG, maks. 10 MB na plik",
+  "MESSAGE.FILE_PICKER_DROPZONE_HINT":
+    "({{formats}}), maks. {{maxSize}} na plik",
   "BUTTON.CHOOSE_FILE": "Wybierz plik",
   "BUTTON.CHOOSE_FILES": "Wybierz pliki",
   "BUTTON.DELETE": "Usuń plik",

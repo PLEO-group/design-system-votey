@@ -305,10 +305,13 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     protected readonly isDragging: Signal<boolean>;
     protected readonly isLoading: Signal<boolean>;
     protected readonly isDropzone: Signal<boolean>;
+    protected readonly dropzoneHintParams: Signal<VoteyTranslationParams>;
     protected readonly effectiveMultiple: Signal<boolean>;
     protected readonly displayedFiles: Signal<readonly VoteyFilePickerFile[]>;
     protected readonly effectiveDisabled: Signal<boolean>;
     protected readonly isRequired: Signal<boolean>;
+    private readonly resolvedAcceptedFormats;
+    private readonly resolvedMaxFileSize;
     protected get errorKeys(): string[];
     constructor();
     set control(control: FormControl<File | null> | null | undefined);
@@ -326,6 +329,7 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     protected handleFileCancelled(file: VoteyFilePickerFile): void;
     protected handleFileAction(file: VoteyFilePickerFile): void;
     protected handleDropzoneClick(event: MouseEvent): void;
+    protected handleDropzoneKeydown(event: KeyboardEvent): void;
     protected handleCancel(): void;
     private observeFormControl;
     private syncFormControlState;

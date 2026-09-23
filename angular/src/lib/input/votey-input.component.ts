@@ -39,6 +39,7 @@ export type VoteyInputVariant = (typeof VoteyInputVariants)[number];
 export type VoteyInputType =
   (typeof VoteyInputTypeNames)[keyof typeof VoteyInputTypeNames];
 export type VoteyInputMode = (typeof VoteyInputModes)[number];
+export type VoteyInputTrimmer = (value: string) => string;
 
 export const VoteyInputTypes: readonly VoteyInputType[] = Object.values(
   VoteyInputTypeNames
@@ -82,6 +83,8 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     500
   );
   public readonly pattern: InputSignal<string> = input<string>("");
+  public readonly trimmer: InputSignal<VoteyInputTrimmer | null> =
+    input<VoteyInputTrimmer | null>(null);
   public readonly dataCy: InputSignal<string> = input<string>("");
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly showErrors: InputSignalWithTransform<boolean, unknown> =
@@ -107,5 +110,18 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
   protected get errorKeys(): string[] {
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
+  }
+
+  protected handleBlur(event: FocusEvent): void {
+    const value: string | null = this.formControl.value;
+    const trimmer: VoteyInputTrimmer | null = this.trimmer();
+
+    if (value !== null && trimmer) {
+      const trimmedValue: string = trimmer(value);
+
+      if (trimmedValue !== value) this.formControl.setValue(trimmedValue);
+    }
+
+    this.blur.emit(event);
   }
 }

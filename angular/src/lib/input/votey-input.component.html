@@ -31,7 +31,7 @@
       [attr.pattern]="pattern() || null"
       [attr.aria-invalid]="hasError ? true : null"
       [attr.data-cy]="dataCy() || null"
-      (blur)="blur.emit($event)"
+      (blur)="handleBlur($event)"
     />
   </div>
 

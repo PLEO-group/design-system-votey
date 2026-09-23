@@ -21,6 +21,8 @@ const inputNames = [
   "dataCy",
 ];
 
+const removeWhitespace = (value) => value.replace(/\s/g, "");
+
 function setInputProperties(componentRef, control, Validators, props) {
   const validators = [
     props.required || props.showError ? Validators.required : null,
@@ -40,6 +42,10 @@ function setInputProperties(componentRef, control, Validators, props) {
   }
 
   componentRef.setInput("control", control);
+  componentRef.setInput(
+    "trimmer",
+    props.trimWhitespace ? removeWhitespace : null
+  );
 
   for (const inputName of inputNames) {
     componentRef.setInput(inputName, props[inputName]);
@@ -177,6 +183,9 @@ export default {
     showError: {
       description: "Shows the required error state for an empty input.",
     },
+    trimWhitespace: {
+      description: "Removes whitespace from the FormControl value on blur.",
+    },
     onChanged: { action: "changed", table: { category: "Events" } },
     onKeyDown: { action: "keyDown", table: { category: "Events" } },
   },
@@ -184,11 +193,12 @@ export default {
     text: "",
     variant: "boxed",
     type: "text",
-    label: "Nazwa wydarzenia",
-    placeholder: "Wpisz nazwę…",
+    label: "Event name",
+    placeholder: "Enter event name",
     disabled: false,
     required: false,
     showError: false,
+    trimWhitespace: false,
     id: "storybook-input",
     name: "storybook-input",
     inputMode: "",
@@ -217,5 +227,16 @@ export const Playground = {
         }}
       />
     );
+  },
+};
+
+export const PhoneNumberWithWhitespaceTrimmer = {
+  args: {
+    text: "502 724 170",
+    type: "tel",
+    inputMode: "tel",
+    label: "Phone number",
+    placeholder: "Enter phone number",
+    trimWhitespace: true,
   },
 };

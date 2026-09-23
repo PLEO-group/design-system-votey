@@ -147,26 +147,26 @@
           &.file-preview-name {
             flex: 1 1 0;
             overflow: hidden;
+            ::ng-deep {
+              .button-wrapper,
+              button,
+              .label {
+                min-width: 0;
+                max-width: 100%;
+              }
 
-            ::ng-deep .button-wrapper,
-            ::ng-deep button,
-            ::ng-deep .label {
-              min-width: 0;
-              max-width: 100%;
+              .button-wrapper,
+              button {
+                width: 100%;
+                justify-content: flex-start;
+              }
+
+              .label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
             }
-
-            ::ng-deep .button-wrapper,
-            ::ng-deep button {
-              width: 100%;
-              justify-content: flex-start;
-            }
-
-            ::ng-deep .label {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-
             &:hover {
               text-decoration: underline;
             }
@@ -202,7 +202,6 @@
           .file-name {
             flex: 1 1 0;
             min-width: 0;
-
           }
         }
 

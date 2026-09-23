@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.9.0
+version: 1.11.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -103,8 +103,20 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
    domenową od mapowania publicznego API Votey.
 5. Zastosuj lokalny standard frameworka. Zachowaj zachowanie, payloady, dostępność,
    stany i granicę Server/Client albo Angular Forms.
-6. Uruchom najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
+6. Dobierz najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
    testu, builda, Storybooka ani smoke testu bez dowodu z tej sesji.
+
+### Testy przy zmianie kodu
+
+Gdy zmiana dotyczy kodu runtime, publicznego API albo zachowania komponentu,
+sprawdź najbliższe istniejące testy. Jeśli test opisuje zmieniany kontrakt,
+zaktualizuj go; jeśli nowe zachowanie nie ma pokrycia, dodaj lub rozszerz
+minimalny test adekwatny do zmiany. Aktualizacja testów jest częścią implementacji
+zmiany, gdy jest konieczna — nie oznacza automatycznego uruchamiania całej suity.
+
+Nie uruchamiaj testów przy każdym prompcie. Uruchom tylko najwęższy właściwy test
+lub zestaw testów, gdy użytkownik o to poprosi, projektowy workflow tego wymaga
+albo weryfikacja jest potrzebna do potwierdzenia wykonanej zmiany.
 
 Rutynowa zmiana tokenu, assetu, komponentu, story lub eksportu pozostaje w tym
 skill-u. Eskaluj do `pleo-design-system` tylko przy audycie całego DS, zmianie
@@ -134,28 +146,4 @@ return-to: references/<plik>.md
 
 ## Historia zmian
 
-- 1.5.1 — Dodano preferowany kontrakt `VoteyFormControlApplyDirective` dla
-  Angularowych kontrolek formularzowych oraz ograniczony wyjątek dla natywnego
-  inputu pliku.
-- 1.6.0 — Dodano wspólny kontrakt komponentów formularzowych, bramkę zachowania
-  overlayów oraz macierz obowiązkowych stanów i interakcji w Storybooku.
-- 1.7.0 — Dodano referencję migracji istniejących konsumentów Angular/CRM:
-  baseline historyczny, mapowanie legacy API, zachowanie formularzy, audyt wycieków
-  SCSS oraz przepływ świeżości artefaktów `dist` → tarball → konsument.
-- 1.8.0 — Dodano tryb `light` i bramki decyzji użytkownika przed kosztownym
-  baseline'em historycznym, szerokim skanem SCSS, buildem paczki, testami i runtime.
-- 1.9.0 — Doprecyzowano hierarchię walidacji: tryb `light` ogranicza opcjonalną
-  eksplorację, ale nie omija obowiązkowego minimum z `angular.md` po implementacji.
-
-- 1.5.0 — Dodano referencję synchronizacji tokenów Figma Variables: źródło URL z
-  manifestu, dwa eksporty JSON, walidację w pamięci bieżącego zadania oraz
-  wdrożenie po poprawnym eksporcie; dodano obowiązkowy routing do `assets.md` dla
-  źródłowych SVG i integracji opublikowanych assetów.
-- 1.4.0 — Dodano kontraktowy router, snapshot manifestu i wspólne referencje dla
-  tokenów, theme, SVG, responsywności, komponentów, preview i konsumentów Angular/React;
-  doprecyzowano publiczny Sass entry point `ds-device-mixins` dla responsywności Angulara.
-- 1.3.2 — Dodano preflight publicznych komponentów i lokalnych prymitywów przed implementacją UI.
-- 1.3.1 — Udokumentowano publiczny context ilustracji `info` dla szczegółowych infografik.
-- 1.3.0 — Dodano obowiązkową bramkę izolacji Angular ↔ React/PWA oraz walidację właściwych entry pointów i buildów.
-- 1.2.0 — Dodano wybór sposobu użycia publicznych assetów w Angularze i React oraz obowiązkową bramkę lokalnego osadzania SVG.
-- 1.1.0 — Dodano publiczny Angular SVG registry, provider bootstrapu i kontrakt migracji konsumentów z lokalnych rejestrów.
+Pełna historia wersji znajduje się w [references/changelog.md](references/changelog.md).

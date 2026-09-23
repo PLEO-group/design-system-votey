@@ -15,7 +15,9 @@ const filePickerTranslations = {
   "BUTTON.DELETE": "Usuń plik",
   "BUTTON.CANCEL": "Anuluj",
   "BUTTON.TRY_AGAIN": "Spróbuj ponownie",
+  "BUTTON.PREVIEW_FILE": "Podgląd pliku",
   "MESSAGE.FILE_PICKER_DONE": "Gotowe",
+  "MESSAGE.FILE_PICKER_PENDING": "Do zapisania",
   "ERRORS.FILE_UPLOAD_FAILED": "Błąd przesyłania",
   "ERRORS.FILE_PICKER_INVALID_TYPE": "Nieobsługiwany typ pliku",
   "ERRORS.FILE_PICKER_FILE_TOO_LARGE": "Plik jest zbyt duży",
@@ -41,6 +43,8 @@ const filePickerInputs = [
   "dropzoneHint",
   "dropzoneActionText",
   "doneText",
+  "pendingText",
+  "previewText",
   "uploadErrorText",
   "retryText",
   "cancelText",
@@ -165,6 +169,9 @@ function AngularFilePickerPreview(props) {
         componentRef.instance.fileCancelled.subscribe((file) =>
           latestPropsRef.current.onFileCancelled(file)
         ),
+        componentRef.instance.filePreview.subscribe((file) =>
+          latestPropsRef.current.onFilePreview(file)
+        ),
       ];
       const control = new FormControl(null);
 
@@ -242,6 +249,10 @@ export default {
       action: "fileCancelled",
       table: { category: "Events" },
     },
+    onFilePreview: {
+      action: "filePreview",
+      table: { category: "Events" },
+    },
     initialFilename: { description: "Value passed through initialValue." },
     staticFilename: { description: "Value passed through staticValue." },
     disable: { control: "boolean" },
@@ -265,6 +276,8 @@ export default {
     dropzoneHint: "MESSAGE.FILE_PICKER_DROPZONE_HINT",
     dropzoneActionText: "BUTTON.CHOOSE_FILES",
     doneText: "MESSAGE.FILE_PICKER_DONE",
+    pendingText: "MESSAGE.FILE_PICKER_PENDING",
+    previewText: "BUTTON.PREVIEW_FILE",
     uploadErrorText: "ERRORS.FILE_UPLOAD_FAILED",
     retryText: "BUTTON.TRY_AGAIN",
     cancelText: "BUTTON.CANCEL",
@@ -290,6 +303,7 @@ export default {
     onFileRemoved: fn(),
     onFileRetry: fn(),
     onFileCancelled: fn(),
+    onFilePreview: fn(),
   },
 };
 

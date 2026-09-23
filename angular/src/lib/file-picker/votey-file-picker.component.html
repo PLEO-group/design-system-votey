@@ -12,16 +12,14 @@
   @if (isDropzone()) {
   <div
     class="dropzone-field"
-    role="button"
+    role="group"
     [class.dragging]="isDragging()"
     [class.error]="errorKeys.length > 0"
     [class.filled]="displayedFiles().length > 0"
     [attr.aria-busy]="isLoading()"
     [attr.aria-disabled]="effectiveDisabled()"
     [attr.aria-label]="dropzoneTitle() | vtTranslate"
-    [attr.tabindex]="effectiveDisabled() ? -1 : 0"
     (click)="handleDropzoneClick($event)"
-    (keydown)="handleDropzoneKeydown($event)"
     (dragenter)="handleDragEnter($event)"
     (dragover)="handleDragOver($event)"
     (dragleave)="handleDragLeave($event)"
@@ -34,19 +32,34 @@
         class="file-row"
         [class.uploading]="file.state === fileStateNames.uploading"
       >
-        <span class="file-tile">
+        <button
+          class="file-preview-trigger file-tile"
+          type="button"
+          [attr.title]="(previewText() | vtTranslate) + ': ' + file.filename"
+          [attr.aria-label]="
+            (previewText() | vtTranslate) + ': ' + file.filename
+          "
+          (click)="handleFilePreview(file)"
+        >
           <vt-icon [ico]="file.icon || 'ui-file-txt'" />
-        </span>
+        </button>
 
         <div class="file-content">
           <div class="file-heading">
             <span class="file-name">
-              <vt-text
-                variant="body"
-                color="primary"
-                [content]="file.filename | vtTranslate"
-                [maxLines]="1"
-              />
+              <button
+                class="file-preview-trigger file-preview-name"
+                type="button"
+                [attr.title]="file.filename"
+                (click)="handleFilePreview(file)"
+              >
+                <vt-text
+                  variant="body"
+                  color="primary"
+                  [content]="file.filename | vtTranslate"
+                  [maxLines]="1"
+                />
+              </button>
             </span>
             @if (file.meta) {
             <vt-text
@@ -76,6 +89,14 @@
               variant="caption"
               color="accent"
               [content]="(file.statusText || doneText()) | vtTranslate"
+            />
+          </div>
+          } @else if (file.state === fileStateNames.pending) {
+          <div class="file-status pending">
+            <vt-text
+              variant="caption"
+              color="muted"
+              [content]="(file.statusText || pendingText()) | vtTranslate"
             />
           </div>
           } @else if (file.state === fileStateNames.uploading) {
@@ -115,7 +136,9 @@
           variant="secondary"
           size="small"
           [ico]="
-            file.state === fileStateNames.done || !file.state
+            file.state === fileStateNames.done ||
+            file.state === fileStateNames.pending ||
+            !file.state
               ? 'ui-delete'
               : 'ui-close-v2'
           "

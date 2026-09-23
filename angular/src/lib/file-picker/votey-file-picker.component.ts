@@ -70,6 +70,7 @@ export type VoteyFilePickerValidationErrorKeys = Readonly<
 const filePickerVariants = ["compact", "dropzone"] as const;
 const filePickerFileStates = [
   "done",
+  "pending",
   "uploading",
   "error",
 ] as const;
@@ -150,8 +151,9 @@ export class VoteyFilePickerComponent
     Record<VoteyFilePickerFileState, VoteyFilePickerFileState>
   > = {
     done: filePickerFileStates[0],
-    uploading: filePickerFileStates[1],
-    error: filePickerFileStates[2],
+    pending: filePickerFileStates[1],
+    uploading: filePickerFileStates[2],
+    error: filePickerFileStates[3],
   };
   public readonly variant: InputSignal<VoteyFilePickerVariant> =
     input<VoteyFilePickerVariant>("compact");
@@ -197,6 +199,12 @@ export class VoteyFilePickerComponent
   );
   public readonly doneText: InputSignal<string> = input<string>(
     "MESSAGE.FILE_PICKER_DONE"
+  );
+  public readonly pendingText: InputSignal<string> = input<string>(
+    "MESSAGE.FILE_PICKER_PENDING"
+  );
+  public readonly previewText: InputSignal<string> = input<string>(
+    "BUTTON.PREVIEW_FILE"
   );
   public readonly uploadErrorText: InputSignal<string> = input<string>(
     "ERRORS.FILE_UPLOAD_FAILED"
@@ -254,6 +262,8 @@ export class VoteyFilePickerComponent
   public readonly fileRetry: OutputEmitterRef<VoteyFilePickerFile> =
     output<VoteyFilePickerFile>();
   public readonly fileCancelled: OutputEmitterRef<VoteyFilePickerFile> =
+    output<VoteyFilePickerFile>();
+  public readonly filePreview: OutputEmitterRef<VoteyFilePickerFile> =
     output<VoteyFilePickerFile>();
 
   protected readonly fileInput: Signal<
@@ -411,6 +421,10 @@ export class VoteyFilePickerComponent
     this.fileRetry.emit(file);
   }
 
+  protected handleFilePreview(file: VoteyFilePickerFile): void {
+    this.filePreview.emit(file);
+  }
+
   protected handleFileCancelled(file: VoteyFilePickerFile): void {
     if (this.effectiveDisabled()) return;
 
@@ -431,13 +445,6 @@ export class VoteyFilePickerComponent
 
     if (target.closest("button")) return;
 
-    this.open();
-  }
-
-  protected handleDropzoneKeydown(event: KeyboardEvent): void {
-    if (event.key !== "Enter" && event.key !== " ") return;
-
-    event.preventDefault();
     this.open();
   }
 

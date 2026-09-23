@@ -127,6 +127,20 @@
         padding: var(--space-stack-gap-s) 0;
         border-bottom: 1px solid var(--color-border-subtle);
 
+        .file-preview-trigger {
+          padding: 0;
+          border: 0;
+          color: inherit;
+          background: transparent;
+          font: inherit;
+          cursor: pointer;
+
+          &:focus-visible {
+            outline: 2px solid var(--color-border-focus);
+            outline-offset: var(--spacing-2);
+          }
+        }
+
         .file-tile {
           display: flex;
           flex: 0 0 44px;
@@ -167,6 +181,18 @@
           .file-name {
             flex: 1 1 0;
             min-width: 0;
+
+            .file-preview-name {
+              display: block;
+              width: 100%;
+              min-width: 0;
+              overflow: hidden;
+              text-align: left;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
           }
         }
 

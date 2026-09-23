@@ -32,14 +32,34 @@
         box-sizing: border-box;
         padding: 0 var(--space-field-padding-x);
         overflow: hidden;
-        border: 1.5px solid transparent;
+        gap: var(--space-icon-gap);
+        border: 1px solid transparent;
         border-radius: var(--radius-input);
         background-color: var(--color-bg-surface-tint);
+
+        .file-icon {
+          display: block;
+          flex: 0 0 20px;
+          width: 20px;
+          height: 20px;
+        }
 
         .file-name {
           flex: 1 1 0;
           min-width: 0;
           overflow: hidden;
+
+          ::ng-deep .text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &.placeholder {
+            ::ng-deep .text {
+              color: var(--color-text-placeholder);
+            }
+          }
         }
 
         &.dragging {
@@ -63,12 +83,32 @@
           animation: file-picker-spin 700ms linear infinite;
         }
       }
+
     }
 
     &.filled {
       .file-box {
         border-color: var(--color-border-field);
-        background-color: var(--color-bg-surface);
+        background-color: var(--color-bg-surface-tint);
+      }
+
+      .compact-remove {
+        flex: 0 0 28px;
+
+        ::ng-deep button {
+          width: 28px;
+          height: 28px;
+          padding: 0;
+          border-radius: var(--radius-pill);
+        }
+      }
+    }
+
+    &.disabled {
+      .file-name.placeholder {
+        ::ng-deep .text {
+          color: var(--color-text-muted);
+        }
       }
     }
   }
@@ -146,7 +186,25 @@
 
           &.file-preview-name {
             flex: 1 1 0;
+            min-width: 0;
             overflow: hidden;
+
+            ::ng-deep button {
+              height: auto;
+              min-height: 0;
+              padding: 0;
+              border: 0;
+              border-radius: 0;
+              background-color: transparent;
+              color: var(--color-text-primary);
+              font-family: var(--typo-body-font-family);
+              font-size: var(--typo-body-font-size);
+              font-weight: var(--typo-body-font-weight);
+              letter-spacing: var(--typo-body-letter-spacing);
+              line-height: var(--typo-body-line-height);
+              text-align: left;
+            }
+
             ::ng-deep {
               .button-wrapper,
               button,
@@ -197,11 +255,20 @@
         }
 
         .file-heading {
+          overflow: hidden;
+        }
+
+        .file-heading {
           align-items: baseline;
 
           .file-name {
             flex: 1 1 0;
             min-width: 0;
+            overflow: hidden;
+          }
+
+          > vt-text {
+            flex: 0 0 auto;
           }
         }
 
@@ -234,7 +301,7 @@
 
         .file-status {
           &.done {
-            gap: var(--spacing-8);
+            gap: var(--spacing-6);
           }
 
           &.uploading,

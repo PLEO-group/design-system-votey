@@ -582,6 +582,45 @@ test("file picker supports drops, batches, validation and clearing", async () =>
   picker.ngOnDestroy();
 });
 
+test("file picker compact mode keeps one file and clears it with remove action", async () => {
+  const {
+    FormControl,
+    Injector,
+    runInInjectionContext,
+    VoteyFilePickerComponent,
+  } = await loadAngularRuntime();
+  const picker = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyFilePickerComponent(),
+  );
+  const control = new FormControl(null);
+  const fileBatches = [];
+  let cleared = 0;
+  const file = new File(["file"], "nazwa_pliku_alfa_beta_gamma.jpg", {
+    type: "image/jpeg",
+  });
+
+  picker.control = control;
+  picker.variant = () => "compact";
+  picker.multiple = () => true;
+  picker.filesChanged.subscribe((files) => fileBatches.push(files));
+  picker.cleared.subscribe(() => {
+    cleared += 1;
+  });
+
+  picker.handleChange({ target: { files: [file, file] } });
+
+  assert.deepEqual(fileBatches, [[file]]);
+  assert.equal(control.value, file);
+
+  picker.clear();
+
+  assert.equal(control.value, null);
+  assert.deepEqual(fileBatches.at(-1), []);
+  assert.equal(cleared, 1);
+  picker.ngOnDestroy();
+});
+
 test.skip("legacy input CVA contract", async () => {
   const { Injector, runInInjectionContext, VoteyInputComponent } =
     await loadAngularRuntime();

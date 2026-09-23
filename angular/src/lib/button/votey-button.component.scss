@@ -36,8 +36,26 @@ button {
   }
 
   &.small {
-    height: 28px;
-    padding: 0 var(--spacing-12);
+    height: calc(
+      (var(--space-button-small-padding-y) * 2) +
+        var(--typo-button-small-line-height)
+    );
+    gap: var(--space-button-small-gap);
+    padding: var(--space-button-small-padding-y)
+      var(--space-button-small-padding-right)
+      var(--space-button-small-padding-y)
+      var(--space-button-small-padding-left);
+    font-family: var(--typo-button-small-font-family);
+    font-size: var(--typo-button-small-font-size);
+    font-weight: var(--typo-button-small-font-weight);
+    letter-spacing: var(--typo-button-small-letter-spacing);
+    line-height: var(--typo-button-small-line-height);
+
+    .icon {
+      flex-basis: 15px;
+      width: 15px;
+      height: 15px;
+    }
   }
 
   .label {
@@ -122,16 +140,24 @@ button {
   }
 
   &.link {
-    height: auto;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
     color: var(--color-accent-primary);
-    font-family: var(--typo-body-s-font-family);
-    font-size: var(--typo-body-s-font-size);
-    font-weight: var(--typo-body-s-font-weight);
-    letter-spacing: var(--typo-body-s-letter-spacing);
-    line-height: var(--typo-body-s-line-height);
+
+    &:not(.small) {
+      height: auto;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      font-family: var(--typo-body-s-font-family);
+      font-size: var(--typo-body-s-font-size);
+      font-weight: var(--typo-body-s-font-weight);
+      letter-spacing: var(--typo-body-s-letter-spacing);
+      line-height: var(--typo-body-s-line-height);
+    }
+
+    &.small {
+      border: 0;
+      border-radius: 0;
+    }
 
     &:hover {
       color: var(--color-accent-hover);

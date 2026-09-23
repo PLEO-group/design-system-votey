@@ -198,7 +198,12 @@
         }
       </div>
       } @else {
-      <span class="file-name">
+      @if (hasFile()) {
+      <span class="file-icon" aria-hidden="true">
+        <vt-icon [ico]="resolvedFileIcon()" />
+      </span>
+      }
+      <span class="file-name" [class.placeholder]="!hasFile()">
         <vt-text
           variant="field"
           [color]="hasFile() ? 'primary' : 'muted'"
@@ -211,6 +216,7 @@
       }
     </div>
 
+    @if (!hasFile()) {
     <vt-button
       variant="link"
       size="small"
@@ -218,9 +224,11 @@
       [disabled]="effectiveDisabled()"
       (pressed)="open()"
     />
+    }
 
     @if (clearable() && hasFile() && !isLoading()) {
     <vt-button
+      class="compact-remove"
       variant="secondary"
       size="small"
       ico="ui-delete"

@@ -288,6 +288,9 @@ export class VoteyFilePickerComponent
         .map((file: File) => file.name)
         .join(", ") || this.filename().trim()
   );
+  protected readonly resolvedFileIcon: Signal<VoteyIcon> = computed<VoteyIcon>(
+    () => this.getFileIcon(this.selectedFiles()[0]?.name ?? this.filename())
+  );
   protected readonly isDragging: Signal<boolean> = computed<boolean>(
     () => this.dragDepth() > 0
   );

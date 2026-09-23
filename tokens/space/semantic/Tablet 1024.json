@@ -113,6 +113,22 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "button-small-gap": {
+      "value": 13,
+      "type": "number"
+    },
+    "button-small-padding-left": {
+      "value": 22,
+      "type": "number"
+    },
+    "button-small-padding-right": {
+      "value": 17,
+      "type": "number"
+    },
+    "button-small-padding-y": {
+      "value": 10,
+      "type": "number"
     }
   }
 }

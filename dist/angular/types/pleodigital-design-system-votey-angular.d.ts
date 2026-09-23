@@ -302,6 +302,7 @@ declare class VoteyFilePickerComponent extends VoteyFormControlApplyDirective<Fi
     private formControlEventsSubscription;
     protected readonly hasFile: Signal<boolean>;
     protected readonly resolvedFilename: Signal<string>;
+    protected readonly resolvedFileIcon: Signal<VoteyIcon>;
     protected readonly isDragging: Signal<boolean>;
     protected readonly isLoading: Signal<boolean>;
     protected readonly isDropzone: Signal<boolean>;

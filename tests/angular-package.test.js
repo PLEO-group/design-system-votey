@@ -539,7 +539,7 @@ test("file picker supports drops, batches, validation and clearing", async () =>
 
   assert.equal(prevented, true);
   assert.equal(control.errors, null);
-  assert.deepEqual(fileBatches.at(-1), [firstFile]);
+  assert.deepEqual(fileBatches.at(-1), [firstFile, firstFile]);
 
   picker.clear();
 

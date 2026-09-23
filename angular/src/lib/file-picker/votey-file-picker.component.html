@@ -1,5 +1,7 @@
 <div
   class="file-picker-wrapper"
+  [class.compact]="!isDropzone()"
+  [class.dropzone]="isDropzone()"
   [class.disabled]="effectiveDisabled()"
   [class.filled]="hasFile()"
 >
@@ -7,6 +9,155 @@
   <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
   }
 
+  @if (isDropzone()) {
+  <div
+    class="dropzone-field"
+    role="button"
+    [class.dragging]="isDragging()"
+    [class.error]="errorKeys.length > 0"
+    [class.filled]="displayedFiles().length > 0"
+    [attr.aria-busy]="isLoading()"
+    [attr.aria-disabled]="effectiveDisabled()"
+    [attr.aria-label]="dropzoneTitle() | vtTranslate"
+    [attr.tabindex]="effectiveDisabled() ? -1 : 0"
+    (click)="handleDropzoneClick($event)"
+    (keydown)="handleDropzoneKeydown($event)"
+    (dragenter)="handleDragEnter($event)"
+    (dragover)="handleDragOver($event)"
+    (dragleave)="handleDragLeave($event)"
+    (drop)="handleDrop($event)"
+  >
+    @if (displayedFiles().length) {
+    <div class="file-list">
+      @for (file of displayedFiles(); track file.id) {
+      <div
+        class="file-row"
+        [class.uploading]="file.state === fileStateNames.uploading"
+      >
+        <span class="file-tile">
+          <vt-icon [ico]="file.icon || 'ui-file-txt'" />
+        </span>
+
+        <div class="file-content">
+          <div class="file-heading">
+            <span class="file-name">
+              <vt-text
+                variant="body"
+                color="primary"
+                [content]="file.filename | vtTranslate"
+                [maxLines]="1"
+              />
+            </span>
+            @if (file.meta) {
+            <vt-text
+              variant="caption"
+              color="muted"
+              [content]="file.meta | vtTranslate"
+            />
+            }
+          </div>
+
+          @if (
+            file.state === fileStateNames.uploading ||
+            file.state === fileStateNames.error
+          ) {
+          <progress
+            class="file-progress"
+            [class.error]="file.state === fileStateNames.error"
+            [value]="file.progress ?? 0"
+            max="100"
+          ></progress>
+          }
+
+          @if (file.state === fileStateNames.done || !file.state) {
+          <div class="file-status done">
+            <span class="status-icon"><vt-icon ico="sp-check" /></span>
+            <vt-text
+              variant="caption"
+              color="accent"
+              [content]="(file.statusText || doneText()) | vtTranslate"
+            />
+          </div>
+          } @else if (file.state === fileStateNames.uploading) {
+          <div class="file-status uploading">
+            <vt-text
+              variant="caption"
+              color="muted"
+              [content]="(file.statusText || loadingText()) | vtTranslate"
+            />
+            @if (file.speed) {
+            <vt-text
+              variant="caption"
+              color="muted"
+              [content]="file.speed | vtTranslate"
+            />
+            }
+          </div>
+          } @else {
+          <div class="file-status error">
+            <vt-text
+              variant="caption"
+              color="error"
+              [content]="(file.statusText || uploadErrorText()) | vtTranslate"
+            />
+            <vt-button
+              variant="link"
+              size="small"
+              [text]="retryText()"
+              [disabled]="effectiveDisabled()"
+              (pressed)="handleFileRetry(file)"
+            />
+          </div>
+          }
+        </div>
+
+        <vt-button
+          variant="secondary"
+          size="small"
+          [ico]="
+            file.state === fileStateNames.done || !file.state
+              ? 'ui-delete'
+              : 'ui-close-v2'
+          "
+          [tooltipText]="
+            file.state === fileStateNames.uploading ? cancelText() : clearText()
+          "
+          [disabled]="effectiveDisabled()"
+          (pressed)="handleFileAction(file)"
+        />
+      </div>
+      }
+    </div>
+    <vt-button
+      variant="secondary"
+      size="small"
+      [text]="dropzoneActionText()"
+      [disabled]="effectiveDisabled()"
+      (pressed)="open()"
+    />
+    } @else {
+    <div class="dropzone-prompt">
+      <vt-text
+        variant="body"
+        color="primary"
+        [content]="dropzoneTitle() | vtTranslate"
+      />
+      <vt-text
+        variant="caption"
+        color="muted"
+        [content]="dropzoneHint() | vtTranslate"
+      />
+      <vt-button
+        variant="secondary"
+        size="small"
+        [text]="dropzoneActionText()"
+        [disabled]="effectiveDisabled()"
+        (pressed)="open()"
+      />
+    </div>
+    }
+  </div>
+  } @else {
   <div
     class="row"
     [class.loading]="isLoading()"
@@ -31,18 +182,22 @@
         }
       </div>
       } @else {
-      <vt-text
-        variant="caption"
-        [color]="hasFile() ? 'primary' : 'muted'"
-        [content]="
-          resolvedFilename() ? resolvedFilename() : (emptyText() | vtTranslate)
-        "
-      />
+      <span class="file-name">
+        <vt-text
+          variant="field"
+          [color]="hasFile() ? 'primary' : 'muted'"
+          [content]="
+            resolvedFilename() ? resolvedFilename() : (emptyText() | vtTranslate)
+          "
+          [maxLines]="1"
+        />
+      </span>
       }
     </div>
 
     <vt-button
-      variant="ghost"
+      variant="link"
+      size="small"
       [text]="actionText()"
       [disabled]="effectiveDisabled()"
       (pressed)="open()"
@@ -50,7 +205,7 @@
 
     @if (clearable() && hasFile() && !isLoading()) {
     <vt-button
-      variant="ghost"
+      variant="secondary"
       size="small"
       ico="ui-delete"
       [tooltipText]="clearText()"
@@ -58,22 +213,23 @@
       (pressed)="clear()"
     />
     }
-
-    <input
-      #fileInput
-      type="file"
-      hidden
-      [name]="name()"
-      [disabled]="effectiveDisabled()"
-      [required]="isRequired()"
-      [attr.accept]="accept() || null"
-      [attr.capture]="capture() || null"
-      [attr.data-cy]="dataCy() || null"
-      [multiple]="multiple()"
-      (change)="handleChange($event)"
-      (cancel)="handleCancel()"
-    />
   </div>
+  }
+
+  <input
+    #fileInput
+    type="file"
+    hidden
+    [name]="name()"
+    [disabled]="effectiveDisabled()"
+    [required]="isRequired()"
+    [attr.accept]="accept() || null"
+    [attr.capture]="capture() || null"
+    [attr.data-cy]="dataCy() || null"
+    [multiple]="effectiveMultiple()"
+    (change)="handleChange($event)"
+    (cancel)="handleCancel()"
+  />
 
   <vt-form-error
     [errors]="errorKeys"

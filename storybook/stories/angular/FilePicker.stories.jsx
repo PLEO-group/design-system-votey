@@ -3,7 +3,28 @@ import { useArgs } from "@storybook/preview-api";
 import { fn } from "@storybook/test";
 import "./FilePicker.stories.scss";
 
+const filePickerTranslations = {
+  "LABEL.ATTACHMENT": "Załącznik",
+  "MESSAGE.FILE_PICKER_EMPTY": "Nie wybrano pliku",
+  "MESSAGE.FILE_UPLOAD_IN_PROGRESS": "Przesyłanie",
+  "MESSAGE.FILE_PICKER_DROPZONE_PROMPT":
+    "Przeciągnij pliki tutaj lub kliknij, aby wybrać",
+  "MESSAGE.FILE_PICKER_DROPZONE_HINT": "PDF, JPG, PNG, maks. 10 MB na plik",
+  "BUTTON.CHOOSE_FILE": "Wybierz plik",
+  "BUTTON.CHOOSE_FILES": "Wybierz pliki",
+  "BUTTON.DELETE": "Usuń plik",
+  "BUTTON.CANCEL": "Anuluj",
+  "BUTTON.TRY_AGAIN": "Spróbuj ponownie",
+  "MESSAGE.FILE_PICKER_DONE": "Gotowe",
+  "ERRORS.FILE_UPLOAD_FAILED": "Błąd przesyłania",
+  "ERRORS.FILE_PICKER_INVALID_TYPE": "Nieobsługiwany typ pliku",
+  "ERRORS.FILE_PICKER_FILE_TOO_LARGE": "Plik jest zbyt duży",
+  "ERRORS.FILE_PICKER_TOTAL_TOO_LARGE": "Łączny rozmiar plików jest zbyt duży",
+  "ERRORS.FILE_PICKER_TOO_MANY_FILES": "Wybrano zbyt wiele plików",
+};
+
 const filePickerInputs = [
+  "variant",
   "filename",
   "label",
   "emptyText",
@@ -16,6 +37,14 @@ const filePickerInputs = [
   "clearable",
   "clearText",
   "loadingText",
+  "dropzoneTitle",
+  "dropzoneHint",
+  "dropzoneActionText",
+  "doneText",
+  "uploadErrorText",
+  "retryText",
+  "cancelText",
+  "files",
   "allowedExtensions",
   "allowedMimeTypes",
   "maxFileSizeBytes",
@@ -60,7 +89,11 @@ function AngularFilePickerPreview(props) {
         { createComponent },
         { createApplication },
         { FormControl },
-        { VoteyFilePickerComponent },
+        {
+          provideVoteySvgRegistry,
+          VOTEY_TRANSLATOR,
+          VoteyFilePickerComponent,
+        },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
@@ -70,7 +103,30 @@ function AngularFilePickerPreview(props) {
 
       if (!isMounted || !hostRef.current) return;
 
-      const applicationRef = await createApplication();
+      const applicationRef = await createApplication({
+        providers: [
+          provideVoteySvgRegistry(),
+          {
+            provide: VOTEY_TRANSLATOR,
+            useValue: {
+              translate: (key, params) => {
+                let translatedText = filePickerTranslations[key] ?? key;
+
+                for (const [paramName, paramValue] of Object.entries(
+                  params ?? {}
+                )) {
+                  translatedText = translatedText.replaceAll(
+                    `{{${paramName}}}`,
+                    String(paramValue)
+                  );
+                }
+
+                return translatedText;
+              },
+            },
+          },
+        ],
+      });
 
       if (!isMounted || !hostRef.current) {
         applicationRef.destroy();
@@ -99,6 +155,15 @@ function AngularFilePickerPreview(props) {
         ),
         componentRef.instance.rejected.subscribe((rejection) =>
           latestPropsRef.current.onRejected(rejection)
+        ),
+        componentRef.instance.fileRemoved.subscribe((file) =>
+          latestPropsRef.current.onFileRemoved(file)
+        ),
+        componentRef.instance.fileRetry.subscribe((file) =>
+          latestPropsRef.current.onFileRetry(file)
+        ),
+        componentRef.instance.fileCancelled.subscribe((file) =>
+          latestPropsRef.current.onFileCancelled(file)
         ),
       ];
       const control = new FormControl(null);
@@ -152,6 +217,11 @@ export default {
     layout: "centered",
   },
   argTypes: {
+    variant: { control: false },
+    files: {
+      control: "object",
+      description: "External file rows for the dropzone variant.",
+    },
     filename: {
       description: "Controlled filename for an existing or previewed file.",
     },
@@ -163,24 +233,42 @@ export default {
     onCleared: { action: "cleared", table: { category: "Events" } },
     onCancelled: { action: "cancelled", table: { category: "Events" } },
     onRejected: { action: "rejected", table: { category: "Events" } },
+    onFileRemoved: {
+      action: "fileRemoved",
+      table: { category: "Events" },
+    },
+    onFileRetry: { action: "fileRetry", table: { category: "Events" } },
+    onFileCancelled: {
+      action: "fileCancelled",
+      table: { category: "Events" },
+    },
     initialFilename: { description: "Value passed through initialValue." },
     staticFilename: { description: "Value passed through staticValue." },
     disable: { control: "boolean" },
     block: { control: "boolean" },
   },
   args: {
+    variant: "compact",
     filename: "",
-    label: "Załącznik",
-    emptyText: "Nie wybrano pliku",
-    actionText: "Wybierz plik",
+    label: "LABEL.ATTACHMENT",
+    emptyText: "MESSAGE.FILE_PICKER_EMPTY",
+    actionText: "BUTTON.CHOOSE_FILE",
     disabled: false,
     loading: false,
     progress: null,
     multiple: false,
     dropEnabled: true,
     clearable: true,
-    clearText: "Usuń plik",
-    loadingText: "Przesyłanie",
+    clearText: "BUTTON.DELETE",
+    loadingText: "MESSAGE.FILE_UPLOAD_IN_PROGRESS",
+    dropzoneTitle: "MESSAGE.FILE_PICKER_DROPZONE_PROMPT",
+    dropzoneHint: "MESSAGE.FILE_PICKER_DROPZONE_HINT",
+    dropzoneActionText: "BUTTON.CHOOSE_FILES",
+    doneText: "MESSAGE.FILE_PICKER_DONE",
+    uploadErrorText: "ERRORS.FILE_UPLOAD_FAILED",
+    retryText: "BUTTON.TRY_AGAIN",
+    cancelText: "BUTTON.CANCEL",
+    files: null,
     allowedExtensions: [],
     allowedMimeTypes: [],
     maxFileSizeBytes: null,
@@ -199,21 +287,37 @@ export default {
     onCleared: fn(),
     onCancelled: fn(),
     onRejected: fn(),
+    onFileRemoved: fn(),
+    onFileRetry: fn(),
+    onFileCancelled: fn(),
   },
 };
 
-export const Playground = {
-  render: function Render(args) {
+function renderFilePickerPlayground(variant) {
+  return function Render(args) {
     const [, updateArgs] = useArgs();
 
     return (
       <AngularFilePickerPreview
         {...args}
+        variant={variant}
         onChanged={(file) => {
           args.onChanged(file);
           updateArgs({ filename: file?.name ?? "" });
         }}
       />
     );
-  },
+  };
+}
+
+export const CompactPlayground = {
+  name: "Compact",
+  args: { variant: "compact" },
+  render: renderFilePickerPlayground("compact"),
+};
+
+export const DropzonePlayground = {
+  name: "Dropzone",
+  args: { variant: "dropzone" },
+  render: renderFilePickerPlayground("dropzone"),
 };

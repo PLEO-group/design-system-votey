@@ -56,9 +56,12 @@ export {
   VoteyFilePickerValidationErrors,
 } from "./lib/file-picker/votey-file-picker.component";
 export type {
+  VoteyFilePickerFile,
+  VoteyFilePickerFileState,
   VoteyFilePickerRejection,
   VoteyFilePickerValidationError,
   VoteyFilePickerValidationErrorKeys,
+  VoteyFilePickerVariant,
 } from "./lib/file-picker/votey-file-picker.component";
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
 export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";

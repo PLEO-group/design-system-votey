@@ -31,8 +31,7 @@ import { VoteyRadioOptionContentDirective } from "./votey-radio-option-content.d
 
 export type VoteyRadioButtonLabelPosition = "before" | "after";
 
-export interface VtRadioOption<T = unknown> {
-  readonly label: string;
+interface VtRadioOptionBase<T> {
   readonly value: T;
   readonly disabled?: boolean;
   readonly required?: boolean;
@@ -42,6 +41,12 @@ export interface VtRadioOption<T = unknown> {
   readonly className?: string;
   readonly dataCy?: string;
 }
+
+export type VtRadioOption<T = unknown> = VtRadioOptionBase<T> &
+  (
+    | { readonly label: string; readonly ariaLabel?: string }
+    | { readonly label?: never; readonly ariaLabel: string }
+  );
 
 @Component({
   selector: "vt-radio-button",
@@ -71,6 +76,7 @@ export class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<un
   public readonly options: InputSignal<readonly VtRadioOption[]> =
     input.required<readonly VtRadioOption[]>();
 
+  public readonly groupName: InputSignal<string> = input<string>("");
   public readonly groupLabelPosition: InputSignal<VoteyRadioButtonLabelPosition> =
     input<VoteyRadioButtonLabelPosition>("after");
   public readonly groupDisabled: InputSignal<boolean> = input<boolean>(false);
@@ -86,7 +92,9 @@ export class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<un
   protected readonly groupAccessibleLabel: Signal<string> = computed<string>(
     () =>
       this.options()
-        .map((option) => this.translator.translate(option.label))
+        .map((option) =>
+          this.translator.translate(option.ariaLabel ?? option.label)
+        )
         .join(", ")
   );
   protected readonly resolvedTooltip: Signal<string> = computed<string>(() =>

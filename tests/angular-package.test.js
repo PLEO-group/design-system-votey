@@ -182,6 +182,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.options[0], "options");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.tooltip[0], "tooltip");
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.disabledNote[0],
@@ -190,7 +192,6 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupValue, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.inputId, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupColor, undefined);
-  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabel, undefined);
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabelledby,
@@ -823,6 +824,36 @@ test("radio button emits MatRadioChange", async () => {
   assert.deepEqual(changes, [event]);
 
   subscription.unsubscribe();
+});
+
+test("radio button exposes the optional label and native group-name contracts", async () => {
+  const { VoteyRadioButtonComponent } = await loadAngularRuntime();
+  const template = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.html",
+    ),
+    "utf8",
+  );
+  const styles = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.scss",
+    ),
+    "utf8",
+  );
+
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
+  assert.match(template, /\[name\]="groupName\(\)"/);
+  assert.match(template, /@if \(option\.label !== undefined\)/);
+  assert.match(
+    template,
+    /\[aria-label\]="\(option\.ariaLabel \?\? option\.label\) \| vtTranslate"/,
+  );
+  assert.match(styles, /gap: var\(--space-gap-xs\)/);
+  assert.match(styles, /overflow-wrap: anywhere/);
+  assert.match(styles, /white-space: normal/);
 });
 
 test("text resolves its default token-backed presentation", async () => {

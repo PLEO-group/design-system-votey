@@ -213,3 +213,44 @@ Domyślny URL assetów to `assets/votey`. Aplikacja powinna skopiować zawartoś
 `dist/assets/angular/svg-raw` z paczki do tego katalogu przez konfigurację
 `assets` w `angular.json`. Inny URL można przekazać jako
 `provideVoteySvgRegistry({ assetBaseUrl: "..." })`.
+
+### Angular DatePicker i TimePicker
+
+Publiczny entry point `@pleodigital/design-system-votey/angular` udostępnia
+`VoteyDatePickerComponent` (`vt-date-picker`) i `VoteyTimePickerComponent`
+(`vt-time-picker`). Kalendarz jest elementem wewnętrznym biblioteki. Pickery
+wymagają zgodnej wersji `@angular/cdk` oraz arkusza tokenów Angulara.
+Panel ma stałe 320 px, dzień 40 × 40 px, a ikony 24 × 24 px; te wymiary
+nie są zmiennymi Figmy i są zapisane bezpośrednio w SCSS pickerów.
+
+```ts
+import { FormControl } from "@angular/forms";
+import {
+  VoteyDatePickerComponent,
+  VoteyTimePickerComponent,
+} from "@pleodigital/design-system-votey/angular";
+
+const date = new FormControl<string | null>(null);
+const time = new FormControl<string | null>(null);
+```
+
+```html
+<vt-date-picker label="Data" [control]="date" mode="Date" />
+<vt-time-picker label="Godzina" [control]="time" [stepMinutes]="30" />
+```
+
+`Date` zapisuje `YYYY-MM-DD`, `DateTime` zapisuje kanoniczne UTC ISO
+`YYYY-MM-DDTHH:mm:00.000Z`, a `TimePicker` zapisuje `HH:mm`. Puste opcjonalne
+pole daje `null`. `min` i `max` w trybie `Date` są datami `YYYY-MM-DD`, a w
+`DateTime` chwilami ISO z offsetem lub `Z`. Krok godzin wynosi domyślnie
+30 minut; `timeEntryPolicy="listOnly"` ogranicza **nowe** wybory do listy.
+Nieedytowana wartość historyczna spoza listy pozostaje poprawna. Kontrolka
+formularza ustala `required`, a aplikacja mapuje wartość do własnego API.
+
+Picker dodaje do `control.errors` tylko własne klucze: `voteyPickerFormat`,
+`voteyPickerDate`, `voteyPickerTime`, `voteyPickerRange`, `voteyPickerPolicy`
+i `voteyPickerConfig`. Tłumacz aplikacji (`VOTEY_TRANSLATOR`) powinien obsłużyć
+`ERRORS.VOTEYPICKERFORMAT`, `ERRORS.VOTEYPICKERDATE`,
+`ERRORS.VOTEYPICKERTIME`, `ERRORS.VOTEYPICKERRANGE`,
+`ERRORS.VOTEYPICKERPOLICY`, `ERRORS.VOTEYPICKERCONFIG` oraz etykiety akcji
+`BUTTON.CLEAR`, `BUTTON.PREVIOUS_MONTH` i `BUTTON.NEXT_MONTH`.

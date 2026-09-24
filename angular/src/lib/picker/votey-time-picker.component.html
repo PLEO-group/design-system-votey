@@ -1,0 +1,55 @@
+<div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
+  @if (label()) {
+    <label class="label" [for]="inputId">{{ label() | vtTranslate }}</label>
+  }
+  <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">
+    <input
+      #fieldInput
+      class="control"
+      vtPickerDraft
+      [id]="inputId"
+      [formControl]="formControl"
+      [displayValue]="displayValue"
+      [value]="draft()"
+      [disabled]="isDisabled"
+      [required]="isRequired"
+      placeholder="GG:MM"
+      [attr.aria-label]="label() ? null : 'GG:MM'"
+      [attr.aria-describedby]="inputId + '-format ' + inputId + '-error'"
+      [attr.aria-invalid]="hasError"
+      [attr.aria-expanded]="opened()"
+      [attr.aria-controls]="opened() ? inputId + '-panel' : null"
+      (input)="updateDraft($event)"
+      (blur)="finishDraft()"
+      (keydown.escape)="close()"
+    />
+    <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
+    @if (committed() && !isDisabled && !isRequired) {
+      <button class="clear" type="button" [attr.aria-label]="'BUTTON.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
+    }
+  </div>
+  <span class="format" [id]="inputId + '-format'">GG:MM</span>
+  <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="opened()"
+  [cdkConnectedOverlayPositions]="positions"
+  [cdkConnectedOverlayPush]="true"
+  (overlayOutsideClick)="close()"
+  (overlayKeydown)="handleOverlayKeydown($event)"
+>
+  <div class="panel" [id]="inputId + '-panel'">
+    <div class="time-list">
+      <vt-menu
+        [fullWidth]="true"
+        [items]="timeItems()"
+        [selectedId]="committed()"
+        (itemSelected)="chooseTime($event)"
+        (dismissed)="close()"
+      />
+    </div>
+  </div>
+</ng-template>

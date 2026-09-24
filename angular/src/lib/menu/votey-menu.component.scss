@@ -19,6 +19,10 @@
     0 8px 24px -4px color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   list-style: none;
 
+  &.full-width {
+    width: 100%;
+  }
+
   li {
     display: block;
     margin: 0;

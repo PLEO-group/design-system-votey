@@ -1,0 +1,40 @@
+<div class="calendar" role="group" [attr.aria-label]="monthName()">
+  <div class="header">
+    <button class="nav" type="button" [attr.aria-label]="'BUTTON.PREVIOUS_MONTH' | vtTranslate" (click)="shiftMonth(-1)">
+      <vt-icon ico="ui-chevron-left" />
+    </button>
+    <span class="month" aria-live="polite">{{ monthName() }}</span>
+    <button class="nav" type="button" [attr.aria-label]="'BUTTON.NEXT_MONTH' | vtTranslate" (click)="shiftMonth(1)">
+      <vt-icon ico="ui-chevron-right" />
+    </button>
+  </div>
+  <div class="weekdays" aria-hidden="true">
+    @for (name of weekdayNames(); track $index) {
+      <span>{{ name }}</span>
+    }
+  </div>
+  <div class="grid" role="grid" [attr.aria-label]="monthName()">
+    @for (week of weeks(); track week[0].iso) {
+      <div class="week" role="row">
+        @for (day of week; track day.iso) {
+          <button
+            #dayButton
+            class="day"
+            type="button"
+            role="gridcell"
+            [class.other-month]="day.otherMonth"
+            [class.today]="day.today"
+            [class.selected]="day.selected"
+            [disabled]="day.disabled"
+            [attr.tabindex]="day.active ? 0 : -1"
+            [attr.aria-label]="day.ariaLabel"
+            [attr.aria-selected]="day.selected"
+            [attr.aria-current]="day.today ? 'date' : null"
+            (click)="choose(day)"
+            (keydown)="handleKeydown($event, day)"
+          >{{ day.day }}</button>
+        }
+      </div>
+    }
+  </div>
+</div>

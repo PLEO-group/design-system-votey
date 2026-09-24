@@ -1,0 +1,68 @@
+<div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
+  @if (label()) {
+    <label class="label" [for]="inputId">{{ label() | vtTranslate }}</label>
+  }
+  <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">
+    <input
+      #fieldInput
+      class="control"
+      vtPickerDraft
+      [id]="inputId"
+      [formControl]="formControl"
+      [displayValue]="displayValue"
+      [value]="draft()"
+      [disabled]="isDisabled"
+      [required]="isRequired"
+      [placeholder]="expectedFormat"
+      [attr.aria-label]="label() ? null : (expectedFormat)"
+      [attr.aria-describedby]="inputId + '-format ' + inputId + '-error'"
+      [attr.aria-invalid]="hasError"
+      [attr.aria-expanded]="opened()"
+      [attr.aria-controls]="opened() ? inputId + '-panel' : null"
+      (input)="updateDraft($event)"
+      (blur)="finishDraft()"
+      (keydown.escape)="close()"
+    />
+    <span class="icon" aria-hidden="true"><vt-icon ico="ui-calendar" /></span>
+    @if (committed() && !isDisabled && !isRequired) {
+      <button class="clear" type="button" [attr.aria-label]="'BUTTON.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
+    }
+  </div>
+  <span class="format" [id]="inputId + '-format'">{{ expectedFormat }}</span>
+  <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="opened()"
+  [cdkConnectedOverlayPositions]="positions"
+  [cdkConnectedOverlayPush]="true"
+  (overlayOutsideClick)="close()"
+  (overlayKeydown)="handleOverlayKeydown($event)"
+>
+  <div class="panel" [id]="inputId + '-panel'">
+    <vt-picker-calendar
+      [month]="displayedMonth()"
+      [active]="active()"
+      [selected]="selected()"
+      [min]="minDay()"
+      [max]="maxDay()"
+      [locale]="locale()"
+      [isAllowed]="dayAllowed"
+      (activeDay)="active.set($event)"
+      (selectedDay)="chooseDay($event)"
+    />
+    @if (mode() === 'DateTime' && selected()) {
+      <div class="time-list">
+        <vt-menu
+          [fullWidth]="true"
+          [items]="timeItems()"
+          [selectedId]="selectedTime()"
+          (itemSelected)="chooseTime($event)"
+          (dismissed)="close()"
+        />
+      </div>
+    }
+  </div>
+</ng-template>

@@ -2,17 +2,21 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   type InputSignal,
   type InputSignalWithTransform,
   output,
   type OutputEmitterRef,
+  type Signal,
 } from "@angular/core";
 import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
+import { VoteyIconComponent } from "../icon/votey-icon.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
+import type { VoteyIcon } from "../votey-assets";
 
 export const VoteyInputVariants = ["boxed", "underline"] as const;
 export const VoteyInputTypeNames = {
@@ -41,9 +45,10 @@ export type VoteyInputType =
 export type VoteyInputMode = (typeof VoteyInputModes)[number];
 export type VoteyInputTrimmer = (value: string) => string;
 
-export const VoteyInputTypes: readonly VoteyInputType[] = Object.values(
-  VoteyInputTypeNames
-);
+export const VoteyInputTypes: readonly VoteyInputType[] =
+  Object.values(VoteyInputTypeNames);
+
+let nextInputId = 0;
 
 @Component({
   selector: "vt-input",
@@ -53,18 +58,23 @@ export const VoteyInputTypes: readonly VoteyInputType[] = Object.values(
   imports: [
     ReactiveFormsModule,
     VoteyFormErrorComponent,
+    VoteyIconComponent,
     VoteyTextComponent,
     VoteyTranslatePipe,
   ],
 })
 export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> {
+  private readonly fallbackId: string = `vt-input-${++nextInputId}`;
+
   public readonly variant: InputSignal<VoteyInputVariant> =
     input<VoteyInputVariant>("boxed");
   public readonly type: InputSignal<VoteyInputType> = input<VoteyInputType>(
     VoteyInputTypeNames.text
   );
-  public readonly label: InputSignal<string> = input<string>("");
+  public readonly label: InputSignal<string> = input.required<string>();
   public readonly placeholder: InputSignal<string> = input<string>("");
+  public readonly helper: InputSignal<string> = input<string>("");
+  public readonly icon: InputSignal<VoteyIcon | ""> = input<VoteyIcon | "">("");
   public readonly disabled: InputSignalWithTransform<boolean, unknown> = input<
     boolean,
     unknown
@@ -85,14 +95,37 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   public readonly pattern: InputSignal<string> = input<string>("");
   public readonly trimmer: InputSignal<VoteyInputTrimmer | null> =
     input<VoteyInputTrimmer | null>(null);
+  public readonly ariaLabel: InputSignal<string> = input<string>("");
+  public readonly ariaDescribedby: InputSignal<string> = input<string>("");
   public readonly dataCy: InputSignal<string> = input<string>("");
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly showErrors: InputSignalWithTransform<boolean, unknown> =
     input<boolean, unknown>(true, { transform: booleanAttribute });
-  public readonly blur: OutputEmitterRef<FocusEvent> =
-    output<FocusEvent>();
   public readonly keyDown: OutputEmitterRef<KeyboardEvent> =
     output<KeyboardEvent>();
+
+  protected readonly resolvedId: Signal<string> = computed<string>(
+    () => this.id().trim() || this.fallbackId
+  );
+  protected readonly helperId: Signal<string> = computed<string>(
+    () => `${this.resolvedId()}-helper`
+  );
+  protected readonly errorId: Signal<string> = computed<string>(
+    () => `${this.resolvedId()}-error`
+  );
+  protected readonly resolvedAriaDescribedby: Signal<string | null> = computed<
+    string | null
+  >(() => {
+    const ids: string[] = [this.ariaDescribedby().trim()];
+
+    if (this.helper().trim()) ids.push(this.helperId());
+
+    return ids.filter(Boolean).join(" ") || null;
+  });
+
+  protected get isDisabled(): boolean {
+    return this.disabled() || this.formControl.disabled;
+  }
 
   protected get isRequired(): boolean {
     return this.formControl.hasValidator(Validators.required);
@@ -112,7 +145,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
   }
 
-  protected handleBlur(event: FocusEvent): void {
+  protected handleBlur(): void {
     const value: string | null = this.formControl.value;
     const trimmer: VoteyInputTrimmer | null = this.trimmer();
 
@@ -121,7 +154,9 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
       if (trimmedValue !== value) this.formControl.setValue(trimmedValue);
     }
+  }
 
-    this.blur.emit(event);
+  protected handleKeyDown(event: KeyboardEvent): void {
+    this.keyDown.emit(event);
   }
 }

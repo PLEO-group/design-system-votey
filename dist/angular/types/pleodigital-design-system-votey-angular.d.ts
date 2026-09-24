@@ -575,10 +575,13 @@ type VoteyInputMode = (typeof VoteyInputModes)[number];
 type VoteyInputTrimmer = (value: string) => string;
 declare const VoteyInputTypes: readonly VoteyInputType[];
 declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string> {
+    private readonly fallbackId;
     readonly variant: InputSignal<VoteyInputVariant>;
     readonly type: InputSignal<VoteyInputType>;
     readonly label: InputSignal<string>;
     readonly placeholder: InputSignal<string>;
+    readonly helper: InputSignal<string>;
+    readonly icon: InputSignal<VoteyIcon | "">;
     readonly disabled: InputSignalWithTransform<boolean, unknown>;
     readonly id: InputSignal<string>;
     readonly name: InputSignal<string>;
@@ -589,18 +592,25 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     readonly maxLength: InputSignal<number | null>;
     readonly pattern: InputSignal<string>;
     readonly trimmer: InputSignal<VoteyInputTrimmer | null>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly ariaDescribedby: InputSignal<string>;
     readonly dataCy: InputSignal<string>;
     readonly ignoredErrors: InputSignal<string[]>;
     readonly showErrors: InputSignalWithTransform<boolean, unknown>;
-    readonly blur: OutputEmitterRef<FocusEvent>;
     readonly keyDown: OutputEmitterRef<KeyboardEvent>;
+    protected readonly resolvedId: Signal<string>;
+    protected readonly helperId: Signal<string>;
+    protected readonly errorId: Signal<string>;
+    protected readonly resolvedAriaDescribedby: Signal<string | null>;
+    protected get isDisabled(): boolean;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get hasValue(): boolean;
     protected get errorKeys(): string[];
-    protected handleBlur(event: FocusEvent): void;
+    protected handleBlur(): void;
+    protected handleKeyDown(event: KeyboardEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyInputComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "trimmer": { "alias": "trimmer"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "blur": "blur"; "keyDown": "keyDown"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "icon": { "alias": "icon"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "trimmer": { "alias": "trimmer"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "keyDown": "keyDown"; }, never, never, true, never>;
 }
 
 export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, provideVoteyDeviceDetection, provideVoteySvgRegistry };

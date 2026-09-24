@@ -130,6 +130,11 @@ w konsumencie.
 - `label` musi wpływać na semantyczną nazwę pola albo właściwe ARIA. Pusty label
   jest poprawnym stanem dla pól pomocniczych, tabelarycznych i kompozycji, które mają
   osobny opis grupy.
+- Oddzielaj obowiązek przekazania inputu od obowiązku podania niepustej treści. Gdy
+  każdy konsument musi jawnie wybrać sposób nadania polu dostępnej nazwy, deklaruj
+  signal jako `input.required<string>()`; wymagany jest wtedy binding, a nie niepusty
+  string. Wartość `""` dopuszczaj tylko z udokumentowaną alternatywą, np. `ariaLabel`
+  albo opisem grupy, i pokaż ten kontrakt w typach, Storybooku oraz teście template.
 - Stan `disabled`, `required`, `touched`, `error` i wartość kontrolki musi być
   spójny między wartością z formularza a inputami komponentu. Komponent nie może
   emitować akcji dla stanu disabled.
@@ -152,6 +157,11 @@ w konsumencie.
 - Zdefiniuj i sprawdź wszystkie istotne stany: default, hover, active, focus-visible,
   disabled, error, selected/checked, loading i indeterminate — tylko te, które mają
   znaczenie dla danego komponentu.
+- Przed zapisaniem selektorów ustal priorytet konfliktujących stanów i sprawdź ich
+  kombinacje, nie tylko każdy stan osobno. `disabled` powinien wygrywać ze stanami
+  interaktywnymi, a relacja `focus` do `error` musi odpowiadać jawnej macierzy
+  komponentu. Kolejność i specyficzność CSS nie mogą przypadkowo zmieniać tego
+  priorytetu.
 - Nie zwiększaj obszaru klikalnego ani nie zmieniaj payloadu zdarzenia podczas migracji
   bez jawnej decyzji funkcjonalnej.
 

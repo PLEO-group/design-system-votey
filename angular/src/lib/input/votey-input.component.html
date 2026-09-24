@@ -1,4 +1,5 @@
 @let translatedLabel = label() | vtTranslate;
+@let accessibleName = ariaLabel() ? (ariaLabel() | vtTranslate) : translatedLabel;
 
 <div
   class="input-wrapper"
@@ -9,7 +10,11 @@
 >
   @if (label()) {
     <label class="label" [for]="resolvedId()">
-      <vt-text variant="label" color="primary" [content]="translatedLabel" />
+      <vt-text
+        variant="label"
+        [color]="isDisabled ? 'muted' : 'primary'"
+        [content]="translatedLabel"
+      />
     </label>
   }
 
@@ -21,7 +26,7 @@
       [type]="type()"
       [formControl]="formControl"
       [placeholder]="placeholder() | vtTranslate"
-      [attr.disabled]="disabled() ? '' : null"
+      [attr.disabled]="isDisabled ? '' : null"
       [required]="isRequired"
       [attr.inputmode]="inputMode() || null"
       [attr.min]="min()"
@@ -29,10 +34,10 @@
       [attr.minlength]="minLength()"
       [attr.maxlength]="maxLength()"
       [attr.pattern]="pattern() || null"
-      [attr.aria-label]="label() ? null : (ariaLabel() | vtTranslate) || null"
+      [attr.aria-label]="label() ? null : accessibleName || null"
       [attr.aria-describedby]="resolvedAriaDescribedby()"
       [attr.aria-invalid]="hasError ? true : null"
-      [attr.aria-errormessage]="hasError ? errorId() : null"
+      [attr.aria-errormessage]="hasError ? (shouldShowHelper ? helperId() : errorId()) : null"
       [attr.data-cy]="dataCy() || null"
       (blur)="handleBlur()"
       (keydown)="handleKeyDown($event)"
@@ -44,11 +49,11 @@
     }
   </div>
 
-  @if (helper()) {
+  @if (shouldShowHelper) {
     <div class="helper" [id]="helperId()">
       <vt-text
         variant="caption-s"
-        color="muted"
+        [color]="helperColor"
         [content]="helper() | vtTranslate"
       />
     </div>
@@ -56,7 +61,7 @@
 
   <vt-form-error
     [id]="errorId()"
-    [errors]="errorKeys"
+    [errors]="showFormErrors ? errorKeys : []"
     [ignoredErrors]="ignoredErrors()"
   />
 </div>

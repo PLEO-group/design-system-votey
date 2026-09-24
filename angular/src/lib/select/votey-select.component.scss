@@ -6,7 +6,7 @@ vt-select {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--spacing-8);
+    gap: var(--space-stack-gap-s);
     width: 100%;
 
     .label {
@@ -22,7 +22,7 @@ vt-select {
       height: 50px;
       padding: 0;
       border: 1px solid var(--color-border-field);
-      border-radius: var(--radius-input);
+      border-radius: var(--radius-m);
       background-color: var(--color-bg-surface);
       transition: background-color 180ms ease, border-color 180ms ease,
         box-shadow 180ms ease;
@@ -66,16 +66,16 @@ vt-select {
           height: 100%;
           padding: 0
             calc(
-              var(--spacing-20) + var(--spacing-20) +
-                var(--spacing-8)
+              var(--space-field-padding-x) + var(--spacing-20) +
+                var(--space-gap-xs)
             )
-            0 var(--spacing-20);
+            0 var(--space-field-padding-x);
         }
 
         .selected-option {
           display: flex;
           align-items: center;
-          gap: var(--spacing-8);
+          gap: var(--space-gap-xs);
           min-width: 0;
 
           .option-flag,
@@ -107,7 +107,7 @@ vt-select {
       .arrow {
         position: absolute;
         top: 50%;
-        right: var(--spacing-20);
+        right: var(--space-field-padding-x);
         flex: 0 0 auto;
         width: 20px;
         height: 20px;
@@ -125,8 +125,8 @@ vt-select {
         position: absolute;
         top: 50%;
         right: calc(
-          var(--spacing-20) + var(--spacing-20) +
-            var(--spacing-8)
+          var(--space-field-padding-x) + var(--spacing-20) +
+            var(--space-gap-xs)
         );
         display: inline-flex;
         align-items: center;
@@ -155,8 +155,8 @@ vt-select {
       &:has(.clear) {
         .control .mat-mdc-select-trigger {
           padding-right: calc(
-            var(--spacing-20) + var(--spacing-20) +
-              var(--spacing-8) + var(--spacing-24) + var(--spacing-8)
+            var(--space-field-padding-x) + var(--spacing-20) +
+              var(--space-gap-xs) + var(--spacing-24) + var(--spacing-8)
           );
         }
       }
@@ -227,22 +227,22 @@ vt-select {
 
 .vt-select-panel {
   box-sizing: border-box;
-  padding: var(--spacing-12) 0;
+  padding: var(--space-icon-gap) 0;
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-input) !important;
+  border-radius: var(--radius-m) !important;
   background-color: var(--color-bg-surface) !important;
   box-shadow: 0 var(--spacing-8) var(--spacing-24) calc(-1 * var(--spacing-4))
-    var(--color-shadow-soft);
+    color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 
   .mat-mdc-option {
     min-height: 44px;
-    padding: 0 var(--spacing-24);
+    padding: 0 var(--space-control-padding-x);
     color: var(--color-text-primary);
-    font-family: var(--typo-field-font-family);
-    font-size: var(--typo-field-font-size);
-    font-weight: var(--typo-field-font-weight);
-    letter-spacing: var(--typo-field-letter-spacing);
-    line-height: var(--typo-field-line-height);
+    font-family: var(--typo-body-font-family);
+    font-size: var(--typo-body-font-size);
+    font-weight: var(--typo-body-font-weight);
+    letter-spacing: var(--typo-body-letter-spacing);
+    line-height: var(--typo-body-line-height);
 
     .mat-mdc-option-pseudo-checkbox,
     .mat-pseudo-checkbox {
@@ -266,7 +266,7 @@ vt-select {
     .option-content {
       display: flex;
       align-items: center;
-      gap: var(--spacing-8);
+      gap: var(--space-gap-xs);
       min-width: 0;
       width: 100%;
 
@@ -316,7 +316,7 @@ vt-select {
       width: 100%;
       padding: var(--spacing-8) var(--spacing-12);
       border: 1px solid var(--color-border-subtle);
-      border-radius: var(--radius-input);
+      border-radius: var(--radius-m);
       background-color: var(--color-bg-surface);
       color: var(--color-text-primary);
       font-family: var(--typo-field-font-family);

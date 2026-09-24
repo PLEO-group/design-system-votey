@@ -246,6 +246,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(typeof VoteyInputComponent, "function");
   assert.deepEqual(VoteyInputComponent.ɵcmp.selectors, [["vt-input"]]);
   assert.deepEqual(VoteyInputVariants, ["boxed", "underline"]);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.helper[0], "helper");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.showHelper, undefined);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.showLabel, undefined);
   assert.deepEqual(VoteyInputTypes, [
     "text",
     "email",

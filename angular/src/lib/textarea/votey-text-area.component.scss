@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--spacing-8);
+  gap: var(--space-stack-gap-s);
   width: 100%;
 
   .field {
@@ -15,10 +15,10 @@
     width: 100%;
     height: 120px;
     min-height: 120px;
-    padding: calc(var(--spacing-12) + var(--spacing-2)) var(--spacing-16);
+    padding: var(--space-inset-s) var(--space-field-padding-x);
     overflow: hidden;
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-input);
+    border: 1px solid var(--color-border-field);
+    border-radius: var(--radius-m);
     background-color: var(--color-bg-surface);
     transition:
       background-color 180ms ease,
@@ -49,7 +49,7 @@
       line-height: var(--typo-body-line-height);
 
       &::placeholder {
-        color: var(--color-text-muted);
+        color: var(--color-text-placeholder);
         opacity: 1;
       }
     }
@@ -57,7 +57,7 @@
 
   &.filled {
     .field {
-      border-color: var(--color-border-strong);
+      border-color: var(--color-border-field);
 
       &:focus-within {
         border-color: var(--color-accent-primary);
@@ -77,7 +77,7 @@
   &.disabled {
     .field,
     .field:focus-within {
-      border-color: var(--color-border-subtle);
+      border-color: var(--color-border-field);
       background-color: var(--color-bg-surface-tint);
       box-shadow: none;
 

@@ -1,16 +1,28 @@
 {
   "radius": {
-    "button": {
-      "value": "{radius.pill}",
+    "xs": {
+      "value": "{radius.6}",
       "type": "number",
       "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
         "com.figma.hiddenFromPublishing": false
-      }
+      },
+      "description": "Promień semantyczny (DEC-56)."
     },
-    "input": {
+    "s": {
+      "value": "{radius.8}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      },
+      "description": "Promień semantyczny (DEC-56)."
+    },
+    "m": {
       "value": "{radius.10}",
       "type": "number",
       "$extensions": {
@@ -18,69 +30,10 @@
           "ALL_SCOPES"
         ],
         "com.figma.hiddenFromPublishing": false
-      }
+      },
+      "description": "Promień semantyczny (DEC-56)."
     },
-    "control": {
-      "value": "{radius.6}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "badge": {
-      "value": "{radius.6}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "card": {
-      "value": "{radius.30}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "card-s": {
-      "value": "{radius.16}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "modal": {
-      "value": "{radius.30}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "tooltip": {
-      "value": "{radius.8}",
-      "type": "number",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "table-row": {
+    "l": {
       "value": "{radius.12}",
       "type": "number",
       "$extensions": {
@@ -88,9 +41,43 @@
           "ALL_SCOPES"
         ],
         "com.figma.hiddenFromPublishing": false
-      }
+      },
+      "description": "Promień semantyczny (DEC-56)."
     },
-    "avatar": {
+    "xl": {
+      "value": "{radius.16}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      },
+      "description": "Promień semantyczny (DEC-56)."
+    },
+    "2xl": {
+      "value": "{radius.20}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      },
+      "description": "Promień semantyczny (DEC-56)."
+    },
+    "3xl": {
+      "value": "{radius.30}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.hiddenFromPublishing": false
+      },
+      "description": "Promień semantyczny (DEC-56)."
+    },
+    "full": {
       "value": "{radius.pill}",
       "type": "number",
       "$extensions": {
@@ -98,27 +85,8 @@
           "ALL_SCOPES"
         ],
         "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "card-m": {
-      "value": "{radius.20}",
-      "type": "number",
-      "": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "icon-tile": {
-      "value": "{radius.8}",
-      "type": "number",
-      "": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
+      },
+      "description": "Promień semantyczny (DEC-56)."
     }
   }
 }

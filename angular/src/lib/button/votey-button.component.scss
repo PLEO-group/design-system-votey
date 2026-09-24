@@ -11,16 +11,16 @@ button {
   justify-content: center;
   gap: var(--space-icon-gap);
   height: 44px;
-  padding: var(--space-control-padding-y) var(--space-control-padding-x);
+  padding: var(--space-control-padding-y-l) var(--space-control-padding-x-l);
   border: 1px solid transparent;
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-full);
   background-color: transparent;
   color: var(--color-text-primary);
-  font-family: var(--typo-button-font-family);
-  font-size: var(--typo-button-font-size);
-  font-weight: var(--typo-button-font-weight);
-  letter-spacing: var(--typo-button-letter-spacing);
-  line-height: var(--typo-button-line-height);
+  font-family: inherit;
+  font-size: var(--typo-action-font-size);
+  font-weight: var(--typo-action-font-weight);
+  letter-spacing: var(--typo-action-letter-spacing);
+  line-height: var(--typo-action-line-height);
   white-space: nowrap;
   cursor: pointer;
   outline: none;
@@ -37,19 +37,15 @@ button {
 
   &.small {
     height: calc(
-      (var(--space-button-small-padding-y) * 2) +
-        var(--typo-button-small-line-height)
+      (var(--space-inset-2xs) * 2) + var(--typo-action-s-line-height)
     );
-    gap: var(--space-button-small-gap);
-    padding: var(--space-button-small-padding-y)
-      var(--space-button-small-padding-right)
-      var(--space-button-small-padding-y)
-      var(--space-button-small-padding-left);
-    font-family: var(--typo-button-small-font-family);
-    font-size: var(--typo-button-small-font-size);
-    font-weight: var(--typo-button-small-font-weight);
-    letter-spacing: var(--typo-button-small-letter-spacing);
-    line-height: var(--typo-button-small-line-height);
+    gap: var(--space-gap-s);
+    padding: var(--space-inset-2xs) var(--space-inset-m) var(--space-inset-2xs)
+      var(--space-inset-l);
+    font-size: var(--typo-action-s-font-size);
+    font-weight: var(--typo-action-s-font-weight);
+    letter-spacing: var(--typo-action-s-letter-spacing);
+    line-height: var(--typo-action-s-line-height);
 
     .icon {
       flex-basis: 15px;
@@ -147,7 +143,7 @@ button {
       padding: 0;
       border: 0;
       border-radius: 0;
-      font-family: var(--typo-body-s-font-family);
+      font-family: inherit;
       font-size: var(--typo-body-s-font-size);
       font-weight: var(--typo-body-s-font-weight);
       letter-spacing: var(--typo-body-s-letter-spacing);
@@ -181,7 +177,6 @@ button {
     &:hover:not(:disabled) {
       border-color: transparent;
       background-color: transparent;
-      box-shadow: 0 var(--spacing-2) var(--spacing-8) var(--color-shadow-soft);
     }
 
     &:active {
@@ -220,7 +215,7 @@ button {
     color: var(--color-text-primary);
 
     .label {
-      font-weight: var(--typo-button-font-weight);
+      font-weight: var(--typo-action-font-weight);
     }
   }
 

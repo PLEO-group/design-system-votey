@@ -606,6 +606,9 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get hasValue(): boolean;
+    protected get shouldShowHelper(): boolean;
+    protected get showFormErrors(): boolean;
+    protected get helperColor(): "error" | "muted";
     protected get errorKeys(): string[];
     protected handleBlur(): void;
     protected handleKeyDown(event: KeyboardEvent): void;

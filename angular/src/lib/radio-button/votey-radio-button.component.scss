@@ -28,7 +28,7 @@ vt-radio-button {
   }
 
   .vt-radio-option-content {
-    padding-inline-start: calc($radio-control-size + var(--spacing-8));
+    padding-inline-start: calc($radio-control-size + var(--space-gap-xs));
   }
 
   .mat-mdc-radio-group {
@@ -66,13 +66,13 @@ vt-radio-button {
     }
 
     .mdc-radio__background {
-      border-radius: var(--radius-10);
+      border-radius: var(--radius-m);
       background-color: var(--color-bg-surface);
     }
 
     .mdc-radio__outer-circle,
     .mdc-radio__inner-circle {
-      border-radius: var(--radius-10);
+      border-radius: var(--radius-m);
     }
 
     .mdc-radio__native-control:enabled:not(:checked)
@@ -128,7 +128,7 @@ vt-radio-button {
 
       > .mdc-label {
         align-self: flex-start;
-        padding-inline-start: var(--spacing-8);
+        padding-inline-start: var(--space-gap-xs);
         padding-inline-end: 0;
         font-family: var(--typo-body-font-family);
         font-size: var(--typo-body-font-size);
@@ -140,7 +140,7 @@ vt-radio-button {
 
       &.mdc-form-field--align-end > .mdc-label {
         padding-inline-start: 0;
-        padding-inline-end: var(--spacing-8);
+        padding-inline-end: var(--space-gap-xs);
       }
     }
 

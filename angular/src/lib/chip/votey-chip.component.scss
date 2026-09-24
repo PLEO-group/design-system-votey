@@ -7,8 +7,8 @@
   align-items: center;
   gap: 0;
   min-width: 0;
-  padding-left: var(--spacing-12);
-  border-radius: var(--radius-pill);
+  padding-left: var(--space-inset-xs);
+  border-radius: var(--radius-full);
   background-color: var(--color-accent-soft);
   border: 2px solid var(--color-accent-hover);
   white-space: nowrap;

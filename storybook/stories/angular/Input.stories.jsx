@@ -31,6 +31,19 @@ const inputNames = [
   "dataCy",
 ];
 
+const figmaInputStates = [
+  { name: "Default", description: "Oczekuje na wpis." },
+  { name: "Focus", description: "Focus — podgląd." },
+  { name: "Filled", description: "Wartość wpisana." },
+  { name: "Error", description: "Błąd walidacji." },
+  { name: "Disabled", description: "Pole niedostępne." },
+];
+
+const figmaInputStyles = [
+  { name: "Boxed", variant: "boxed" },
+  { name: "Underline", variant: "underline" },
+];
+
 const removeWhitespace = (value) => value.replace(/\s/g, "");
 
 function setInputProperties(componentRef, control, Validators, props) {
@@ -109,6 +122,9 @@ function AngularInputPreview(props) {
         control.valueChanges.subscribe((value) =>
           latestPropsRef.current.onChanged(value)
         ),
+        componentRef.instance.blur.subscribe((event) =>
+          latestPropsRef.current.onBlur(event)
+        ),
         componentRef.instance.keyDown.subscribe((event) =>
           latestPropsRef.current.onKeyDown(event)
         ),
@@ -161,6 +177,169 @@ function AngularInputPreview(props) {
   }, [props]);
 
   return <div className="angular-input-story" ref={hostRef} />;
+}
+
+function AngularInputStatesPreview() {
+  const hostRef = useRef(null);
+  const angularRuntimeRef = useRef(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function mountAngularInputStates() {
+      await import("@angular/compiler");
+      const [
+        { createComponent },
+        { createApplication },
+        { FormControl, Validators },
+        { provideVoteySvgRegistry, VoteyInputComponent },
+      ] = await Promise.all([
+        import("@angular/core"),
+        import("@angular/platform-browser"),
+        import("@angular/forms"),
+        import("@pleodigital/design-system-votey/angular"),
+      ]);
+
+      if (!isMounted || !hostRef.current) return;
+
+      const applicationRef = await createApplication({
+        providers: [provideVoteySvgRegistry()],
+      });
+      const componentRefs = [];
+
+      for (const style of figmaInputStyles) {
+        for (const state of figmaInputStates) {
+          const stateId = `${style.variant}-${state.name.toLowerCase()}`;
+          const previewHost = hostRef.current.querySelector(
+            `[data-input-state="${stateId}"]`
+          );
+
+          if (!previewHost) continue;
+
+          const inputHost = document.createElement("vt-input");
+          previewHost.append(inputHost);
+
+          const componentRef = createComponent(VoteyInputComponent, {
+            environmentInjector: applicationRef.injector,
+            hostElement: inputHost,
+          });
+          const control = new FormControl("", { nonNullable: true });
+          const hasValue = ["Filled", "Error", "Disabled"].includes(
+            state.name
+          );
+
+          setInputProperties(componentRef, control, Validators, {
+            text: hasValue ? "Wpisz…" : "",
+            variant: style.variant,
+            type: "text",
+            label: "Etykieta",
+            placeholder: "Wpisz…",
+            helper: "",
+            disabled: state.name === "Disabled",
+            id: `storybook-input-${stateId}`,
+            name: `storybook-input-${stateId}`,
+            inputMode: "",
+            min: null,
+            max: null,
+            minLength: null,
+            maxLength: 500,
+            pattern: "",
+            ignoredErrors: state.name === "Error" ? ["required"] : [],
+            ariaLabel: "",
+            ariaDescribedby: `input-state-description-${stateId}`,
+            dataCy: "",
+            icon: "none",
+            required: false,
+            showError: state.name === "Error",
+            trimWhitespace: false,
+            onChanged: () => {},
+            onBlur: () => {},
+            onKeyDown: () => {},
+          });
+
+          if (state.name === "Error") {
+            control.setErrors({ required: true });
+          }
+          if (state.name === "Disabled") {
+            control.disable({ emitEvent: false });
+          }
+
+          applicationRef.attachView(componentRef.hostView);
+          componentRefs.push(componentRef);
+        }
+      }
+
+      if (!isMounted) {
+        componentRefs.forEach((componentRef) => {
+          applicationRef.detachView(componentRef.hostView);
+          componentRef.destroy();
+        });
+        applicationRef.destroy();
+        return;
+      }
+
+      applicationRef.tick();
+      hostRef.current.querySelectorAll("input").forEach((nativeInput) => {
+        nativeInput.readOnly = true;
+        nativeInput.tabIndex = -1;
+      });
+      angularRuntimeRef.current = {
+        applicationRef,
+        componentRefs,
+        destroy: () => {
+          componentRefs.forEach((componentRef) => {
+            applicationRef.detachView(componentRef.hostView);
+            componentRef.destroy();
+          });
+          applicationRef.destroy();
+        },
+      };
+    }
+
+    void mountAngularInputStates();
+
+    return () => {
+      isMounted = false;
+      angularRuntimeRef.current?.destroy?.();
+      angularRuntimeRef.current = null;
+    };
+  }, []);
+
+  return (
+    <section className="input-states-card" id="input-states-card" ref={hostRef}>
+      <header className="input-states-header">
+        <h2>Stany Input z Figmy</h2>
+        <p>Statyczny podgląd wszystkich wariantów komponentu.</p>
+      </header>
+      {figmaInputStyles.map((style) => (
+        <section className="input-state-row" key={style.variant}>
+          <h3>{style.name}</h3>
+          <div className="input-state-grid">
+            {figmaInputStates.map((state) => {
+              const stateId = `${style.variant}-${state.name.toLowerCase()}`;
+
+              return (
+                <article
+                  className="input-state-item"
+                  data-state={state.name.toLowerCase()}
+                  key={stateId}
+                >
+                  <h4>{state.name}</h4>
+                  <p id={`input-state-description-${stateId}`}>
+                    {state.description}
+                  </p>
+                  <div
+                    className="angular-input-state-story"
+                    data-input-state={stateId}
+                  />
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </section>
+  );
 }
 
 export default {
@@ -216,6 +395,11 @@ export default {
       description: "Emits the native KeyboardEvent from the input element.",
       table: { category: "Events" },
     },
+    onBlur: {
+      action: "blur",
+      description: "Emits the native FocusEvent after applying the trimmer.",
+      table: { category: "Events" },
+    },
   },
   args: {
     text: "",
@@ -242,6 +426,7 @@ export default {
     ariaDescribedby: "",
     dataCy: "",
     onChanged: fn(),
+    onBlur: fn(),
     onKeyDown: fn(),
   },
 };
@@ -270,5 +455,14 @@ export const PhoneNumberWithWhitespaceTrimmer = {
     label: "Phone number",
     placeholder: "Enter phone number",
     trimWhitespace: true,
+  },
+};
+
+export const FigmaStates = {
+  render: () => <AngularInputStatesPreview />,
+  parameters: {
+    actions: { disable: true },
+    controls: { disable: true },
+    layout: "padded",
   },
 };

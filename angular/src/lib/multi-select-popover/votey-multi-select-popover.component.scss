@@ -18,9 +18,10 @@
     max-width: min(340px, calc(100vw - var(--spacing-48)));
     max-height: min(620px, 52dvh);
     overflow: hidden;
-    border-radius: var(--radius-card-s);
+    border-radius: var(--radius-xl);
     background-color: var(--color-bg-surface-raised);
-    box-shadow: 0 var(--spacing-2) var(--spacing-8) var(--color-shadow-overlay);
+    box-shadow: 0 var(--spacing-2) var(--spacing-8)
+      color-mix(in srgb, var(--color-text-primary) 12%, transparent);
     transform: translateY(100%);
 
     .items {

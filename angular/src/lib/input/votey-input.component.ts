@@ -118,7 +118,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   >(() => {
     const ids: string[] = [this.ariaDescribedby().trim()];
 
-    if (this.helper().trim()) ids.push(this.helperId());
+    if (this.shouldShowHelper) ids.push(this.helperId());
 
     return ids.filter(Boolean).join(" ") || null;
   });
@@ -133,12 +133,27 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
   protected get hasError(): boolean {
     return (
-      this.showErrors() && this.formControl.invalid && this.formControl.touched
+      this.showErrors() &&
+      !this.isDisabled &&
+      this.formControl.invalid &&
+      this.formControl.touched
     );
   }
 
   protected get hasValue(): boolean {
     return (this.formControl.value ?? "").length > 0;
+  }
+
+  protected get shouldShowHelper(): boolean {
+    return this.helper().length > 0;
+  }
+
+  protected get showFormErrors(): boolean {
+    return this.hasError && !this.shouldShowHelper;
+  }
+
+  protected get helperColor(): "error" | "muted" {
+    return this.hasError ? "error" : "muted";
   }
 
   protected get errorKeys(): string[] {

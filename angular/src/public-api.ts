@@ -104,3 +104,6 @@ export type {
   VoteyInputType,
   VoteyInputVariant,
 } from "./lib/input/votey-input.component";
+export { VoteyDatePickerComponent, VoteyDatePickerModes } from "./lib/picker/votey-date-picker.component";
+export { VoteyTimePickerComponent, VoteyTimeEntryPolicies } from "./lib/picker/votey-time-picker.component";
+export type { PickerMode, PickerTimeEntryPolicy } from "./lib/picker/picker-value";

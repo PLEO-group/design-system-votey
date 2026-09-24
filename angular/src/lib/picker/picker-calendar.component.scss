@@ -1,0 +1,100 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-gap-s);
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .month {
+      color: var(--color-text-primary);
+      font-size: var(--typo-body-l-semibold-font-size);
+      font-weight: var(--typo-body-l-semibold-font-weight);
+      line-height: var(--typo-body-l-semibold-line-height);
+      text-transform: capitalize;
+    }
+
+    .nav {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      aspect-ratio: 1;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-text-primary);
+      cursor: pointer;
+
+      &:hover,
+      &:focus-visible {
+        background: var(--color-bg-surface-tint);
+      }
+    }
+  }
+
+  .weekdays,
+  .grid .week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-gap-3xs);
+  }
+
+  .weekdays {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: var(--typo-caption-s-font-size);
+    line-height: var(--typo-caption-s-line-height);
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-gap-3xs);
+
+    .week .day {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      max-width: 40px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: var(--radius-m);
+      background: transparent;
+      color: var(--color-text-primary);
+      font-size: var(--typo-body-font-size);
+      line-height: var(--typo-body-line-height);
+      cursor: pointer;
+
+      &:hover:not(:disabled),
+      &:focus-visible {
+        background: var(--color-bg-surface-tint);
+      }
+
+      &.other-month {
+        color: var(--color-text-placeholder);
+      }
+
+      &.today {
+        border-color: var(--color-accent-primary);
+      }
+
+      &.selected {
+        background: var(--color-accent-primary);
+        color: var(--color-accent-on-accent);
+      }
+
+      &:disabled {
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+      }
+    }
+  }
+}

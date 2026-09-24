@@ -38,6 +38,7 @@ export class VoteyMenuComponent {
   public readonly dataCy: InputSignal<string | null> = input<string | null>(
     null
   );
+  public readonly fullWidth: InputSignal<boolean> = input<boolean>(false);
 
   public readonly itemSelected: OutputEmitterRef<VoteyMenuItem> =
     output<VoteyMenuItem>();
@@ -66,6 +67,16 @@ export class VoteyMenuComponent {
 
   public focusLast(): void {
     this.focusEnabledItem(this.items().length - 1, -1);
+  }
+
+  public focusSelected(): void {
+    const index = this.items().findIndex(item => item.id === this.selectedId() && !item.disabled);
+    this.focusEnabledItem(index < 0 ? 0 : index, 1);
+  }
+
+  public scrollSelected(): void {
+    const index = this.items().findIndex(item => item.id === this.selectedId() && !item.disabled);
+    if (index >= 0) this.menuItems()[index]?.nativeElement.scrollIntoView({ block: "nearest" });
   }
 
   protected handleItemFocus(index: number): void {

@@ -39,7 +39,7 @@
       [attr.aria-invalid]="hasError ? true : null"
       [attr.aria-errormessage]="hasError ? (shouldShowHelper ? helperId() : errorId()) : null"
       [attr.data-cy]="dataCy() || null"
-      (blur)="handleBlur($event)"
+      (blur)="handleBlur()"
       (keydown)="handleKeyDown($event)"
     />
 

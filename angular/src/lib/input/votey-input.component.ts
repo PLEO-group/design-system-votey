@@ -101,7 +101,6 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly showErrors: InputSignalWithTransform<boolean, unknown> =
     input<boolean, unknown>(true, { transform: booleanAttribute });
-  public readonly blur: OutputEmitterRef<FocusEvent> = output<FocusEvent>();
   public readonly keyDown: OutputEmitterRef<KeyboardEvent> =
     output<KeyboardEvent>();
 
@@ -161,7 +160,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
   }
 
-  protected handleBlur(event: FocusEvent): void {
+  protected handleBlur(): void {
     const value: string | null = this.formControl.value;
     const trimmer: VoteyInputTrimmer | null = this.trimmer();
 
@@ -170,8 +169,6 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
       if (trimmedValue !== value) this.formControl.setValue(trimmedValue);
     }
-
-    this.blur.emit(event);
   }
 
   protected handleKeyDown(event: KeyboardEvent): void {

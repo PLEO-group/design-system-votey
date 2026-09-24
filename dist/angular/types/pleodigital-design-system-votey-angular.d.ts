@@ -111,6 +111,7 @@ declare class VoteyButtonComponent {
     readonly variant: InputSignal<VoteyButtonVariant>;
     readonly size: InputSignal<VoteyButtonSize>;
     readonly text: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
     readonly ico: InputSignal<VoteyIcon | "">;
     readonly badge: InputSignal<string | number | null>;
     readonly tooltipText: InputSignal<string>;
@@ -123,7 +124,7 @@ declare class VoteyButtonComponent {
     protected readonly isIconButton: Signal<boolean>;
     protected readonly resolvedTooltipText: Signal<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyButtonComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "ariaExpanded": { "alias": "ariaExpanded"; "required": false; "isSignal": true; }; "ariaHasPopup": { "alias": "ariaHasPopup"; "required": false; "isSignal": true; }; "ariaControls": { "alias": "ariaControls"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyButtonComponent, "vt-button", never, { "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "text": { "alias": "text"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "tooltipText": { "alias": "tooltipText"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "ariaExpanded": { "alias": "ariaExpanded"; "required": false; "isSignal": true; }; "ariaHasPopup": { "alias": "ariaHasPopup"; "required": false; "isSignal": true; }; "ariaControls": { "alias": "ariaControls"; "required": false; "isSignal": true; }; }, { "pressed": "pressed"; }, never, never, true, never>;
 }
 
 interface VoteyMenuItem {

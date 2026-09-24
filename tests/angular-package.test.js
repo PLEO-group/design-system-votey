@@ -219,7 +219,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyIconComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ico[0], "ico");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.hasIcon, undefined);
-  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded[0], "ariaExpanded");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaHasPopup[0], "ariaHasPopup");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaControls[0], "ariaControls");

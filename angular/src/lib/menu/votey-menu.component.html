@@ -20,9 +20,8 @@
       (focus)="handleItemFocus(index)"
       (keydown)="handleKeydown($event, index)"
     >
-      <!--        DO ZMIANY NA BODY-M-->
       <vt-text
-        variant="body-l"
+        variant="body"
         [content]="item.label | vtTranslate"
         [color]="selected ? 'accent' : disabled ? 'muted' : 'primary'"
       />

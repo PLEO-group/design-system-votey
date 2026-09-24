@@ -3,12 +3,12 @@
 <div
   class="input-wrapper"
   [class.underline]="variant() === 'underline'"
-  [class.disabled]="disabled() || formControl.disabled"
+  [class.disabled]="isDisabled"
   [class.error]="hasError"
   [class.filled]="hasValue"
 >
   @if (label()) {
-    <label class="label" [for]="id()">
+    <label class="label" [for]="resolvedId()">
       <vt-text variant="label" color="primary" [content]="translatedLabel" />
     </label>
   }
@@ -16,7 +16,7 @@
   <div class="field">
     <input
       class="control"
-      [id]="id()"
+      [id]="resolvedId()"
       [name]="name()"
       [type]="type()"
       [formControl]="formControl"
@@ -29,13 +29,33 @@
       [attr.minlength]="minLength()"
       [attr.maxlength]="maxLength()"
       [attr.pattern]="pattern() || null"
+      [attr.aria-label]="label() ? null : (ariaLabel() | vtTranslate) || null"
+      [attr.aria-describedby]="resolvedAriaDescribedby()"
       [attr.aria-invalid]="hasError ? true : null"
+      [attr.aria-errormessage]="hasError ? errorId() : null"
       [attr.data-cy]="dataCy() || null"
-      (blur)="blur.emit($event)"
+      (blur)="handleBlur()"
+      (keydown)="handleKeyDown($event)"
     />
+
+    @let currentIcon = icon();
+    @if (currentIcon) {
+      <vt-icon class="icon" [ico]="currentIcon" />
+    }
   </div>
 
+  @if (helper()) {
+    <div class="helper" [id]="helperId()">
+      <vt-text
+        variant="caption-s"
+        color="muted"
+        [content]="helper() | vtTranslate"
+      />
+    </div>
+  }
+
   <vt-form-error
+    [id]="errorId()"
     [errors]="errorKeys"
     [ignoredErrors]="ignoredErrors()"
   />

@@ -100,6 +100,7 @@ export {
 } from "./lib/input/votey-input.component";
 export type {
   VoteyInputMode,
+  VoteyInputTrimmer,
   VoteyInputType,
   VoteyInputVariant,
 } from "./lib/input/votey-input.component";

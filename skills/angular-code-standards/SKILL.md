@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.17.0
+version: 1.17.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -479,6 +479,13 @@ Po zmianie API komponentu albo przepływu danych usuń martwe elementy:
 Nie zostawiaj pozostałości "na później", jeśli nie są celowym TODO związanym z blokadą zewnętrzną.
 
 ### [3.11] Wpływ zmian `.ts` na testy
+
+Przed utworzeniem albo aktualizacją pliku testowego ustal faktycznie używany runner,
+komendę uruchamiającą test oraz to, czy konfiguracja obejmuje dany plik. Sama obecność
+`*.spec.ts` obok komponentu nie jest dowodem, że test jest wykonywany. Jeżeli projekt
+nie ma działającego runnera dla tego pliku, rozszerz istniejący wykonywalny harness
+albo jawnie zgłoś brak uruchamialnego pokrycia; nie deklaruj takiego testu jako
+zweryfikowanego.
 
 Jeśli modyfikujesz plik `.ts`, sprawdź, czy obok istnieje `.spec.ts`.
 Jeśli istnieje i zmiana dotyka logiki, stanu, inputów, outputów, requestów albo warunków w template, zaktualizuj test.

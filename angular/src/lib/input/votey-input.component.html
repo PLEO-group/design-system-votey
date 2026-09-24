@@ -8,7 +8,7 @@
   [class.filled]="hasValue"
 >
   @if (label()) {
-    <label class="label" [for]="id()">
+    <label class="label" [for]="resolvedId()">
       <vt-text
         variant="label"
         [color]="isDisabled ? 'muted' : 'primary'"
@@ -20,7 +20,7 @@
   <div class="field">
     <input
       class="control"
-      [id]="id()"
+      [id]="resolvedId()"
       [name]="name()"
       [type]="type()"
       [formControl]="formControl"
@@ -33,25 +33,34 @@
       [attr.minlength]="minLength()"
       [attr.maxlength]="maxLength()"
       [attr.pattern]="pattern() || null"
+      [attr.aria-label]="label() ? null : (ariaLabel() | vtTranslate) || null"
+      [attr.aria-describedby]="resolvedAriaDescribedby()"
       [attr.aria-invalid]="hasError ? true : null"
+      [attr.aria-errormessage]="hasError ? errorId() : null"
       [attr.data-cy]="dataCy() || null"
-      (blur)="blur.emit($event)"
-      (keydown)="keyDown.emit($event)"
+      (blur)="handleBlur()"
+      (keydown)="handleKeyDown($event)"
     />
+
+    @let currentIcon = icon();
+    @if (currentIcon) {
+      <vt-icon class="icon" [ico]="currentIcon" />
+    }
   </div>
 
-  @if (shouldShowHelper) {
-    <p class="helper">
+  @if (helper()) {
+    <div class="helper" [id]="helperId()">
       <vt-text
         variant="caption-s"
-        [color]="helperColor"
+        color="muted"
         [content]="helper() | vtTranslate"
       />
-    </p>
+    </div>
   }
 
   <vt-form-error
-    [errors]="showFormErrors ? errorKeys : []"
+    [id]="errorId()"
+    [errors]="errorKeys"
     [ignoredErrors]="ignoredErrors()"
   />
 </div>

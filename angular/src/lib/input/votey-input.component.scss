@@ -27,6 +27,10 @@
       border-color 180ms ease,
       box-shadow 180ms ease;
 
+    &:hover {
+      border-color: var(--color-accent-hover);
+    }
+
     &:focus-within {
       border: 2px solid var(--color-accent-primary);
       box-shadow: none;
@@ -47,15 +51,15 @@
       line-height: var(--typo-field-line-height);
 
       &::placeholder {
-        color: var(--color-text-muted);
+        color: var(--color-text-placeholder);
         opacity: 1;
       }
     }
 
     .icon {
-      flex: 0 0 18px;
-      width: 18px;
-      height: 18px;
+      flex: 0 0 var(--spacing-20);
+      width: var(--spacing-20);
+      height: var(--spacing-20);
       color: var(--color-text-primary);
     }
   }
@@ -94,6 +98,7 @@
 
   &.disabled {
     .field,
+    .field:hover,
     .field:focus-within {
       border: 1px solid var(--color-border-subtle);
       background-color: var(--color-bg-surface-tint);
@@ -125,5 +130,15 @@
   .helper {
     margin: 0;
     white-space: nowrap;
+  }
+}
+
+:host ::ng-deep .input-wrapper.disabled .icon svg {
+  path:not([fill="none"]) {
+    fill: var(--color-text-muted);
+  }
+
+  [stroke]:not([stroke="none"]) {
+    stroke: var(--color-text-muted);
   }
 }

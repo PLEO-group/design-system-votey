@@ -1,15 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import { useArgs } from "@storybook/preview-api";
 import { fn } from "@storybook/test";
+import { getIconList } from "../../utils/assetLoader";
 import "./Input.stories.scss";
 
+const iconOptions = [
+  "none",
+  ...getIconList()
+    .map((icon) => icon.angularRegistryName)
+    .sort((first, second) => first.localeCompare(second)),
+];
 const inputNames = [
   "variant",
   "type",
   "label",
   "placeholder",
   "helper",
-  "showHelper",
   "disabled",
   "id",
   "name",
@@ -20,8 +26,12 @@ const inputNames = [
   "maxLength",
   "pattern",
   "ignoredErrors",
+  "ariaLabel",
+  "ariaDescribedby",
   "dataCy",
 ];
+
+const removeWhitespace = (value) => value.replace(/\s/g, "");
 
 function setInputProperties(componentRef, control, Validators, props) {
   const validators = [
@@ -42,6 +52,11 @@ function setInputProperties(componentRef, control, Validators, props) {
   }
 
   componentRef.setInput("control", control);
+  componentRef.setInput(
+    "trimmer",
+    props.trimWhitespace ? removeWhitespace : null
+  );
+  componentRef.setInput("icon", props.icon === "none" ? "" : props.icon);
 
   for (const inputName of inputNames) {
     componentRef.setInput(inputName, props[inputName]);
@@ -63,7 +78,7 @@ function AngularInputPreview(props) {
         { createComponent },
         { createApplication },
         { FormControl, Validators },
-        { VoteyInputComponent },
+        { provideVoteySvgRegistry, VoteyInputComponent },
       ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
@@ -73,7 +88,9 @@ function AngularInputPreview(props) {
 
       if (!isMounted || !hostRef.current) return;
 
-      const applicationRef = await createApplication();
+      const applicationRef = await createApplication({
+        providers: [provideVoteySvgRegistry()],
+      });
 
       if (!isMounted || !hostRef.current) {
         applicationRef.destroy();
@@ -151,6 +168,12 @@ export default {
   component: AngularInputPreview,
   parameters: { layout: "centered" },
   argTypes: {
+    label: {
+      description:
+        "Required translation key used as the field's accessible label. Pass an empty string only when ariaLabel provides the accessible name.",
+      type: { name: "string", required: true },
+      table: { category: "Content" },
+    },
     variant: {
       options: ["boxed", "underline"],
       control: { type: "inline-radio" },
@@ -173,27 +196,40 @@ export default {
       ],
       control: { type: "select" },
     },
+    icon: {
+      options: iconOptions,
+      control: { type: "select" },
+      table: { category: "Appearance" },
+    },
     required: {
       description: "Adds Validators.required to the preview FormControl.",
     },
     showError: {
       description: "Shows the required error state for an empty input.",
     },
+    trimWhitespace: {
+      description: "Removes whitespace from the FormControl value on blur.",
+    },
     onChanged: { action: "changed", table: { category: "Events" } },
-    onKeyDown: { action: "keyDown", table: { category: "Events" } },
+    onKeyDown: {
+      action: "keyDown",
+      description: "Emits the native KeyboardEvent from the input element.",
+      table: { category: "Events" },
+    },
   },
   args: {
     text: "",
     variant: "boxed",
     type: "text",
-    label: "Nazwa wydarzenia",
-    placeholder: "Wpisz nazwę…",
-    helper: "Tekst pomocniczy",
-    showHelper: false,
+    label: "Event name",
+    placeholder: "Enter event name",
+    helper: "Additional information",
+    icon: "ui-search",
     disabled: false,
     required: false,
     showError: false,
-    id: "storybook-input",
+    trimWhitespace: false,
+    id: "",
     name: "storybook-input",
     inputMode: "",
     min: null,
@@ -202,6 +238,8 @@ export default {
     maxLength: 100,
     pattern: "",
     ignoredErrors: [],
+    ariaLabel: "",
+    ariaDescribedby: "",
     dataCy: "",
     onChanged: fn(),
     onKeyDown: fn(),
@@ -221,5 +259,16 @@ export const Playground = {
         }}
       />
     );
+  },
+};
+
+export const PhoneNumberWithWhitespaceTrimmer = {
+  args: {
+    text: "502 724 170",
+    type: "tel",
+    inputMode: "tel",
+    label: "Phone number",
+    placeholder: "Enter phone number",
+    trimWhitespace: true,
   },
 };

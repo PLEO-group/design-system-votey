@@ -1,5 +1,7 @@
 # Changelog
 
+- 1.12.0 — Doprecyzowano semantykę wymaganych signal inputs dla nazw dostępnych
+  kontrolek oraz obowiązek jawnego priorytetu i walidacji złożonych stanów UI.
 - 1.11.0 — Przeniesiono historię zmian do osobnej referencji `references/changelog.md`.
 - 1.10.0 — Dodano zasadę aktualizacji najbliższych testów przy zmianie kontraktu
   lub zachowania kodu, bez obowiązku uruchamiania testów przy każdym prompcie.

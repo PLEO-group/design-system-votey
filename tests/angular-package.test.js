@@ -770,9 +770,38 @@ test("input uses the shared form control contract", async () => {
   );
 
   assert.equal(input.formControl.value, null);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.label[0], "label");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.helper[0], "helper");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.icon[0], "icon");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(
+    VoteyInputComponent.ɵcmp.inputs.ariaDescribedby[0],
+    "ariaDescribedby",
+  );
   assert.equal(input.keyDown !== undefined, true);
+  assert.equal(VoteyInputComponent.ɵcmp.outputs.keyDown, "keyDown");
+  assert.equal(input.blur, undefined);
   assert.equal(input.changed, undefined);
   assert.equal(input.registerOnChange, undefined);
+});
+
+test("input applies the configured trimmer on blur", async () => {
+  const { FormControl, Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const control = new FormControl("502 724\t170");
+  input.control = control;
+  input.handleBlur();
+
+  assert.equal(control.value, "502 724\t170");
+
+  input.trimmer = () => (value) => value.replace(/\s/g, "");
+  input.handleBlur();
+
+  assert.equal(control.value, "502724170");
 });
 
 test("radio button emits MatRadioChange", async () => {

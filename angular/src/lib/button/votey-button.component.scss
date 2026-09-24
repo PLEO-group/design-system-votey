@@ -10,7 +10,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--space-icon-gap);
-  height: 44px;
+  height: 45px;
   padding: var(--space-control-padding-y-l) var(--space-control-padding-x-l);
   border: 1px solid transparent;
   border-radius: var(--radius-full);
@@ -139,8 +139,9 @@ button {
     color: var(--color-accent-primary);
 
     &:not(.small) {
-      height: auto;
-      padding: 0;
+      height: 42px;
+      padding: var(--space-control-padding-y-l)
+        var(--space-control-padding-x-l);
       border: 0;
       border-radius: 0;
       font-family: inherit;
@@ -174,7 +175,7 @@ button {
     background-color: transparent;
     color: var(--color-text-primary);
 
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not(:focus-visible) {
       border-color: transparent;
       background-color: transparent;
     }
@@ -195,6 +196,7 @@ button {
 
   &.icon-button {
     width: 44px;
+    height: 44px;
     padding: 0;
 
     &.small {
@@ -266,5 +268,13 @@ button {
 @media (prefers-reduced-motion: reduce) {
   button {
     transition: none;
+
+    &:active:not(:disabled) {
+      transform: none;
+    }
+
+    &.danger::before {
+      transition: none;
+    }
   }
 }

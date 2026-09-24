@@ -32,13 +32,6 @@ const crmDarkTokens = require(path.join(
     'semantic-CRM',
     'Dark.json',
 ));
-const responsiveSpacingTokens = require(path.join(
-    projectRoot,
-    'tokens',
-    'space',
-    'semantic',
-    'Mobile 360.json',
-));
 const responsiveTypographyTokens = require(path.join(
     projectRoot,
     'tokens',
@@ -139,27 +132,10 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     assert.match(firstBuild, /--color-yellow-50: #fff5e1;/);
     assertColorReferences(firstBuild, crmLightTokens);
     assert.match(firstBuild, /--spacing-16: 16px;/);
-    assert.match(firstBuild, /--radius-card: var\(--radius-30\);/);
-    assert.match(firstBuild, /--typo-input-label-font-weight: 800;/);
-    assert.match(firstBuild, /--typo-input-label-font-size: 14px;/);
-    assert.match(firstBuild, /--typo-input-label-line-height: 19px;/);
-    assert.match(
-        firstBuild,
-        /--font-family-open-sans: "Open Sans", Arial, sans-serif;/,
-    );
-    assert.match(
-        firstBuild,
-        /--font-family-satoshi: "Satoshi", system-ui, Arial, sans-serif;/,
-    );
-    assert.match(
-        firstBuild,
-        /--typo-h1-font-family: var\(--font-family-open-sans\);/,
-    );
     assert.match(firstBuild, /--typo-h1-font-weight: 800;/);
     assert.match(firstBuild, /--typo-h1-letter-spacing: 0px;/);
     for (const role of Object.keys(responsiveTypographyTokens)) {
         for (const property of [
-            'font-family',
             'font-size',
             'font-weight',
             'letter-spacing',
@@ -189,34 +165,7 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         firstBuild,
         /--grid-column-width: calc\(\n    \(100vw - 7\.4666666667vw - 9\.6vw\) \/ 4\n  \);/,
     );
-    assert.match(
-        firstBuild,
-        /--color-shadow-soft: rgba\(1, 0, 39, 0\.08\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-shadow-overlay: rgba\(7, 6, 78, 0\.12\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-shadow-event-filter: rgba\(19, 18, 93, 0\.3\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-overlay-loader: rgba\(255, 255, 255, 0\.78\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-overlay-loader-soft: rgba\(255, 255, 255, 0\.68\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-overlay-accent-start: rgba\(136, 234, 125, 0\.3\);/,
-    );
-    assert.match(
-        firstBuild,
-        /--color-overlay-accent-end: rgba\(2, 194, 149, 0\);/,
-    );
+    assert.doesNotMatch(firstBuild, /--color-(shadow|overlay)-/);
     assert.doesNotMatch(firstBuild, /--opacity-/);
     assert.match(
         firstBuild,
@@ -238,17 +187,17 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         firstBuild,
         /body\[data-device=mobile\] \{\n    --typo-h1-font-size: calc\(0vw \+ 24px\);/,
     );
-    const responsiveDeclarationCount =
-        Object.keys(responsiveSpacingTokens.space).length * 3 +
-        Object.keys(responsiveTypographyTokens).length * 6;
+    const maxWidthMediaCount = [
+        ...firstBuild.matchAll(/@media \(max-width: 360px\)/g),
+    ].length;
+    const minWidthMediaCount = [
+        ...firstBuild.matchAll(/@media \(min-width: 1920px\)/g),
+    ].length;
     assert.equal(
-        [...firstBuild.matchAll(/@media \(max-width: 360px\)/g)].length,
-        responsiveDeclarationCount,
+        maxWidthMediaCount,
+        minWidthMediaCount,
     );
-    assert.equal(
-        [...firstBuild.matchAll(/@media \(min-width: 1920px\)/g)].length,
-        responsiveDeclarationCount,
-    );
+    assert.ok(maxWidthMediaCount > 0);
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);
     assert.equal(

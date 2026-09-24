@@ -42,12 +42,10 @@ npm run build:tokens
 
 ## Font families
 
-Foundation font families są zdefiniowane w `tokens/type/core/value.json`:
-
-- `font-family.open-sans` — font produktu CRM;
-- `font-family.satoshi` — font produktu PWA oraz interfejsu Storybooka.
-
-Build Angular publikuje je jako `--font-family-open-sans` i `--font-family-satoshi`. Responsywne role `--typo-*` CRM wskazują na `--font-family-open-sans`. Storybook używa `--font-family-satoshi` globalnie. Istniejąca zmienna `--font-satoshi` w `votey-user-app` pozostaje bez zmian.
+Aktualny eksport Figma Variables nie zawiera już tokenów `font-family`. Generator
+nie publikuje więc `--font-family-*` ani `--typo-*-font-family`; wybór fontu
+pozostaje tymczasowo po stronie komponentu lub aplikacji i będzie migrowany
+razem z komponentami do nowego kontraktu tokenów.
 
 ## Runtime Angulara
 

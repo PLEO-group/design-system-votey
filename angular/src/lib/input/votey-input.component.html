@@ -3,13 +3,17 @@
 <div
   class="input-wrapper"
   [class.underline]="variant() === 'underline'"
-  [class.disabled]="disabled() || formControl.disabled"
+  [class.disabled]="isDisabled"
   [class.error]="hasError"
   [class.filled]="hasValue"
 >
   @if (label()) {
     <label class="label" [for]="id()">
-      <vt-text variant="label" color="primary" [content]="translatedLabel" />
+      <vt-text
+        variant="label"
+        [color]="isDisabled ? 'muted' : 'primary'"
+        [content]="translatedLabel"
+      />
     </label>
   }
 
@@ -21,7 +25,7 @@
       [type]="type()"
       [formControl]="formControl"
       [placeholder]="placeholder() | vtTranslate"
-      [attr.disabled]="disabled() ? '' : null"
+      [attr.disabled]="isDisabled ? '' : null"
       [required]="isRequired"
       [attr.inputmode]="inputMode() || null"
       [attr.min]="min()"
@@ -32,11 +36,22 @@
       [attr.aria-invalid]="hasError ? true : null"
       [attr.data-cy]="dataCy() || null"
       (blur)="blur.emit($event)"
+      (keydown)="keyDown.emit($event)"
     />
   </div>
 
+  @if (shouldShowHelper) {
+    <p class="helper">
+      <vt-text
+        variant="caption-s"
+        [color]="helperColor"
+        [content]="helper() | vtTranslate"
+      />
+    </p>
+  }
+
   <vt-form-error
-    [errors]="errorKeys"
+    [errors]="showFormErrors ? errorKeys : []"
     [ignoredErrors]="ignoredErrors()"
   />
 </div>

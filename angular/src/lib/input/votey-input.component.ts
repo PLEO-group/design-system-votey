@@ -64,6 +64,9 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   );
   public readonly label: InputSignal<string> = input<string>("");
   public readonly placeholder: InputSignal<string> = input<string>("");
+  public readonly helper: InputSignal<string> = input<string>("");
+  public readonly showHelper: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly disabled: InputSignalWithTransform<boolean, unknown> = input<
     boolean,
     unknown
@@ -103,6 +106,22 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
   protected get hasValue(): boolean {
     return (this.formControl.value ?? "").length > 0;
+  }
+
+  protected get isDisabled(): boolean {
+    return this.disabled() || this.formControl.disabled;
+  }
+
+  protected get shouldShowHelper(): boolean {
+    return this.showHelper() && this.helper().length > 0;
+  }
+
+  protected get showFormErrors(): boolean {
+    return this.hasError && !this.shouldShowHelper;
+  }
+
+  protected get helperColor(): "error" | "muted" {
+    return this.hasError ? "error" : "muted";
   }
 
   protected get errorKeys(): string[] {

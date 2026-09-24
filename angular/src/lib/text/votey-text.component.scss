@@ -37,7 +37,6 @@ $text-colors: (
 );
 
 @mixin text-variant($variant) {
-  font-family: var(--typo-#{$variant}-font-family);
   font-size: var(--typo-#{$variant}-font-size);
   font-weight: var(--typo-#{$variant}-font-weight);
   letter-spacing: var(--typo-#{$variant}-letter-spacing);

@@ -67,9 +67,9 @@
   &.underline {
     .field {
       height: var(--spacing-40);
-      padding: 0;
+      padding: 0 var(--space-field-padding-x);
       border: 0;
-      border-bottom: 1px solid var(--color-border-subtle);
+      border-bottom: 1px solid var(--color-border-field);
       border-radius: 0;
       background-color: transparent;
 
@@ -100,7 +100,7 @@
     .field,
     .field:hover,
     .field:focus-within {
-      border: 1px solid var(--color-border-subtle);
+      border: 1px solid var(--color-border-field);
       background-color: var(--color-bg-surface-tint);
       box-shadow: none;
 
@@ -121,7 +121,7 @@
     &.underline {
       .field {
         border: 0;
-        border-bottom: 1px solid var(--color-border-subtle);
+        border-bottom: 1px solid var(--color-border-field);
         background-color: transparent;
       }
     }

@@ -2,3 +2,108 @@
   display: block;
   width: 320px;
 }
+
+.angular-input-state-story {
+  display: block;
+  width: 100%;
+}
+
+.input-states-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-gap-l);
+  width: 100%;
+  padding: var(--space-card-padding);
+  border: 1px solid var(--color-border-field);
+  border-radius: var(--radius-m);
+  background-color: var(--color-bg-surface);
+}
+
+.input-states-header {
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    color: var(--color-text-primary);
+    font-size: var(--typo-h2-font-size);
+    font-weight: var(--typo-h2-font-weight);
+    line-height: var(--typo-h2-line-height);
+  }
+
+  p {
+    margin-top: var(--space-stack-gap-s);
+    color: var(--color-text-secondary);
+    font-size: var(--typo-body-s-font-size);
+    font-weight: var(--typo-body-s-font-weight);
+    line-height: var(--typo-body-s-line-height);
+  }
+}
+
+.input-state-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-gap-m);
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--typo-h4-font-size);
+    font-weight: var(--typo-h4-font-weight);
+    line-height: var(--typo-h4-line-height);
+  }
+}
+
+.input-state-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-card-gap);
+  min-width: 900px;
+}
+
+.input-state-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-gap-s);
+  min-width: 0;
+  padding: var(--space-stack-gap-m);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-m);
+  background-color: var(--color-bg-surface);
+
+  h4,
+  p {
+    margin: 0;
+  }
+
+  h4 {
+    color: var(--color-text-primary);
+    font-size: var(--typo-h5-font-size);
+    font-weight: var(--typo-h5-font-weight);
+    line-height: var(--typo-h5-line-height);
+  }
+
+  p {
+    color: var(--color-text-secondary);
+    font-size: var(--typo-body-s-font-size);
+    font-weight: var(--typo-body-s-font-weight);
+    line-height: var(--typo-body-s-line-height);
+  }
+
+  &[data-state="focus"] {
+    .input-wrapper:not(.underline) .field {
+      border: 2px solid var(--color-accent-primary);
+    }
+  }
+}
+
+#input-states-card .input-state-item[data-state="focus"] .input-wrapper.underline .field {
+  border: 0;
+  border-bottom: 2px solid var(--color-accent-primary);
+}
+
+.input-state-row {
+  overflow-x: auto;
+}

@@ -101,6 +101,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly showErrors: InputSignalWithTransform<boolean, unknown> =
     input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly blur: OutputEmitterRef<FocusEvent> = output<FocusEvent>();
   public readonly keyDown: OutputEmitterRef<KeyboardEvent> =
     output<KeyboardEvent>();
 
@@ -118,7 +119,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
   >(() => {
     const ids: string[] = [this.ariaDescribedby().trim()];
 
-    if (this.helper().trim()) ids.push(this.helperId());
+    if (this.shouldShowHelper) ids.push(this.helperId());
 
     return ids.filter(Boolean).join(" ") || null;
   });
@@ -133,7 +134,10 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
   protected get hasError(): boolean {
     return (
-      this.showErrors() && this.formControl.invalid && this.formControl.touched
+      this.showErrors() &&
+      !this.isDisabled &&
+      this.formControl.invalid &&
+      this.formControl.touched
     );
   }
 
@@ -141,12 +145,8 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     return (this.formControl.value ?? "").length > 0;
   }
 
-  protected get isDisabled(): boolean {
-    return this.disabled() || this.formControl.disabled;
-  }
-
   protected get shouldShowHelper(): boolean {
-    return this.showHelper() && this.helper().length > 0;
+    return this.helper().length > 0;
   }
 
   protected get showFormErrors(): boolean {
@@ -161,7 +161,7 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
   }
 
-  protected handleBlur(): void {
+  protected handleBlur(event: FocusEvent): void {
     const value: string | null = this.formControl.value;
     const trimmer: VoteyInputTrimmer | null = this.trimmer();
 
@@ -170,6 +170,8 @@ export class VoteyInputComponent extends VoteyFormControlApplyDirective<string> 
 
       if (trimmedValue !== value) this.formControl.setValue(trimmedValue);
     }
+
+    this.blur.emit(event);
   }
 
   protected handleKeyDown(event: KeyboardEvent): void {

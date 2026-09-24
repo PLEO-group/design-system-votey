@@ -1,4 +1,5 @@
 @let translatedLabel = label() | vtTranslate;
+@let accessibleName = ariaLabel() ? (ariaLabel() | vtTranslate) : translatedLabel;
 
 <div
   class="input-wrapper"
@@ -33,12 +34,12 @@
       [attr.minlength]="minLength()"
       [attr.maxlength]="maxLength()"
       [attr.pattern]="pattern() || null"
-      [attr.aria-label]="label() ? null : (ariaLabel() | vtTranslate) || null"
+      [attr.aria-label]="label() ? null : accessibleName || null"
       [attr.aria-describedby]="resolvedAriaDescribedby()"
       [attr.aria-invalid]="hasError ? true : null"
-      [attr.aria-errormessage]="hasError ? errorId() : null"
+      [attr.aria-errormessage]="hasError ? (shouldShowHelper ? helperId() : errorId()) : null"
       [attr.data-cy]="dataCy() || null"
-      (blur)="handleBlur()"
+      (blur)="handleBlur($event)"
       (keydown)="handleKeyDown($event)"
     />
 
@@ -48,11 +49,11 @@
     }
   </div>
 
-  @if (helper()) {
+  @if (shouldShowHelper) {
     <div class="helper" [id]="helperId()">
       <vt-text
         variant="caption-s"
-        color="muted"
+        [color]="helperColor"
         [content]="helper() | vtTranslate"
       />
     </div>
@@ -60,7 +61,7 @@
 
   <vt-form-error
     [id]="errorId()"
-    [errors]="errorKeys"
+    [errors]="showFormErrors ? errorKeys : []"
     [ignoredErrors]="ignoredErrors()"
   />
 </div>

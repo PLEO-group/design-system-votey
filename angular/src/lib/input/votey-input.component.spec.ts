@@ -58,7 +58,7 @@ describe("VoteyInputComponent", () => {
       fixture.nativeElement.querySelector(".input-wrapper.disabled")
     ).not.toBeNull();
     expect(
-      fixture.nativeElement.querySelector("label .text.primary")
+      fixture.nativeElement.querySelector("label .text.muted")
     ).not.toBeNull();
     expect(fixture.nativeElement.querySelector("vt-icon.icon")).not.toBeNull();
   });
@@ -84,10 +84,48 @@ describe("VoteyInputComponent", () => {
     ).not.toBeNull();
   });
 
-  it("should emit keydown and apply the trimmer on blur", (): void => {
+  it("should hide validation errors when the input is disabled", (): void => {
+    control.setValidators(Validators.required);
+    control.markAsTouched();
+    control.updateValueAndValidity();
+    fixture.componentRef.setInput("disabled", true);
+    fixture.componentRef.setInput("helper", "Unavailable");
+    fixture.detectChanges();
+
+    const inputElement: HTMLInputElement =
+      fixture.nativeElement.querySelector("input");
+    const helperElement: HTMLElement =
+      fixture.nativeElement.querySelector(".helper .text");
+
+    expect(inputElement.disabled).toBe(true);
+    expect(inputElement.getAttribute("aria-invalid")).toBeNull();
+    expect(inputElement.getAttribute("aria-errormessage")).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(".input-wrapper.error")
+    ).toBeNull();
+    expect(helperElement.classList.contains("muted")).toBe(true);
+  });
+
+  it("should keep an accessible name when no visible label is provided", (): void => {
+    fixture.componentRef.setInput("label", "");
+    fixture.componentRef.setInput("ariaLabel", "Email address");
+    fixture.detectChanges();
+
+    const inputElement: HTMLInputElement =
+      fixture.nativeElement.querySelector("input");
+
+    expect(fixture.nativeElement.querySelector("label")).toBeNull();
+    expect(inputElement.getAttribute("aria-label")).toBe("Email address");
+  });
+
+  it("should emit keydown and blur events and apply the trimmer", (): void => {
     const keyEvents: KeyboardEvent[] = [];
+    const blurEvents: FocusEvent[] = [];
     const subscription = component.keyDown.subscribe((event: KeyboardEvent) =>
       keyEvents.push(event)
+    );
+    const blurSubscription = component.blur.subscribe((event: FocusEvent) =>
+      blurEvents.push(event)
     );
     fixture.componentRef.setInput("trimmer", (value: string): string =>
       value.replace(/\s/g, "")
@@ -100,13 +138,27 @@ describe("VoteyInputComponent", () => {
     inputElement.dispatchEvent(
       new KeyboardEvent("keydown", { bubbles: true, key: "Enter" })
     );
-    inputElement.dispatchEvent(new FocusEvent("blur", { bubbles: true }));
+    const blurEvent: FocusEvent = new FocusEvent("blur", { bubbles: true });
+    inputElement.dispatchEvent(blurEvent);
 
     expect(keyEvents.map((event: KeyboardEvent) => event.key)).toEqual([
       "Enter",
     ]);
     expect(control.value).toBe("502724170");
+    expect(blurEvents).toEqual([blurEvent]);
 
     subscription.unsubscribe();
+    blurSubscription.unsubscribe();
+  });
+
+  it("should hide the helper when no helper text is provided", (): void => {
+    fixture.componentRef.setInput("helper", "");
+    fixture.detectChanges();
+
+    const inputElement: HTMLInputElement =
+      fixture.nativeElement.querySelector("input");
+
+    expect(fixture.nativeElement.querySelector(".helper")).toBeNull();
+    expect(inputElement.getAttribute("aria-describedby")).toBeNull();
   });
 });

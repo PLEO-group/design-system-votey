@@ -10,11 +10,45 @@
 
   .preview {
     display: inline-flex;
+    max-width: 100%;
 
     .insertable-content {
       display: inline-flex;
       align-items: center;
-      gap: var(--spacing-8);
+      gap: var(--space-gap-xs);
+    }
+  }
+
+  &.constrained {
+    width: 280px;
+    min-width: 0;
+  }
+
+  &.radio-state-story {
+    width: min(100%, 760px);
+    min-width: 0;
+    justify-content: flex-start;
+
+    .radio-state-grid {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(120px, 1.4fr) repeat(4, minmax(0, 1fr));
+      align-items: center;
+      gap: var(--space-stack-gap-m);
+
+      > strong {
+        color: var(--color-text-primary);
+        font-family: var(--typo-body-font-family);
+        font-size: var(--typo-body-font-size);
+        font-weight: var(--typo-body-font-weight);
+        line-height: var(--typo-body-line-height);
+      }
+
+      .radio-state-cell {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+      }
     }
   }
 }

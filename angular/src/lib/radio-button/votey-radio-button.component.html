@@ -10,6 +10,7 @@
     [class]="groupClass()"
     [formControl]="formControl"
     [labelPosition]="groupLabelPosition()"
+    [name]="groupName()"
     [required]="groupRequired()"
     [attr.aria-label]="groupAccessibleLabel()"
     (change)="handleChange($event)"
@@ -24,15 +25,18 @@
       [labelPosition]="option.labelPosition ?? groupLabelPosition()"
       [id]="option.id ?? ''"
       [value]="option.value"
+      [aria-label]="(option.ariaLabel ?? option.label) | vtTranslate"
       [attr.data-cy]="option.dataCy ?? null"
     >
-      <span class="vt-radio-option-label">
-        <vt-text
-          variant="body"
-          [color]="optionDisabled ? 'muted' : 'primary'"
-          [content]="option.label | vtTranslate"
-        />
-      </span>
+      @if (option.label !== undefined) {
+        <span class="vt-radio-option-label">
+          <vt-text
+            variant="body"
+            [color]="optionDisabled ? 'muted' : 'primary'"
+            [content]="option.label | vtTranslate"
+          />
+        </span>
+      }
     </mat-radio-button>
     @if (formControl.value === option.value) { @if (option.id; as optionId) { @if
     (optionContentTemplates()[optionId]; as optionContent) {

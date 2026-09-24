@@ -481,8 +481,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
 }
 
 type VoteyRadioButtonLabelPosition = "before" | "after";
-interface VtRadioOption<T = unknown> {
-    readonly label: string;
+interface VtRadioOptionBase<T> {
     readonly value: T;
     readonly disabled?: boolean;
     readonly required?: boolean;
@@ -492,10 +491,18 @@ interface VtRadioOption<T = unknown> {
     readonly className?: string;
     readonly dataCy?: string;
 }
+type VtRadioOption<T = unknown> = VtRadioOptionBase<T> & ({
+    readonly label: string;
+    readonly ariaLabel?: string;
+} | {
+    readonly label?: never;
+    readonly ariaLabel: string;
+});
 declare class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<unknown> {
     private readonly translator;
     private readonly optionContents;
     readonly options: InputSignal<readonly VtRadioOption[]>;
+    readonly groupName: InputSignal<string>;
     readonly groupLabelPosition: InputSignal<VoteyRadioButtonLabelPosition>;
     readonly groupDisabled: InputSignal<boolean>;
     readonly groupRequired: InputSignal<boolean>;
@@ -510,7 +517,7 @@ declare class VoteyRadioButtonComponent extends VoteyFormControlApplyDirective<u
     protected get errorKeys(): string[];
     protected handleChange(event: MatRadioChange): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyRadioButtonComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyRadioButtonComponent, "vt-radio-button", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "groupLabelPosition": { "alias": "groupLabelPosition"; "required": false; "isSignal": true; }; "groupDisabled": { "alias": "groupDisabled"; "required": false; "isSignal": true; }; "groupRequired": { "alias": "groupRequired"; "required": false; "isSignal": true; }; "groupClass": { "alias": "groupClass"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "change": "change"; }, ["optionContents"], never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyRadioButtonComponent, "vt-radio-button", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "groupName": { "alias": "groupName"; "required": false; "isSignal": true; }; "groupLabelPosition": { "alias": "groupLabelPosition"; "required": false; "isSignal": true; }; "groupDisabled": { "alias": "groupDisabled"; "required": false; "isSignal": true; }; "groupRequired": { "alias": "groupRequired"; "required": false; "isSignal": true; }; "groupClass": { "alias": "groupClass"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "change": "change"; }, ["optionContents"], never, true, never>;
 }
 
 declare class VoteyRadioOptionContentDirective {

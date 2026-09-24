@@ -354,14 +354,22 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     ),
   );
   assert.deepEqual(VOTEY_DEFAULT_GRID_CONFIG, {
-    desktop: gridTokens.grid.admin.desktop.columns.value,
-    tablet: gridTokens.grid.admin.tablet.columns.value,
-    mobile: gridTokens.grid.admin.mobile.columns.value,
+    desktop: gridTokens.grid.admin.columns.desktop.value,
+    tablet: gridTokens.grid.admin.columns.tablet.value,
+    mobile: gridTokens.grid.admin.columns.mobile.value,
   });
-  assert.equal(gridTokens.grid.mobile, undefined);
-  assert.equal(gridTokens.grid.admin.mobile["reference-width"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints.mobile["margin-extra"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"].margin.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet.margin.value, 42);
+  assert.equal(gridTokens.grid.admin.breakpoints.laptop.gutter.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.desktop.gutter.value, 40);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"]["sidebar-expanded"].value, 0);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet["sidebar-expanded"].value, 140);
+  assert.equal(gridTokens.breakpoint["mobile-small"].value, 360);
   assert.equal(gridTokens.breakpoint.mobile.value, 375);
+  assert.equal(gridTokens.breakpoint["tablet-small"].value, 768);
   assert.equal(gridTokens.breakpoint.tablet.value, 1024);
+  assert.equal(gridTokens.breakpoint.laptop.value, 1280);
   assert.equal(gridTokens.breakpoint.desktop.value, 1920);
   assert.match(
     require.resolve(

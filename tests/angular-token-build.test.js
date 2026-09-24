@@ -94,6 +94,29 @@ function buildAngularTokens() {
     return fs.readFileSync(outputPath, 'utf8');
 }
 
+function resolvedGridValue(css, property, width) {
+    const gridCss = css.split('/* CRM grid tokens. */')[1];
+    const declaration = /@media \((max-width|min-width): (\d+)px\)(?: and \(max-width: (\d+)px\))? \{\s*:root \{\s*(--grid-[a-z-]+): ([^;]+);/g;
+    let result;
+
+    for (const match of gridCss.matchAll(declaration)) {
+        const [, direction, boundary, upper, token, rawValue] = match;
+        if (token !== property) continue;
+        const applies = direction === 'max-width'
+            ? width <= Number(boundary)
+            : width >= Number(boundary) && (!upper || width <= Number(upper));
+        if (!applies) continue;
+
+        const calc = rawValue.match(/^calc\((-?[\d.]+)vw \+ (-?[\d.]+)px\)$/);
+        result = calc
+            ? Number(calc[1]) * width / 100 + Number(calc[2])
+            : Number(rawValue.replace('px', ''));
+    }
+
+    assert.notEqual(result, undefined, `Missing ${property} at ${width}px`);
+    return result;
+}
+
 test('CRM light and dark semantic colors expose the same contract', () => {
     assert.deepEqual(
         getTokenPaths(crmDarkTokens).sort(),
@@ -158,13 +181,27 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
         firstBuild,
         /body\[data-device=desktop\] \{\n  --grid-columns: 12;/,
     );
-    assert.match(firstBuild, /--grid-margin: 3\.7333333333vw;/);
-    assert.match(firstBuild, /--grid-margin-extra: 6\.4vw;/);
-    assert.match(firstBuild, /--grid-column-gap: 3\.2vw;/);
-    assert.match(
-        firstBuild,
-        /--grid-column-width: calc\(\n    \(100vw - 7\.4666666667vw - 9\.6vw\) \/ 4\n  \);/,
-    );
+    assert.match(firstBuild, /--grid-margin: 16px;/);
+    assert.match(firstBuild, /--grid-margin: calc\(-3\.90625vw \+ 82px\);/);
+    assert.match(firstBuild, /--grid-margin: 64px;/);
+    assert.match(firstBuild, /--grid-column-gap: 16px;/);
+    assert.match(firstBuild, /--grid-column-gap: calc\(0vw \+ 24px\);/);
+    assert.match(firstBuild, /--grid-column-gap: 40px;/);
+    assert.match(firstBuild, /--grid-sidebar-width-collapsed: 80px;/);
+    assert.match(firstBuild, /--grid-sidebar-width-expanded: 183px;/);
+    assert.match(firstBuild, /body\[data-votey-sidebar-state=expanded\]/);
+    assert.match(firstBuild, /--grid-content-width: calc\(100vw - var\(--grid-sidebar-width\)\);/);
+    assert.match(firstBuild, /--grid-column-width: calc\(\(var\(--grid-content-width\)/);
+    assert.doesNotMatch(firstBuild, /--grid-margin-extra:/);
+    const gridReferences = [
+        [360, 16, 16], [375, 16, 16], [768, 24, 24],
+        [1024, 42, 24], [1280, 32, 24], [1920, 64, 40],
+        [900, 33.28125, 24], [1152, 37, 24], [1600, 48, 32],
+    ];
+    for (const [width, margin, gutter] of gridReferences) {
+        assert.ok(Math.abs(resolvedGridValue(firstBuild, '--grid-margin', width) - margin) < 0.01);
+        assert.ok(Math.abs(resolvedGridValue(firstBuild, '--grid-column-gap', width) - gutter) < 0.01);
+    }
     assert.doesNotMatch(firstBuild, /--color-(shadow|overlay)-/);
     assert.doesNotMatch(firstBuild, /--opacity-/);
     assert.match(
@@ -193,10 +230,9 @@ test('Angular build is deterministic and isolated from PWA semantics', () => {
     const minWidthMediaCount = [
         ...firstBuild.matchAll(/@media \(min-width: 1920px\)/g),
     ].length;
-    assert.equal(
-        maxWidthMediaCount,
-        minWidthMediaCount,
-    );
+    // The sidebar adds one independent >=1920px step on top of the paired
+    // responsive margin and gutter ranges.
+    assert.equal(minWidthMediaCount, maxWidthMediaCount + 1);
     assert.ok(maxWidthMediaCount > 0);
     assert.doesNotMatch(firstBuild, /\{[a-z0-9.-]+\}/);
     assert.doesNotMatch(firstBuild, /--button-/);

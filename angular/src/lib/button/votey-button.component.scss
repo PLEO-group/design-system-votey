@@ -177,7 +177,6 @@ button {
     &:hover:not(:disabled) {
       border-color: transparent;
       background-color: transparent;
-      box-shadow: 0 var(--spacing-2) var(--spacing-8) var(--color-shadow-soft);
     }
 
     &:active {

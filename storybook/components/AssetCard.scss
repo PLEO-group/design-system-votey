@@ -3,13 +3,13 @@
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-card-s);
+    border-radius: var(--radius-xl);
     background: var(--color-bg-surface);
     transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
 
     &:hover {
         border-color: var(--color-border-strong);
-        box-shadow: 0 8px 24px var(--color-shadow-soft);
+        box-shadow: 0 8px 24px color-mix(in srgb, var(--color-navy-blue-900) 8%, transparent);
         transform: translateY(-1px);
     }
 

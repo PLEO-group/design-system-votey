@@ -16,7 +16,7 @@
   border-radius: var(--radius-3xl);
   background-color: var(--color-bg-surface);
   box-shadow: inset 0 0 0 1px var(--color-border-subtle),
-    0 8px 24px -4px var(--color-shadow-overlay);
+    0 8px 24px -4px color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   list-style: none;
 
   li {

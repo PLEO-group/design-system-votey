@@ -32,7 +32,7 @@
 
             div {
                 padding: 12px;
-                border-radius: var(--radius-card-s);
+                border-radius: var(--radius-xl);
                 background: var(--color-bg-surface);
 
                 dt {
@@ -186,7 +186,7 @@
             min-height: 360px;
             padding: 64px var(--grid-margin) 24px;
             border: 1px solid var(--color-border-subtle);
-            border-radius: var(--radius-card-s);
+            border-radius: var(--radius-xl);
             background: var(--color-bg-page);
 
             .measurements {
@@ -615,7 +615,7 @@
         .table-wrapper {
             overflow-x: auto;
             border: 1px solid var(--color-border-subtle);
-            border-radius: var(--radius-card-s);
+            border-radius: var(--radius-xl);
 
             .table {
                 width: 100%;

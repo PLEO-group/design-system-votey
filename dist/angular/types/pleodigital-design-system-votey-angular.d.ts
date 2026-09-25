@@ -528,24 +528,37 @@ declare class VoteyRadioOptionContentDirective {
 }
 
 declare class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<string> {
+    private readonly fallbackId;
+    private readonly textareaElement;
     readonly label: InputSignal<string>;
     readonly placeholder: InputSignal<string>;
     readonly helper: InputSignal<string>;
+    readonly limitDescription: InputSignal<string>;
     readonly disabled: InputSignalWithTransform<boolean, unknown>;
     readonly spellcheck: InputSignalWithTransform<boolean, unknown>;
     readonly minLength: InputSignal<number | null>;
     readonly maxLength: InputSignal<number | null>;
+    readonly id: InputSignal<string>;
+    readonly name: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly ariaDescribedby: InputSignal<string>;
     readonly dataCy: InputSignal<string>;
     readonly ignoredErrors: InputSignal<string[]>;
     readonly changed: OutputEmitterRef<string>;
     readonly keyDown: OutputEmitterRef<KeyboardEvent>;
+    protected readonly resolvedId: Signal<string>;
+    protected readonly helperId: Signal<string>;
+    protected readonly errorId: Signal<string>;
+    protected readonly resolvedAriaDescribedby: Signal<string | null>;
+    protected get isDisabled(): boolean;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get errorKeys(): string[];
+    ngAfterViewChecked(): void;
     protected handleInput(event: Event): void;
     protected handleKeyDown(event: KeyboardEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTextAreaComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextAreaComponent, "vt-text-area", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "spellcheck": { "alias": "spellcheck"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "keyDown": "keyDown"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTextAreaComponent, "vt-text-area", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "limitDescription": { "alias": "limitDescription"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "spellcheck": { "alias": "spellcheck"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "changed": "changed"; "keyDown": "keyDown"; }, never, never, true, never>;
 }
 
 declare const VoteyTextVariants: readonly ["h1", "h2", "h3", "h4", "h5", "display-l", "body-2xl", "body-xl", "body-l", "body-l-semibold", "body-l-bold", "body", "body-s", "caption", "caption-extrabold", "caption-light", "caption-s", "micro", "button", "button-small", "table-header", "label", "field"];

@@ -5,8 +5,10 @@ import {
   type InputSignalWithTransform, type Signal,
 } from "@angular/core";
 import { ReactiveFormsModule, Validators } from "@angular/forms";
+import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyIconComponent } from "../icon/votey-icon.component";
+import { VoteyTextComponent } from "../text/votey-text.component";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
 import type { VoteyMenuItem } from "../menu/votey-menu.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
@@ -28,7 +30,7 @@ let nextTimeId = 0;
   styleUrl: "./votey-time-picker.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, PickerDraftValueAccessorDirective, CdkOverlayOrigin, CdkConnectedOverlay, PickerTimeListComponent,
-    VoteyIconComponent, VoteyFormErrorComponent, VoteyTranslatePipe],
+    VoteyButtonComponent, VoteyIconComponent, VoteyTextComponent, VoteyFormErrorComponent, VoteyTranslatePipe],
 })
 export class VoteyTimePickerComponent extends PickerControl {
   private readonly translator: VoteyTranslator = injectVoteyTranslator();

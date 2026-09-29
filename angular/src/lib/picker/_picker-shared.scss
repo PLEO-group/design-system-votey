@@ -12,10 +12,7 @@
   width: 100%;
 
   .label {
-    color: var(--color-text-primary);
-    font-size: var(--typo-label-font-size);
-    font-weight: var(--typo-label-font-weight);
-    line-height: var(--typo-label-line-height);
+    display: block;
   }
 
   .field {
@@ -64,18 +61,13 @@
     }
 
     .clear {
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--color-text-primary);
-      cursor: pointer;
+      display: inline-flex;
+      flex: 0 0 28px;
     }
   }
 
   .format {
-    color: var(--color-text-muted);
-    font-size: var(--typo-caption-s-font-size);
-    line-height: var(--typo-caption-s-line-height);
+    display: block;
   }
 
   &.error .field {

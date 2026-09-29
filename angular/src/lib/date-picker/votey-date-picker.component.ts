@@ -7,8 +7,10 @@ import {
 import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, provideNativeDateAdapter } from "@angular/material/core";
 import { MatCalendar, MatDatepickerIntl } from "@angular/material/datepicker";
+import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyIconComponent } from "../icon/votey-icon.component";
+import { VoteyTextComponent } from "../text/votey-text.component";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
 import type { VoteyMenuItem } from "../menu/votey-menu.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
@@ -46,7 +48,8 @@ let nextPickerId = 0;
     } },
   ],
   imports: [ReactiveFormsModule, PickerDraftValueAccessorDirective, CdkOverlayOrigin, CdkConnectedOverlay, MatCalendar,
-    PickerTimeListComponent, VoteyIconComponent, VoteyFormErrorComponent, VoteyTranslatePipe],
+    PickerTimeListComponent, VoteyButtonComponent, VoteyIconComponent, VoteyTextComponent,
+    VoteyFormErrorComponent, VoteyTranslatePipe],
 })
 export class VoteyDatePickerComponent extends PickerControl {
   private readonly translator: VoteyTranslator = injectVoteyTranslator();

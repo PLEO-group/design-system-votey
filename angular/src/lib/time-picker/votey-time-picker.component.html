@@ -1,6 +1,8 @@
 <div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
   @if (label()) {
-    <label class="label" [for]="inputId">{{ label() | vtTranslate }}</label>
+    <label class="label" [for]="inputId">
+      <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
+    </label>
   }
   <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">
     <input
@@ -25,10 +27,13 @@
     />
     <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
     @if (committed() && !isDisabled && !isRequired) {
-      <button class="clear" type="button" [attr.aria-label]="'LABEL.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
+      <vt-button class="clear" variant="ghost" size="small" ico="ui-close" ariaLabel="LABEL.CLEAR"
+        (click)="$event.stopPropagation()" (pressed)="clear()" />
     }
   </div>
-  <span class="format" [id]="inputId + '-format'">{{ 'LABEL.TIME_FORMAT' | vtTranslate }}</span>
+  <span class="format" [id]="inputId + '-format'">
+    <vt-text variant="caption-s" color="muted" [content]="'LABEL.TIME_FORMAT' | vtTranslate" />
+  </span>
   <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
 </div>
 

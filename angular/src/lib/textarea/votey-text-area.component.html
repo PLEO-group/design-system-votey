@@ -19,13 +19,11 @@
 
   <div class="field">
     <textarea
-      #textareaElement
       class="control"
       [id]="resolvedId()"
       [name]="name()"
       [placeholder]="placeholder() | vtTranslate"
       [formControl]="formControl"
-      [disabled]="isDisabled"
       [required]="isRequired"
       [spellcheck]="spellcheck()"
       [attr.minlength]="minLength()"

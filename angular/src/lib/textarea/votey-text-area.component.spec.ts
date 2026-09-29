@@ -92,11 +92,60 @@ describe("VoteyTextAreaComponent", () => {
     const textarea: HTMLTextAreaElement =
       fixture.nativeElement.querySelector("textarea");
 
+    expect(control.disabled).toBe(true);
     expect(textarea.disabled).toBe(true);
     expect(fixture.nativeElement.querySelector("label .text.primary")).not.toBeNull();
     expect(textarea.getAttribute("aria-invalid")).toBeNull();
     expect(textarea.getAttribute("aria-errormessage")).toBeNull();
     expect(fixture.nativeElement.querySelector(".text-area-wrapper.error")).toBeNull();
+  });
+
+  it("reenables only a control disabled by the component input", (): void => {
+    fixture.detectChanges();
+
+    const textarea: HTMLTextAreaElement =
+      fixture.nativeElement.querySelector("textarea");
+
+    fixture.componentRef.setInput("disabled", true);
+    fixture.detectChanges();
+
+    expect(control.disabled).toBe(true);
+    expect(textarea.disabled).toBe(true);
+
+    fixture.componentRef.setInput("disabled", false);
+    fixture.detectChanges();
+
+    expect(control.enabled).toBe(true);
+    expect(textarea.disabled).toBe(false);
+
+    control.disable();
+    fixture.detectChanges();
+
+    expect(textarea.disabled).toBe(true);
+
+    fixture.componentRef.setInput("disabled", true);
+    fixture.detectChanges();
+    fixture.componentRef.setInput("disabled", false);
+    fixture.detectChanges();
+
+    expect(control.disabled).toBe(true);
+    expect(textarea.disabled).toBe(true);
+  });
+
+  it("moves the disabled input state to a replacement control", (): void => {
+    fixture.componentRef.setInput("disabled", true);
+    fixture.detectChanges();
+
+    const replacement = new FormControl<string | null>("");
+    fixture.componentRef.setInput("control", replacement);
+    fixture.detectChanges();
+
+    const textarea: HTMLTextAreaElement =
+      fixture.nativeElement.querySelector("textarea");
+
+    expect(control.enabled).toBe(true);
+    expect(replacement.disabled).toBe(true);
+    expect(textarea.disabled).toBe(true);
   });
 
   it("uses an accessible name when the visible label is empty", (): void => {

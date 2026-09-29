@@ -3,16 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  type ElementRef,
   input,
   type InputSignal,
   type InputSignalWithTransform,
+  type OnChanges,
+  type OnDestroy,
   output,
   type OutputEmitterRef,
   type Signal,
-  viewChild,
+  type SimpleChanges,
 } from "@angular/core";
-import { ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
@@ -32,10 +33,12 @@ let nextTextAreaId = 0;
     VoteyTranslatePipe,
   ],
 })
-export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<string> {
+export class VoteyTextAreaComponent
+  extends VoteyFormControlApplyDirective<string>
+  implements OnChanges, OnDestroy
+{
   private readonly fallbackId: string = `vt-text-area-${++nextTextAreaId}`;
-  private readonly textareaElement: Signal<ElementRef<HTMLTextAreaElement>> =
-    viewChild.required<ElementRef<HTMLTextAreaElement>>("textareaElement");
+  private disabledByInput: FormControl<string | null> | null = null;
 
   public readonly label: InputSignal<string> = input<string>("");
   public readonly placeholder: InputSignal<string> = input<string>("");
@@ -102,11 +105,22 @@ export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<strin
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
   }
 
-  public ngAfterViewChecked(): void {
-    const textarea: HTMLTextAreaElement = this.textareaElement().nativeElement;
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (!changes["disabled"] && !changes["control"]) return;
 
-    // Angular Forms can overwrite the native disabled state during control setup.
-    if (textarea.disabled !== this.isDisabled) textarea.disabled = this.isDisabled;
+    if (this.disabledByInput && (changes["control"] || !this.disabled())) {
+      this.disabledByInput.enable();
+      this.disabledByInput = null;
+    }
+
+    if (this.disabled() && this.formControl.enabled) {
+      this.formControl.disable();
+      this.disabledByInput = this.formControl;
+    }
+  }
+
+  public ngOnDestroy(): void {
+    this.disabledByInput?.enable();
   }
 
   protected handleInput(event: Event): void {

@@ -18,6 +18,10 @@
         place-items: center;
         min-width: 0;
         background: var(--color-bg-page);
+
+        &.dark-logo {
+            background: var(--color-navy-blue-900);
+        }
     }
 
     &.icon {
@@ -70,6 +74,17 @@
                 max-width: 280px;
                 height: 100%;
                 max-height: 220px;
+            }
+        }
+
+        &.logotype {
+            .preview {
+                svg {
+                    width: auto;
+                    max-width: 280px;
+                    height: auto;
+                    max-height: 62px;
+                }
             }
         }
 

@@ -66,6 +66,18 @@ export type {
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
 export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyChipComponent } from "./lib/chip/votey-chip.component";
+export { VoteyPaginationComponent } from "./lib/pagination/votey-pagination.component";
+export type { VoteyPaginationEvent } from "./lib/pagination/votey-pagination.component";
+export {
+  defaultFetchParams,
+  emptyPaginatedList,
+  emptyPaginatedListLoading,
+  noPaginationParams,
+} from "./lib/pagination/pagination.model";
+export type {
+  PaginatedList,
+  PaginationEvent,
+} from "./lib/pagination/pagination.model";
 export {
   VoteySelectComponent,
   VoteySelectVariants,

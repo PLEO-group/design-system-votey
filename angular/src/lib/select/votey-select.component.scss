@@ -125,8 +125,7 @@ vt-select {
         position: absolute;
         top: 50%;
         right: calc(
-          var(--space-field-padding-x) + var(--spacing-20) +
-            var(--space-gap-xs)
+          var(--space-field-padding-x) + var(--spacing-20) + var(--space-gap-xs)
         );
         display: inline-flex;
         align-items: center;
@@ -175,8 +174,8 @@ vt-select {
 
         .control .mat-mdc-select-trigger {
           padding: 0
-            calc(var(--spacing-12) + var(--spacing-20) + var(--spacing-8))
-            0 var(--spacing-12);
+            calc(var(--spacing-12) + var(--spacing-20) + var(--spacing-8)) 0
+            var(--spacing-12);
         }
 
         .arrow {

@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.12.0
+version: 1.13.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -84,6 +84,13 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
   zamykanie poza komponentem, klawiaturę i widoczność akcji w Storybooku.
 
 ## Codzienny workflow
+
+Ważne dla CRM: `grid.admin` **nie używa już gridu BoxEs ani proporcjonalnych
+wartości `vw` per device**. Kolumny nadal wybiera `VoteyDeviceService`, natomiast
+margines i gutter interpolują między sześcioma szerokościami makiet; sidebar jest
+osobnym stanem shellu i ma próg 1024 px. Pełny kontrakt, wartości i sposób
+pozycjonowania overlayu są w [responsiveness.md](references/responsiveness.md).
+Przed zmianą gridu przeczytaj tę sekcję, nie kopiuj generatora z BoxEs.
 
 1. Dla Figmy odbierz zweryfikowany handoff ze skilla `figma`: target, struktura,
    stany, layout-driving scope, breakpointy oraz wartości potwierdzone i brakujące.

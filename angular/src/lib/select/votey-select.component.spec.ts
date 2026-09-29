@@ -49,7 +49,9 @@ describe("VoteySelectComponent", () => {
 
   it("should preserve the complete option when bindValue is not configured", (): void => {
     const option: VtOption<string> = { label: "FIRST", value: "first" };
-    const control: FormControl<VtOption<string> | null> = new FormControl(option);
+    const control: FormControl<VtOption<string> | null> = new FormControl(
+      option
+    );
 
     fixture.componentRef.setInput("control", control);
     fixture.componentRef.setInput("options", [option]);
@@ -139,9 +141,7 @@ describe("VoteySelectComponent", () => {
     fixture.detectChanges();
     component["isOpen"].set(true);
     component["addBackdropListener"]();
-    backdrop.dispatchEvent(
-      new PointerEvent("pointerdown", { bubbles: true })
-    );
+    backdrop.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
     backdrop.remove();
 
     expect(closeSpy).toHaveBeenCalled();

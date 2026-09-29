@@ -476,116 +476,146 @@ ${spacingDefaults}
 }
 
 const GRID_DEVICES = ['mobile', 'tablet', 'desktop'];
-const GRID_TOKEN_PROPERTIES = [
+const GRID_BREAKPOINTS = [
+    'mobile-small',
+    'mobile',
+    'tablet-small',
+    'tablet',
+    'laptop',
+    'desktop',
+];
+const GRID_LAYOUT_PROPERTIES = [
     'margin',
-    'margin-extra',
     'gutter',
-    'columns',
+    'sidebar-collapsed',
+    'sidebar-expanded',
 ];
 
-function serializeGridMap(gridTokens) {
-    const lines = ['$grid-tokens: ('];
+function serializeGridColumns(columns) {
+    const lines = ['$grid-columns: ('];
 
     for (const device of GRID_DEVICES) {
-        const config = gridTokens[device];
+        lines.push(`  "${device}": ${columns[device]},`);
+    }
 
-        lines.push(`  "${device}": (`);
-        for (const property of GRID_TOKEN_PROPERTIES) {
-            lines.push(`    "${property}": ${config[property]},`);
+    lines.push(');');
+    return lines.join('\n');
+}
+
+function serializeGridValues(values) {
+    const lines = ['$grid-values: ('];
+
+    for (const breakpoint of GRID_BREAKPOINTS) {
+        lines.push(`  "${breakpoint}": (`);
+        for (const property of GRID_LAYOUT_PROPERTIES) {
+            lines.push(`    "${property}": ${values[breakpoint][property]},`);
         }
         lines.push('  ),');
     }
 
     lines.push(');');
-
     return lines.join('\n');
 }
 
 function serializeBreakpointMap(breakpoints) {
     const lines = ['$breakpoints: ('];
 
-    for (const device of GRID_DEVICES) {
-        lines.push(`  "${device}": ${breakpoints[device]},`);
+    for (const breakpoint of GRID_BREAKPOINTS) {
+        lines.push(`  "${breakpoint}": ${breakpoints[breakpoint]},`);
     }
 
     lines.push(');');
-
     return lines.join('\n');
+}
+
+function serializeBreakpointOrder() {
+    return `$breakpoint-order: (${GRID_BREAKPOINTS.map(
+        (breakpoint) => `"${breakpoint}"`,
+    ).join(', ')});`;
 }
 
 function loadGridTokens() {
     const source = JSON.parse(
         fs.readFileSync('tokens/grid/angular.json', 'utf8'),
     );
-    const gridTokens = source.grid?.admin;
+    const gridConfig = source.grid?.admin;
     const breakpoints = source.breakpoint;
 
     if (
-        !gridTokens ||
-        typeof gridTokens !== 'object' ||
+        !gridConfig?.columns ||
+        !gridConfig?.breakpoints ||
         !breakpoints ||
         typeof breakpoints !== 'object'
     ) {
         throw new Error(
-            'Angular grid tokens must define grid.admin and breakpoint objects.',
+            'Angular grid tokens must define grid.admin.columns, grid.admin.breakpoints and breakpoint objects.',
         );
     }
 
-    const normalizedGridTokens = {};
+    const normalizedColumns = {};
+    const normalizedGridValues = {};
     const normalizedBreakpoints = {};
 
     for (const device of GRID_DEVICES) {
-        const deviceTokens = gridTokens[device];
-        const breakpoint = breakpoints[device]?.value;
+        const count = gridConfig.columns[device]?.value;
 
-        if (
-            !deviceTokens ||
-            typeof deviceTokens !== 'object' ||
-            !Number.isFinite(breakpoint) ||
-            breakpoint <= 0
-        ) {
-            throw new Error(
-                `Angular grid or breakpoint tokens are missing ${device}.`,
-            );
+        if (!Number.isInteger(count) || count <= 0) {
+            throw new Error(`Angular grid columns for ${device} must be a positive integer.`);
         }
 
-        normalizedGridTokens[device] = {};
-        normalizedBreakpoints[device] = breakpoint;
+        normalizedColumns[device] = count;
+    }
 
-        for (const property of GRID_TOKEN_PROPERTIES) {
-            const value = deviceTokens[property]?.value;
+    let previousWidth = 0;
+    for (const breakpoint of GRID_BREAKPOINTS) {
+        const width = breakpoints[breakpoint]?.value;
+        const values = gridConfig.breakpoints[breakpoint];
 
-            if (!Number.isFinite(value) || value <= 0) {
-                throw new Error(
-                    `Angular grid token ${device}.${property} must be a positive number.`,
-                );
+        if (!Number.isFinite(width) || width <= previousWidth || !values) {
+            throw new Error(`Angular grid breakpoint ${breakpoint} is missing or out of order.`);
+        }
+
+        normalizedBreakpoints[breakpoint] = width;
+        normalizedGridValues[breakpoint] = {};
+        previousWidth = width;
+
+        for (const property of GRID_LAYOUT_PROPERTIES) {
+            const value = values[property]?.value;
+            const minimum = property.startsWith('sidebar-') ? 0 : Number.EPSILON;
+
+            if (!Number.isFinite(value) || value < minimum) {
+                throw new Error(`Angular grid token ${breakpoint}.${property} is missing or invalid.`);
             }
 
-            normalizedGridTokens[device][property] = value;
+            normalizedGridValues[breakpoint][property] = value;
         }
 
-        if (!Number.isInteger(normalizedGridTokens[device].columns)) {
-            throw new Error(
-                `Angular grid token ${device}.columns must be an integer.`,
-            );
+        if (normalizedGridValues[breakpoint]['sidebar-collapsed'] >
+            normalizedGridValues[breakpoint]['sidebar-expanded']) {
+            throw new Error(`Angular grid sidebar widths are reversed at ${breakpoint}.`);
         }
     }
 
     return {
         breakpoints: normalizedBreakpoints,
-        gridTokens: normalizedGridTokens,
+        columns: normalizedColumns,
+        gridValues: normalizedGridValues,
     };
 }
 
 function buildGridAngularCss() {
-    const {breakpoints, gridTokens} = loadGridTokens();
+    const {breakpoints, columns, gridValues} = loadGridTokens();
     const scss = `@use "styles/angular/grid-token-engine" as engine;
 
-${serializeGridMap(gridTokens)}
+${serializeGridColumns(columns)}
+
+${serializeGridValues(gridValues)}
 
 ${serializeBreakpointMap(breakpoints)}
 
-@include engine.grid-token-bundle($grid-tokens, $breakpoints);
+${serializeBreakpointOrder()}
+
+@include engine.grid-token-bundle($grid-columns, $grid-values, $breakpoints, $breakpoint-order);
 `;
     const result = compileString(scss, {
         loadPaths: [process.cwd()],

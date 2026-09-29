@@ -9,15 +9,15 @@
     [color]="disabled() ? 'muted' : 'primary'"
   />
   @if (showRemove()) {
-    <vt-button
-      class="remove"
-      variant="ghost"
-      size="small"
-      ico="ui-close"
-      [disabled]="disabled()"
-      [disabledNote]="removeTooltip()"
-      [tooltipText]="removeTooltip()"
-      (pressed)="removed.emit()"
-    />
+  <vt-button
+    class="remove"
+    variant="ghost"
+    size="small"
+    ico="ui-close"
+    [disabled]="disabled()"
+    [disabledNote]="removeTooltip()"
+    [tooltipText]="removeTooltip()"
+    (pressed)="removed.emit()"
+  />
   }
 </div>

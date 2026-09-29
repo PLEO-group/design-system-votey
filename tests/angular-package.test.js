@@ -182,6 +182,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.options[0], "options");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.tooltip[0], "tooltip");
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.disabledNote[0],
@@ -190,7 +192,6 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupValue, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.inputId, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupColor, undefined);
-  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabel, undefined);
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabelledby,
@@ -219,7 +220,7 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyIconComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ico[0], "ico");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.hasIcon, undefined);
-  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded[0], "ariaExpanded");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaHasPopup[0], "ariaHasPopup");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaControls[0], "ariaControls");
@@ -353,14 +354,22 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     ),
   );
   assert.deepEqual(VOTEY_DEFAULT_GRID_CONFIG, {
-    desktop: gridTokens.grid.admin.desktop.columns.value,
-    tablet: gridTokens.grid.admin.tablet.columns.value,
-    mobile: gridTokens.grid.admin.mobile.columns.value,
+    desktop: gridTokens.grid.admin.columns.desktop.value,
+    tablet: gridTokens.grid.admin.columns.tablet.value,
+    mobile: gridTokens.grid.admin.columns.mobile.value,
   });
-  assert.equal(gridTokens.grid.mobile, undefined);
-  assert.equal(gridTokens.grid.admin.mobile["reference-width"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints.mobile["margin-extra"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"].margin.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet.margin.value, 42);
+  assert.equal(gridTokens.grid.admin.breakpoints.laptop.gutter.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.desktop.gutter.value, 40);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"]["sidebar-expanded"].value, 0);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet["sidebar-expanded"].value, 140);
+  assert.equal(gridTokens.breakpoint["mobile-small"].value, 360);
   assert.equal(gridTokens.breakpoint.mobile.value, 375);
+  assert.equal(gridTokens.breakpoint["tablet-small"].value, 768);
   assert.equal(gridTokens.breakpoint.tablet.value, 1024);
+  assert.equal(gridTokens.breakpoint.laptop.value, 1280);
   assert.equal(gridTokens.breakpoint.desktop.value, 1920);
   assert.match(
     require.resolve(
@@ -823,6 +832,36 @@ test("radio button emits MatRadioChange", async () => {
   assert.deepEqual(changes, [event]);
 
   subscription.unsubscribe();
+});
+
+test("radio button exposes the optional label and native group-name contracts", async () => {
+  const { VoteyRadioButtonComponent } = await loadAngularRuntime();
+  const template = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.html",
+    ),
+    "utf8",
+  );
+  const styles = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.scss",
+    ),
+    "utf8",
+  );
+
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
+  assert.match(template, /\[name\]="groupName\(\)"/);
+  assert.match(template, /@if \(option\.label !== undefined\)/);
+  assert.match(
+    template,
+    /\[aria-label\]="\(option\.ariaLabel \?\? option\.label\) \| vtTranslate"/,
+  );
+  assert.match(styles, /gap: var\(--space-gap-xs\)/);
+  assert.match(styles, /overflow-wrap: anywhere/);
+  assert.match(styles, /white-space: normal/);
 });
 
 test("text resolves its default token-backed presentation", async () => {

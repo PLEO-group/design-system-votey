@@ -35,7 +35,6 @@ export class VoteyFormControlApplyDirective<T> {
     } else {
       this.formControl.enable();
     }
-
   }
 
   @Input() set block(blocked: boolean) {
@@ -49,5 +48,4 @@ export class VoteyFormControlApplyDirective<T> {
   public get touched(): boolean {
     return this.formControl.touched;
   }
-
 }

@@ -16,7 +16,4 @@
   <ng-content>{{ label() | vtTranslate }}</ng-content>
 </mat-checkbox>
 
-<vt-form-error
-  [errors]="errorKeys"
-  [ignoredErrors]="ignoredErrors()"
-/>
+<vt-form-error [errors]="errorKeys" [ignoredErrors]="ignoredErrors()" />

@@ -22,9 +22,7 @@
     border: 1px solid var(--color-border-field);
     border-radius: var(--radius-m);
     background-color: var(--color-bg-surface);
-    transition:
-      background-color 180ms ease,
-      border-color 180ms ease,
+    transition: background-color 180ms ease, border-color 180ms ease,
       box-shadow 180ms ease;
 
     &:hover {

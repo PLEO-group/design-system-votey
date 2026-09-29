@@ -58,6 +58,7 @@ export class VoteyButtonComponent {
   public readonly size: InputSignal<VoteyButtonSize> =
     input<VoteyButtonSize>("large");
   public readonly text: InputSignal<string> = input<string>("");
+  public readonly ariaLabel: InputSignal<string> = input<string>("");
   public readonly ico: InputSignal<VoteyIcon | ""> = input<VoteyIcon | "">("");
   public readonly badge: InputSignal<string | number | null> = input<
     string | number | null
@@ -72,6 +73,9 @@ export class VoteyButtonComponent {
   public readonly ariaControls: InputSignal<string | null> = input<
     string | null
   >(null);
+  public readonly iconColor: InputSignal<"accent" | "white" | ""> = input<
+    "accent" | "white" | ""
+  >("");
 
   public readonly pressed: OutputEmitterRef<void> = output<void>();
 

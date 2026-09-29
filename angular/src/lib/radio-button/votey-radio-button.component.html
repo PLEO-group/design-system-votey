@@ -25,7 +25,7 @@
       [labelPosition]="option.labelPosition ?? groupLabelPosition()"
       [id]="option.id ?? ''"
       [value]="option.value"
-      [aria-label]="option.ariaLabel ?? option.label | vtTranslate"
+      [aria-label]="(option.ariaLabel ?? option.label) | vtTranslate"
       [attr.data-cy]="option.dataCy ?? null"
     >
       @if (option.label !== undefined) {

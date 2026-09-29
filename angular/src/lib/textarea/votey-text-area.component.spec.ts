@@ -38,9 +38,9 @@ describe("VoteyTextAreaComponent", () => {
 
     const textarea: HTMLTextAreaElement =
       fixture.nativeElement.querySelector("textarea");
-    const label: HTMLLabelElement = fixture.nativeElement.querySelector("label");
-    const helper: HTMLElement =
-      fixture.nativeElement.querySelector(".helper");
+    const label: HTMLLabelElement =
+      fixture.nativeElement.querySelector("label");
+    const helper: HTMLElement = fixture.nativeElement.querySelector(".helper");
 
     expect(textarea.id).toMatch(/^vt-text-area-\d+$/);
     expect(label.htmlFor).toBe(textarea.id);
@@ -52,8 +52,7 @@ describe("VoteyTextAreaComponent", () => {
     fixture.componentRef.setInput("maxLength", 2000);
     fixture.detectChanges();
 
-    const helper: HTMLElement =
-      fixture.nativeElement.querySelector(".helper");
+    const helper: HTMLElement = fixture.nativeElement.querySelector(".helper");
     const textarea: HTMLTextAreaElement =
       fixture.nativeElement.querySelector("textarea");
 
@@ -94,10 +93,14 @@ describe("VoteyTextAreaComponent", () => {
 
     expect(control.enabled).toBe(true);
     expect(textarea.disabled).toBe(true);
-    expect(fixture.nativeElement.querySelector("label .text.primary")).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector("label .text.primary")
+    ).not.toBeNull();
     expect(textarea.getAttribute("aria-invalid")).toBeNull();
     expect(textarea.getAttribute("aria-errormessage")).toBeNull();
-    expect(fixture.nativeElement.querySelector(".text-area-wrapper.error")).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(".text-area-wrapper.error")
+    ).toBeNull();
   });
 
   it("toggles the native disabled state without changing the control", (): void => {

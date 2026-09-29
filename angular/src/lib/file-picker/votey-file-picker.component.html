@@ -7,9 +7,7 @@
 >
   @if (label()) {
   <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
-  }
-
-  @if (isDropzone()) {
+  } @if (isDropzone()) {
   <div
     class="dropzone-field"
     role="group"
@@ -63,25 +61,21 @@
             }
           </div>
 
-          @if (
-            file.state === fileStateNames.uploading ||
-            file.state === fileStateNames.error
-          ) {
+          @if ( file.state === fileStateNames.uploading || file.state ===
+          fileStateNames.error ) {
           <progress
             class="file-progress"
             [class.error]="file.state === fileStateNames.error"
             [value]="file.progress ?? 0"
             max="100"
           ></progress>
-          }
-
-          @if (file.state === fileStateNames.done || !file.state) {
+          } @if (file.state === fileStateNames.done || !file.state) {
           <div class="file-status done">
             <span class="status-icon"><vt-icon ico="sp-check" /></span>
             <vt-text
               variant="caption"
               color="accent"
-              [content]="(file.statusText || doneText()) | vtTranslate"
+              [content]="file.statusText || doneText() | vtTranslate"
             />
           </div>
           } @else if (file.state === fileStateNames.pending) {
@@ -89,7 +83,7 @@
             <vt-text
               variant="caption"
               color="muted"
-              [content]="(file.statusText || pendingText()) | vtTranslate"
+              [content]="file.statusText || pendingText() | vtTranslate"
             />
           </div>
           } @else if (file.state === fileStateNames.uploading) {
@@ -97,7 +91,7 @@
             <vt-text
               variant="caption"
               color="muted"
-              [content]="(file.statusText || loadingText()) | vtTranslate"
+              [content]="file.statusText || loadingText() | vtTranslate"
             />
             @if (file.speed) {
             <vt-text
@@ -112,7 +106,7 @@
             <vt-text
               variant="caption"
               color="error"
-              [content]="(file.statusText || uploadErrorText()) | vtTranslate"
+              [content]="file.statusText || uploadErrorText() | vtTranslate"
             />
             <vt-button
               variant="link"
@@ -161,7 +155,7 @@
       <vt-text
         variant="caption"
         color="muted"
-        [content]="dropzoneHint() | vtTranslate: dropzoneHintParams()"
+        [content]="dropzoneHint() | vtTranslate : dropzoneHintParams()"
       />
       <vt-button
         variant="secondary"
@@ -174,11 +168,7 @@
     }
   </div>
   } @else {
-  <div
-    class="row"
-    [class.loading]="isLoading()"
-    [attr.aria-busy]="isLoading()"
-  >
+  <div class="row" [class.loading]="isLoading()" [attr.aria-busy]="isLoading()">
     <div
       class="file-box"
       [class.dragging]="isDragging()"
@@ -192,13 +182,20 @@
       @if (isLoading()) {
       <div class="loading-state" role="status">
         <span class="loading-spinner" aria-hidden="true"></span>
-        <vt-text variant="caption" color="secondary" [content]="loadingText() | vtTranslate" />
+        <vt-text
+          variant="caption"
+          color="secondary"
+          [content]="loadingText() | vtTranslate"
+        />
         @if (progress() !== null) {
-        <vt-text variant="caption" color="secondary" [content]="progress() + '%'" />
+        <vt-text
+          variant="caption"
+          color="secondary"
+          [content]="progress() + '%'"
+        />
         }
       </div>
-      } @else {
-      @if (hasFile()) {
+      } @else { @if (hasFile()) {
       <span class="file-icon" aria-hidden="true">
         <vt-icon [ico]="resolvedFileIcon()" />
       </span>
@@ -208,7 +205,9 @@
           variant="field"
           [color]="hasFile() ? 'primary' : 'muted'"
           [content]="
-            resolvedFilename() ? resolvedFilename() : (emptyText() | vtTranslate)
+            resolvedFilename()
+              ? resolvedFilename()
+              : (emptyText() | vtTranslate)
           "
           [maxLines]="1"
         />
@@ -224,9 +223,7 @@
       [disabled]="effectiveDisabled()"
       (pressed)="open()"
     />
-    }
-
-    @if (clearable() && hasFile() && !isLoading()) {
+    } @if (clearable() && hasFile() && !isLoading()) {
     <vt-button
       class="compact-remove"
       variant="secondary"
@@ -255,8 +252,5 @@
     (cancel)="handleCancel()"
   />
 
-  <vt-form-error
-    [errors]="errorKeys"
-    [ignoredErrors]="ignoredErrors()"
-  />
+  <vt-form-error [errors]="errorKeys" [ignoredErrors]="ignoredErrors()" />
 </div>

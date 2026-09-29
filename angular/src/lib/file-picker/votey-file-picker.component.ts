@@ -69,16 +69,10 @@ export type VoteyFilePickerValidationErrorKeys = Readonly<
 >;
 
 const filePickerVariants = ["compact", "dropzone"] as const;
-const filePickerFileStates = [
-  "done",
-  "pending",
-  "uploading",
-  "error",
-] as const;
+const filePickerFileStates = ["done", "pending", "uploading", "error"] as const;
 
 export type VoteyFilePickerVariant = (typeof filePickerVariants)[number];
-export type VoteyFilePickerFileState =
-  (typeof filePickerFileStates)[number];
+export type VoteyFilePickerFileState = (typeof filePickerFileStates)[number];
 
 export interface VoteyFilePickerFile {
   readonly id: string;
@@ -184,8 +178,10 @@ export class VoteyFilePickerComponent
   >(false, { transform: booleanAttribute });
   public readonly dropEnabled: InputSignalWithTransform<boolean, unknown> =
     input<boolean, unknown>(true, { transform: booleanAttribute });
-  public readonly clearable: InputSignalWithTransform<boolean, unknown> =
-    input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly clearable: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(true, { transform: booleanAttribute });
   public readonly clearText: InputSignal<string> =
     input<string>("BUTTON.DELETE");
   public readonly loadingText: InputSignal<string> = input<string>("LOADING");
@@ -210,12 +206,10 @@ export class VoteyFilePickerComponent
   public readonly uploadErrorText: InputSignal<string> = input<string>(
     "ERRORS.FILE_UPLOAD_FAILED"
   );
-  public readonly retryText: InputSignal<string> = input<string>(
-    "BUTTON.TRY_AGAIN"
-  );
-  public readonly cancelText: InputSignal<string> = input<string>(
-    "BUTTON.CANCEL"
-  );
+  public readonly retryText: InputSignal<string> =
+    input<string>("BUTTON.TRY_AGAIN");
+  public readonly cancelText: InputSignal<string> =
+    input<string>("BUTTON.CANCEL");
   public readonly files: InputSignal<readonly VoteyFilePickerFile[] | null> =
     input<readonly VoteyFilePickerFile[] | null>(null);
   public readonly allowedExtensions: InputSignal<readonly string[]> = input<
@@ -309,12 +303,13 @@ export class VoteyFilePickerComponent
     () => this.isDropzone()
   );
   protected readonly displayedFiles: Signal<readonly VoteyFilePickerFile[]> =
-    computed<readonly VoteyFilePickerFile[]>(() =>
-      this.files() ??
-      this.selectedFiles().map(
-        (file: File, index: number): VoteyFilePickerFile =>
-          this.toFilePickerFile(file, index)
-      )
+    computed<readonly VoteyFilePickerFile[]>(
+      () =>
+        this.files() ??
+        this.selectedFiles().map(
+          (file: File, index: number): VoteyFilePickerFile =>
+            this.toFilePickerFile(file, index)
+        )
     );
   protected readonly effectiveDisabled: Signal<boolean> = computed<boolean>(
     () =>
@@ -342,11 +337,12 @@ export class VoteyFilePickerComponent
         if (!normalizedValue) continue;
 
         const mimeParts: string[] = normalizedValue.split("/");
-        const format: string = mimeParts[1] === "*"
-          ? normalizedValue.toUpperCase()
-          : (mimeParts[mimeParts.length - 1] ?? normalizedValue)
-              .replace(/^\./, "")
-              .toUpperCase();
+        const format: string =
+          mimeParts[1] === "*"
+            ? normalizedValue.toUpperCase()
+            : (mimeParts[mimeParts.length - 1] ?? normalizedValue)
+                .replace(/^\./, "")
+                .toUpperCase();
         if (format) formats.add(format);
       }
 
@@ -574,7 +570,9 @@ export class VoteyFilePickerComponent
   ): VoteyFilePickerValidationError[] {
     const errors = new Set<VoteyFilePickerValidationError>();
     const allowedExtensions = this.allowedExtensions()
-      .map((extension: string) => extension.trim().toLowerCase().replace(/^\./, ""))
+      .map((extension: string) =>
+        extension.trim().toLowerCase().replace(/^\./, "")
+      )
       .filter(Boolean);
     const allowedMimeTypes = this.allowedMimeTypes()
       .map((mimeType: string) => mimeType.trim().toLowerCase())
@@ -689,10 +687,10 @@ export class VoteyFilePickerComponent
     );
   }
 
-  private getValidationErrorKey(
-    error: VoteyFilePickerValidationError
-  ): string {
-    return this.validationErrorKeys()[error] ?? defaultValidationErrorKeys[error];
+  private getValidationErrorKey(error: VoteyFilePickerValidationError): string {
+    return (
+      this.validationErrorKeys()[error] ?? defaultValidationErrorKeys[error]
+    );
   }
 
   private commitFiles(files: readonly File[]): void {
@@ -708,10 +706,7 @@ export class VoteyFilePickerComponent
     this.filesChanged.emit(files);
   }
 
-  private toFilePickerFile(
-    file: File,
-    index: number
-  ): VoteyFilePickerFile {
+  private toFilePickerFile(file: File, index: number): VoteyFilePickerFile {
     return {
       id: this.getFilePickerFileId(file, index),
       filename: file.name,

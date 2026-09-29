@@ -32,10 +32,7 @@ import { VoteyIconComponent } from "../icon/votey-icon.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
-export const VoteySelectVariants = [
-  "boxed",
-  "compact",
-] as const;
+export const VoteySelectVariants = ["boxed", "compact"] as const;
 
 export type VoteySelectVariant = (typeof VoteySelectVariants)[number];
 
@@ -90,9 +87,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   private backdropListenerTimeout: ReturnType<typeof setTimeout> | null = null;
   private overlayBackdrop: HTMLElement | null = null;
 
-  public readonly options: InputSignal<readonly unknown[]> = input.required<
-    readonly unknown[]
-  >();
+  public readonly options: InputSignal<readonly unknown[]> =
+    input.required<readonly unknown[]>();
   public readonly variant: InputSignal<VoteySelectVariant> =
     input<VoteySelectVariant>("boxed");
   public readonly label: InputSignal<string> = input<string>("");
@@ -110,10 +106,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     boolean,
     unknown
   >(false, { transform: booleanAttribute });
-  public readonly flagSelect: InputSignalWithTransform<boolean, unknown> = input<
-    boolean,
-    unknown
-  >(false, { transform: booleanAttribute });
+  public readonly flagSelect: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly clearable: InputSignalWithTransform<boolean, unknown> = input<
     boolean,
     unknown
@@ -124,10 +118,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     boolean,
     unknown
   > = input<boolean, unknown>(true, { transform: booleanAttribute });
-  public readonly searchable: InputSignalWithTransform<boolean, unknown> = input<
-    boolean,
-    unknown
-  >(false, { transform: booleanAttribute });
+  public readonly searchable: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly searchPlaceholder: InputSignal<string> =
     input<string>("COMMON.SEARCH");
   public readonly customSearchFn: InputSignal<VoteySelectSearchFn | null> =
@@ -165,7 +157,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     input<string>("BUTTON.REMOVE");
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
 
-  public readonly selectionChange: OutputEmitterRef<unknown> = output<unknown>();
+  public readonly selectionChange: OutputEmitterRef<unknown> =
+    output<unknown>();
   public readonly change: OutputEmitterRef<unknown> = output<unknown>();
 
   protected readonly isOpen = signal<boolean>(false);
@@ -173,8 +166,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   protected readonly matSelect = viewChild(MatSelect);
   protected readonly selectionActionControl: FormControl<unknown | null> =
     new FormControl<unknown | null>([]);
-  protected readonly optionViews: Signal<readonly SelectOptionView[]> = computed(
-    (): readonly SelectOptionView[] =>
+  protected readonly optionViews: Signal<readonly SelectOptionView[]> =
+    computed((): readonly SelectOptionView[] =>
       this.options().map(
         (option: unknown): SelectOptionView => ({
           avatarUrl: this.getOptionText(option, this.optionAvatarField()),
@@ -189,7 +182,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
           value: this.getOptionValue(option),
         })
       )
-  );
+    );
   protected readonly filteredOptionViews: Signal<readonly SelectOptionView[]> =
     computed((): readonly SelectOptionView[] => {
       const searchTerm: string = this.searchTerm().trim();
@@ -200,8 +193,8 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
         this.matchesSearch(searchTerm, option)
       );
     });
-  protected readonly resolvedTooltip: Signal<string> = computed(
-    (): string => this.toTrimmedString(
+  protected readonly resolvedTooltip: Signal<string> = computed((): string =>
+    this.toTrimmedString(
       this.disabled() || this.formControl.disabled
         ? this.disabledNote()
         : this.tooltip()
@@ -237,7 +230,9 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   }
 
   protected get selectedOptions(): readonly SelectOptionView[] {
-    const selectedValues: readonly unknown[] = this.toArray(this.formControl.value);
+    const selectedValues: readonly unknown[] = this.toArray(
+      this.formControl.value
+    );
 
     return this.optionViews().filter((option: SelectOptionView) =>
       selectedValues.some((value: unknown) => Object.is(value, option.value))
@@ -272,7 +267,10 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   }
 
   protected get isSearchEnabled(): boolean {
-    return this.searchable() || this.isSelectionActionMode && this.withSelectionSearch();
+    return (
+      this.searchable() ||
+      (this.isSelectionActionMode && this.withSelectionSearch())
+    );
   }
 
   protected handleSelectionChange(event: MatSelectChange): void {
@@ -501,22 +499,23 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   private resolveValueWithNonRemovable(value: unknown): unknown {
     if (!this.multiple() || !Array.isArray(value)) return value;
 
-    const requiredValues: readonly (string | number)[] = this.nonRemovableValues();
+    const requiredValues: readonly (string | number)[] =
+      this.nonRemovableValues();
     const nextValues: unknown[] = [...value];
 
     requiredValues.forEach((requiredValue: string | number): void => {
       const normalizedRequiredValue: string | number | null =
         this.normalizeOptionValue(requiredValue);
-      const matchingOption: SelectOptionView | undefined = this.optionViews().find(
-        (option: SelectOptionView): boolean =>
-          this.normalizeOptionValue(option.value) === normalizedRequiredValue
-      );
+      const matchingOption: SelectOptionView | undefined =
+        this.optionViews().find(
+          (option: SelectOptionView): boolean =>
+            this.normalizeOptionValue(option.value) === normalizedRequiredValue
+        );
 
       if (
         matchingOption &&
-        !nextValues.some(
-          (currentValue: unknown): boolean =>
-            Object.is(currentValue, matchingOption.value)
+        !nextValues.some((currentValue: unknown): boolean =>
+          Object.is(currentValue, matchingOption.value)
         )
       ) {
         nextValues.push(matchingOption.value);

@@ -1,6 +1,6 @@
 @let translatedLabel = label() | vtTranslate; @let selectDisabled = disabled()
-|| formControl.disabled;
-@let translatedTooltip = resolvedTooltip() | vtTranslate;
+|| formControl.disabled; @let translatedTooltip = resolvedTooltip() |
+vtTranslate;
 
 <div
   class="select-wrapper"
@@ -46,9 +46,11 @@
       <mat-select-trigger>
         <span class="selected-option">
           @if (flagSelect() && option.flagClass) {
-          <span class="option-flag" [class]="flagClass() + ' ' + option.flagClass"></span>
-          }
-          @if (option.avatarUrl) {
+          <span
+            class="option-flag"
+            [class]="flagClass() + ' ' + option.flagClass"
+          ></span>
+          } @if (option.avatarUrl) {
           <img
             class="option-avatar"
             [src]="option.avatarUrl"
@@ -64,9 +66,7 @@
           </span>
         </span>
       </mat-select-trigger>
-      }
-
-      @if (multiple() && showSelectionChips()) {
+      } @if (multiple() && showSelectionChips()) {
       <mat-select-trigger>
         @if (!selectedOptions.length) {
         <span class="selected-option placeholder">
@@ -74,9 +74,7 @@
         </span>
         }
       </mat-select-trigger>
-      }
-
-      @if (isSearchEnabled) {
+      } @if (isSearchEnabled) {
       <div class="panel-search" (click)="stopPanelEvent($event)">
         <input
           aria-label="Search"
@@ -89,18 +87,15 @@
           (keydown)="stopPanelEvent($event)"
         />
       </div>
-      }
-
-      @for (option of filteredOptionViews(); track option.value) {
-      <mat-option
-        [value]="option.value"
-        [disabled]="option.disabled"
-      >
+      } @for (option of filteredOptionViews(); track option.value) {
+      <mat-option [value]="option.value" [disabled]="option.disabled">
         <div class="option-content">
           @if (flagSelect() && option.flagClass) {
-          <span class="option-flag" [class]="flagClass() + ' ' + option.flagClass"></span>
-          }
-          @if (option.avatarUrl) {
+          <span
+            class="option-flag"
+            [class]="flagClass() + ' ' + option.flagClass"
+          ></span>
+          } @if (option.avatarUrl) {
           <img
             class="option-avatar"
             [src]="option.avatarUrl"
@@ -121,9 +116,7 @@
           </span>
         </div>
       </mat-option>
-      }
-
-      @if (isSelectionActionMode) {
+      } @if (isSelectionActionMode) {
       <div
         class="selection-actions"
         (click)="stopPanelEvent($event)"
@@ -152,11 +145,7 @@
       <vt-icon ico="ui-close" />
     </button>
     }
-    <vt-icon
-      class="arrow"
-      ico="ui-chevron-down"
-      [class.open]="isOpen()"
-    />
+    <vt-icon class="arrow" ico="ui-chevron-down" [class.open]="isOpen()" />
   </div>
 
   @if (multiple() && showSelectionChips() && selectedOptions.length) {
@@ -165,7 +154,9 @@
     <vt-chip
       [label]="translateOptions() ? (option.label | vtTranslate) : option.label"
       [removeTooltip]="removeTooltip()"
-      [disabled]="selectDisabled || option.disabled || !isOptionRemovable(option)"
+      [disabled]="
+        selectDisabled || option.disabled || !isOptionRemovable(option)
+      "
       (removed)="removeSelection(option)"
     />
     }

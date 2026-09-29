@@ -140,8 +140,7 @@ button {
 
     &:not(.small) {
       height: 42px;
-      padding: var(--space-control-padding-y-l)
-        var(--space-control-padding-x-l);
+      padding: var(--space-control-padding-y-l) var(--space-control-padding-x-l);
       border: 0;
       border-radius: 0;
       font-family: inherit;

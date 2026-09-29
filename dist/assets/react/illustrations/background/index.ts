@@ -3,6 +3,7 @@ export { default as IlluBgAddParticipants } from "./IlluBgAddParticipants";
 export { default as IlluBgAgenda } from "./IlluBgAgenda";
 export { default as IlluBgChooseSubscriptionPlan } from "./IlluBgChooseSubscriptionPlan";
 export { default as IlluBgCreateFirstVote } from "./IlluBgCreateFirstVote";
+export { default as IlluBgCreateFirstVoteV2 } from "./IlluBgCreateFirstVoteV2";
 export { default as IlluBgDownloadReportEvent } from "./IlluBgDownloadReportEvent";
 export { default as IlluBgDownloadReportVoting } from "./IlluBgDownloadReportVoting";
 export { default as IlluBgEventTypeBasic } from "./IlluBgEventTypeBasic";

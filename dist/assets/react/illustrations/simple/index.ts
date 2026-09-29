@@ -1,5 +1,7 @@
 export { default as IlluSimpleAnonymityOff } from "./IlluSimpleAnonymityOff";
+export { default as IlluSimpleAnonymityOffV2 } from "./IlluSimpleAnonymityOffV2";
 export { default as IlluSimpleAnonymityOn } from "./IlluSimpleAnonymityOn";
+export { default as IlluSimpleAnonymityOnV2 } from "./IlluSimpleAnonymityOnV2";
 export { default as IlluSimpleAvatar } from "./IlluSimpleAvatar";
 export { default as IlluSimpleChat } from "./IlluSimpleChat";
 export { default as IlluSimpleClick } from "./IlluSimpleClick";

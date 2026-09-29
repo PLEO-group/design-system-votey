@@ -25,21 +25,21 @@
       [labelPosition]="option.labelPosition ?? groupLabelPosition()"
       [id]="option.id ?? ''"
       [value]="option.value"
-      [aria-label]="(option.ariaLabel ?? option.label) | vtTranslate"
+      [aria-label]="option.ariaLabel ?? option.label | vtTranslate"
       [attr.data-cy]="option.dataCy ?? null"
     >
       @if (option.label !== undefined) {
-        <span class="vt-radio-option-label">
-          <vt-text
-            variant="body"
-            [color]="optionDisabled ? 'muted' : 'primary'"
-            [content]="option.label | vtTranslate"
-          />
-        </span>
+      <span class="vt-radio-option-label">
+        <vt-text
+          variant="body"
+          [color]="optionDisabled ? 'muted' : 'primary'"
+          [content]="option.label | vtTranslate"
+        />
+      </span>
       }
     </mat-radio-button>
-    @if (formControl.value === option.value) { @if (option.id; as optionId) { @if
-    (optionContentTemplates()[optionId]; as optionContent) {
+    @if (formControl.value === option.value) { @if (option.id; as optionId) {
+    @if (optionContentTemplates()[optionId]; as optionContent) {
     <div class="vt-radio-option-content">
       <ng-container [ngTemplateOutlet]="optionContent" />
     </div>
@@ -47,7 +47,4 @@
   </mat-radio-group>
 </div>
 
-<vt-form-error
-  [errors]="errorKeys"
-  [ignoredErrors]="ignoredErrors()"
-/>
+<vt-form-error [errors]="errorKeys" [ignoredErrors]="ignoredErrors()" />

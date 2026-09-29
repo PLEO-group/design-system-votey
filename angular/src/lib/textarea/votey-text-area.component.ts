@@ -91,7 +91,9 @@ export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<strin
   }
 
   protected get hasError(): boolean {
-    return !this.isDisabled && this.formControl.invalid && this.formControl.touched;
+    return (
+      !this.isDisabled && this.formControl.invalid && this.formControl.touched
+    );
   }
 
   protected get errorKeys(): string[] {

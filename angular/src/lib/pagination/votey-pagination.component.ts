@@ -23,43 +23,64 @@ export type VoteyPaginationEvent = PaginationEvent;
   templateUrl: "./votey-pagination.component.html",
   styleUrl: "./votey-pagination.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [VoteyIconComponent, VoteySelectComponent, VoteyTextComponent, VoteyTranslatePipe],
+  imports: [
+    VoteyIconComponent,
+    VoteySelectComponent,
+    VoteyTextComponent,
+    VoteyTranslatePipe,
+  ],
 })
 export class VoteyPaginationComponent {
-  public readonly page: InputSignal<number> = input<number>(defaultFetchParams.page);
-  public readonly size: InputSignal<number> = input<number>(defaultFetchParams.size);
+  public readonly page: InputSignal<number> = input<number>(
+    defaultFetchParams.page
+  );
+  public readonly size: InputSignal<number> = input<number>(
+    defaultFetchParams.size
+  );
   public readonly totalElements: InputSignal<number> = input<number>(0);
-  public readonly pageSizeOptions: InputSignal<readonly number[]> =
-    input<readonly number[]>([10, 20, 50, 100]);
+  public readonly pageSizeOptions: InputSignal<readonly number[]> = input<
+    readonly number[]
+  >([10, 20, 50, 100]);
   public readonly disabled: InputSignal<boolean> = input<boolean>(false);
   public readonly loading: InputSignal<boolean> = input<boolean>(false);
   public readonly pagination: OutputEmitterRef<PaginationEvent> =
     output<PaginationEvent>();
 
-  protected readonly sizeControl: FormControl<number | null> = new FormControl<number | null>(null);
+  protected readonly sizeControl: FormControl<number | null> = new FormControl<
+    number | null
+  >(null);
 
   protected readonly pageCount: Signal<number> = computed<number>(() => {
     const size: number = this.size();
     return size > 0 ? Math.ceil(Math.max(0, this.totalElements()) / size) : 0;
   });
   protected readonly currentPage: Signal<number> = computed<number>(() =>
-    Math.min(Math.max(0, this.page()), Math.max(0, this.pageCount() - 1)),
+    Math.min(Math.max(0, this.page()), Math.max(0, this.pageCount() - 1))
   );
   protected readonly visiblePages: Signal<number[]> = computed<number[]>(() => {
     const count: number = this.pageCount();
     if (count === 0) return [];
 
-    const start: number = Math.max(0, Math.min(this.currentPage() - 2, count - 5));
-    return Array.from({ length: Math.min(5, count - start) }, (_, index: number) => start + index);
+    const start: number = Math.max(
+      0,
+      Math.min(this.currentPage() - 2, count - 5)
+    );
+    return Array.from(
+      { length: Math.min(5, count - start) },
+      (_, index: number) => start + index
+    );
   });
   protected readonly startItem: Signal<number> = computed<number>(() =>
-    this.totalElements() > 0 ? this.currentPage() * this.size() + 1 : 0,
+    this.totalElements() > 0 ? this.currentPage() * this.size() + 1 : 0
   );
   protected readonly endItem: Signal<number> = computed<number>(() =>
-    Math.min((this.currentPage() + 1) * this.size(), Math.max(0, this.totalElements())),
+    Math.min(
+      (this.currentPage() + 1) * this.size(),
+      Math.max(0, this.totalElements())
+    )
   );
   protected readonly rangeText: Signal<string> = computed<string>(
-    () => `${this.startItem()}–${this.endItem()} / ${this.totalElements()}`,
+    () => `${this.startItem()}–${this.endItem()} / ${this.totalElements()}`
   );
 
   public constructor() {
@@ -69,13 +90,25 @@ export class VoteyPaginationComponent {
   }
 
   protected selectPage(page: number): void {
-    if (this.disabled() || this.loading() || page < 0 || page >= this.pageCount() || page === this.currentPage()) return;
+    if (
+      this.disabled() ||
+      this.loading() ||
+      page < 0 ||
+      page >= this.pageCount() ||
+      page === this.currentPage()
+    )
+      return;
     this.pagination.emit({ page, size: this.size() });
   }
 
   protected selectSize(value: unknown): void {
     if (this.disabled() || this.loading()) return;
-    if (typeof value !== "number" || !this.pageSizeOptions().includes(value) || value === this.size()) return;
+    if (
+      typeof value !== "number" ||
+      !this.pageSizeOptions().includes(value) ||
+      value === this.size()
+    )
+      return;
     this.pagination.emit({ page: 0, size: value });
   }
 }

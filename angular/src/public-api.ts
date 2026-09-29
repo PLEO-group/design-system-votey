@@ -74,7 +74,10 @@ export {
   emptyPaginatedListLoading,
   noPaginationParams,
 } from "./lib/pagination/pagination.model";
-export type { PaginatedList, PaginationEvent } from "./lib/pagination/pagination.model";
+export type {
+  PaginatedList,
+  PaginationEvent,
+} from "./lib/pagination/pagination.model";
 export {
   VoteySelectComponent,
   VoteySelectVariants,

@@ -1,13 +1,15 @@
 ---
 name: pleo-library-shared-skill-sync
 description: Sprawdza listę shared skilli w bibliotece i porównuje ją z lokalnym katalogiem `skills`. Używaj, gdy użytkownik chce zobaczyć brakujące shared skille, pobrać shared skille albo gdy `pleo-library-prompt-model-triage` wskaże ten skill; nie raportuj tego skilla w telemetryce.
-version: 1.2.7
+version: 1.2.8
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
 tags: []
 ---
 # Pleo Library Shared Skill Sync
+
+Podczas pobierania pomijaj katalogi `__pycache__` i pliki `.pyc`/`.pyo` oraz odrzucaj pliki tekstowe spoza UTF-8.
 
 Uruchamiaj ten skill wtedy, gdy użytkownik chce porównać lokalny projekt z listą shared skilli dostępnych w bibliotece, dociągnąć brakujące katalogi skilli do repo albo gdy `pleo-library-prompt-model-triage` wskaże, że do zadania potrzebny jest sync shared skilli.
 Nie uruchamiaj go przed pierwszym routingiem triage, chyba że użytkownik jawnie prosi właśnie o sync shared skilli.

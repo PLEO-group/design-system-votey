@@ -1,0 +1,8 @@
+<vt-menu
+  [fullWidth]="true"
+  [embedded]="true"
+  [items]="items()"
+  [selectedId]="selectedId()"
+  (itemSelected)="selected.emit($event)"
+  (dismissed)="dismissed.emit()"
+/>

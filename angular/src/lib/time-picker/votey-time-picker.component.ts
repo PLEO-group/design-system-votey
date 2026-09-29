@@ -7,14 +7,16 @@ import {
 import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyIconComponent } from "../icon/votey-icon.component";
-import { VoteyMenuComponent, type VoteyMenuItem } from "../menu/votey-menu.component";
+import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
+import type { VoteyMenuItem } from "../menu/votey-menu.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
-import { PickerControl, type PickerError } from "./picker-control";
-import { PickerDraftValueAccessorDirective } from "./picker-draft-value-accessor.directive";
+import { PickerControl, type PickerError } from "../picker/picker-control";
+import { PickerDraftValueAccessorDirective } from "../picker/picker-draft-value-accessor.directive";
+import { PickerTimeListComponent } from "./picker-time-list.component";
 import {
   parseTimeInput, timeSuggestions, validateTimeConfig,
   type PickerTimeEntryPolicy,
-} from "./picker-value";
+} from "../picker/picker-value";
 
 export const VoteyTimeEntryPolicies = ["allowManual", "listOnly"] as const;
 
@@ -23,12 +25,13 @@ let nextTimeId = 0;
 @Component({
   selector: "vt-time-picker",
   templateUrl: "./votey-time-picker.component.html",
-  styleUrl: "./votey-date-picker.component.scss",
+  styleUrl: "./votey-time-picker.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, PickerDraftValueAccessorDirective, CdkOverlayOrigin, CdkConnectedOverlay, VoteyMenuComponent,
+  imports: [ReactiveFormsModule, PickerDraftValueAccessorDirective, CdkOverlayOrigin, CdkConnectedOverlay, PickerTimeListComponent,
     VoteyIconComponent, VoteyFormErrorComponent, VoteyTranslatePipe],
 })
 export class VoteyTimePickerComponent extends PickerControl {
+  private readonly translator: VoteyTranslator = injectVoteyTranslator();
   public readonly label: InputSignal<string> = input<string>("");
   public readonly disabled: InputSignalWithTransform<boolean, unknown> = input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly stepMinutes: InputSignal<number> = input<number>(30);
@@ -36,7 +39,7 @@ export class VoteyTimePickerComponent extends PickerControl {
 
   private readonly fallbackId = `vt-time-picker-${++nextTimeId}`;
   private readonly field: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild<ElementRef<HTMLInputElement>>("fieldInput");
-  private readonly menu: Signal<VoteyMenuComponent | undefined> = viewChild<VoteyMenuComponent>(VoteyMenuComponent);
+  private readonly menu: Signal<PickerTimeListComponent | undefined> = viewChild<PickerTimeListComponent>(PickerTimeListComponent);
   protected readonly timeItems: Signal<readonly VoteyMenuItem[]> = computed(() =>
     timeSuggestions(this.stepMinutes()).map(label => ({ id: label, label }))
   );
@@ -60,6 +63,7 @@ export class VoteyTimePickerComponent extends PickerControl {
   protected override get isDisabled(): boolean { return this.disabled() || super.isDisabled; }
   protected get isRequired(): boolean { return this.formControl.hasValidator(Validators.required); }
   protected get inputId(): string { return this.fallbackId; }
+  protected get expectedFormat(): string { return this.translator.translate("LABEL.TIME_FORMAT"); }
   protected readonly displayValue = (value: string | null): string => this.formatCommitted(value);
 
   protected override formatCommitted(value: string | null): string { return value ?? ""; }
@@ -69,7 +73,7 @@ export class VoteyTimePickerComponent extends PickerControl {
     if (config) return { voteyPickerConfig: { reason: config } };
     if (!value) return null;
     const parsed = parseTimeInput(value);
-    if (parsed.error === "format") return { voteyPickerFormat: { expected: "GG:MM" } };
+    if (parsed.error === "format") return { voteyPickerFormat: { expected: this.expectedFormat } };
     if (parsed.error === "time") return { voteyPickerTime: { input: value } };
     return null;
   }
@@ -79,7 +83,7 @@ export class VoteyTimePickerComponent extends PickerControl {
     if (config) return { value: null, error: { voteyPickerConfig: { reason: config } } };
     if (!value) return { value: null, error: null };
     const parsed = parseTimeInput(value);
-    if (parsed.error === "format") return { value: null, error: { voteyPickerFormat: { expected: "GG:MM" } } };
+    if (parsed.error === "format") return { value: null, error: { voteyPickerFormat: { expected: this.expectedFormat } } };
     if (parsed.error === "time") return { value: null, error: { voteyPickerTime: { input: value } } };
     if (this.timeEntryPolicy() === "listOnly" &&
       (parsed.value.hour * 60 + parsed.value.minute) % this.stepMinutes() !== 0) {

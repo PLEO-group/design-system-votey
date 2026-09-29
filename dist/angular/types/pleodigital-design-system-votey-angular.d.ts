@@ -1,10 +1,13 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatRadioChange } from '@angular/material/radio';
+import { ConnectedPosition } from '@angular/cdk/overlay';
+import { DateAdapter } from '@angular/material/core';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
 
 type VoteyDevice = "mobile" | "tablet" | "desktop";
 type VoteyDeviceOrientation = "vertical" | "horizontal";
@@ -90,6 +93,7 @@ declare function provideVoteySvgRegistry(config?: VoteySvgRegistryConfig): Envir
 type VoteyTranslationParams = Record<string, string | number>;
 interface VoteyTranslator {
     translate(key: string, params?: VoteyTranslationParams): string;
+    getActiveLanguage?(): string;
 }
 declare const VOTEY_TRANSLATOR: InjectionToken<VoteyTranslator>;
 
@@ -138,6 +142,8 @@ declare class VoteyMenuComponent {
     readonly items: InputSignal<readonly VoteyMenuItem[]>;
     readonly selectedId: InputSignal<string | null>;
     readonly dataCy: InputSignal<string | null>;
+    readonly fullWidth: InputSignal<boolean>;
+    readonly embedded: InputSignal<boolean>;
     readonly itemSelected: OutputEmitterRef<VoteyMenuItem>;
     readonly dismissed: OutputEmitterRef<void>;
     protected readonly menuItems: Signal<readonly ElementRef<HTMLButtonElement>[]>;
@@ -145,12 +151,14 @@ declare class VoteyMenuComponent {
     protected readonly resolvedActiveIndex: Signal<number>;
     focusFirst(): void;
     focusLast(): void;
+    focusSelected(): void;
+    scrollSelected(): void;
     protected handleItemFocus(index: number): void;
     protected handleItemPressed(item: VoteyMenuItem, index: number): void;
     protected handleKeydown(event: KeyboardEvent, index: number): void;
     private focusEnabledItem;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyMenuComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyMenuComponent, "vt-menu", never, { "items": { "alias": "items"; "required": false; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "itemSelected": "itemSelected"; "dismissed": "dismissed"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyMenuComponent, "vt-menu", never, { "items": { "alias": "items"; "required": false; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "fullWidth": { "alias": "fullWidth"; "required": false; "isSignal": true; }; "embedded": { "alias": "embedded"; "required": false; "isSignal": true; }; }, { "itemSelected": "itemSelected"; "dismissed": "dismissed"; }, never, never, true, never>;
 }
 
 interface VoteyMultiSelectItem {
@@ -679,5 +687,150 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "icon": { "alias": "icon"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "trimmer": { "alias": "trimmer"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "keyDown": "keyDown"; }, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { PaginatedList, PaginationEvent, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+declare class PickerDatepickerIntl extends MatDatepickerIntl {
+    private readonly translator;
+    constructor();
+    refresh(): void;
+    formatYearRangeLabel(start: string, end: string): string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<PickerDatepickerIntl, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<PickerDatepickerIntl>;
+}
+
+declare const PICKER_ERRORS: readonly ["voteyPickerFormat", "voteyPickerDate", "voteyPickerTime", "voteyPickerRange", "voteyPickerPolicy", "voteyPickerConfig"];
+type PickerError = Partial<Record<(typeof PICKER_ERRORS)[number], unknown>>;
+declare abstract class PickerControl extends VoteyFormControlApplyDirective<string> implements OnInit, OnDestroy {
+    private readonly changeDetector;
+    protected readonly draft: WritableSignal<string>;
+    protected readonly committed: WritableSignal<string | null>;
+    protected readonly opened: WritableSignal<boolean>;
+    private valueSubscription;
+    private statusSubscription;
+    private editing;
+    private connectedControl;
+    protected constructor(changeDetector: ChangeDetectorRef);
+    set control(control: FormControl<string | null> | null | undefined);
+    ngOnInit(): void;
+    ngOnDestroy(): void;
+    protected abstract formatCommitted(value: string | null): string;
+    protected abstract validateCommitted(value: string | null): PickerError | null;
+    protected abstract commitDraft(value: string): {
+        value: string | null;
+        error: PickerError | null;
+    };
+    protected get isDisabled(): boolean;
+    protected get hasError(): boolean;
+    protected get errorKeys(): string[];
+    protected updateDraft(event: Event): void;
+    protected finishDraft(): void;
+    protected setCommitted(value: string | null): void;
+    protected refreshValidation(): void;
+    protected refreshDisplay(): void;
+    protected showDraftError(error: PickerError): void;
+    private connectControl;
+    private applyPickerError;
+    static ɵfac: i0.ɵɵFactoryDeclaration<PickerControl, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PickerControl, never, never, { "control": { "alias": "control"; "required": false; }; }, {}, never, never, true, never>;
+}
+
+interface PickerDateParts {
+    readonly year: number;
+    readonly month: number;
+    readonly day: number;
+}
+type PickerTimeEntryPolicy = "allowManual" | "listOnly";
+type PickerMode = "Date" | "DateTime";
+
+declare const VoteyDatePickerModes: readonly ["Date", "DateTime"];
+declare class VoteyDatePickerComponent extends PickerControl {
+    private readonly dateAdapter;
+    private readonly datepickerIntl;
+    private readonly translator;
+    private readonly defaultLocale;
+    readonly label: InputSignal<string>;
+    readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly mode: InputSignal<PickerMode>;
+    readonly min: InputSignal<string | null>;
+    readonly max: InputSignal<string | null>;
+    readonly locale: InputSignal<string>;
+    readonly stepMinutes: InputSignal<number>;
+    readonly timeEntryPolicy: InputSignal<PickerTimeEntryPolicy>;
+    private readonly fallbackId;
+    private readonly field;
+    private readonly calendar;
+    private readonly menu;
+    protected readonly active: WritableSignal<PickerDateParts>;
+    protected readonly resolvedLocale: Signal<string>;
+    protected readonly timeOpened: WritableSignal<boolean>;
+    protected readonly startAt: Signal<Date>;
+    protected readonly selected: Signal<PickerDateParts | null>;
+    protected readonly minDay: Signal<PickerDateParts | null>;
+    protected readonly maxDay: Signal<PickerDateParts | null>;
+    protected readonly selectedDate: Signal<Date | null>;
+    protected readonly minDate: Signal<Date | null>;
+    protected readonly maxDate: Signal<Date | null>;
+    protected readonly timeItems: Signal<readonly VoteyMenuItem[]>;
+    protected readonly selectedTime: Signal<string | null>;
+    protected readonly positions: ConnectedPosition[];
+    protected readonly dayAllowed: (day: PickerDateParts) => boolean;
+    protected readonly calendarDateFilter: Signal<(date: Date) => boolean>;
+    constructor(changeDetector: ChangeDetectorRef, dateAdapter: DateAdapter<Date>, datepickerIntl: PickerDatepickerIntl);
+    protected get isDisabled(): boolean;
+    protected get isRequired(): boolean;
+    protected get inputId(): string;
+    protected get expectedFormat(): string;
+    protected readonly displayValue: (value: string | null) => string;
+    protected formatCommitted(value: string | null): string;
+    protected validateCommitted(value: string | null): PickerError | null;
+    protected commitDraft(value: string): {
+        value: string | null;
+        error: PickerError | null;
+    };
+    protected open(): void;
+    protected close(): void;
+    protected handleOverlayKeydown(event: KeyboardEvent): void;
+    protected toggleTime(): void;
+    protected chooseDay(date: Date | null): void;
+    protected chooseTime(item: VoteyMenuItem): void;
+    protected clear(): void;
+    private configurationError;
+    private parseSuggestion;
+    private toLocalDate;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyDatePickerComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyDatePickerComponent, "vt-date-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "mode": { "alias": "mode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "locale": { "alias": "locale"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+declare const VoteyTimeEntryPolicies: readonly ["allowManual", "listOnly"];
+declare class VoteyTimePickerComponent extends PickerControl {
+    private readonly translator;
+    readonly label: InputSignal<string>;
+    readonly disabled: InputSignalWithTransform<boolean, unknown>;
+    readonly stepMinutes: InputSignal<number>;
+    readonly timeEntryPolicy: InputSignal<PickerTimeEntryPolicy>;
+    private readonly fallbackId;
+    private readonly field;
+    private readonly menu;
+    protected readonly timeItems: Signal<readonly VoteyMenuItem[]>;
+    protected readonly positions: ConnectedPosition[];
+    constructor(changeDetector: ChangeDetectorRef);
+    protected get isDisabled(): boolean;
+    protected get isRequired(): boolean;
+    protected get inputId(): string;
+    protected get expectedFormat(): string;
+    protected readonly displayValue: (value: string | null) => string;
+    protected formatCommitted(value: string | null): string;
+    protected validateCommitted(value: string | null): PickerError | null;
+    protected commitDraft(value: string): {
+        value: string | null;
+        error: PickerError | null;
+    };
+    protected open(): void;
+    protected close(): void;
+    protected handleOverlayKeydown(event: KeyboardEvent): void;
+    protected chooseTime(item: VoteyMenuItem): void;
+    protected clear(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTimePickerComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTimePickerComponent, "vt-time-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

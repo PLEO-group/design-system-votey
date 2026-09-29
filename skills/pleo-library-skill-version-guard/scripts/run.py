@@ -28,6 +28,7 @@ WINDOWS_RESERVED_NAME_PATTERN = re.compile(
     r"(?i)^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$"
 )
 REQUEST_TIMEOUT_SECONDS = 5
+TEXT_SUFFIXES = {".md", ".txt", ".yml", ".yaml", ".json", ".xml", ".java", ".js", ".ts", ".tsx", ".jsx", ".py", ".sh", ".properties", ".toml", ".ini", ".cfg", ".csv", ".sql", ".svg", ".html", ".css", ".rst", ".jsonl", ".ndjson", ".ps1"}
 
 
 class ScriptError(RuntimeError):
@@ -514,6 +515,8 @@ def rewrite_skill_directory(
             raise ScriptError("Plik w payloadzie wymaga tekstowych relativePath i contentBase64")
 
         relative_path = normalize_relative_path(raw_path)
+        if is_python_cache(relative_path):
+            continue
         portable_name = unicodedata.normalize("NFC", relative_path).casefold()
         previous_path = expected_paths_by_portable_name.get(portable_name)
         if previous_path is not None:
@@ -521,7 +524,9 @@ def rewrite_skill_directory(
                 f"Duplikat lub nieprzenośna kolizja pliku w payloadzie: {previous_path} / {relative_path}"
             )
         expected_paths_by_portable_name[portable_name] = relative_path
-        normalized_files.append((relative_path, decode_file_content(relative_path, encoded_content)))
+        content = decode_file_content(relative_path, encoded_content)
+        validate_text_encoding(relative_path, file_payload.get("mimeType"), content)
+        normalized_files.append((relative_path, content))
 
     expected_paths = set(expected_paths_by_portable_name.values())
     if "SKILL.md" not in expected_paths:
@@ -582,6 +587,25 @@ def decode_file_content(relative_path: str, encoded_content: str) -> bytes:
         return base64.b64decode(encoded_content, validate=True)
     except (binascii.Error, ValueError) as exception:
         raise ScriptError(f"Nieprawidłowy Base64 dla pliku: {relative_path}") from exception
+
+
+def is_python_cache(relative_path: str) -> bool:
+    parts = relative_path.replace("\\", "/").lower().split("/")
+    return "__pycache__" in parts or parts[-1].endswith((".pyc", ".pyo"))
+
+
+def validate_text_encoding(relative_path: str, mime_type: str | None, content: bytes) -> None:
+    lower_path = relative_path.lower()
+    lower_mime = (mime_type or "").lower()
+    if not (Path(lower_path).suffix in TEXT_SUFFIXES or lower_path.endswith(".gitignore")
+            or lower_mime.startswith("text/") or any(kind in lower_mime for kind in ("json", "xml", "yaml", "javascript"))):
+        return
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as exception:
+        raise ScriptError(f"Plik tekstowy musi być zapisany w UTF-8: {relative_path}") from exception
+    if "\x00" in text:
+        raise ScriptError(f"Plik tekstowy zawiera bajt NUL: {relative_path}")
 
 
 def validate_staged_skill_directory(staged_skill_dir: Path, expected_name: str, expected_version: str) -> None:

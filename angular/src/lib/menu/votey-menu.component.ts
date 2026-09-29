@@ -39,6 +39,7 @@ export class VoteyMenuComponent {
     null
   );
   public readonly fullWidth: InputSignal<boolean> = input<boolean>(false);
+  public readonly embedded: InputSignal<boolean> = input<boolean>(false);
 
   public readonly itemSelected: OutputEmitterRef<VoteyMenuItem> =
     output<VoteyMenuItem>();

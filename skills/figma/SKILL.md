@@ -9,7 +9,7 @@ description: >
   Triggery: link do Figmy, pixel-perfect, "odczytaj z Figmy", "zmień hover", "dodaj wariant",
   "component set", "macierz wariantów", figma-to-code,
   get_design_context, get_screenshot, get_metadata.
-version: 1.26.0
+version: 1.27.1
 author: s.stawowy@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -20,6 +20,12 @@ tags:
 # Figma
 
 Skill obejmuje odczyt makiet Figma i wdrożenie zgodnego UI frontendowego. Nie obejmuje programowej edycji canvasu Figmy.
+## Pixel-perfect: najpierw potwierdź runtime
+
+Gdy zadanie wymaga implementacji lub korekty pixel-perfect z walidacją runtime, przed pierwszą operacją Figma wykonaj bramkę `Runtime Access Gate` z `references/runtime-pixel-perfect-loop.md`. Samo wykrycie narzędzia Playwright, status HTTP 200 albo redirect do logowania nie oznacza potwierdzonego dostępu. Jeśli Playwright nie pokaże docelowego widoku po uwierzytelnieniu, zatrzymaj pracę pixel-perfect: nie odczytuj Figmy, nie edytuj UI i zgłoś blocker. Po potwierdzeniu runtime wykonaj MCP Guard przed odczytem Figmy.
+
+Ta kolejność dotyczy zadań pixel-perfect wymagających porównania z działającą aplikacją; zwykły odczyt Figmy bez implementacji nie wymaga uruchamiania aplikacji.
+
 ## Obowiązkowy pre-check: MCP Guard
 
 **Przed każdą operacją Figma** wczytaj i wykonaj `references/mcp-guard.md`. Nie pomijaj tego kroku nawet gdy URL Figmy jest oczywisty.
@@ -37,11 +43,11 @@ Wczytaj **tylko** te referencje, które pasują do bieżącego zadania:
 Dowolna operacja Figma
   → ZAWSZE wczytaj references/mcp-guard.md (pre-check)
 
-Odczyt makiety → implementacja UI/komponentu (pixel-perfect)
+Sam odczyt makiety bez implementacji pixel-perfect
   → Instrukcje są w tym SKILL.md (poniżej)
 
-Odczyt makiety → implementacja UI/komponentu + runtime walidacja / pixel-perfect loop
-  → Wczytaj references/runtime-pixel-perfect-loop.md po MCP Guardzie i przed edycją kodu
+Odczyt makiety → implementacja UI/komponentu pixel-perfect z walidacją runtime
+  → Wczytaj references/runtime-pixel-perfect-loop.md przed operacjami Figma; wykonaj Runtime Access Gate, potem MCP Guard i odczyt
 
 Odczyt makiety → implementacja w projekcie Angular
   → Wczytaj references/angular-implementation.md po MCP Guardzie i przed edycją kodu
@@ -605,6 +611,12 @@ Przed napisaniem nowego komponentu sprawdź, czy projekt ma już gotowy komponen
 W implementacji UI z Figmy sprawdź teksty, które użytkownik widzi: headingi, opisy, CTA, etykiety tabów, komunikaty,
 placeholdery i aria-labels, jeśli wynikają z makiety. Nie zastępuj ich przykładowym copy ani parafrazą, jeśli treść
 ma pochodzić z CMS/speca.
+
+Gdy projekt używa i18n, przed zakończeniem przejrzyj też teksty wpisane na sztywno w komponentach i danych mockowych
+tego zakresu. Dla każdego tekstu ustal właściciela: słownik/API tłumaczeń, CMS, dane produktu albo stała niezależna
+od języka. Teksty należące do słownika podłącz przez istniejące i18n. Nowe klucze wypisz osobno w formacie
+`KATEGORIA.CZLON1_CZLON2 = tekst`, z podziałem na języki; nie mieszaj ich z kluczami już dostępnymi w API.
+Jeśli wartości nie ma jeszcze w API, zgłoś zależność i nie deklaruj zgodności treści w runtime.
 
 Przed końcem zadania wypisz różnice:
 

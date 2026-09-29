@@ -13,7 +13,7 @@ export default {
 
 export const Playground = {
   args: {
-    label: "Data",
+    label: "LABEL.DATE",
     mode: "Date",
     value: null,
     disabled: false,

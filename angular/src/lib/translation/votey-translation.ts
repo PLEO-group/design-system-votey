@@ -4,6 +4,7 @@ export type VoteyTranslationParams = Record<string, string | number>;
 
 export interface VoteyTranslator {
   translate(key: string, params?: VoteyTranslationParams): string;
+  getActiveLanguage?(): string;
 }
 
 const VOTEY_IDENTITY_TRANSLATOR: VoteyTranslator = {

@@ -13,8 +13,8 @@
       [value]="draft()"
       [disabled]="isDisabled"
       [required]="isRequired"
-      placeholder="GG:MM"
-      [attr.aria-label]="label() ? null : 'GG:MM'"
+      [placeholder]="'LABEL.SELECT_TIME' | vtTranslate"
+      [attr.aria-label]="label() ? null : ('LABEL.SELECT_TIME' | vtTranslate)"
       [attr.aria-describedby]="inputId + '-format ' + inputId + '-error'"
       [attr.aria-invalid]="hasError"
       [attr.aria-expanded]="opened()"
@@ -25,10 +25,10 @@
     />
     <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
     @if (committed() && !isDisabled && !isRequired) {
-      <button class="clear" type="button" [attr.aria-label]="'BUTTON.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
+      <button class="clear" type="button" [attr.aria-label]="'LABEL.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
     }
   </div>
-  <span class="format" [id]="inputId + '-format'">GG:MM</span>
+  <span class="format" [id]="inputId + '-format'">{{ 'LABEL.TIME_FORMAT' | vtTranslate }}</span>
   <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
 </div>
 
@@ -42,14 +42,11 @@
   (overlayKeydown)="handleOverlayKeydown($event)"
 >
   <div class="panel" [id]="inputId + '-panel'">
-    <div class="time-list">
-      <vt-menu
-        [fullWidth]="true"
-        [items]="timeItems()"
-        [selectedId]="committed()"
-        (itemSelected)="chooseTime($event)"
-        (dismissed)="close()"
-      />
-    </div>
+    <vt-picker-time-list
+      [items]="timeItems()"
+      [selectedId]="committed()"
+      (selected)="chooseTime($event)"
+      (dismissed)="close()"
+    />
   </div>
 </ng-template>

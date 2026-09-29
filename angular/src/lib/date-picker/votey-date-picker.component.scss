@@ -1,0 +1,155 @@
+@use "../picker/picker-shared" as shared;
+
+@include shared.picker-field;
+@include shared.picker-panel;
+
+.panel {
+  --mat-datepicker-calendar-container-background-color: var(--color-bg-surface);
+  --mat-datepicker-calendar-container-text-color: var(--color-text-primary);
+  --mat-datepicker-calendar-text-font: inherit;
+  --mat-datepicker-calendar-text-size: var(--typo-body-font-size);
+  --mat-datepicker-calendar-body-label-text-color: var(--color-text-muted);
+  --mat-datepicker-calendar-header-text-color: var(--color-text-primary);
+  --mat-datepicker-calendar-navigation-button-icon-color: var(--color-text-primary);
+  --mat-datepicker-calendar-period-button-icon-color: var(--color-text-primary);
+  --mat-datepicker-calendar-period-button-text-color: var(--color-text-primary);
+  --mat-datepicker-calendar-date-text-color: var(--color-text-primary);
+  --mat-datepicker-calendar-date-disabled-state-text-color: var(--color-text-muted);
+  --mat-datepicker-calendar-date-hover-state-background-color: var(--color-bg-surface-tint);
+  --mat-datepicker-calendar-date-focus-state-background-color: var(--color-bg-surface-tint);
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--color-accent-primary);
+  --mat-datepicker-calendar-date-selected-state-text-color: var(--color-accent-on-accent);
+  --mat-datepicker-calendar-date-today-outline-color: var(--color-accent-primary);
+  --mat-datepicker-calendar-date-today-selected-state-outline-color: var(--color-accent-on-accent);
+  --mat-datepicker-calendar-header-divider-color: var(--color-border-subtle);
+  mat-calendar {
+    width: 100%;
+    height: auto;
+  }
+
+  .time-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-stack-gap-s);
+    width: 100%;
+
+    .time-trigger {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 50px;
+      padding: 0 var(--space-field-padding-x);
+      border: 1px solid var(--color-border-field);
+      border-radius: var(--radius-m);
+      background: var(--color-bg-surface);
+      color: var(--color-text-primary);
+      font-size: var(--typo-field-font-size);
+      font-weight: var(--typo-field-font-weight);
+      line-height: var(--typo-field-line-height);
+      cursor: pointer;
+
+      .placeholder {
+        color: var(--color-text-placeholder);
+      }
+
+      span {
+        white-space: nowrap;
+      }
+
+      .time-icon {
+        display: block;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    vt-picker-time-list {
+      max-height: 176px;
+    }
+  }
+}
+
+.vt-date-picker-panel ::ng-deep {
+  .mat-calendar-header {
+    padding: 0;
+  }
+
+  .mat-calendar-controls {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    margin: 0 0 var(--space-stack-gap-s);
+
+    .mat-calendar-period-button {
+      order: 2;
+      flex: 1;
+      color: var(--color-text-primary);
+      font-size: var(--typo-body-l-semibold-font-size);
+      font-weight: var(--typo-body-l-semibold-font-weight);
+      line-height: var(--typo-body-l-semibold-line-height);
+
+      span {
+        display: inline-block;
+        text-transform: lowercase;
+
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .mat-calendar-spacer {
+      display: none;
+    }
+
+    .mat-calendar-previous-button,
+    .mat-calendar-next-button {
+      box-sizing: border-box;
+      display: inline-flex;
+      flex: 0 0 28px;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 1px solid var(--color-accent-primary);
+      border-radius: var(--radius-full);
+      color: var(--color-text-primary);
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .mat-calendar-previous-button { order: 1; }
+    .mat-calendar-next-button { order: 3; }
+  }
+
+  .mat-calendar-content {
+    padding: 0;
+  }
+
+  .mat-calendar-table-header {
+    color: var(--color-text-muted);
+    font-size: var(--typo-caption-s-font-size);
+    line-height: var(--typo-caption-s-line-height);
+
+    th { padding: 0 0 var(--space-stack-gap-s); }
+  }
+
+  .mat-calendar-body tr:first-child {
+    display: none;
+  }
+
+  .mat-calendar-body-cell-content {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-m);
+    font-size: var(--typo-body-font-size);
+    line-height: var(--typo-body-line-height);
+  }
+}

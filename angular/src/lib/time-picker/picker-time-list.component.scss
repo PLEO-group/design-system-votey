@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+vt-menu {
+  display: block;
+  width: 100%;
+  max-height: var(--picker-time-list-max-height, 176px);
+  overflow-y: auto;
+}

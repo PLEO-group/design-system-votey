@@ -25,13 +25,12 @@ DEFAULT_STAGE_BY_COMMAND = {
     "interrupt": "interrupted",
 }
 DEFAULT_STATUS_BY_COMMAND = {
-    "finish": "success",
     "interrupt": "cancelled",
 }
 ALLOWED_STATUS_BY_COMMAND = {
     "start": {None},
     "progress": {None},
-    "finish": {"success", "error", "cancelled"},
+    "finish": {"success", "error"},
     "interrupt": {"cancelled", "error"},
 }
 
@@ -126,7 +125,7 @@ def normalize_command(raw_command: str) -> str:
     normalized = command.lower()
     if normalized == "heartbeat":
         raise ScriptError(
-            "Command heartbeat was removed. Use progress as the heartbeat event during long-running skill work."
+            "Command heartbeat was removed. Send progress only when the work actually changes stage; otherwise omit it."
         )
     if normalized not in SUPPORTED_COMMANDS:
         supported = ", ".join(SUPPORTED_COMMANDS)
@@ -137,6 +136,8 @@ def normalize_command(raw_command: str) -> str:
 def normalize_status(command: str, raw_status: str | None) -> str | None:
     normalized = normalize_optional_text(raw_status)
     if normalized is None:
+        if command == "finish":
+            raise ScriptError("finish wymaga jawnego --status success albo --status error.")
         return DEFAULT_STATUS_BY_COMMAND.get(command)
     normalized = normalized.lower()
     if normalized not in ALLOWED_STATUS_BY_COMMAND[command]:

@@ -23,9 +23,9 @@
       (blur)="finishDraft()"
       (keydown.escape)="close()"
     />
-    <span class="icon" aria-hidden="true"><vt-icon ico="ui-calendar" /></span>
+    <span class="icon" aria-hidden="true"><vt-icon [ico]="mode() === 'DateTime' ? 'ui-time' : 'ui-calendar'" /></span>
     @if (committed() && !isDisabled && !isRequired) {
-      <button class="clear" type="button" [attr.aria-label]="'BUTTON.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
+      <button class="clear" type="button" [attr.aria-label]="'LABEL.CLEAR' | vtTranslate" (click)="$event.stopPropagation(); clear()">×</button>
     }
   </div>
   <span class="format" [id]="inputId + '-format'">{{ expectedFormat }}</span>
@@ -41,27 +41,31 @@
   (overlayOutsideClick)="close()"
   (overlayKeydown)="handleOverlayKeydown($event)"
 >
-  <div class="panel" [id]="inputId + '-panel'">
-    <vt-picker-calendar
-      [month]="displayedMonth()"
-      [active]="active()"
-      [selected]="selected()"
-      [min]="minDay()"
-      [max]="maxDay()"
-      [locale]="locale()"
-      [isAllowed]="dayAllowed"
-      (activeDay)="active.set($event)"
-      (selectedDay)="chooseDay($event)"
+  <div class="panel vt-date-picker-panel" [id]="inputId + '-panel'">
+    <mat-calendar
+      [startAt]="startAt()"
+      [selected]="selectedDate()"
+      [minDate]="minDate()"
+      [maxDate]="maxDate()"
+      [dateFilter]="calendarDateFilter()"
+      (selectedChange)="chooseDay($event)"
     />
-    @if (mode() === 'DateTime' && selected()) {
-      <div class="time-list">
-        <vt-menu
-          [fullWidth]="true"
-          [items]="timeItems()"
-          [selectedId]="selectedTime()"
-          (itemSelected)="chooseTime($event)"
-          (dismissed)="close()"
-        />
+    @if (mode() === 'DateTime') {
+      <div class="time-picker">
+        <button class="time-trigger" type="button" [attr.aria-expanded]="timeOpened()" [attr.aria-controls]="inputId + '-time-list'" (click)="toggleTime()">
+          <span [class.placeholder]="!committed()">{{ committed() ? selectedTime() : ('LABEL.SELECT_TIME' | vtTranslate) }}</span>
+          <span class="time-icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
+        </button>
+        @if (timeOpened()) {
+          <div [id]="inputId + '-time-list'">
+            <vt-picker-time-list
+              [items]="timeItems()"
+              [selectedId]="selectedTime()"
+              (selected)="chooseTime($event)"
+              (dismissed)="timeOpened.set(false)"
+            />
+          </div>
+        }
       </div>
     }
   </div>

@@ -2,9 +2,30 @@ import React, { useEffect, useRef, useState } from "react";
 import "./AngularPickerPreview.scss";
 
 const translations = {
-  "BUTTON.CLEAR": "Wyczyść pole",
-  "BUTTON.PREVIOUS_MONTH": "Poprzedni miesiąc",
-  "BUTTON.NEXT_MONTH": "Następny miesiąc",
+  "LABEL.DATE": "Data",
+  "LABEL.TIME": "Godzina",
+  "LABEL.SELECT_TIME": "Wybierz godzinę",
+  "LABEL.TIME_FORMAT": "GG:MM",
+  "LABEL.DATE_FORMAT": "DD.MM.RRRR",
+  "LABEL.DATE_TIME_FORMAT": "DD.MM.RRRR, GG:MM",
+  "LABEL.WEEKDAY_SUNDAY_SHORT": "Nd",
+  "LABEL.WEEKDAY_MONDAY_SHORT": "Pn",
+  "LABEL.WEEKDAY_TUESDAY_SHORT": "Wt",
+  "LABEL.WEEKDAY_WEDNESDAY_SHORT": "Śr",
+  "LABEL.WEEKDAY_THURSDAY_SHORT": "Cz",
+  "LABEL.WEEKDAY_FRIDAY_SHORT": "Pt",
+  "LABEL.WEEKDAY_SATURDAY_SHORT": "So",
+  "LABEL.CALENDAR": "Kalendarz",
+  "LABEL.PREVIOUS_YEAR": "Poprzedni rok",
+  "LABEL.NEXT_YEAR": "Następny rok",
+  "LABEL.PREVIOUS_24_YEARS": "Poprzednie 24 lata",
+  "LABEL.NEXT_24_YEARS": "Następne 24 lata",
+  "LABEL.CHOOSE_DATE": "Wybierz datę",
+  "LABEL.CHOOSE_MONTH_AND_YEAR": "Wybierz miesiąc i rok",
+  "LABEL.YEAR_RANGE_LABEL": "{start}–{end}",
+  "LABEL.CLEAR": "Wyczyść pole",
+  "LABEL.PREVIOUS_MONTH": "Poprzedni miesiąc",
+  "LABEL.NEXT_MONTH": "Następny miesiąc",
   "ERRORS.VOTEYPICKERFORMAT": "Nieprawidłowy format",
   "ERRORS.VOTEYPICKERDATE": "Nieistniejąca data",
   "ERRORS.VOTEYPICKERTIME": "Nieprawidłowa godzina",
@@ -38,7 +59,8 @@ export function AngularPickerPreview({ kind, ...props }) {
           library.provideVoteySvgRegistry(),
           {
             provide: library.VOTEY_TRANSLATOR,
-            useValue: { translate: (key) => translations[key] ?? key },
+            useValue: { translate: (key, params) =>
+              (translations[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => String(params?.[name] ?? `{${name}}`)) },
           },
         ],
       });
@@ -70,7 +92,11 @@ export function AngularPickerPreview({ kind, ...props }) {
       application.tick();
     }
 
-    void mount();
+    void mount().catch((error) => {
+      if (mounted) {
+        setState((previous) => ({ ...previous, runtimeError: String(error) }));
+      }
+    });
     return () => {
       mounted = false;
       const runtime = runtimeRef.current;

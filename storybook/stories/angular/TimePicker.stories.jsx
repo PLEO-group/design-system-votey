@@ -12,7 +12,7 @@ export default {
 
 export const Playground = {
   args: {
-    label: "Godzina",
+    label: "LABEL.TIME",
     value: null,
     disabled: false,
     required: false,

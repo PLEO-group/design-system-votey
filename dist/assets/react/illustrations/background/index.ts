@@ -21,6 +21,7 @@ export { default as IlluBgParticipantTypeObserver } from "./IlluBgParticipantTyp
 export { default as IlluBgParticipantTypeVoter } from "./IlluBgParticipantTypeVoter";
 export { default as IlluBgParticipantWoman } from "./IlluBgParticipantWoman";
 export { default as IlluBgPointVoting } from "./IlluBgPointVoting";
+export { default as IlluBgPointVotingV2 } from "./IlluBgPointVotingV2";
 export { default as IlluBgPublicAccessEvent } from "./IlluBgPublicAccessEvent";
 export { default as IlluBgQuestionnaire } from "./IlluBgQuestionnaire";
 export { default as IlluBgRegistration } from "./IlluBgRegistration";

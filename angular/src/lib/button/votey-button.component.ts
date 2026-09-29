@@ -73,6 +73,9 @@ export class VoteyButtonComponent {
   public readonly ariaControls: InputSignal<string | null> = input<
     string | null
   >(null);
+  public readonly iconColor: InputSignal<"accent" | "white" | ""> = input<
+    "accent" | "white" | ""
+  >("");
 
   public readonly pressed: OutputEmitterRef<void> = output<void>();
 

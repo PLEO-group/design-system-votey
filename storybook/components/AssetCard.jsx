@@ -5,10 +5,11 @@ export const AssetCard = ({asset}) => {
     const isIcon = asset.type === 'icon';
     const variants = asset.variants ?? [asset];
     const hasVariants = variants.length > 1;
+    const isLogotype = asset.category === 'logotypes';
 
     return (
-        <article className={`asset-card ${asset.type}${asset.category === 'info' ? ' info' : ''}${hasVariants ? ' has-variants' : ''}`}>
-            <div className={`preview${hasVariants ? ' variants' : ''}`}>
+        <article className={`asset-card ${asset.type}${asset.category === 'info' ? ' info' : ''}${isLogotype ? ' logotype' : ''}${hasVariants ? ' has-variants' : ''}`}>
+            <div className={`preview${hasVariants ? ' variants' : ''}${isLogotype ? ' dark-logo' : ''}`}>
                 {isIcon ? variants.map((variant) => (
                     <div className="icon-preview" key={variant.name}>
                         {hasVariants && (

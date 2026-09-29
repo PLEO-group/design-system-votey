@@ -50,6 +50,16 @@ const DeviceContext = ({children, device}) => {
     return children;
 };
 
+const ThemeContext = ({children, theme}) => {
+    useLayoutEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+
+        return () => document.documentElement.removeAttribute('data-theme');
+    }, [theme]);
+
+    return children;
+};
+
 const preview = {
     globalTypes: {
         device: {
@@ -61,6 +71,18 @@ const preview = {
                     {value: 'mobile', title: 'Mobile'},
                     {value: 'tablet', title: 'Tablet'},
                     {value: 'desktop', title: 'Desktop'},
+                ],
+                dynamicTitle: true,
+            },
+        },
+        theme: {
+            description: 'Color theme used by the Storybook preview',
+            defaultValue: 'light',
+            toolbar: {
+                icon: 'sun',
+                items: [
+                    {value: 'light', title: 'Light'},
+                    {value: 'dark', title: 'Dark'},
                 ],
                 dynamicTitle: true,
             },
@@ -87,11 +109,13 @@ const preview = {
     },
     decorators: [
         (Story, context) => (
-            <DeviceContext device={context.globals.device || 'desktop'}>
-                <div style={{fontFamily: 'var(--storybook-font-family)'}}>
-                    <Story/>
-                </div>
-            </DeviceContext>
+            <ThemeContext theme={context.globals.theme || 'light'}>
+                <DeviceContext device={context.globals.device || 'desktop'}>
+                    <div style={{fontFamily: 'var(--storybook-font-family)'}}>
+                        <Story/>
+                    </div>
+                </DeviceContext>
+            </ThemeContext>
         ),
     ],
 };

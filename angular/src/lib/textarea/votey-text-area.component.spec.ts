@@ -92,7 +92,7 @@ describe("VoteyTextAreaComponent", () => {
     const textarea: HTMLTextAreaElement =
       fixture.nativeElement.querySelector("textarea");
 
-    expect(control.disabled).toBe(true);
+    expect(control.enabled).toBe(true);
     expect(textarea.disabled).toBe(true);
     expect(fixture.nativeElement.querySelector("label .text.primary")).not.toBeNull();
     expect(textarea.getAttribute("aria-invalid")).toBeNull();
@@ -100,7 +100,7 @@ describe("VoteyTextAreaComponent", () => {
     expect(fixture.nativeElement.querySelector(".text-area-wrapper.error")).toBeNull();
   });
 
-  it("reenables only a control disabled by the component input", (): void => {
+  it("toggles the native disabled state without changing the control", (): void => {
     fixture.detectChanges();
 
     const textarea: HTMLTextAreaElement =
@@ -109,7 +109,7 @@ describe("VoteyTextAreaComponent", () => {
     fixture.componentRef.setInput("disabled", true);
     fixture.detectChanges();
 
-    expect(control.disabled).toBe(true);
+    expect(control.enabled).toBe(true);
     expect(textarea.disabled).toBe(true);
 
     fixture.componentRef.setInput("disabled", false);
@@ -132,7 +132,7 @@ describe("VoteyTextAreaComponent", () => {
     expect(textarea.disabled).toBe(true);
   });
 
-  it("moves the disabled input state to a replacement control", (): void => {
+  it("applies the disabled input to a replacement control", (): void => {
     fixture.componentRef.setInput("disabled", true);
     fixture.detectChanges();
 
@@ -144,7 +144,7 @@ describe("VoteyTextAreaComponent", () => {
       fixture.nativeElement.querySelector("textarea");
 
     expect(control.enabled).toBe(true);
-    expect(replacement.disabled).toBe(true);
+    expect(replacement.enabled).toBe(true);
     expect(textarea.disabled).toBe(true);
   });
 

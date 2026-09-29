@@ -24,6 +24,7 @@
       [name]="name()"
       [placeholder]="placeholder() | vtTranslate"
       [formControl]="formControl"
+      [attr.disabled]="isDisabled ? '' : null"
       [required]="isRequired"
       [spellcheck]="spellcheck()"
       [attr.minlength]="minLength()"

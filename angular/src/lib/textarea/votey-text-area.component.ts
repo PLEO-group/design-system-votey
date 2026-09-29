@@ -6,14 +6,11 @@ import {
   input,
   type InputSignal,
   type InputSignalWithTransform,
-  type OnChanges,
-  type OnDestroy,
   output,
   type OutputEmitterRef,
   type Signal,
-  type SimpleChanges,
 } from "@angular/core";
-import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
+import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { VoteyFormControlApplyDirective } from "../directives/votey-form-control-apply.directive";
 import { VoteyFormErrorComponent } from "../form-error/votey-form-error.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
@@ -33,12 +30,8 @@ let nextTextAreaId = 0;
     VoteyTranslatePipe,
   ],
 })
-export class VoteyTextAreaComponent
-  extends VoteyFormControlApplyDirective<string>
-  implements OnChanges, OnDestroy
-{
+export class VoteyTextAreaComponent extends VoteyFormControlApplyDirective<string> {
   private readonly fallbackId: string = `vt-text-area-${++nextTextAreaId}`;
-  private disabledByInput: FormControl<string | null> | null = null;
 
   public readonly label: InputSignal<string> = input<string>("");
   public readonly placeholder: InputSignal<string> = input<string>("");
@@ -103,24 +96,6 @@ export class VoteyTextAreaComponent
 
   protected get errorKeys(): string[] {
     return this.hasError ? Object.keys(this.formControl.errors ?? {}) : [];
-  }
-
-  public ngOnChanges(changes: SimpleChanges): void {
-    if (!changes["disabled"] && !changes["control"]) return;
-
-    if (this.disabledByInput && (changes["control"] || !this.disabled())) {
-      this.disabledByInput.enable();
-      this.disabledByInput = null;
-    }
-
-    if (this.disabled() && this.formControl.enabled) {
-      this.formControl.disable();
-      this.disabledByInput = this.formControl;
-    }
-  }
-
-  public ngOnDestroy(): void {
-    this.disabledByInput?.enable();
   }
 
   protected handleInput(event: Event): void {

@@ -7,10 +7,15 @@ const textareaInputs = [
   "label",
   "placeholder",
   "helper",
+  "limitDescription",
   "disabled",
   "spellcheck",
   "minLength",
   "maxLength",
+  "id",
+  "name",
+  "ariaLabel",
+  "ariaDescribedby",
   "ignoredErrors",
   "dataCy",
 ];
@@ -35,7 +40,12 @@ function setTextareaInputs(componentRef, control, Validators, props) {
   componentRef.setInput("control", control);
 
   for (const inputName of textareaInputs) {
-    componentRef.setInput(inputName, props[inputName]);
+    componentRef.setInput(
+      inputName,
+      inputName === "limitDescription"
+        ? props.limitDescription.replace("{max}", String(props.maxLength ?? ""))
+        : props[inputName]
+    );
   }
 }
 
@@ -161,13 +171,18 @@ export default {
     text: "",
     label: "Opis wydarzenia",
     placeholder: "Wpisz opis…",
-    helper: "Maks. 2000 znaków",
+    helper: "",
+    limitDescription: "Maks. {max} znaków",
     disabled: false,
     required: false,
     showError: false,
     spellcheck: true,
     minLength: null,
     maxLength: 2000,
+    id: "",
+    name: "",
+    ariaLabel: "",
+    ariaDescribedby: "",
     ignoredErrors: [],
     dataCy: "",
     onChanged: fn(),

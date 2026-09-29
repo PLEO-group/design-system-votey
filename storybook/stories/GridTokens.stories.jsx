@@ -3,11 +3,14 @@ import {StoryPageHeader} from '../components/StoryPageHeader';
 import gridTokenSource from '../../tokens/grid/angular.json';
 import './GridTokens.stories.scss';
 
-const devices = ['mobile', 'tablet', 'desktop'];
+const breakpointOrder = [
+    'mobile-small', 'mobile', 'tablet-small', 'tablet', 'laptop', 'desktop',
+];
 const breakpointPreviews = {
     mobile: [
         {
             label: 'Mobile 360',
+            breakpoint: 'mobile-small',
             width: 360,
             height: 800,
             type: 'phone',
@@ -15,6 +18,7 @@ const breakpointPreviews = {
         },
         {
             label: 'Mobile 375',
+            breakpoint: 'mobile',
             width: 375,
             height: 812,
             type: 'phone',
@@ -24,6 +28,7 @@ const breakpointPreviews = {
     tablet: [
         {
             label: 'Tablet 768',
+            breakpoint: 'tablet-small',
             width: 768,
             height: 1024,
             type: 'tablet',
@@ -31,6 +36,7 @@ const breakpointPreviews = {
         },
         {
             label: 'Tablet 1024',
+            breakpoint: 'tablet',
             width: 1024,
             height: 768,
             type: 'tablet',
@@ -40,6 +46,7 @@ const breakpointPreviews = {
     desktop: [
         {
             label: 'Laptop 1280',
+            breakpoint: 'laptop',
             width: 1280,
             height: 800,
             type: 'laptop',
@@ -47,6 +54,7 @@ const breakpointPreviews = {
         },
         {
             label: 'Desktop 1920',
+            breakpoint: 'desktop',
             width: 1920,
             height: 1080,
             type: 'desktop',
@@ -59,16 +67,41 @@ function formatNumber(value) {
     return Number(value.toFixed(2));
 }
 
-function toViewportWidth(value, referenceWidth) {
-    return `${formatNumber(value / referenceWidth * 100)}vw`;
-}
-
 function toPercentageValue(value, referenceWidth) {
     return formatNumber(value / referenceWidth * 100);
 }
 
-function toPixels(value, referenceWidth, viewportWidth) {
-    return `${formatNumber(value / referenceWidth * viewportWidth)}px`;
+function gridValue(breakpoint, field) {
+    return gridTokenSource.grid.admin.breakpoints[breakpoint][field].value;
+}
+
+function interpolatedGridValue(field, viewportWidth) {
+    const first = breakpointOrder[0];
+    if (viewportWidth <= gridTokenSource.breakpoint[first].value) {
+        return gridValue(first, field);
+    }
+
+    for (let index = 0; index < breakpointOrder.length - 1; index += 1) {
+        const from = breakpointOrder[index];
+        const to = breakpointOrder[index + 1];
+        const fromWidth = gridTokenSource.breakpoint[from].value;
+        const toWidth = gridTokenSource.breakpoint[to].value;
+
+        if (viewportWidth < toWidth) {
+            const progress = (viewportWidth - fromWidth) / (toWidth - fromWidth);
+            return gridValue(from, field) +
+                progress * (gridValue(to, field) - gridValue(from, field));
+        }
+    }
+
+    return gridValue(breakpointOrder[breakpointOrder.length - 1], field);
+}
+
+function steppedSidebarValue(field, viewportWidth) {
+    const breakpoint = [...breakpointOrder].reverse().find(
+        (name) => viewportWidth >= gridTokenSource.breakpoint[name].value,
+    ) || breakpointOrder[0];
+    return gridValue(breakpoint, field);
 }
 
 function useViewportWidth(device) {
@@ -97,27 +130,17 @@ function GridMetric({label, property, resolved, value}) {
     );
 }
 
-function BreakpointDevice({config, preview, referenceWidth}) {
-    const columns = config.columns.value;
-    const margin = config.margin.value / referenceWidth * preview.width;
-    const marginExtra =
-        config['margin-extra'].value / referenceWidth * preview.width;
-    const columnGap = config.gutter.value / referenceWidth * preview.width;
+function BreakpointDevice({columns, preview}) {
+    const margin = gridValue(preview.breakpoint, 'margin');
+    const columnGap = gridValue(preview.breakpoint, 'gutter');
+    const sidebarCollapsed = gridValue(preview.breakpoint, 'sidebar-collapsed');
+    const sidebarExpanded = gridValue(preview.breakpoint, 'sidebar-expanded');
     const previewStyle = {
         '--device-width': `${preview.previewWidth}px`,
         '--preview-columns': columns,
-        '--preview-margin': toPercentageValue(
-            config.margin.value,
-            referenceWidth,
-        ),
-        '--preview-margin-extra': toPercentageValue(
-            config['margin-extra'].value,
-            referenceWidth,
-        ),
-        '--preview-column-gap': toPercentageValue(
-            config.gutter.value,
-            referenceWidth,
-        ),
+        '--preview-margin': toPercentageValue(margin, preview.width),
+        '--preview-sidebar': toPercentageValue(sidebarExpanded, preview.width),
+        '--preview-column-gap': toPercentageValue(columnGap, preview.width),
     };
 
     return (
@@ -142,8 +165,7 @@ function BreakpointDevice({config, preview, referenceWidth}) {
                                 `${preview.width} / ${preview.height}`,
                         }}
                     >
-                        <i className="extra-guide start" aria-hidden="true"/>
-                        <i className="extra-guide end" aria-hidden="true"/>
+                        <i className="sidebar-band" aria-hidden="true"/>
                         <div className="mini-grid" aria-hidden="true">
                             {Array.from({length: columns}, (_, index) => (
                                 <i key={`${preview.label}-column-${index + 1}`}/>
@@ -156,12 +178,10 @@ function BreakpointDevice({config, preview, referenceWidth}) {
 
             <dl className="device-values">
                 <div><dt>Margin</dt><dd>{formatNumber(margin)}px</dd></div>
-                <div>
-                    <dt>Margin extra</dt>
-                    <dd>{formatNumber(marginExtra)}px</dd>
-                </div>
                 <div><dt>Column gap</dt><dd>{formatNumber(columnGap)}px</dd></div>
                 <div><dt>Columns</dt><dd>{columns}</dd></div>
+                <div><dt>Sidebar collapsed</dt><dd>{sidebarCollapsed}px</dd></div>
+                <div><dt>Sidebar expanded</dt><dd>{sidebarExpanded}px</dd></div>
             </dl>
         </article>
     );
@@ -169,27 +189,16 @@ function BreakpointDevice({config, preview, referenceWidth}) {
 
 function GridFoundations({device}) {
     const viewportWidth = useViewportWidth(device);
-    const config = gridTokenSource.grid.admin[device];
-    const referenceWidth = gridTokenSource.breakpoint[device].value;
-    const columns = config.columns.value;
-    const margin = config.margin.value;
-    const marginExtra = config['margin-extra'].value;
-    const gutter = config.gutter.value;
+    const [sidebarState, setSidebarState] = useState('collapsed');
+    const columns = gridTokenSource.grid.admin.columns[device].value;
+    const margin = interpolatedGridValue('margin', viewportWidth);
+    const gutter = interpolatedGridValue('gutter', viewportWidth);
+    const sidebarWidth = steppedSidebarValue(`sidebar-${sidebarState}`, viewportWidth);
+    const marginPixelValue = `${formatNumber(margin)}px`;
+    const gutterPixelValue = `${formatNumber(gutter)}px`;
     const columnWidth =
-        (viewportWidth -
-            2 * margin / referenceWidth * viewportWidth -
-            (columns - 1) * gutter / referenceWidth * viewportWidth) /
+        (viewportWidth - sidebarWidth - 2 * margin - (columns - 1) * gutter) /
         columns;
-    const marginViewportValue = toViewportWidth(margin, referenceWidth);
-    const marginExtraViewportValue = toViewportWidth(marginExtra, referenceWidth);
-    const gutterViewportValue = toViewportWidth(gutter, referenceWidth);
-    const marginPixelValue = toPixels(margin, referenceWidth, viewportWidth);
-    const marginExtraPixelValue = toPixels(
-        marginExtra,
-        referenceWidth,
-        viewportWidth,
-    );
-    const gutterPixelValue = toPixels(gutter, referenceWidth, viewportWidth);
     const labeledGutterIndex = Math.floor((columns - 1) / 2);
     const gridTemplateColumns = Array.from(
         {length: columns * 2 - 1},
@@ -200,9 +209,9 @@ function GridFoundations({device}) {
     ).join(' ');
     const gridStyle = {
         '--grid-columns': columns,
-        '--grid-margin': marginViewportValue,
-        '--grid-margin-extra': marginExtraViewportValue,
-        '--grid-column-gap': gutterViewportValue,
+        '--grid-margin': marginPixelValue,
+        '--grid-column-gap': gutterPixelValue,
+        '--grid-sidebar-width': `${sidebarWidth}px`,
     };
 
     return (
@@ -212,26 +221,25 @@ function GridFoundations({device}) {
                     <dl className="runtime">
                         <div><dt>Device</dt><dd>{device}</dd></div>
                         <div><dt>Viewport</dt><dd>{viewportWidth}px</dd></div>
-                        <div><dt>Reference</dt><dd>{referenceWidth}px</dd></div>
                         <div><dt>Columns</dt><dd>{columns}</dd></div>
+                        <div><dt>Sidebar</dt><dd>{sidebarState} · {sidebarWidth}px</dd></div>
                     </dl>
                 }
                 className="hero"
-                description="The CRM layout grid is generated from grid.admin tokens and device breakpoints. Change the device context and viewport in the Storybook toolbar to inspect every variant."
+                description="Columns follow device detection. Margins and gutters interpolate across six viewport references; the sidebar changes at 1024px."
                 eyebrow="CRM / Foundations"
                 title="Grid system"
             />
 
             <aside className="notice">
-                The preview mirrors the production variables generated for
-                <code> body[data-device=&quot;{device}&quot;]</code> directly from the
-                source tokens. The legend and guides belong only to Storybook.
+                Choose a device in the toolbar and resize the viewport to inspect
+                the generated grid. Sidebar state is independent of device.
             </aside>
 
             <section className="section">
                 <div className="section-heading">
                     <div><span>Live preview</span><h2>{columns}-column grid</h2></div>
-                    <p>Outer tinted areas represent the responsive page margins.</p>
+                    <p>Margins are symmetric inside the content area after the sidebar.</p>
                 </div>
 
                 <div className="legend" aria-label="Grid legend">
@@ -239,14 +247,14 @@ function GridFoundations({device}) {
                         <i className="swatch margin"/>
                         <div>
                             <strong>Margin</strong>
-                            <span>{marginPixelValue} · {marginViewportValue}</span>
+                            <span>{marginPixelValue}</span>
                         </div>
                     </article>
                     <article>
-                        <i className="swatch margin-extra"/>
+                        <i className="swatch sidebar"/>
                         <div>
-                            <strong>Margin extra</strong>
-                            <span>{marginExtraPixelValue} · {marginExtraViewportValue}</span>
+                            <strong>Sidebar</strong>
+                            <span>{sidebarState} · {sidebarWidth}px</span>
                         </div>
                     </article>
                     <article>
@@ -260,32 +268,29 @@ function GridFoundations({device}) {
                         <i className="swatch gutter"/>
                         <div>
                             <strong>Gutter</strong>
-                            <span>{gutterPixelValue} · {gutterViewportValue}</span>
-                        </div>
-                    </article>
-                    <article>
-                        <i className="swatch reference"/>
-                        <div>
-                            <strong>Reference width</strong>
-                            <span>{referenceWidth}px</span>
+                            <span>{gutterPixelValue}</span>
                         </div>
                     </article>
                 </div>
 
+                <button
+                    className="sidebar-toggle"
+                    onClick={() => setSidebarState(
+                        (state) => state === 'collapsed' ? 'expanded' : 'collapsed'
+                    )}
+                    type="button"
+                >
+                    Toggle sidebar ({sidebarState})
+                </button>
                 <div className="viewport">
                     <div className="measurements">
-                        <span>Margin {marginPixelValue}</span>
+                        <span>Sidebar {sidebarWidth}px + margin {marginPixelValue}</span>
                         <strong>{columns} columns / {columns - 1} gutters</strong>
                         <span>Margin {marginPixelValue}</span>
                     </div>
+                    <div className="sidebar-band"/>
                     <div className="margin-band start"/>
                     <div className="margin-band end"/>
-                    <div className="extra-guide start">
-                        <span>margin-extra</span>
-                    </div>
-                    <div className="extra-guide end">
-                        <span>margin-extra</span>
-                    </div>
                     <div
                         className="columns"
                         style={{gridTemplateColumns}}
@@ -324,19 +329,17 @@ function GridFoundations({device}) {
                         <h2>{device} reference screens</h2>
                     </div>
                     <p>
-                        Device frames preserve screen aspect ratios. Grid
-                        margins and column gaps are scaled from the same source
-                        tokens as the live preview.
+                        Device frames preserve screen aspect ratios and show
+                        the exact grid values at each reference width.
                     </p>
                 </div>
 
                 <div className="device-pair">
                     {breakpointPreviews[device].map((preview) => (
                         <BreakpointDevice
-                            config={config}
+                            columns={columns}
                             key={preview.label}
                             preview={preview}
-                            referenceWidth={referenceWidth}
                         />
                     ))}
                 </div>
@@ -359,19 +362,19 @@ function GridFoundations({device}) {
                         label="Margin"
                         property="--grid-margin"
                         resolved={marginPixelValue}
-                        value={marginViewportValue}
+                        value="Interpolated by viewport"
                     />
                     <GridMetric
-                        label="Margin extra"
-                        property="--grid-margin-extra"
-                        resolved={marginExtraPixelValue}
-                        value={marginExtraViewportValue}
+                        label="Sidebar width"
+                        property="--grid-sidebar-width"
+                        resolved={`${sidebarWidth}px`}
+                        value={sidebarState}
                     />
                     <GridMetric
                         label="Column gap"
                         property="--grid-column-gap"
                         resolved={gutterPixelValue}
-                        value={gutterViewportValue}
+                        value="Interpolated by viewport"
                     />
                     <GridMetric
                         label="Column width"
@@ -385,33 +388,39 @@ function GridFoundations({device}) {
             <section className="section">
                 <div className="section-heading">
                     <div><span>Source tokens</span><h2>Admin grid variants</h2></div>
-                    <p>Token names remain aligned with the angular-design-system schema.</p>
+                    <p>Votey CRM uses a separate grid contract from BoxEs.</p>
                 </div>
 
                 <div className="table-wrapper">
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Device</th>
                                 <th>Breakpoint</th>
+                                <th>Width</th>
                                 <th>Columns</th>
                                 <th>Margin</th>
-                                <th>Margin extra</th>
                                 <th>Gutter</th>
+                                <th>Sidebar collapsed</th>
+                                <th>Sidebar expanded</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {devices.map((variant) => {
-                                const variantConfig = gridTokenSource.grid.admin[variant];
+                            {breakpointOrder.map((breakpoint) => {
+                                const referenceDevice = breakpoint.startsWith('mobile')
+                                    ? 'mobile'
+                                    : breakpoint.startsWith('tablet')
+                                        ? 'tablet'
+                                        : 'desktop';
 
                                 return (
-                                    <tr className={variant === device ? 'is-active' : ''} key={variant}>
-                                        <th>{variant}</th>
-                                        <td>{gridTokenSource.breakpoint[variant].value}px</td>
-                                        <td>{variantConfig.columns.value}</td>
-                                        <td>{variantConfig.margin.value}px</td>
-                                        <td>{variantConfig['margin-extra'].value}px</td>
-                                        <td>{variantConfig.gutter.value}px</td>
+                                    <tr className={referenceDevice === device ? 'is-active' : ''} key={breakpoint}>
+                                        <th>{breakpoint}</th>
+                                        <td>{gridTokenSource.breakpoint[breakpoint].value}px</td>
+                                        <td>{gridTokenSource.grid.admin.columns[referenceDevice].value}</td>
+                                        <td>{gridValue(breakpoint, 'margin')}px</td>
+                                        <td>{gridValue(breakpoint, 'gutter')}px</td>
+                                        <td>{gridValue(breakpoint, 'sidebar-collapsed')}px</td>
+                                        <td>{gridValue(breakpoint, 'sidebar-expanded')}px</td>
                                     </tr>
                                 );
                             })}

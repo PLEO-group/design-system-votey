@@ -1,6 +1,44 @@
-:host,
+:host {
+  display: contents;
+}
+
 mat-icon {
   display: block;
   width: 100%;
   height: 100%;
+
+  &.accent {
+    color: var(--color-accent-primary);
+  }
+
+  &.white {
+    color: var(--color-white);
+  }
+}
+
+// MatIcon inserts the registered SVG after Angular has scoped component styles.
+:host ::ng-deep mat-icon {
+  &.accent svg {
+    &[fill]:not([fill="none"]),
+    [fill]:not([fill="none"]) {
+      fill: var(--color-accent-primary) !important;
+    }
+
+    &[stroke]:not([stroke="none"]),
+    [stroke]:not([stroke="none"]) {
+      stroke: var(--color-accent-primary) !important;
+    }
+  }
+
+  &.white svg {
+    &[fill]:not([fill="none"]),
+    [fill]:not([fill="none"]) {
+      fill: var(--color-white) !important;
+    }
+
+    &[stroke]:not([stroke="none"]),
+    [stroke]:not([stroke="none"]) {
+      stroke: var(--color-white) !important;
+    }
+  }
 }

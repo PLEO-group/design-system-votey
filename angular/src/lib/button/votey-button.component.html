@@ -23,7 +23,7 @@ resolvedTooltipText() | vtTranslate;
   >
     @if (ico()) {
     <span class="icon">
-      <vt-icon [ico]="ico()" />
+      <vt-icon [ico]="ico()" [color]="iconColor()" />
     </span>
     } @if (text()) {
     <span class="label">{{ translatedText }}</span>

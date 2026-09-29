@@ -1,5 +1,8 @@
 # Changelog
 
+- 1.13.0 — Dodano odrębny kontrakt grida CRM: kolumny według device, interpolowane
+  marginesy i gutter według sześciu szerokości, skokowy sidebar oraz usunięcie
+  `margin-extra`; wyjaśniono różnicę względem grida BoxEs.
 - 1.12.0 — Doprecyzowano semantykę wymaganych signal inputs dla nazw dostępnych
   kontrolek oraz obowiązek jawnego priorytetu i walidacji złożonych stanów UI.
 - 1.11.0 — Przeniesiono historię zmian do osobnej referencji `references/changelog.md`.

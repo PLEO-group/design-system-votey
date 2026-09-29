@@ -1,0 +1,40 @@
+@let translatedPageLabel = 'LABEL.PAGE' | vtTranslate;
+@let interactionDisabled = disabled() || loading();
+@let previousDisabled = interactionDisabled || currentPage() === 0;
+@let nextDisabled = interactionDisabled || currentPage() >= pageCount() - 1;
+<nav class="pagination" [attr.aria-label]="'LABEL.PAGINATION' | vtTranslate" [attr.aria-busy]="loading()">
+  <div class="range" aria-live="polite">
+    <vt-text variant="body-s" color="secondary" [content]="rangeText()" />
+  </div>
+
+  <div class="pages">
+    <button class="page-button" type="button" [attr.aria-label]="'LABEL.PREVIOUS_PAGE' | vtTranslate"
+      [disabled]="previousDisabled" (click)="selectPage(currentPage() - 1)">
+      <span class="page-icon"><vt-icon ico="ui-chevron-left" /></span>
+    </button>
+    @for (pageIndex of visiblePages(); track pageIndex) {
+      <button class="page-button" type="button" [class.selected]="pageIndex === currentPage()"
+        [attr.aria-label]="translatedPageLabel + ' ' + (pageIndex + 1)"
+        [attr.aria-current]="pageIndex === currentPage() ? 'page' : null"
+        [disabled]="interactionDisabled" (click)="selectPage(pageIndex)">
+        <vt-text variant="button-small" [content]="pageIndex + 1" [color]="interactionDisabled ? 'muted' : 'primary'" />
+      </button>
+    }
+    <button class="page-button" type="button" [attr.aria-label]="'LABEL.NEXT_PAGE' | vtTranslate"
+      [disabled]="nextDisabled" (click)="selectPage(currentPage() + 1)">
+      <span class="page-icon"><vt-icon ico="ui-chevron-right" /></span>
+    </button>
+  </div>
+
+  <div class="size-control">
+    <vt-select
+      variant="compact"
+      label="LABEL.ITEMS_PER_PAGE"
+      [options]="pageSizeOptions()"
+      [control]="sizeControl"
+      [disabled]="interactionDisabled"
+      [translateOptions]="false"
+      (change)="selectSize($event)"
+    />
+  </div>
+</nav>

@@ -2,4 +2,6 @@
   [svgIcon]="ico()"
   [attr.aria-hidden]="ariaLabel().trim() ? null : true"
   [attr.aria-label]="ariaLabel().trim() || null"
+  [class.accent]="color() === 'accent'"
+  [class.white]="color() === 'white'"
 />

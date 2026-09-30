@@ -112,6 +112,20 @@ export function timeSuggestions(stepMinutes: number): readonly string[] {
   });
 }
 
+export function isWithinTimeRange(value: PickerTimeParts, min: PickerTimeParts | null, max: PickerTimeParts | null): boolean {
+  const minute = value.hour * 60 + value.minute;
+  return (min === null || minute >= min.hour * 60 + min.minute) &&
+    (max === null || minute <= max.hour * 60 + max.minute);
+}
+
+export function isTimeWithinBounds(value: string, min: string | null, max: string | null): boolean {
+  const parsed = parseTimeInput(value);
+  if (parsed.error) return false;
+  return isWithinTimeRange(parsed.value,
+    min === null ? null : parseTimeInput(min).value,
+    max === null ? null : parseTimeInput(max).value);
+}
+
 export function parseInstant(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?(Z|[+-]\d{2}:\d{2})$/.exec(value);
   if (!match || parseCalendarDate(`${match[1]}-${match[2]}-${match[3]}`).error) return null;
@@ -181,12 +195,19 @@ export function firstAllowedTime(
 
 export function validateTimeConfig(
   stepMinutes: number,
-  policy: PickerTimeEntryPolicy
+  policy: PickerTimeEntryPolicy,
+  min: string | null = null,
+  max: string | null = null
 ): PickerConfigError | null {
   if (!Number.isInteger(stepMinutes) || stepMinutes < 1 || stepMinutes > 60) {
     return "invalidStep";
   }
   if (policy !== "allowManual" && policy !== "listOnly") return "invalidPolicy";
+  const low = min === null ? null : parseTimeInput(min).value;
+  const high = max === null ? null : parseTimeInput(max).value;
+  if (min !== null && low === null) return "invalidMin";
+  if (max !== null && high === null) return "invalidMax";
+  if (low !== null && high !== null && !isWithinTimeRange(low, null, high)) return "minAfterMax";
   return null;
 }
 

@@ -37,6 +37,7 @@ describe("VoteyIconComponent", () => {
       "#00aa77"
     );
     fixture.nativeElement.style.setProperty("--color-white", "#ffffff");
+    fixture.nativeElement.style.setProperty("--color-text-muted", "#777777");
     fixture.componentRef.setInput("ico", "ui-turn-on-thick");
   });
 
@@ -54,5 +55,10 @@ describe("VoteyIconComponent", () => {
     fixture.detectChanges();
     expect(getComputedStyle(path).fill).toBe("rgb(255, 255, 255)");
     expect(getComputedStyle(path).stroke).toBe("rgb(255, 255, 255)");
+
+    fixture.componentRef.setInput("color", "muted");
+    fixture.detectChanges();
+    expect(getComputedStyle(path).fill).toBe("rgb(119, 119, 119)");
+    expect(getComputedStyle(path).stroke).toBe("rgb(119, 119, 119)");
   });
 });

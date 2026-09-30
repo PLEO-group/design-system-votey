@@ -13,7 +13,9 @@
       [formControl]="formControl"
       [displayValue]="displayValue"
       [value]="draft()"
-      [disabled]="isDisabled"
+      [readOnly]="isDisabled"
+      [attr.aria-disabled]="isDisabled"
+      [attr.tabindex]="isDisabled ? -1 : null"
       [required]="isRequired"
       [placeholder]="expectedFormat"
       [attr.aria-label]="label() ? null : (expectedFormat)"
@@ -25,7 +27,7 @@
       (blur)="finishDraft()"
       (keydown.escape)="close()"
     />
-    <span class="icon" aria-hidden="true"><vt-icon [ico]="mode() === 'DateTime' ? 'ui-time' : 'ui-calendar'" /></span>
+    <span class="icon" aria-hidden="true"><vt-icon [ico]="mode() === 'DateTime' ? 'ui-time' : 'ui-calendar'" [color]="isDisabled ? 'muted' : ''" /></span>
     @if (committed() && !isDisabled && !isRequired) {
       <vt-button class="clear" variant="ghost" size="small" ico="ui-close" ariaLabel="LABEL.CLEAR"
         (click)="$event.stopPropagation()" (pressed)="clear()" />
@@ -57,15 +59,15 @@
     />
     @if (mode() === 'DateTime') {
       <div class="time-picker">
-        <button class="time-trigger" type="button" [attr.aria-expanded]="timeOpened()" [attr.aria-controls]="inputId + '-time-list'" (click)="toggleTime()">
-          <span [class.placeholder]="!committed()">{{ committed() ? selectedTime() : ('LABEL.SELECT_TIME' | vtTranslate) }}</span>
+        <button class="time-trigger" type="button" [disabled]="deferDateTimeCommit() && !pendingDay()" [attr.aria-expanded]="timeOpened()" [attr.aria-controls]="inputId + '-time-list'" (click)="toggleTime()">
+          <span [class.placeholder]="pendingDay() || !committed()">{{ pendingDay() || !committed() ? ('LABEL.SELECT_TIME' | vtTranslate) : selectedTime() }}</span>
           <span class="time-icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
         </button>
         @if (timeOpened()) {
           <div [id]="inputId + '-time-list'">
             <vt-picker-time-list
               [items]="timeItems()"
-              [selectedId]="selectedTime()"
+              [selectedId]="pendingDay() ? null : selectedTime()"
               (selected)="chooseTime($event)"
               (dismissed)="timeOpened.set(false)"
             />

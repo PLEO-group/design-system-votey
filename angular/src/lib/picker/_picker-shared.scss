@@ -26,7 +26,7 @@
     border: 1px solid var(--color-border-field);
     border-radius: var(--radius-m);
     background: var(--color-bg-surface);
-    cursor: text;
+    cursor: pointer;
 
     &:hover {
       border-color: var(--color-accent-hover);
@@ -45,6 +45,7 @@
       outline: 0;
       background: transparent;
       color: var(--color-text-primary);
+      cursor: inherit;
       font-size: var(--typo-field-font-size);
       font-weight: var(--typo-field-font-weight);
       line-height: var(--typo-field-line-height);
@@ -79,8 +80,7 @@
       background: var(--color-bg-surface-tint);
       cursor: not-allowed;
 
-      .control,
-      .icon {
+      .control {
         color: var(--color-text-muted);
       }
     }

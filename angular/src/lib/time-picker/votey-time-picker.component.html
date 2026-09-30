@@ -25,7 +25,7 @@
       (blur)="finishDraft()"
       (keydown.escape)="close()"
     />
-    <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
+    <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" [color]="isDisabled ? 'muted' : ''" /></span>
     @if (committed() && !isDisabled && !isRequired) {
       <vt-button class="clear" variant="ghost" size="small" ico="ui-close" ariaLabel="LABEL.CLEAR"
         (click)="$event.stopPropagation()" (pressed)="clear()" />

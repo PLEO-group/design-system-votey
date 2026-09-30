@@ -68,6 +68,7 @@ export abstract class PickerControl extends VoteyFormControlApplyDirective<strin
       if (result.error) {
         this.applyPickerError(result.error);
       } else {
+        this.formControl.markAsDirty();
         this.formControl.setValue(result.value);
         this.committed.set(result.value);
         this.editing = false;
@@ -83,6 +84,7 @@ export abstract class PickerControl extends VoteyFormControlApplyDirective<strin
   protected setCommitted(value: string | null): void {
     if (this.isDisabled) return;
     this.editing = false;
+    this.formControl.markAsDirty();
     this.formControl.setValue(value);
     this.committed.set(value);
     this.formControl.markAsTouched();

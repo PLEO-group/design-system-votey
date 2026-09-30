@@ -236,7 +236,7 @@ const time = new FormControl<string | null>(null);
 
 ```html
 <vt-date-picker label="Data" [control]="date" mode="Date" />
-<vt-time-picker label="Godzina" [control]="time" [stepMinutes]="30" />
+<vt-time-picker label="Godzina" [control]="time" [min]="'09:00'" [max]="'17:00'" [stepMinutes]="30" />
 ```
 
 `Date` zapisuje `YYYY-MM-DD`, `DateTime` zapisuje kanoniczne UTC ISO
@@ -244,6 +244,11 @@ const time = new FormControl<string | null>(null);
 pole daje `null`. `min` i `max` w trybie `Date` są datami `YYYY-MM-DD`, a w
 `DateTime` chwilami ISO z offsetem lub `Z`. Krok godzin wynosi domyślnie
 30 minut; `timeEntryPolicy="listOnly"` ogranicza **nowe** wybory do listy.
+`vt-time-picker` przyjmuje opcjonalne, włączne granice `min` i `max` w formacie
+`HH:mm`. Ograniczają one listę i ręcznie wpisywane wartości, niezależnie od
+`stepMinutes`. Zmiana granic nie usuwa zapisanej wartości: jeśli wypada poza
+zakres, kontrolka otrzymuje `voteyPickerRange`. Błędny format granicy lub
+`min > max` daje `voteyPickerConfig`.
 Nieedytowana wartość historyczna spoza listy pozostaje poprawna. Kontrolka
 formularza ustala `required`, a aplikacja mapuje wartość do własnego API.
 

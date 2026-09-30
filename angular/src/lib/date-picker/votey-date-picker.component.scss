@@ -50,6 +50,11 @@
       line-height: var(--typo-field-line-height);
       cursor: pointer;
 
+      &:disabled {
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+      }
+
       .placeholder {
         color: var(--color-text-placeholder);
       }
@@ -73,6 +78,11 @@
 }
 
 .vt-date-picker-panel ::ng-deep {
+  --mat-icon-button-state-layer-color: transparent;
+  --mat-icon-button-ripple-color: transparent;
+  --mat-text-button-state-layer-color: transparent;
+  --mat-text-button-ripple-color: transparent;
+
   .mat-calendar-header {
     padding: 0;
   }
@@ -85,7 +95,17 @@
 
     .mat-calendar-period-button {
       order: 2;
-      flex: 1;
+      display: inline-flex;
+      flex: 1 1 auto;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      height: 28px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
       color: var(--color-text-primary);
       font-size: var(--typo-body-l-semibold-font-size);
       font-weight: var(--typo-body-l-semibold-font-weight);
@@ -113,20 +133,65 @@
       align-items: center;
       justify-content: center;
       width: 28px;
+      min-width: 28px;
       height: 28px;
       padding: 0;
       border: 1px solid var(--color-accent-primary);
       border-radius: var(--radius-full);
+      background-color: var(--color-bg-surface);
       color: var(--color-text-primary);
 
       svg {
-        width: 20px;
-        height: 20px;
+        opacity: 0;
+      }
+
+      &::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 14px;
+        height: 14px;
+        background-color: currentColor;
+        content: "";
+        transform: translate(-50%, -50%);
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: contain;
+      }
+
+      &:hover:not(:disabled):not([aria-disabled="true"]):not(.mat-mdc-button-disabled) {
+        border-color: var(--color-accent-hover);
+        background-color: var(--color-bg-surface-tint);
+        color: var(--color-text-primary);
+        cursor: pointer;
+      }
+
+      &:disabled,
+      &[aria-disabled="true"],
+      &.mat-mdc-button-disabled {
+        border-color: var(--color-border-subtle);
+        background-color: var(--color-bg-surface);
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+        opacity: 1;
       }
     }
 
-    .mat-calendar-previous-button { order: 1; }
-    .mat-calendar-next-button { order: 3; }
+    .mat-calendar-previous-button {
+      order: 1;
+
+      &::after {
+        mask-image: url("/assets/votey/icons/ui/icon_ui_chevron-left.svg");
+      }
+    }
+
+    .mat-calendar-next-button {
+      order: 3;
+
+      &::after {
+        mask-image: url("/assets/votey/icons/ui/icon_ui_chevron-right.svg");
+      }
+    }
   }
 
   .mat-calendar-content {

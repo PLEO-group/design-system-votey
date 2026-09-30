@@ -70,7 +70,7 @@ declare const VoteyIllustrationRegistryEntries: readonly VoteySvgRegistryEntry<V
 declare class VoteyIconComponent {
     readonly ico: InputSignal<VoteyIcon | VoteyIllustration | "">;
     readonly ariaLabel: InputSignal<string>;
-    readonly color: InputSignal<"accent" | "white" | "">;
+    readonly color: InputSignal<"accent" | "white" | "muted" | "">;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyIconComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyIconComponent, "vt-icon", never, { "ico": { "alias": "ico"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "color": { "alias": "color"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
@@ -749,6 +749,7 @@ declare class VoteyDatePickerComponent extends PickerControl {
     readonly label: InputSignal<string>;
     readonly disabled: InputSignalWithTransform<boolean, unknown>;
     readonly mode: InputSignal<PickerMode>;
+    readonly deferDateTimeCommit: InputSignalWithTransform<boolean, unknown>;
     readonly min: InputSignal<string | null>;
     readonly max: InputSignal<string | null>;
     readonly locale: InputSignal<string>;
@@ -761,6 +762,7 @@ declare class VoteyDatePickerComponent extends PickerControl {
     protected readonly active: WritableSignal<PickerDateParts>;
     protected readonly resolvedLocale: Signal<string>;
     protected readonly timeOpened: WritableSignal<boolean>;
+    protected readonly pendingDay: WritableSignal<PickerDateParts | null>;
     protected readonly startAt: Signal<Date>;
     protected readonly selected: Signal<PickerDateParts | null>;
     protected readonly minDay: Signal<PickerDateParts | null>;
@@ -796,7 +798,7 @@ declare class VoteyDatePickerComponent extends PickerControl {
     private parseSuggestion;
     private toLocalDate;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyDatePickerComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyDatePickerComponent, "vt-date-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "mode": { "alias": "mode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "locale": { "alias": "locale"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyDatePickerComponent, "vt-date-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "mode": { "alias": "mode"; "required": false; "isSignal": true; }; "deferDateTimeCommit": { "alias": "deferDateTimeCommit"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "locale": { "alias": "locale"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
 declare const VoteyTimeEntryPolicies: readonly ["allowManual", "listOnly"];
@@ -806,6 +808,8 @@ declare class VoteyTimePickerComponent extends PickerControl {
     readonly disabled: InputSignalWithTransform<boolean, unknown>;
     readonly stepMinutes: InputSignal<number>;
     readonly timeEntryPolicy: InputSignal<PickerTimeEntryPolicy>;
+    readonly min: InputSignal<string | null>;
+    readonly max: InputSignal<string | null>;
     private readonly fallbackId;
     private readonly field;
     private readonly menu;
@@ -828,8 +832,9 @@ declare class VoteyTimePickerComponent extends PickerControl {
     protected handleOverlayKeydown(event: KeyboardEvent): void;
     protected chooseTime(item: VoteyMenuItem): void;
     protected clear(): void;
+    private configurationError;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTimePickerComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTimePickerComponent, "vt-time-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTimePickerComponent, "vt-time-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
 export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };

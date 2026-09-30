@@ -28,9 +28,9 @@ export const VoteyTextVariants = [
   "caption-light",
   "caption-s",
   "micro",
-  "button",
-  "button-small",
-  "table-header",
+  "action",
+  "action-s",
+  "column-header",
   "label",
   "field",
 ] as const;
@@ -67,7 +67,12 @@ export class VoteyTextComponent {
   public readonly maxLines: InputSignalWithTransform<number, unknown> = input<
     number,
     unknown
-  >(0, { transform: numberAttribute });
+  >(0, {
+    transform: (value: unknown): number => {
+      const lines: number = numberAttribute(value);
+      return Number.isSafeInteger(lines) && lines > 0 ? lines : 0;
+    },
+  });
 
   protected readonly lineClampEnabled: Signal<boolean> = computed<boolean>(
     () => !this.wrap() && this.maxLines() > 0

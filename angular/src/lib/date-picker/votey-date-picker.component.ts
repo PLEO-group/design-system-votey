@@ -57,6 +57,7 @@ export class VoteyDatePickerComponent extends PickerControl {
   public readonly label: InputSignal<string> = input<string>("");
   public readonly disabled: InputSignalWithTransform<boolean, unknown> = input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly mode: InputSignal<PickerMode> = input<PickerMode>("Date");
+  public readonly deferDateTimeCommit: InputSignalWithTransform<boolean, unknown> = input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly min: InputSignal<string | null> = input<string | null>(null);
   public readonly max: InputSignal<string | null> = input<string | null>(null);
   public readonly locale: InputSignal<string> = input<string>("");
@@ -72,6 +73,7 @@ export class VoteyDatePickerComponent extends PickerControl {
     this.locale() || this.translator.getActiveLanguage?.() || this.defaultLocale
   );
   protected readonly timeOpened: WritableSignal<boolean> = signal(false);
+  protected readonly pendingDay: WritableSignal<PickerDateParts | null> = signal(null);
   protected readonly startAt: Signal<Date> = computed(() => this.toLocalDate(this.active()));
   protected readonly selected: Signal<PickerDateParts | null> = computed(() => {
     const value = this.committed();
@@ -87,7 +89,7 @@ export class VoteyDatePickerComponent extends PickerControl {
     this.mode() === "Date" ? (this.max() ? parseCalendarDate(this.max()!).value : null) : (this.max() && parseInstant(this.max()!) ? dateParts(parseInstant(this.max()!)!) : null)
   );
   protected readonly selectedDate: Signal<Date | null> = computed(() => {
-    const day = this.selected();
+    const day = this.pendingDay() ?? this.selected();
     return day ? this.toLocalDate(day) : null;
   });
   protected readonly minDate: Signal<Date | null> = computed(() => {
@@ -99,7 +101,7 @@ export class VoteyDatePickerComponent extends PickerControl {
     return day ? this.toLocalDate(day) : null;
   });
   protected readonly timeItems: Signal<readonly VoteyMenuItem[]> = computed(() => {
-    const day = this.selected() ?? this.active();
+    const day = this.pendingDay() ?? this.selected() ?? this.active();
     if (this.mode() !== "DateTime") return [];
     const min = this.min() ? parseInstant(this.min()!) : null;
     const max = this.max() ? parseInstant(this.max()!) : null;
@@ -111,7 +113,8 @@ export class VoteyDatePickerComponent extends PickerControl {
   });
   protected readonly selectedTime: Signal<string | null> = computed(() => {
     const instant = this.committed() ? parseInstant(this.committed()!) : null;
-    return instant && this.mode() === "DateTime" ? formatTime(timeParts(instant)) : this.timeItems()[0]?.id ?? null;
+    return !this.pendingDay() && instant && this.mode() === "DateTime" ?
+      formatTime(timeParts(instant)) : this.timeItems()[0]?.id ?? null;
   });
   protected readonly positions: ConnectedPosition[] = [
     { originX: "start", originY: "bottom", overlayX: "start", overlayY: "top", offsetY: 8 },
@@ -142,7 +145,11 @@ export class VoteyDatePickerComponent extends PickerControl {
       this.refreshValidation();
     });
     effect((): void => {
-      if (this.disabled()) this.opened.set(false);
+      if (this.disabled()) {
+        this.pendingDay.set(null);
+        this.timeOpened.set(false);
+        this.opened.set(false);
+      }
     });
   }
 
@@ -223,6 +230,7 @@ export class VoteyDatePickerComponent extends PickerControl {
     const active = nearestAllowedDay(origin, this.dayAllowed, this.minDay(), this.maxDay());
     if (!active) return;
     this.active.set(active);
+    this.pendingDay.set(null);
     this.timeOpened.set(false);
     this.opened.set(true);
     queueMicrotask(() => {
@@ -231,6 +239,7 @@ export class VoteyDatePickerComponent extends PickerControl {
   }
 
   protected close(): void {
+    this.pendingDay.set(null);
     if (!this.opened()) return;
     this.opened.set(false);
     this.timeOpened.set(false);
@@ -241,12 +250,14 @@ export class VoteyDatePickerComponent extends PickerControl {
   protected handleOverlayKeydown(event: KeyboardEvent): void {
     if (event.key === "Escape") {
       event.preventDefault();
-      if (this.timeOpened()) this.timeOpened.set(false);
+      if (this.pendingDay()) this.close();
+      else if (this.timeOpened()) this.timeOpened.set(false);
       else this.close();
     }
   }
 
   protected toggleTime(): void {
+    if (this.deferDateTimeCommit() && !this.pendingDay()) return;
     this.timeOpened.update(open => !open);
     if (this.timeOpened()) queueMicrotask(() => this.menu()?.scrollSelected());
   }
@@ -265,16 +276,26 @@ export class VoteyDatePickerComponent extends PickerControl {
       this.max() ? parseInstant(this.max()!) : null, this.stepMinutes(), this.timeEntryPolicy(),
       previous ? timeParts(previous) : null);
     if (!nextTime) return;
+    if (this.deferDateTimeCommit()) {
+      this.pendingDay.set(day);
+      this.active.set(day);
+      this.timeOpened.set(true);
+      queueMicrotask(() => this.menu()?.scrollSelected());
+      return;
+    }
     this.setCommitted(canonicalInstant({ ...day, ...nextTime }));
     this.active.set(day);
   }
 
   protected chooseTime(item: VoteyMenuItem): void {
-    const day = this.selected() ?? this.active();
+    if (this.deferDateTimeCommit() && !this.pendingDay()) return;
+    const day = this.pendingDay() ?? this.selected() ?? this.active();
     if (this.configurationError() || !this.timeItems().some(option => option.id === item.id)) return;
     const time = this.parseSuggestion(item.id);
+    this.pendingDay.set(null);
     this.setCommitted(canonicalInstant({ ...day, ...time }));
     this.timeOpened.set(false);
+    if (this.deferDateTimeCommit()) this.close();
   }
 
   protected clear(): void {

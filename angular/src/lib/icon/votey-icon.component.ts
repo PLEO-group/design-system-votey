@@ -19,7 +19,7 @@ export class VoteyIconComponent {
     VoteyIcon | VoteyIllustration | ""
   >("");
   public readonly ariaLabel: InputSignal<string> = input<string>("");
-  public readonly color: InputSignal<"accent" | "white" | ""> = input<
-    "accent" | "white" | ""
+  public readonly color: InputSignal<"accent" | "white" | "muted" | ""> = input<
+    "accent" | "white" | "muted" | ""
   >("");
 }

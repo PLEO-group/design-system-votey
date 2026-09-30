@@ -52,6 +52,16 @@
         color: var(--color-text-placeholder);
         opacity: 1;
       }
+
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:autofill {
+        -webkit-box-shadow: 0 0 0 1000px var(--color-bg-surface) inset;
+        box-shadow: 0 0 0 1000px var(--color-bg-surface) inset;
+        -webkit-text-fill-color: var(--color-text-primary);
+        caret-color: var(--color-text-primary);
+      }
     }
 
     .icon {

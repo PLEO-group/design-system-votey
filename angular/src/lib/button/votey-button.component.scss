@@ -137,6 +137,7 @@ button {
 
   &.link {
     color: var(--color-accent-primary);
+    padding: 0;
 
     &:not(.small) {
       height: 42px;

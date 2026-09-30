@@ -8,13 +8,14 @@ import {
 } from "@angular/core";
 import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
+import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 
 @Component({
   selector: "vt-chip",
   templateUrl: "./votey-chip.component.html",
   styleUrl: "./votey-chip.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [VoteyButtonComponent, VoteyTextComponent],
+  imports: [VoteyButtonComponent, VoteyTextComponent, VoteyTranslatePipe],
 })
 export class VoteyChipComponent {
   public readonly label: InputSignal<string> = input.required<string>();

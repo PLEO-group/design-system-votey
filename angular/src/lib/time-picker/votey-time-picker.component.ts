@@ -16,7 +16,7 @@ import { PickerControl, type PickerError } from "../picker/picker-control";
 import { PickerDraftValueAccessorDirective } from "../picker/picker-draft-value-accessor.directive";
 import { PickerTimeListComponent } from "./picker-time-list.component";
 import {
-  parseTimeInput, timeSuggestions, validateTimeConfig,
+  isTimeWithinBounds, parseTimeInput, timeSuggestions, validateTimeConfig,
   type PickerTimeEntryPolicy,
 } from "../picker/picker-value";
 
@@ -38,12 +38,16 @@ export class VoteyTimePickerComponent extends PickerControl {
   public readonly disabled: InputSignalWithTransform<boolean, unknown> = input<boolean, unknown>(false, { transform: booleanAttribute });
   public readonly stepMinutes: InputSignal<number> = input<number>(30);
   public readonly timeEntryPolicy: InputSignal<PickerTimeEntryPolicy> = input<PickerTimeEntryPolicy>("allowManual");
+  public readonly min: InputSignal<string | null> = input<string | null>(null);
+  public readonly max: InputSignal<string | null> = input<string | null>(null);
 
   private readonly fallbackId = `vt-time-picker-${++nextTimeId}`;
   private readonly field: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild<ElementRef<HTMLInputElement>>("fieldInput");
   private readonly menu: Signal<PickerTimeListComponent | undefined> = viewChild<PickerTimeListComponent>(PickerTimeListComponent);
   protected readonly timeItems: Signal<readonly VoteyMenuItem[]> = computed(() =>
-    timeSuggestions(this.stepMinutes()).map(label => ({ id: label, label }))
+    timeSuggestions(this.stepMinutes())
+      .filter(label => isTimeWithinBounds(label, this.min(), this.max()))
+      .map(label => ({ id: label, label }))
   );
   protected readonly positions: ConnectedPosition[] = [
     { originX: "start", originY: "bottom", overlayX: "start", overlayY: "top", offsetY: 8 },
@@ -53,8 +57,8 @@ export class VoteyTimePickerComponent extends PickerControl {
   public constructor(changeDetector: ChangeDetectorRef) {
     super(changeDetector);
     effect((): void => {
-      this.stepMinutes(); this.timeEntryPolicy();
-      if (validateTimeConfig(this.stepMinutes(), this.timeEntryPolicy())) this.opened.set(false);
+      this.stepMinutes(); this.timeEntryPolicy(); this.min(); this.max();
+      if (this.configurationError()) this.opened.set(false);
       this.refreshValidation();
     });
     effect((): void => {
@@ -71,22 +75,28 @@ export class VoteyTimePickerComponent extends PickerControl {
   protected override formatCommitted(value: string | null): string { return value ?? ""; }
 
   protected override validateCommitted(value: string | null): PickerError | null {
-    const config = validateTimeConfig(this.stepMinutes(), this.timeEntryPolicy());
+    const config = this.configurationError();
     if (config) return { voteyPickerConfig: { reason: config } };
     if (!value) return null;
     const parsed = parseTimeInput(value);
     if (parsed.error === "format") return { voteyPickerFormat: { expected: this.expectedFormat } };
     if (parsed.error === "time") return { voteyPickerTime: { input: value } };
+    if (!isTimeWithinBounds(value, this.min(), this.max())) {
+      return { voteyPickerRange: { min: this.min(), max: this.max() } };
+    }
     return null;
   }
 
   protected override commitDraft(value: string): { value: string | null; error: PickerError | null } {
-    const config = validateTimeConfig(this.stepMinutes(), this.timeEntryPolicy());
+    const config = this.configurationError();
     if (config) return { value: null, error: { voteyPickerConfig: { reason: config } } };
     if (!value) return { value: null, error: null };
     const parsed = parseTimeInput(value);
     if (parsed.error === "format") return { value: null, error: { voteyPickerFormat: { expected: this.expectedFormat } } };
     if (parsed.error === "time") return { value: null, error: { voteyPickerTime: { input: value } } };
+    if (!isTimeWithinBounds(value, this.min(), this.max())) {
+      return { value: null, error: { voteyPickerRange: { min: this.min(), max: this.max() } } };
+    }
     if (this.timeEntryPolicy() === "listOnly" &&
       (parsed.value.hour * 60 + parsed.value.minute) % this.stepMinutes() !== 0) {
       return { value: null, error: { voteyPickerPolicy: { stepMinutes: this.stepMinutes() } } };
@@ -95,7 +105,7 @@ export class VoteyTimePickerComponent extends PickerControl {
   }
 
   protected open(): void {
-    if (!this.isDisabled && !validateTimeConfig(this.stepMinutes(), this.timeEntryPolicy())) {
+    if (!this.isDisabled && !this.configurationError()) {
       this.opened.set(true);
       queueMicrotask(() => this.menu()?.focusSelected());
     }
@@ -121,5 +131,9 @@ export class VoteyTimePickerComponent extends PickerControl {
     if (this.isDisabled || this.isRequired) return;
     this.setCommitted(null);
     this.close();
+  }
+
+  private configurationError(): ReturnType<typeof validateTimeConfig> {
+    return validateTimeConfig(this.stepMinutes(), this.timeEntryPolicy(), this.min(), this.max());
   }
 }

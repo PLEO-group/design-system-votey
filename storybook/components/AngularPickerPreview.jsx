@@ -139,8 +139,8 @@ function applyProps(runtime, props, kind) {
   if (props.disabled) control.disable({ emitEvent: false });
   else control.enable({ emitEvent: false });
 
-  for (const name of ["label", "disabled", "stepMinutes", "timeEntryPolicy",
-    ...(kind === "date" ? ["mode", "min", "max", "locale"] : [])]) {
+  for (const name of ["label", "disabled", "stepMinutes", "timeEntryPolicy", "min", "max",
+    ...(kind === "date" ? ["mode", "locale"] : [])]) {
     ref.setInput(name, props[name]);
   }
 }

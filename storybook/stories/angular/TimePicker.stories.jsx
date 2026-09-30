@@ -19,6 +19,8 @@ export const Playground = {
     showError: false,
     stepMinutes: 30,
     timeEntryPolicy: "allowManual",
+    min: null,
+    max: null,
   },
   render: (args) => <AngularPickerPreview kind="time" {...args} />,
 };

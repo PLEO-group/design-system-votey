@@ -8,6 +8,7 @@ before(() => {
 const {
   canonicalInstant,
   firstAllowedTime,
+  isTimeWithinBounds,
   formatCalendarDate,
   parseCalendarDate,
   parseDateInput,
@@ -40,6 +41,19 @@ test("time input and suggestion step stay exact", () => {
   assert.equal(timeSuggestions(15).length, 96);
   assert.equal(timeSuggestions(60).at(-1), "23:00");
   assert.deepEqual(timeSuggestions(0), []);
+});
+
+test("time bounds are inclusive and independent of suggestion step", () => {
+  assert.equal(isTimeWithinBounds("10:17", "10:17", "11:45"), true);
+  assert.equal(isTimeWithinBounds("11:45", "10:17", "11:45"), true);
+  assert.equal(isTimeWithinBounds("10:16", "10:17", "11:45"), false);
+  assert.equal(isTimeWithinBounds("11:46", "10:17", "11:45"), false);
+  assert.deepEqual(timeSuggestions(30).filter(value => isTimeWithinBounds(value, "10:17", "11:45")),
+    ["10:30", "11:00", "11:30"]);
+  assert.equal(validateTimeConfig(30, "allowManual", "10:17", "11:45"), null);
+  assert.equal(validateTimeConfig(30, "allowManual", "10:18", "10:17"), "minAfterMax");
+  assert.equal(validateTimeConfig(30, "allowManual", "10:60", null), "invalidMin");
+  assert.equal(validateTimeConfig(30, "allowManual", null, "9:30"), "invalidMax");
 });
 
 test("DST gap is rejected and a repeated local time chooses its first occurrence", () => {

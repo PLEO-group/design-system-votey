@@ -1,0 +1,57 @@
+<div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
+  @if (label()) {
+    <label class="label" [for]="inputId">
+      <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
+    </label>
+  }
+  <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">
+    <input
+      #fieldInput
+      class="control"
+      vtPickerDraft
+      [id]="inputId"
+      [formControl]="formControl"
+      [displayValue]="displayValue"
+      [value]="draft()"
+      [disabled]="isDisabled"
+      [required]="isRequired"
+      [placeholder]="'LABEL.SELECT_TIME' | vtTranslate"
+      [attr.aria-label]="label() ? null : ('LABEL.SELECT_TIME' | vtTranslate)"
+      [attr.aria-describedby]="inputId + '-format ' + inputId + '-error'"
+      [attr.aria-invalid]="hasError"
+      [attr.aria-expanded]="opened()"
+      [attr.aria-controls]="opened() ? inputId + '-panel' : null"
+      (input)="updateDraft($event)"
+      (blur)="finishDraft()"
+      (keydown.escape)="close()"
+    />
+    <span class="icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
+    @if (committed() && !isDisabled && !isRequired) {
+      <vt-button class="clear" variant="ghost" size="small" ico="ui-close" ariaLabel="LABEL.CLEAR"
+        (click)="$event.stopPropagation()" (pressed)="clear()" />
+    }
+  </div>
+  <span class="format" [id]="inputId + '-format'">
+    <vt-text variant="caption-s" color="muted" [content]="'LABEL.TIME_FORMAT' | vtTranslate" />
+  </span>
+  <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="opened()"
+  [cdkConnectedOverlayPositions]="positions"
+  [cdkConnectedOverlayPush]="true"
+  (overlayOutsideClick)="close()"
+  (overlayKeydown)="handleOverlayKeydown($event)"
+>
+  <div class="panel" [id]="inputId + '-panel'">
+    <vt-picker-time-list
+      [items]="timeItems()"
+      [selectedId]="committed()"
+      (selected)="chooseTime($event)"
+      (dismissed)="close()"
+    />
+  </div>
+</ng-template>

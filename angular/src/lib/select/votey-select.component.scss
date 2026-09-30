@@ -105,6 +105,7 @@ vt-select {
       }
 
       .arrow {
+        display: block;
         position: absolute;
         top: 50%;
         right: var(--space-field-padding-x);

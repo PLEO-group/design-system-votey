@@ -5,6 +5,7 @@ Używaj tej referencji, gdy zadanie wymaga dopasowania komponentu lub modułu do
 ## Spis treści
 
 - [Intake Contract](#intake-contract)
+- [Runtime Access Gate](#runtime-access-gate)
 - [Route Placement Contract](#route-placement-contract)
 - [Module Selector Contract](#module-selector-contract)
 - [Collection State Contract](#collection-state-contract)
@@ -28,6 +29,20 @@ Przed rozpoczęciem loopa agent musi znać albo ustalić:
 - czy walidacja dotyczy jednego języka/wariantu czy kilku wariantów contentu.
 
 Jeśli route nie jest podany i nie wynika jednoznacznie z taska, dokumentacji, danych aplikacji albo routingu repo, zapytaj użytkownika o podstronę. Nie zaczynaj runtime loopa na zgadywanej trasie.
+
+## Runtime Access Gate
+
+Wykonaj **przed MCP Guardem, odczytem node'ów Figmy i edycją UI**. Dotyczy zadań pixel-perfect wymagających porównania z działającą aplikacją. Najpierw ustal route z Intake Contract i wykonaj preflight `chrome-debug` dla Playwright MCP; CLI jest fallbackiem tylko wtedy, gdy pozwalają na to instrukcje zadania.
+
+Potwierdź w Playwright, że:
+
+1. aplikacja odpowiada pod właściwym base URL, a docelowy route renderuje właściwy widok;
+2. wymagane logowanie zostało przeprowadzone przez dostępny flow albo istniejącą sesję / projektowy `storageState`;
+3. docelowy komponent jest widoczny w DOM w reprezentatywnym stanie, a screenshot można wykonać.
+
+Zapisz route, base URL, stan uwierzytelnienia, selektor komponentu i wynik próby screenshotu. Samo istnienie Playwright MCP/CLI, działający dev server, odpowiedź HTTP 200, ekran logowania albo screenshot innej trasy **nie** zaliczają bramki.
+
+Jeśli dostęp blokuje logowanie lub dependency, użyj jednego właściwego fallbacku z `chrome-debug` (istniejąca sesja, projektowy `storageState` albo skonfigurowany testowy flow). Nie zgaduj danych logowania ani nie obchodź autoryzacji. Jeśli nadal nie widać docelowego widoku, **zatrzymaj całą operację pixel-perfect przed odczytem Figmy i zmianą kodu**. Zgłoś route, przyczynę, sprawdzony fallback i brakujący dostęp. Nie przechodź na statyczną implementację z obietnicą późniejszej walidacji. Po przywróceniu dostępu rozpocznij bramkę ponownie.
 
 ## Route Placement Contract
 
@@ -108,7 +123,7 @@ lub routingu oznacz zależne scenariusze jako `needs-recheck`.
 
 ## Figma Read
 
-1. Wykonaj `references/mcp-guard.md`.
+1. Po zaliczeniu `Runtime Access Gate` wykonaj `references/mcp-guard.md`.
 2. Odczytaj dokładne node'y przez `get_design_context`; użyj `get_metadata` albo screenshotu tylko jako fallback dla tego samego zakresu.
 3. Dla desktop/tablet/mobile odczytuj każdy breakpoint jako osobny zakres.
 4. Klasyfikuj dane jako `verified`, `partial` albo `blocked` zgodnie z głównym `SKILL.md`.

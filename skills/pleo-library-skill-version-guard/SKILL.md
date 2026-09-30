@@ -1,13 +1,15 @@
 ---
 name: pleo-library-skill-version-guard
 description: Sprawdza wersję wskazanego skilla, pilnuje świeżości manifestu projektu i automatycznie aktualizuje wykryte nieaktualne skille, jeżeli ich katalogi są czyste w Git. Nie pyta o zgodę na bezpieczny pull i nie raportuje telemetryki.
-version: 1.8.1
+version: 1.8.2
 author: p.karas@pleodigital.com
 scope: SHARED
 category: Library
 tags: []
 ---
 # Pleo Library Skill Version Guard
+
+Podczas aktualizacji pomijaj katalogi `__pycache__` i pliki `.pyc`/`.pyo` oraz odrzucaj pliki tekstowe spoza UTF-8.
 
 Guard utrzymuje wersje skilli bez ręcznego potwierdzania bezpiecznych aktualizacji.
 

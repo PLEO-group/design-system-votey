@@ -1,4 +1,10 @@
-<ul class="menu" role="menu" [attr.data-cy]="dataCy()">
+<ul
+  class="menu"
+  [class.full-width]="fullWidth()"
+  [class.embedded]="embedded()"
+  role="menu"
+  [attr.data-cy]="dataCy()"
+>
   @for (item of items(); track item.id; let index = $index) { @let selected =
   item.id === selectedId(); @let disabled = item.disabled;
   <li role="none">

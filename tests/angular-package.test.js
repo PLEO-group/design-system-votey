@@ -307,9 +307,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "caption-light",
     "caption-s",
     "micro",
-    "button",
-    "button-small",
-    "table-header",
+    "action",
+    "action-s",
+    "column-header",
     "label",
     "field",
   ]);

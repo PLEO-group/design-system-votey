@@ -1,5 +1,3 @@
-@use "sass:map";
-
 $text-variants: (
   "h1",
   "h2",
@@ -19,9 +17,9 @@ $text-variants: (
   "caption-light",
   "caption-s",
   "micro",
-  "button",
-  "button-small",
-  "table-header",
+  "action",
+  "action-s",
+  "column-header",
   "label",
   "field"
 );

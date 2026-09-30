@@ -23,9 +23,9 @@ const typographyRoleLabels = {
     'caption-light': 'Caption light',
     'caption-s': 'Caption small',
     micro: 'Micro',
-    button: 'Button',
-    'button-small': 'Button small',
-    'table-header': 'Table header',
+    action: 'Action',
+    'action-s': 'Action small',
+    'column-header': 'Column header',
     label: 'Label',
     field: 'Field',
 };

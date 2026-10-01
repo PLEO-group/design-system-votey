@@ -1,4 +1,4 @@
-<nav class="tabs" role="tablist" [attr.aria-label]="ariaLabel()">
+<nav class="tabs-wrapper" role="tablist" [attr.aria-label]="ariaLabel()">
   <div #track class="track" role="presentation">
     @for (item of items(); track item.id) {
       <button
@@ -15,12 +15,22 @@
         (click)="select(item)"
         (keydown)="onKeydown($event, item)"
       >
-        <span class="label">{{ item.label | vtTranslate }}</span>
+        <vt-text
+          class="label"
+          variant="action"
+          [content]="item.label | vtTranslate"
+          [uppercase]="true"
+        />
         @if (item.count !== null && item.count !== undefined) {
-          <span class="count">{{ item.count }}</span>
+          <vt-text
+            class="count"
+            variant="caption"
+            [color]="selectedId() === item.id ? 'accent' : 'secondary'"
+            [content]="item.count"
+          />
         }
       </button>
     }
-    <span #indicator class="indicator" aria-hidden="true"></span>
+    <div #indicator class="indicator" aria-hidden="true"></div>
   </div>
 </nav>

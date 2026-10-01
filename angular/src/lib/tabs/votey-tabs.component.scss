@@ -3,7 +3,7 @@
   min-width: 0;
 }
 
-.tabs {
+.tabs-wrapper {
   display: block;
   min-height: 50px;
   overflow-x: auto;
@@ -33,14 +33,15 @@
       color: var(--color-navy-blue-800);
       cursor: pointer;
       padding: 0 var(--spacing-4);
-      font-size: var(--typo-caption-font-size);
-      font-weight: var(--typo-action-font-weight);
-      line-height: var(--typo-caption-line-height);
       text-transform: uppercase;
       white-space: nowrap;
 
       &:hover:not(.active):not(:disabled) {
         color: var(--color-mint-green-500);
+
+        ::ng-deep vt-text.label span {
+          color: var(--color-mint-green-500);
+        }
       }
 
       &:focus-visible {
@@ -53,7 +54,11 @@
         opacity: 0.5;
       }
 
-      .count {
+      ::ng-deep vt-text.label span {
+        display: block;
+      }
+
+      ::ng-deep vt-text.count span {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -64,12 +69,9 @@
         background: var(--color-gray-100);
         color: var(--color-gray-700);
         padding: 0 var(--spacing-7);
-        font-size: var(--typo-caption-font-size);
-        font-weight: var(--typo-body-l-bold-font-weight);
-        line-height: var(--typo-caption-line-height);
       }
 
-      &.active .count {
+      &.active ::ng-deep vt-text.count span {
         background: var(--color-mint-green-70);
         color: var(--color-mint-green-500);
       }
@@ -91,13 +93,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tabs .track .indicator.ready {
+  .tabs-wrapper .track .indicator.ready {
     transition: none;
   }
 }
 
 @media (max-width: 760px) {
-  .tabs .track {
+  .tabs-wrapper .track {
     gap: var(--spacing-24);
 
     .tab {

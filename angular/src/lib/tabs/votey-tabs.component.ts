@@ -13,6 +13,7 @@ import {
   type OutputEmitterRef,
 } from "@angular/core";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
+import { VoteyTextComponent } from "../text/votey-text.component";
 
 export interface VoteyTabItem {
   readonly id: string;
@@ -26,7 +27,7 @@ export interface VoteyTabItem {
   templateUrl: "./votey-tabs.component.html",
   styleUrl: "./votey-tabs.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [VoteyTranslatePipe],
+  imports: [VoteyTextComponent, VoteyTranslatePipe],
 })
 export class VoteyTabsComponent {
   public readonly items: InputSignal<readonly VoteyTabItem[]> = input.required<readonly VoteyTabItem[]>();

@@ -1,6 +1,6 @@
 import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import * as i0 from '@angular/core';
-import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, viewChildren, signal, Input, Directive, model, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, effect, TemplateRef, contentChildren, forwardRef, LOCALE_ID } from '@angular/core';
+import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, viewChildren, signal, Input, Directive, model, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, Renderer2, afterRenderEffect, effect, TemplateRef, contentChildren, forwardRef, LOCALE_ID } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
 import { BehaviorSubject } from 'rxjs';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
@@ -1544,6 +1544,102 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
             args: [{ selector: "vt-chip", changeDetection: ChangeDetectionStrategy.OnPush, imports: [VoteyButtonComponent, VoteyTextComponent, VoteyTranslatePipe], template: "<div\r\n  class=\"chip\"\r\n  [class.disabled]=\"disabled()\"\r\n  [attr.aria-disabled]=\"disabled()\"\r\n>\r\n  <span class=\"label\">\r\n    <vt-text\r\n      variant=\"caption\"\r\n      [content]=\"label()\"\r\n      [color]=\"disabled() ? 'muted' : 'primary'\"\r\n    />\r\n  </span>\r\n  @if (showRemove()) {\r\n  @let removeAction = \"BUTTON.REMOVE\" | vtTranslate;\r\n  <vt-button\r\n    class=\"remove\"\r\n    variant=\"ghost\"\r\n    size=\"small\"\r\n    ico=\"ui-close\"\r\n    [disabled]=\"disabled()\"\r\n    [ariaLabel]=\"removeAction + ': ' + label()\"\r\n    [disabledNote]=\"removeTooltip()\"\r\n    [tooltipText]=\"removeTooltip()\"\r\n    (pressed)=\"removed.emit()\"\r\n  />\r\n  }\r\n</div>\r\n", styles: [":host{display:contents}.chip{position:relative;box-sizing:border-box;display:flex;align-items:center;min-width:0;max-width:100%;height:25px;padding-inline:var(--space-inset-xs) var(--space-inset-2xs);border-radius:var(--radius-full);background-color:var(--color-accent-soft);border:2px solid var(--color-accent-hover);white-space:nowrap;transition:background-color .18s ease,border .18s ease}.chip .label{display:block;min-width:0;overflow:hidden}.chip .label ::ng-deep vt-text span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chip .remove{position:absolute;top:50%;right:var(--space-inset-3xs);transform:translateY(-50%)}.chip .remove ::ng-deep button.icon-button.small{width:24px;height:24px}.chip .remove ::ng-deep button.icon-button.small .icon{flex-basis:12px;width:12px;height:12px}.chip:has(.remove){padding-right:calc(var(--space-inset-2xs) + 12px + var(--space-gap-xs))}.chip.disabled{background-color:var(--color-bg-surface-tint);border:2px solid var(--color-border-subtle)}@media(prefers-reduced-motion:reduce){.chip{transition:none}}\n"] }]
         }], propDecorators: { label: [{ type: i0.Input, args: [{ isSignal: true, alias: "label", required: true }] }], removeTooltip: [{ type: i0.Input, args: [{ isSignal: true, alias: "removeTooltip", required: true }] }], showRemove: [{ type: i0.Input, args: [{ isSignal: true, alias: "showRemove", required: false }] }], disabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "disabled", required: false }] }], removed: [{ type: i0.Output, args: ["removed"] }] } });
 
+class VoteyTabsComponent {
+    items = input.required(...(ngDevMode ? [{ debugName: "items" }] : /* istanbul ignore next */ []));
+    selectedId = input.required(...(ngDevMode ? [{ debugName: "selectedId" }] : /* istanbul ignore next */ []));
+    ariaLabel = input.required(...(ngDevMode ? [{ debugName: "ariaLabel" }] : /* istanbul ignore next */ []));
+    panelId = input(null, ...(ngDevMode ? [{ debugName: "panelId" }] : /* istanbul ignore next */ []));
+    idPrefix = input("vt-tab", ...(ngDevMode ? [{ debugName: "idPrefix" }] : /* istanbul ignore next */ []));
+    selectionChange = output();
+    tabElements = viewChildren("tabButton", ...(ngDevMode ? [{ debugName: "tabElements" }] : /* istanbul ignore next */ []));
+    indicatorElement = viewChild("indicator", ...(ngDevMode ? [{ debugName: "indicatorElement" }] : /* istanbul ignore next */ []));
+    trackElement = viewChild("track", ...(ngDevMode ? [{ debugName: "trackElement" }] : /* istanbul ignore next */ []));
+    renderer = inject(Renderer2);
+    constructor() {
+        afterRenderEffect(onCleanup => {
+            const items = this.items();
+            const selectedId = this.selectedId();
+            const buttons = this.tabElements();
+            const indicator = this.indicatorElement()?.nativeElement;
+            const track = this.trackElement()?.nativeElement;
+            if (!indicator || !track)
+                return;
+            let activationFrame = null;
+            const positionIndicator = () => {
+                const selectedIndex = items.findIndex(item => item.id === selectedId);
+                const selectedButton = buttons[selectedIndex]?.nativeElement;
+                if (!selectedButton) {
+                    this.renderer.setStyle(indicator, "visibility", "hidden");
+                    return;
+                }
+                this.renderer.setStyle(indicator, "visibility", "visible");
+                this.renderer.setStyle(indicator, "width", `${selectedButton.offsetWidth}px`);
+                this.renderer.setStyle(indicator, "transform", `translateX(${selectedButton.offsetLeft}px)`);
+                if (!indicator.classList.contains("ready") && activationFrame === null) {
+                    if (typeof requestAnimationFrame === "function") {
+                        activationFrame = requestAnimationFrame(() => {
+                            this.renderer.addClass(indicator, "ready");
+                            activationFrame = null;
+                        });
+                    }
+                    else {
+                        this.renderer.addClass(indicator, "ready");
+                    }
+                }
+            };
+            positionIndicator();
+            const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(positionIndicator);
+            resizeObserver?.observe(track);
+            for (const button of buttons)
+                resizeObserver?.observe(button.nativeElement);
+            onCleanup(() => {
+                resizeObserver?.disconnect();
+                if (activationFrame !== null)
+                    cancelAnimationFrame(activationFrame);
+            });
+        });
+    }
+    select(item) {
+        if (!item.disabled && item.id !== this.selectedId()) {
+            this.selectionChange.emit(item.id);
+        }
+    }
+    onKeydown(event, item) {
+        const enabledItems = this.items().filter(tab => !tab.disabled);
+        const index = enabledItems.findIndex(tab => tab.id === item.id);
+        let nextIndex;
+        switch (event.key) {
+            case "ArrowRight":
+                nextIndex = (index + 1) % enabledItems.length;
+                break;
+            case "ArrowLeft":
+                nextIndex = (index - 1 + enabledItems.length) % enabledItems.length;
+                break;
+            case "Home":
+                nextIndex = 0;
+                break;
+            case "End":
+                nextIndex = enabledItems.length - 1;
+                break;
+            default:
+                return;
+        }
+        event.preventDefault();
+        const next = enabledItems[nextIndex];
+        if (!next)
+            return;
+        this.select(next);
+        const tablist = event.currentTarget.closest('[role="tablist"]');
+        tablist?.querySelectorAll('[role="tab"]')[this.items().findIndex(tab => tab.id === next.id)]?.focus();
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTabsComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyTabsComponent, isStandalone: true, selector: "vt-tabs", inputs: { items: { classPropertyName: "items", publicName: "items", isSignal: true, isRequired: true, transformFunction: null }, selectedId: { classPropertyName: "selectedId", publicName: "selectedId", isSignal: true, isRequired: true, transformFunction: null }, ariaLabel: { classPropertyName: "ariaLabel", publicName: "ariaLabel", isSignal: true, isRequired: true, transformFunction: null }, panelId: { classPropertyName: "panelId", publicName: "panelId", isSignal: true, isRequired: false, transformFunction: null }, idPrefix: { classPropertyName: "idPrefix", publicName: "idPrefix", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { selectionChange: "selectionChange" }, viewQueries: [{ propertyName: "tabElements", predicate: ["tabButton"], descendants: true, isSignal: true }, { propertyName: "indicatorElement", first: true, predicate: ["indicator"], descendants: true, isSignal: true }, { propertyName: "trackElement", first: true, predicate: ["track"], descendants: true, isSignal: true }], ngImport: i0, template: "<nav class=\"tabs\" role=\"tablist\" [attr.aria-label]=\"ariaLabel()\">\n  <div #track class=\"track\" role=\"presentation\">\n    @for (item of items(); track item.id) {\n      <button\n        #tabButton\n        class=\"tab\"\n        type=\"button\"\n        role=\"tab\"\n        [id]=\"idPrefix() + '-' + item.id\"\n        [attr.aria-controls]=\"panelId()\"\n        [attr.aria-selected]=\"selectedId() === item.id\"\n        [attr.tabindex]=\"selectedId() === item.id ? 0 : -1\"\n        [class.active]=\"selectedId() === item.id\"\n        [disabled]=\"item.disabled ?? false\"\n        (click)=\"select(item)\"\n        (keydown)=\"onKeydown($event, item)\"\n      >\n        <span class=\"label\">{{ item.label | vtTranslate }}</span>\n        @if (item.count !== null && item.count !== undefined) {\n          <span class=\"count\">{{ item.count }}</span>\n        }\n      </button>\n    }\n    <span #indicator class=\"indicator\" aria-hidden=\"true\"></span>\n  </div>\n</nav>\n", styles: [":host{display:block;min-width:0}.tabs{display:block;min-height:50px;overflow-x:auto;background:var(--color-blue-70);padding-inline:var(--vt-tabs-padding-start, var(--spacing-0)) var(--vt-tabs-padding-end, var(--spacing-0));scrollbar-width:thin}.tabs .track{position:relative;display:flex;width:max-content;min-width:100%;min-height:50px;gap:var(--spacing-39)}.tabs .track .tab{display:inline-flex;position:relative;flex:0 0 auto;align-items:center;gap:var(--spacing-8);min-width:193px;min-height:50px;box-sizing:border-box;border:0;background:transparent;color:var(--color-navy-blue-800);cursor:pointer;padding:0 var(--spacing-4);font-size:var(--typo-caption-font-size);font-weight:var(--typo-action-font-weight);line-height:var(--typo-caption-line-height);text-transform:uppercase;white-space:nowrap}.tabs .track .tab:hover:not(.active):not(:disabled){color:var(--color-mint-green-500)}.tabs .track .tab:focus-visible{outline:2px solid var(--color-mint-green-400);outline-offset:-4px}.tabs .track .tab:disabled{cursor:not-allowed;opacity:.5}.tabs .track .tab .count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:17px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--color-gray-100);color:var(--color-gray-700);padding:0 var(--spacing-7);font-size:var(--typo-caption-font-size);font-weight:var(--typo-body-l-bold-font-weight);line-height:var(--typo-caption-line-height)}.tabs .track .tab.active .count{background:var(--color-mint-green-70);color:var(--color-mint-green-500)}.tabs .track .indicator{position:absolute;bottom:0;left:0;height:4px;background:var(--color-mint-green-400);pointer-events:none}.tabs .track .indicator.ready{transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}@media(prefers-reduced-motion:reduce){.tabs .track .indicator.ready{transition:none}}@media(max-width:760px){.tabs .track{gap:var(--spacing-24)}.tabs .track .tab{min-width:180px}}\n"], dependencies: [{ kind: "pipe", type: VoteyTranslatePipe, name: "vtTranslate" }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTabsComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "vt-tabs", changeDetection: ChangeDetectionStrategy.OnPush, imports: [VoteyTranslatePipe], template: "<nav class=\"tabs\" role=\"tablist\" [attr.aria-label]=\"ariaLabel()\">\n  <div #track class=\"track\" role=\"presentation\">\n    @for (item of items(); track item.id) {\n      <button\n        #tabButton\n        class=\"tab\"\n        type=\"button\"\n        role=\"tab\"\n        [id]=\"idPrefix() + '-' + item.id\"\n        [attr.aria-controls]=\"panelId()\"\n        [attr.aria-selected]=\"selectedId() === item.id\"\n        [attr.tabindex]=\"selectedId() === item.id ? 0 : -1\"\n        [class.active]=\"selectedId() === item.id\"\n        [disabled]=\"item.disabled ?? false\"\n        (click)=\"select(item)\"\n        (keydown)=\"onKeydown($event, item)\"\n      >\n        <span class=\"label\">{{ item.label | vtTranslate }}</span>\n        @if (item.count !== null && item.count !== undefined) {\n          <span class=\"count\">{{ item.count }}</span>\n        }\n      </button>\n    }\n    <span #indicator class=\"indicator\" aria-hidden=\"true\"></span>\n  </div>\n</nav>\n", styles: [":host{display:block;min-width:0}.tabs{display:block;min-height:50px;overflow-x:auto;background:var(--color-blue-70);padding-inline:var(--vt-tabs-padding-start, var(--spacing-0)) var(--vt-tabs-padding-end, var(--spacing-0));scrollbar-width:thin}.tabs .track{position:relative;display:flex;width:max-content;min-width:100%;min-height:50px;gap:var(--spacing-39)}.tabs .track .tab{display:inline-flex;position:relative;flex:0 0 auto;align-items:center;gap:var(--spacing-8);min-width:193px;min-height:50px;box-sizing:border-box;border:0;background:transparent;color:var(--color-navy-blue-800);cursor:pointer;padding:0 var(--spacing-4);font-size:var(--typo-caption-font-size);font-weight:var(--typo-action-font-weight);line-height:var(--typo-caption-line-height);text-transform:uppercase;white-space:nowrap}.tabs .track .tab:hover:not(.active):not(:disabled){color:var(--color-mint-green-500)}.tabs .track .tab:focus-visible{outline:2px solid var(--color-mint-green-400);outline-offset:-4px}.tabs .track .tab:disabled{cursor:not-allowed;opacity:.5}.tabs .track .tab .count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:17px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--color-gray-100);color:var(--color-gray-700);padding:0 var(--spacing-7);font-size:var(--typo-caption-font-size);font-weight:var(--typo-body-l-bold-font-weight);line-height:var(--typo-caption-line-height)}.tabs .track .tab.active .count{background:var(--color-mint-green-70);color:var(--color-mint-green-500)}.tabs .track .indicator{position:absolute;bottom:0;left:0;height:4px;background:var(--color-mint-green-400);pointer-events:none}.tabs .track .indicator.ready{transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}@media(prefers-reduced-motion:reduce){.tabs .track .indicator.ready{transition:none}}@media(max-width:760px){.tabs .track{gap:var(--spacing-24)}.tabs .track .tab{min-width:180px}}\n"] }]
+        }], ctorParameters: () => [], propDecorators: { items: [{ type: i0.Input, args: [{ isSignal: true, alias: "items", required: true }] }], selectedId: [{ type: i0.Input, args: [{ isSignal: true, alias: "selectedId", required: true }] }], ariaLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaLabel", required: true }] }], panelId: [{ type: i0.Input, args: [{ isSignal: true, alias: "panelId", required: false }] }], idPrefix: [{ type: i0.Input, args: [{ isSignal: true, alias: "idPrefix", required: false }] }], selectionChange: [{ type: i0.Output, args: ["selectionChange"] }], tabElements: [{ type: i0.ViewChildren, args: ["tabButton", { isSignal: true }] }], indicatorElement: [{ type: i0.ViewChild, args: ["indicator", { isSignal: true }] }], trackElement: [{ type: i0.ViewChild, args: ["track", { isSignal: true }] }] } });
+
 const VoteySelectVariants = ["boxed", "compact"];
 class VoteySelectComponent extends VoteyFormControlApplyDirective {
     document = inject(DOCUMENT);
@@ -3072,5 +3168,5 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
  * Generated bundle index. Do not edit.
  */
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

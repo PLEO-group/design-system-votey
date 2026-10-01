@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flow Skill Improver"
+  short_description: "Retrospekcja flow pracy z agentem AI"
+  default_prompt: "Użyj $flow-skill-improver, aby przeanalizować zakończony flow pracy z agentem AI, wskazać usprawnienia skilli oraz zaproponować konkretne walidacje lub komendy, które zapobiegną powtórzeniu błędów."

@@ -3,6 +3,7 @@ export { default as IlluBgAddParticipants } from "./IlluBgAddParticipants";
 export { default as IlluBgAgenda } from "./IlluBgAgenda";
 export { default as IlluBgChooseSubscriptionPlan } from "./IlluBgChooseSubscriptionPlan";
 export { default as IlluBgCreateFirstVote } from "./IlluBgCreateFirstVote";
+export { default as IlluBgCreateFirstVoteV2 } from "./IlluBgCreateFirstVoteV2";
 export { default as IlluBgDownloadReportEvent } from "./IlluBgDownloadReportEvent";
 export { default as IlluBgDownloadReportVoting } from "./IlluBgDownloadReportVoting";
 export { default as IlluBgEventTypeBasic } from "./IlluBgEventTypeBasic";
@@ -21,6 +22,7 @@ export { default as IlluBgParticipantTypeObserver } from "./IlluBgParticipantTyp
 export { default as IlluBgParticipantTypeVoter } from "./IlluBgParticipantTypeVoter";
 export { default as IlluBgParticipantWoman } from "./IlluBgParticipantWoman";
 export { default as IlluBgPointVoting } from "./IlluBgPointVoting";
+export { default as IlluBgPointVotingV2 } from "./IlluBgPointVotingV2";
 export { default as IlluBgPublicAccessEvent } from "./IlluBgPublicAccessEvent";
 export { default as IlluBgQuestionnaire } from "./IlluBgQuestionnaire";
 export { default as IlluBgRegistration } from "./IlluBgRegistration";

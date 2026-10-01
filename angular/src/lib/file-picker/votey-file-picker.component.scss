@@ -6,50 +6,325 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--spacing-8);
+  gap: var(--space-stack-gap-s);
   width: 100%;
 
-  .row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-12);
-    width: 100%;
-    height: 100px;
-    overflow: hidden;
-
+  &.disabled {
+    .dropzone-field,
     .file-box {
+      cursor: not-allowed;
+    }
+  }
+
+  &.compact {
+    .row {
       display: flex;
-      flex: 1 1 0;
       align-items: center;
-      min-width: 0;
-      height: 50px;
+      gap: var(--space-icon-gap);
+      width: 100%;
+
+      .file-box {
+        display: flex;
+        flex: 1 1 0;
+        align-items: center;
+        min-width: 0;
+        height: 50px;
+        box-sizing: border-box;
+        padding: 0 var(--space-field-padding-x);
+        overflow: hidden;
+        gap: var(--space-icon-gap);
+        border: 1px solid transparent;
+        border-radius: var(--radius-m);
+        background-color: var(--color-bg-surface-tint);
+
+        .file-icon {
+          display: block;
+          flex: 0 0 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        .file-name {
+          flex: 1 1 0;
+          min-width: 0;
+          overflow: hidden;
+
+          ::ng-deep .text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &.placeholder {
+            ::ng-deep .text {
+              color: var(--color-text-placeholder);
+            }
+          }
+        }
+
+        &.dragging {
+          border-color: var(--color-accent-primary);
+        }
+
+        .loading-state {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--space-stack-gap-s);
+          min-width: 0;
+        }
+
+        .loading-spinner {
+          flex: 0 0 16px;
+          width: 16px;
+          height: 16px;
+          border: 2px solid var(--color-border-subtle);
+          border-top-color: var(--color-accent-primary);
+          border-radius: var(--radius-full);
+          animation: file-picker-spin 700ms linear infinite;
+        }
+      }
+    }
+
+    &.filled {
+      .file-box {
+        border-color: var(--color-border-field);
+        background-color: var(--color-bg-surface-tint);
+      }
+
+      .compact-remove {
+        flex: 0 0 28px;
+
+        ::ng-deep button {
+          width: 28px;
+          height: 28px;
+          padding: 0;
+          border-radius: var(--radius-full);
+        }
+      }
+    }
+
+    &.disabled {
+      .file-name.placeholder {
+        ::ng-deep .text {
+          color: var(--color-text-muted);
+        }
+      }
+    }
+  }
+
+  &.dropzone {
+    .dropzone-field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-stack-gap-m);
+      width: 100%;
       box-sizing: border-box;
-      padding: 0 var(--spacing-16);
-      overflow: hidden;
-      border: 2px dashed transparent;
-      border-radius: var(--radius-input);
-      background-color: var(--color-bg-surface-tint);
+      padding: var(--space-stack-gap-l) var(--space-card-padding);
+      border: 1.5px dashed var(--color-border-field);
+      border-radius: var(--radius-m);
+      background-color: var(--color-bg-surface);
+      cursor: pointer;
+      outline: none;
+
+      &:focus-visible {
+        box-shadow: 0 0 0 var(--spacing-2) var(--color-border-focus);
+      }
 
       &.dragging {
+        border-width: 2px;
         border-color: var(--color-accent-primary);
+        background-color: var(--color-bg-surface-tint);
       }
 
-      .loading-state {
-        display: inline-flex;
+      &.error {
+        border-color: var(--color-state-error);
+      }
+
+      .dropzone-prompt {
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: var(--spacing-8);
-        min-width: 0;
+        gap: var(--space-icon-gap);
+        width: 100%;
+        text-align: center;
       }
 
-      .loading-spinner {
-        flex: 0 0 16px;
-        width: 16px;
-        height: 16px;
-        border: 2px solid var(--color-border-subtle);
-        border-top-color: var(--color-accent-primary);
-        border-radius: 50%;
-        animation: file-picker-spin 700ms linear infinite;
+      .file-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .file-row {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-icon-gap);
+        width: 100%;
+        padding: var(--space-stack-gap-s) 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+
+        .file-preview-trigger {
+          min-width: 0;
+
+          &.file-tile {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+
+            ::ng-deep button {
+              width: 44px;
+              height: 44px;
+              padding: 0;
+              border-radius: var(--radius-s);
+              background-color: var(--color-bg-surface-tint);
+            }
+          }
+
+          &.file-preview-name {
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+
+            ::ng-deep button {
+              height: auto;
+              min-height: 0;
+              padding: 0;
+              border: 0;
+              border-radius: 0;
+              background-color: transparent;
+              color: var(--color-text-primary);
+              font-family: var(--typo-body-font-family);
+              font-size: var(--typo-body-font-size);
+              font-weight: var(--typo-body-font-weight);
+              letter-spacing: var(--typo-body-letter-spacing);
+              line-height: var(--typo-body-line-height);
+              text-align: left;
+            }
+
+            ::ng-deep {
+              .button-wrapper,
+              button,
+              .label {
+                min-width: 0;
+                max-width: 100%;
+              }
+
+              .button-wrapper,
+              button {
+                width: 100%;
+                justify-content: flex-start;
+              }
+
+              .label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+            }
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .file-tile vt-icon {
+          display: block;
+          width: 28px;
+          height: 28px;
+        }
+
+        .file-content {
+          display: flex;
+          flex: 1 1 0;
+          flex-direction: column;
+          gap: var(--space-gap-3xs);
+          min-width: 0;
+        }
+
+        .file-heading,
+        .file-status {
+          display: flex;
+          align-items: center;
+          gap: var(--space-stack-gap-s);
+          width: 100%;
+          min-width: 0;
+        }
+
+        .file-heading {
+          overflow: hidden;
+        }
+
+        .file-heading {
+          align-items: baseline;
+
+          .file-name {
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+          }
+
+          > vt-text {
+            flex: 0 0 auto;
+          }
+        }
+
+        .file-progress {
+          width: 100%;
+          height: 6px;
+          overflow: hidden;
+          border: 0;
+          border-radius: var(--radius-full);
+          appearance: none;
+          background-color: var(--color-bg-surface-tint);
+
+          &::-webkit-progress-bar {
+            background-color: var(--color-bg-surface-tint);
+          }
+
+          &::-webkit-progress-value,
+          &::-moz-progress-bar {
+            border-radius: var(--radius-full);
+            background-color: var(--color-accent-primary);
+          }
+
+          &.error {
+            &::-webkit-progress-value,
+            &::-moz-progress-bar {
+              background-color: var(--color-state-error);
+            }
+          }
+        }
+
+        .file-status {
+          &.done {
+            gap: var(--space-gap-2xs);
+          }
+
+          &.uploading,
+          &.error {
+            justify-content: space-between;
+          }
+
+          .status-icon {
+            display: block;
+            flex: 0 0 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        vt-button {
+          flex: 0 0 auto;
+        }
+      }
+    }
+
+    @media (pointer: fine) {
+      .dropzone-field:not(.filled):not(.error):hover {
+        border-color: var(--color-accent-primary);
       }
     }
   }
@@ -62,7 +337,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .file-picker-wrapper .row .file-box .loading-spinner {
+  .file-picker-wrapper.compact .row .file-box .loading-spinner {
     animation: none;
   }
 }

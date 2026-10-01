@@ -42,12 +42,10 @@ npm run build:tokens
 
 ## Font families
 
-Foundation font families są zdefiniowane w `tokens/type/core/value.json`:
-
-- `font-family.open-sans` — font produktu CRM;
-- `font-family.satoshi` — font produktu PWA oraz interfejsu Storybooka.
-
-Build Angular publikuje je jako `--font-family-open-sans` i `--font-family-satoshi`. Responsywne role `--typo-*` CRM wskazują na `--font-family-open-sans`. Storybook używa `--font-family-satoshi` globalnie. Istniejąca zmienna `--font-satoshi` w `votey-user-app` pozostaje bez zmian.
+Aktualny eksport Figma Variables nie zawiera już tokenów `font-family`. Generator
+nie publikuje więc `--font-family-*` ani `--typo-*-font-family`; wybór fontu
+pozostaje tymczasowo po stronie komponentu lub aplikacji i będzie migrowany
+razem z komponentami do nowego kontraktu tokenów.
 
 ## Runtime Angulara
 
@@ -215,3 +213,49 @@ Domyślny URL assetów to `assets/votey`. Aplikacja powinna skopiować zawartoś
 `dist/assets/angular/svg-raw` z paczki do tego katalogu przez konfigurację
 `assets` w `angular.json`. Inny URL można przekazać jako
 `provideVoteySvgRegistry({ assetBaseUrl: "..." })`.
+
+### Angular DatePicker i TimePicker
+
+Publiczny entry point `@pleodigital/design-system-votey/angular` udostępnia
+`VoteyDatePickerComponent` (`vt-date-picker`) i `VoteyTimePickerComponent`
+(`vt-time-picker`). Kalendarz jest elementem wewnętrznym biblioteki. Pickery
+wymagają zgodnej wersji `@angular/cdk` oraz arkusza tokenów Angulara.
+Panel ma stałe 320 px, dzień 40 × 40 px, a ikony 24 × 24 px; te wymiary
+nie są zmiennymi Figmy i są zapisane bezpośrednio w SCSS pickerów.
+
+```ts
+import { FormControl } from "@angular/forms";
+import {
+  VoteyDatePickerComponent,
+  VoteyTimePickerComponent,
+} from "@pleodigital/design-system-votey/angular";
+
+const date = new FormControl<string | null>(null);
+const time = new FormControl<string | null>(null);
+```
+
+```html
+<vt-date-picker label="Data" [control]="date" mode="Date" />
+<vt-time-picker label="Godzina" [control]="time" [min]="'09:00'" [max]="'17:00'" [stepMinutes]="30" />
+```
+
+`Date` zapisuje `YYYY-MM-DD`, `DateTime` zapisuje kanoniczne UTC ISO
+`YYYY-MM-DDTHH:mm:00.000Z`, a `TimePicker` zapisuje `HH:mm`. Puste opcjonalne
+pole daje `null`. `min` i `max` w trybie `Date` są datami `YYYY-MM-DD`, a w
+`DateTime` chwilami ISO z offsetem lub `Z`. Krok godzin wynosi domyślnie
+30 minut; `timeEntryPolicy="listOnly"` ogranicza **nowe** wybory do listy.
+`vt-time-picker` przyjmuje opcjonalne, włączne granice `min` i `max` w formacie
+`HH:mm`. Ograniczają one listę i ręcznie wpisywane wartości, niezależnie od
+`stepMinutes`. Zmiana granic nie usuwa zapisanej wartości: jeśli wypada poza
+zakres, kontrolka otrzymuje `voteyPickerRange`. Błędny format granicy lub
+`min > max` daje `voteyPickerConfig`.
+Nieedytowana wartość historyczna spoza listy pozostaje poprawna. Kontrolka
+formularza ustala `required`, a aplikacja mapuje wartość do własnego API.
+
+Picker dodaje do `control.errors` tylko własne klucze: `voteyPickerFormat`,
+`voteyPickerDate`, `voteyPickerTime`, `voteyPickerRange`, `voteyPickerPolicy`
+i `voteyPickerConfig`. Tłumacz aplikacji (`VOTEY_TRANSLATOR`) powinien obsłużyć
+`ERRORS.VOTEYPICKERFORMAT`, `ERRORS.VOTEYPICKERDATE`,
+`ERRORS.VOTEYPICKERTIME`, `ERRORS.VOTEYPICKERRANGE`,
+`ERRORS.VOTEYPICKERPOLICY`, `ERRORS.VOTEYPICKERCONFIG` oraz etykiety akcji
+`BUTTON.CLEAR`, `BUTTON.PREVIOUS_MONTH` i `BUTTON.NEXT_MONTH`.

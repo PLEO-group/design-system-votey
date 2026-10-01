@@ -41,11 +41,14 @@ export {
 } from "./lib/button/votey-button.component";
 export type {
   VoteyButtonSize,
+  VoteyButtonAriaHasPopup,
   VoteyButtonType,
   VoteyButtonVariant,
 } from "./lib/button/votey-button.component";
 export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
 export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
+export { VoteyMultiSelectPopoverComponent } from "./lib/multi-select-popover/votey-multi-select-popover.component";
+export type { VoteyMultiSelectItem } from "./lib/multi-select-popover/votey-multi-select-popover.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";
 export {
@@ -53,13 +56,37 @@ export {
   VoteyFilePickerValidationErrors,
 } from "./lib/file-picker/votey-file-picker.component";
 export type {
+  VoteyFilePickerFile,
+  VoteyFilePickerFileState,
   VoteyFilePickerRejection,
   VoteyFilePickerValidationError,
   VoteyFilePickerValidationErrorKeys,
+  VoteyFilePickerVariant,
 } from "./lib/file-picker/votey-file-picker.component";
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
 export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyChipComponent } from "./lib/chip/votey-chip.component";
+export { VoteyPaginationComponent } from "./lib/pagination/votey-pagination.component";
+export type { VoteyPaginationEvent } from "./lib/pagination/votey-pagination.component";
+export {
+  defaultFetchParams,
+  emptyPaginatedList,
+  emptyPaginatedListLoading,
+  noPaginationParams,
+} from "./lib/pagination/pagination.model";
+export type {
+  PaginatedList,
+  PaginationEvent,
+} from "./lib/pagination/pagination.model";
+export {
+  VoteySelectComponent,
+  VoteySelectVariants,
+} from "./lib/select/votey-select.component";
+export type {
+  VoteySelectSearchFn,
+  VoteySelectVariant,
+  VtOption,
+} from "./lib/select/votey-select.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
 export { VoteyRadioOptionContentDirective } from "./lib/radio-button/votey-radio-option-content.directive";
 export type {
@@ -85,6 +112,10 @@ export {
 } from "./lib/input/votey-input.component";
 export type {
   VoteyInputMode,
+  VoteyInputTrimmer,
   VoteyInputType,
   VoteyInputVariant,
 } from "./lib/input/votey-input.component";
+export { VoteyDatePickerComponent, VoteyDatePickerModes } from "./lib/date-picker/votey-date-picker.component";
+export { VoteyTimePickerComponent, VoteyTimeEntryPolicies } from "./lib/time-picker/votey-time-picker.component";
+export type { PickerMode, PickerTimeEntryPolicy } from "./lib/picker/picker-value";

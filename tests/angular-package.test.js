@@ -142,6 +142,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(
     VoteyFilePickerComponent.ɵcmp.inputs.staticValue[0], "staticValue");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.filename[0], "filename");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.variant[0], "variant");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.files[0], "files");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.accept[0], "accept");
   assert.equal(VoteyFilePickerComponent.ɵcmp.inputs.multiple[0], "multiple");
   assert.equal(
@@ -164,6 +166,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cleared, "cleared");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.cancelled, "cancelled");
   assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.rejected, "rejected");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.fileRemoved, "fileRemoved");
+  assert.equal(VoteyFilePickerComponent.ɵcmp.outputs.fileRetry, "fileRetry");
+  assert.equal(
+    VoteyFilePickerComponent.ɵcmp.outputs.fileCancelled,
+    "fileCancelled",
+  );
   assert.equal(typeof VoteyFormControlApplyDirective, "function");
   assert.deepEqual(VoteyFormControlApplyDirective.ɵdir.selectors, [
     ["", "vtFormControlApply", ""],
@@ -174,6 +182,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   ]);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.options[0], "options");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.control[0], "control");
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.tooltip[0], "tooltip");
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.disabledNote[0],
@@ -182,7 +192,6 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupValue, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.inputId, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupColor, undefined);
-  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName, undefined);
   assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabel, undefined);
   assert.equal(
     VoteyRadioButtonComponent.ɵcmp.inputs.groupAriaLabelledby,
@@ -211,9 +220,10 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(VoteyIconComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.ico[0], "ico");
   assert.equal(VoteyButtonComponent.ɵcmp.inputs.hasIcon, undefined);
-  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel, undefined);
-  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded, undefined);
-  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaPressed, undefined);
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaExpanded[0], "ariaExpanded");
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaHasPopup[0], "ariaHasPopup");
+  assert.equal(VoteyButtonComponent.ɵcmp.inputs.ariaControls[0], "ariaControls");
   assert.equal(typeof VoteyMenuComponent, "function");
   assert.deepEqual(VoteyMenuComponent.ɵcmp.selectors, [["vt-menu"]]);
   assert.equal(VoteyMenuComponent.ɵcmp.inputs.items[0], "items");
@@ -237,6 +247,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
   assert.equal(typeof VoteyInputComponent, "function");
   assert.deepEqual(VoteyInputComponent.ɵcmp.selectors, [["vt-input"]]);
   assert.deepEqual(VoteyInputVariants, ["boxed", "underline"]);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.helper[0], "helper");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.showHelper, undefined);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.showLabel, undefined);
   assert.deepEqual(VoteyInputTypes, [
     "text",
     "email",
@@ -294,9 +307,9 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "caption-light",
     "caption-s",
     "micro",
-    "button",
-    "button-small",
-    "table-header",
+    "action",
+    "action-s",
+    "column-header",
     "label",
     "field",
   ]);
@@ -341,14 +354,22 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     ),
   );
   assert.deepEqual(VOTEY_DEFAULT_GRID_CONFIG, {
-    desktop: gridTokens.grid.admin.desktop.columns.value,
-    tablet: gridTokens.grid.admin.tablet.columns.value,
-    mobile: gridTokens.grid.admin.mobile.columns.value,
+    desktop: gridTokens.grid.admin.columns.desktop.value,
+    tablet: gridTokens.grid.admin.columns.tablet.value,
+    mobile: gridTokens.grid.admin.columns.mobile.value,
   });
-  assert.equal(gridTokens.grid.mobile, undefined);
-  assert.equal(gridTokens.grid.admin.mobile["reference-width"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints.mobile["margin-extra"], undefined);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"].margin.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet.margin.value, 42);
+  assert.equal(gridTokens.grid.admin.breakpoints.laptop.gutter.value, 24);
+  assert.equal(gridTokens.grid.admin.breakpoints.desktop.gutter.value, 40);
+  assert.equal(gridTokens.grid.admin.breakpoints["tablet-small"]["sidebar-expanded"].value, 0);
+  assert.equal(gridTokens.grid.admin.breakpoints.tablet["sidebar-expanded"].value, 140);
+  assert.equal(gridTokens.breakpoint["mobile-small"].value, 360);
   assert.equal(gridTokens.breakpoint.mobile.value, 375);
+  assert.equal(gridTokens.breakpoint["tablet-small"].value, 768);
   assert.equal(gridTokens.breakpoint.tablet.value, 1024);
+  assert.equal(gridTokens.breakpoint.laptop.value, 1280);
   assert.equal(gridTokens.breakpoint.desktop.value, 1920);
   assert.match(
     require.resolve(
@@ -468,6 +489,7 @@ test("file picker supports drops, batches, validation and clearing", async () =>
 
   picker.control = control;
   picker.multiple = () => true;
+  picker.variant = () => "dropzone";
   picker.allowedExtensions = () => ["pdf"];
   picker.maxFileSizeBytes = () => 10;
   picker.maxTotalSizeBytes = () => 20;
@@ -483,6 +505,18 @@ test("file picker supports drops, batches, validation and clearing", async () =>
   );
   const rejectedSubscription = picker.rejected.subscribe((rejection) =>
     rejections.push(rejection),
+  );
+  const removedFiles = [];
+  const retriedFiles = [];
+  const cancelledFiles = [];
+  const removedSubscription = picker.fileRemoved.subscribe((file) =>
+    removedFiles.push(file),
+  );
+  const retrySubscription = picker.fileRetry.subscribe((file) =>
+    retriedFiles.push(file),
+  );
+  const cancelledSubscription = picker.fileCancelled.subscribe((file) =>
+    cancelledFiles.push(file),
   );
   const clearedSubscription = picker.cleared.subscribe(() => {
     cleared += 1;
@@ -517,7 +551,7 @@ test("file picker supports drops, batches, validation and clearing", async () =>
 
   assert.equal(prevented, true);
   assert.equal(control.errors, null);
-  assert.deepEqual(fileBatches.at(-1), [firstFile]);
+  assert.deepEqual(fileBatches.at(-1), [firstFile, firstFile]);
 
   picker.clear();
 
@@ -526,10 +560,76 @@ test("file picker supports drops, batches, validation and clearing", async () =>
   assert.deepEqual(fileBatches.at(-1), []);
   assert.equal(cleared, 1);
 
+  const uploadingFile = {
+    id: "uploading-file",
+    filename: "uploading.pdf",
+    state: "uploading",
+  };
+  const doneFile = {
+    id: "done-file",
+    filename: "first.pdf",
+    state: "done",
+  };
+  const erroredFile = {
+    id: "errored-file",
+    filename: "errored.pdf",
+    state: "error",
+  };
+
+  picker.handleFileRemoved(doneFile);
+  picker.handleFileRetry(erroredFile);
+  picker.handleFileCancelled(uploadingFile);
+
+  assert.deepEqual(removedFiles, [doneFile]);
+  assert.deepEqual(retriedFiles, [erroredFile]);
+  assert.deepEqual(cancelledFiles, [uploadingFile]);
+
   changedSubscription.unsubscribe();
   filesChangedSubscription.unsubscribe();
   rejectedSubscription.unsubscribe();
+  removedSubscription.unsubscribe();
+  retrySubscription.unsubscribe();
+  cancelledSubscription.unsubscribe();
   clearedSubscription.unsubscribe();
+  picker.ngOnDestroy();
+});
+
+test("file picker compact mode keeps one file and clears it with remove action", async () => {
+  const {
+    FormControl,
+    Injector,
+    runInInjectionContext,
+    VoteyFilePickerComponent,
+  } = await loadAngularRuntime();
+  const picker = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyFilePickerComponent(),
+  );
+  const control = new FormControl(null);
+  const fileBatches = [];
+  let cleared = 0;
+  const file = new File(["file"], "nazwa_pliku_alfa_beta_gamma.jpg", {
+    type: "image/jpeg",
+  });
+
+  picker.control = control;
+  picker.variant = () => "compact";
+  picker.multiple = () => true;
+  picker.filesChanged.subscribe((files) => fileBatches.push(files));
+  picker.cleared.subscribe(() => {
+    cleared += 1;
+  });
+
+  picker.handleChange({ target: { files: [file, file] } });
+
+  assert.deepEqual(fileBatches, [[file]]);
+  assert.equal(control.value, file);
+
+  picker.clear();
+
+  assert.equal(control.value, null);
+  assert.deepEqual(fileBatches.at(-1), []);
+  assert.equal(cleared, 1);
   picker.ngOnDestroy();
 });
 
@@ -680,9 +780,38 @@ test("input uses the shared form control contract", async () => {
   );
 
   assert.equal(input.formControl.value, null);
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.label[0], "label");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.helper[0], "helper");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.icon[0], "icon");
+  assert.equal(VoteyInputComponent.ɵcmp.inputs.ariaLabel[0], "ariaLabel");
+  assert.equal(
+    VoteyInputComponent.ɵcmp.inputs.ariaDescribedby[0],
+    "ariaDescribedby",
+  );
   assert.equal(input.keyDown !== undefined, true);
+  assert.equal(VoteyInputComponent.ɵcmp.outputs.keyDown, "keyDown");
+  assert.equal(input.blur, undefined);
   assert.equal(input.changed, undefined);
   assert.equal(input.registerOnChange, undefined);
+});
+
+test("input applies the configured trimmer on blur", async () => {
+  const { FormControl, Injector, runInInjectionContext, VoteyInputComponent } =
+    await loadAngularRuntime();
+  const input = runInInjectionContext(
+    Injector.create({ providers: [] }),
+    () => new VoteyInputComponent(),
+  );
+  const control = new FormControl("502 724\t170");
+  input.control = control;
+  input.handleBlur();
+
+  assert.equal(control.value, "502 724\t170");
+
+  input.trimmer = () => (value) => value.replace(/\s/g, "");
+  input.handleBlur();
+
+  assert.equal(control.value, "502724170");
 });
 
 test("radio button emits MatRadioChange", async () => {
@@ -703,6 +832,36 @@ test("radio button emits MatRadioChange", async () => {
   assert.deepEqual(changes, [event]);
 
   subscription.unsubscribe();
+});
+
+test("radio button exposes the optional label and native group-name contracts", async () => {
+  const { VoteyRadioButtonComponent } = await loadAngularRuntime();
+  const template = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.html",
+    ),
+    "utf8",
+  );
+  const styles = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "angular/src/lib/radio-button/votey-radio-button.component.scss",
+    ),
+    "utf8",
+  );
+
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.showLabel, undefined);
+  assert.equal(VoteyRadioButtonComponent.ɵcmp.inputs.groupName[0], "groupName");
+  assert.match(template, /\[name\]="groupName\(\)"/);
+  assert.match(template, /@if \(option\.label !== undefined\)/);
+  assert.match(
+    template,
+    /\[aria-label\]="\(option\.ariaLabel \?\? option\.label\) \| vtTranslate"/,
+  );
+  assert.match(styles, /gap: var\(--space-gap-xs\)/);
+  assert.match(styles, /overflow-wrap: anywhere/);
+  assert.match(styles, /white-space: normal/);
 });
 
 test("text resolves its default token-backed presentation", async () => {

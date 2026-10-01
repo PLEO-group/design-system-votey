@@ -1,26 +1,4 @@
 {
-  "font-family": {
-    "open-sans": {
-      "value": "Open Sans",
-      "type": "text",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    },
-    "satoshi": {
-      "value": "Satoshi",
-      "type": "text",
-      "$extensions": {
-        "com.figma.scopes": [
-          "ALL_SCOPES"
-        ],
-        "com.figma.hiddenFromPublishing": false
-      }
-    }
-  },
   "font-weight": {
     "light": {
       "value": "Light",
@@ -77,7 +55,7 @@
     "10": {
       "value": 10,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -217,7 +195,7 @@
     "33": {
       "value": 33,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -227,7 +205,7 @@
     "37": {
       "value": 37,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -237,7 +215,7 @@
     "42": {
       "value": 42,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -289,7 +267,7 @@
     "19": {
       "value": 19,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -309,7 +287,7 @@
     "21": {
       "value": 21,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -329,7 +307,7 @@
     "23": {
       "value": 23,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -399,7 +377,7 @@
     "43": {
       "value": 43,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -419,7 +397,7 @@
     "50": {
       "value": 50,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],
@@ -429,7 +407,7 @@
     "57": {
       "value": 57,
       "type": "number",
-      "": {
+      "$extensions": {
         "com.figma.scopes": [
           "ALL_SCOPES"
         ],

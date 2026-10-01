@@ -1,0 +1,79 @@
+<div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
+  @if (label()) {
+    <label class="label" [for]="inputId">
+      <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
+    </label>
+  }
+  <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">
+    <input
+      #fieldInput
+      class="control"
+      vtPickerDraft
+      [id]="inputId"
+      [formControl]="formControl"
+      [displayValue]="displayValue"
+      [value]="draft()"
+      [readOnly]="isDisabled"
+      [attr.aria-disabled]="isDisabled"
+      [attr.tabindex]="isDisabled ? -1 : null"
+      [required]="isRequired"
+      [placeholder]="expectedFormat"
+      [attr.aria-label]="label() ? null : (expectedFormat)"
+      [attr.aria-describedby]="inputId + '-format ' + inputId + '-error'"
+      [attr.aria-invalid]="hasError"
+      [attr.aria-expanded]="opened()"
+      [attr.aria-controls]="opened() ? inputId + '-panel' : null"
+      (input)="updateDraft($event)"
+      (blur)="finishDraft()"
+      (keydown.escape)="close()"
+    />
+    <span class="icon" aria-hidden="true"><vt-icon [ico]="mode() === 'DateTime' ? 'ui-time' : 'ui-calendar'" [color]="isDisabled ? 'muted' : ''" /></span>
+    @if (committed() && !isDisabled && !isRequired) {
+      <vt-button class="clear" variant="ghost" size="small" ico="ui-close" ariaLabel="LABEL.CLEAR"
+        (click)="$event.stopPropagation()" (pressed)="clear()" />
+    }
+  </div>
+  <span class="format" [id]="inputId + '-format'">
+    <vt-text variant="caption-s" color="muted" [content]="expectedFormat" />
+  </span>
+  <vt-form-error [id]="inputId + '-error'" [errors]="errorKeys" />
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="opened()"
+  [cdkConnectedOverlayPositions]="positions"
+  [cdkConnectedOverlayPush]="true"
+  (overlayOutsideClick)="close()"
+  (overlayKeydown)="handleOverlayKeydown($event)"
+>
+  <div class="panel vt-date-picker-panel" [id]="inputId + '-panel'">
+    <mat-calendar
+      [startAt]="startAt()"
+      [selected]="selectedDate()"
+      [minDate]="minDate()"
+      [maxDate]="maxDate()"
+      [dateFilter]="calendarDateFilter()"
+      (selectedChange)="chooseDay($event)"
+    />
+    @if (mode() === 'DateTime') {
+      <div class="time-picker">
+        <button class="time-trigger" type="button" [disabled]="deferDateTimeCommit() && !pendingDay()" [attr.aria-expanded]="timeOpened()" [attr.aria-controls]="inputId + '-time-list'" (click)="toggleTime()">
+          <span [class.placeholder]="pendingDay() || !committed()">{{ pendingDay() || !committed() ? ('LABEL.SELECT_TIME' | vtTranslate) : selectedTime() }}</span>
+          <span class="time-icon" aria-hidden="true"><vt-icon ico="ui-time" /></span>
+        </button>
+        @if (timeOpened()) {
+          <div [id]="inputId + '-time-list'">
+            <vt-picker-time-list
+              [items]="timeItems()"
+              [selectedId]="pendingDay() ? null : selectedTime()"
+              (selected)="chooseTime($event)"
+              (dismissed)="timeOpened.set(false)"
+            />
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>

@@ -28,6 +28,14 @@ export const VoteyButtonSizes = ["large", "small"] as const;
 export type VoteyButtonVariant = (typeof VoteyButtonVariants)[number];
 export type VoteyButtonSize = (typeof VoteyButtonSizes)[number];
 export type VoteyButtonType = "button" | "submit" | "reset";
+export type VoteyButtonAriaHasPopup =
+  | "dialog"
+  | "grid"
+  | "listbox"
+  | "menu"
+  | "tree"
+  | boolean
+  | null;
 
 @Component({
   selector: "vt-button",
@@ -50,12 +58,24 @@ export class VoteyButtonComponent {
   public readonly size: InputSignal<VoteyButtonSize> =
     input<VoteyButtonSize>("large");
   public readonly text: InputSignal<string> = input<string>("");
+  public readonly ariaLabel: InputSignal<string> = input<string>("");
   public readonly ico: InputSignal<VoteyIcon | ""> = input<VoteyIcon | "">("");
   public readonly badge: InputSignal<string | number | null> = input<
     string | number | null
   >(null);
   public readonly tooltipText: InputSignal<string> = input<string>("");
   public readonly disabledNote: InputSignal<string> = input<string>("");
+  public readonly ariaExpanded: InputSignal<boolean | null> = input<
+    boolean | null
+  >(null);
+  public readonly ariaHasPopup: InputSignal<VoteyButtonAriaHasPopup> =
+    input<VoteyButtonAriaHasPopup>(null);
+  public readonly ariaControls: InputSignal<string | null> = input<
+    string | null
+  >(null);
+  public readonly iconColor: InputSignal<"accent" | "white" | ""> = input<
+    "accent" | "white" | ""
+  >("");
 
   public readonly pressed: OutputEmitterRef<void> = output<void>();
 

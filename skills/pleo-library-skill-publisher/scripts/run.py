@@ -26,6 +26,7 @@ FRONTMATTER_LIST_ITEM_PATTERN = re.compile(r"(?m)^\s*-\s*(.*?)\s*$")
 PLEO_LIBRARY_SKILL_PREFIX = "pleo-library-"
 TRANSIENT_HTTP_STATUS_CODES = {502, 503, 504}
 MAX_TRANSIENT_RETRIES = 2
+TEXT_SUFFIXES = {".md", ".txt", ".yml", ".yaml", ".json", ".xml", ".java", ".js", ".ts", ".tsx", ".jsx", ".py", ".sh", ".properties", ".toml", ".ini", ".cfg", ".csv", ".sql", ".svg", ".html", ".css", ".rst", ".jsonl", ".ndjson", ".ps1"}
 
 
 class ScriptError(RuntimeError):
@@ -171,8 +172,10 @@ def build_parser() -> argparse.ArgumentParser:
 def publish_all(config: Config, shared_prefixes: list[str], changelog_md: str | None) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
     for skill_dir in sorted(path for path in config.skills_dir.iterdir() if path.is_dir()):
-        scope = "SHARED" if any(skill_dir.name.startswith(prefix) for prefix in shared_prefixes) else None
-        project_slug = None if scope == "SHARED" else config.project_slug
+        local_skill = load_local_skill(config.skills_dir, skill_dir.name)
+        scope = local_skill.scope or ("SHARED" if any(skill_dir.name.startswith(prefix) for prefix in shared_prefixes)
+                                      else config.default_scope)
+        project_slug = config.project_slug if scope == "PROJECT" else None
         results.append(
             publish_skill(
                 config=config,
@@ -206,15 +209,28 @@ def audit_publication_state(config: Config, excluded_skills: list[str]) -> dict[
         if skill_dir.name.lower() in excluded:
             continue
         local_skill = load_local_skill(config.skills_dir, skill_dir.name)
+        target_scope = local_skill.scope or config.default_scope
+        remote_project_slug = (config.project_slug if target_scope == "PROJECT"
+                               or is_reserved_library_skill_name(local_skill.name) else None)
         remote_latest = request_json(
             config,
             "GET",
             f"/skills/remote/{urllib.parse.quote(local_skill.name)}/latest",
-            query=build_remote_project_query(config.project_slug, {"currentVersion": local_skill.declared_version}),
+            query=build_remote_project_query(remote_project_slug, {"currentVersion": local_skill.declared_version}),
             allow_status={404},
         )
         shared_meta = shared_by_name.get(local_skill.name.lower())
-        remote_scope = "SHARED" if shared_meta is not None else ("PROJECT" if remote_latest is not None else None)
+        remote_scope = "SHARED" if shared_meta is not None else (target_scope if remote_latest is not None else None)
+        if remote_latest is None and target_scope == "SHARED" and config.project_slug is not None and shared_meta is None:
+            project_match = request_json(
+                config,
+                "GET",
+                f"/skills/remote/{urllib.parse.quote(local_skill.name)}/latest",
+                query=build_remote_project_query(config.project_slug),
+                allow_status={404},
+            )
+            if project_match is not None:
+                remote_scope = "PROJECT"
         remote_category = shared_meta.get("category") if shared_meta else None
         requires_library_permission = is_reserved_library_skill_name(local_skill.name)
         item = {
@@ -229,6 +245,7 @@ def audit_publication_state(config: Config, excluded_skills: list[str]) -> dict[
             "needsPull": False,
             "requiresLibraryPermission": requires_library_permission,
             "publishRisk": None,
+            "publishBlockedReason": None,
         }
         if remote_latest is None:
             item["needsPublish"] = True
@@ -252,6 +269,22 @@ def audit_publication_state(config: Config, excluded_skills: list[str]) -> dict[
             else:
                 item["versionRelation"] = "same"
                 same_version.append(item)
+                remote_version = fetch_remote_version(config, local_skill.name, remote_latest["latestVersion"], remote_project_slug)
+                if not has_same_payload(local_skill.files, remote_version["files"]):
+                    item["needsPublish"] = True
+                    item["publishBlockedReason"] = "same_version_different_payload"
+        if target_scope not in {"SHARED", "PROJECT"}:
+            item["publishBlockedReason"] = "missing_or_invalid_scope"
+        elif target_scope == "PROJECT" and config.project_slug is None:
+            item["publishBlockedReason"] = "missing_project_slug"
+        elif remote_scope is not None and remote_scope != target_scope:
+            item["publishBlockedReason"] = "scope_conflict"
+        elif remote_latest is None and target_scope == "SHARED" and local_skill.category is None:
+            item["publishBlockedReason"] = "missing_shared_category"
+        elif item["needsPull"]:
+            item["publishBlockedReason"] = "remote_newer"
+        if item["publishBlockedReason"] is not None:
+            publish_blocked.append(item)
         results.append(item)
 
     return {
@@ -290,15 +323,37 @@ def migrate_project_to_shared(
     if resolved_project_slug is None:
         raise ScriptError(f"Migracja PROJECT -> SHARED dla {skill_name} wymaga projectSlug.")
 
-    delete_result = delete_project_skill_if_exists(config, skill_name, resolved_project_slug)
-    publish_result = publish_skill(
-        config=config,
-        skill_name=skill_name,
-        category=category,
-        scope="SHARED",
-        project_slug=None,
-        changelog_md=changelog_md,
+    local_skill = load_local_skill(config.skills_dir, skill_name)
+    if local_skill.scope != "SHARED":
+        raise ScriptError(f"Migracja {skill_name} wymaga scope: SHARED w lokalnym SKILL.md przed usunięciem PROJECT.")
+    if first_non_blank(category) is None:
+        raise ScriptError(f"Migracja {skill_name} wymaga kategorii SHARED przed usunięciem PROJECT.")
+    source = request_json(
+        config,
+        "GET",
+        f"/skills/remote/{urllib.parse.quote(skill_name)}/latest",
+        query=build_remote_project_query(resolved_project_slug),
+        allow_status={404},
     )
+    if source is None:
+        raise ScriptError(f"Nie znaleziono źródłowego skilla PROJECT {skill_name} w {resolved_project_slug}; niczego nie usunięto.")
+
+    delete_result = delete_project_skill_if_exists(config, skill_name, resolved_project_slug)
+    try:
+        publish_result = publish_skill(
+            config=config,
+            skill_name=skill_name,
+            category=category,
+            scope="SHARED",
+            project_slug=None,
+            changelog_md=changelog_md,
+        )
+    except ScriptError as exception:
+        raise ScriptError(
+            f"Publikacja SHARED nie powiodła się po próbie usunięcia PROJECT {skill_name}. "
+            f"Wpis źródłowy mógł już zostać usunięty. "
+            f"deleteProjectResult={json.dumps(delete_result, ensure_ascii=False)}; przyczyna: {exception}"
+        ) from exception
     return {
         "action": "MIGRATED_PROJECT_TO_SHARED",
         "skillName": skill_name,
@@ -400,22 +455,85 @@ def publish_skill(
 
 
 def rename_skill(config: Config, skill_name: str, new_skill_name: str, project_slug: str | None) -> dict[str, Any]:
+    if (not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", skill_name)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", new_skill_name)
+            or skill_name.lower() == new_skill_name.lower()):
+        raise ScriptError("Nowa nazwa skilla musi być innym, bezpiecznym segmentem katalogu.")
     resolved_project_slug = resolve_remote_skill_project_slug(config, skill_name, project_slug)
-    result = request_json(
-        config,
-        "POST",
-        f"/skills/remote/{urllib.parse.quote(skill_name)}/rename",
-        body={
-            "newSkillName": new_skill_name,
-            "projectSlug": resolved_project_slug,
-            "libraryUserId": config.library_user_id,
-        },
+    local_skill = load_local_skill(config.skills_dir, skill_name)
+    if local_skill.scope not in {"PROJECT", "SHARED"}:
+        raise ScriptError(f"Rename skilla {skill_name} wymaga jawnego scope w lokalnym SKILL.md.")
+    if local_skill.scope == "PROJECT" and resolved_project_slug is None:
+        raise ScriptError(f"Rename skilla PROJECT {skill_name} wymaga jawnego --project-slug.")
+    if local_skill.scope == "SHARED" and resolved_project_slug is not None and not is_reserved_library_skill_name(skill_name):
+        raise ScriptError(f"Rename zwykłego skilla SHARED {skill_name} nie może zawierać --project-slug.")
+    source_dir = config.skills_dir / skill_name
+    target_dir = config.skills_dir / new_skill_name
+    if source_dir.is_symlink() or target_dir.exists():
+        raise ScriptError(f"Nie można bezpiecznie zmienić lokalnego katalogu {source_dir} na {target_dir}.")
+    source_md = source_dir / "SKILL.md"
+    original_bytes = source_md.read_bytes()
+    original_text = original_bytes.decode("utf-8")
+    frontmatter = FRONTMATTER_PATTERN.match(original_text)
+    if frontmatter is None or first_frontmatter_value(parse_frontmatter(original_text), "name") != skill_name:
+        raise ScriptError(f"SKILL.md musi deklarować name: {skill_name} przed rename.")
+    major, minor, patch = parse_semver(local_skill.declared_version)
+    next_version = f"{major}.{minor}.{patch + 1}"
+    updated_frontmatter, name_count = re.subn(r"(?m)^name:[^\r\n]*", f"name: {new_skill_name}", frontmatter.group(1), count=1)
+    updated_frontmatter, version_count = re.subn(r"(?m)^version:[^\r\n]*", f"version: {next_version}", updated_frontmatter, count=1)
+    if name_count != 1 or version_count != 1:
+        raise ScriptError("SKILL.md wymaga pól name i version w frontmatter przed rename.")
+    updated_bytes = (original_text[:frontmatter.start(1)] + updated_frontmatter
+                     + original_text[frontmatter.end(1):]).encode("utf-8")
+    remote_latest = request_json(
+        config, "GET", f"/skills/remote/{urllib.parse.quote(skill_name)}/latest",
+        query=build_remote_project_query(resolved_project_slug), allow_status={404},
     )
+    if remote_latest is None:
+        raise ScriptError(f"Nie znaleziono zdalnego skilla {skill_name}; lokalny katalog pozostaje bez zmian.")
+    if compare_semver(local_skill.declared_version, remote_latest["latestVersion"]) < 0:
+        raise ScriptError(f"Biblioteka ma nowszą wersję {skill_name}; pobierz ją przed rename.")
+
+    try:
+        source_dir.rename(target_dir)
+        (target_dir / "SKILL.md").write_bytes(updated_bytes)
+    except OSError as exception:
+        if target_dir.exists() and not source_dir.exists():
+            target_dir.rename(source_dir)
+            (source_dir / "SKILL.md").write_bytes(original_bytes)
+        raise ScriptError(f"Nie udało się przygotować lokalnego rename: {exception}") from exception
+    try:
+        result = request_json(
+            config,
+            "POST",
+            f"/skills/remote/{urllib.parse.quote(skill_name)}/rename",
+            body={
+                "newSkillName": new_skill_name,
+                "projectSlug": resolved_project_slug,
+                "libraryUserId": config.library_user_id,
+            },
+        )
+    except ScriptError:
+        target_dir.rename(source_dir)
+        (source_dir / "SKILL.md").write_bytes(original_bytes)
+        raise
+    try:
+        publication = publish_skill(config=config, skill_name=new_skill_name, category=local_skill.category,
+                                    scope=local_skill.scope, project_slug=resolved_project_slug, changelog_md=None)
+    except ScriptError as exception:
+        raise ScriptError(
+            f"Zdalny i lokalny rename {skill_name} -> {new_skill_name} powiódł się, "
+            f"ale publikacja wersji {next_version} nie: {exception}. "
+            "Lokalny katalog i wpis zdalny mają nową nazwę; ponów publish po naprawie błędu."
+        ) from exception
     return {
         "action": "RENAMED",
         "previousSkillName": skill_name,
         "skillName": result["name"],
         "scope": result["scope"],
+        "localDirectory": str(target_dir),
+        "version": next_version,
+        "publishResult": publication,
     }
 
 
@@ -510,6 +628,25 @@ def has_same_payload(local_files: list[LocalFile], remote_files: list[dict[str, 
     return local_by_path == remote_by_path
 
 
+def is_python_cache(relative_path: str) -> bool:
+    parts = relative_path.replace("\\", "/").lower().split("/")
+    return "__pycache__" in parts or parts[-1].endswith((".pyc", ".pyo"))
+
+
+def validate_text_encoding(relative_path: str, mime_type: str, content: bytes) -> None:
+    lower_path = relative_path.lower()
+    lower_mime = mime_type.lower()
+    if not (Path(lower_path).suffix in TEXT_SUFFIXES or lower_path.endswith(".gitignore")
+            or lower_mime.startswith("text/") or any(kind in lower_mime for kind in ("json", "xml", "yaml", "javascript"))):
+        return
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as exception:
+        raise ScriptError(f"Plik tekstowy musi być zapisany w UTF-8: {relative_path}") from exception
+    if "\x00" in text:
+        raise ScriptError(f"Plik tekstowy zawiera bajt NUL: {relative_path}")
+
+
 def load_local_skill(skills_dir: Path, skill_name: str) -> LocalSkill:
     skill_dir = skills_dir / skill_name
     if not skill_dir.is_dir():
@@ -518,8 +655,12 @@ def load_local_skill(skills_dir: Path, skill_name: str) -> LocalSkill:
     files: list[LocalFile] = []
     for file_path in sorted(path for path in skill_dir.rglob("*") if path.is_file()):
         relative_path = file_path.relative_to(skill_dir).as_posix()
+        if is_python_cache(relative_path):
+            continue
         mime_type = mimetypes.guess_type(file_path.name)[0] or "application/octet-stream"
-        files.append(LocalFile(relative_path=relative_path, mime_type=mime_type, content=file_path.read_bytes()))
+        content = file_path.read_bytes()
+        validate_text_encoding(relative_path, mime_type, content)
+        files.append(LocalFile(relative_path=relative_path, mime_type=mime_type, content=content))
 
     skill_md = next((file for file in files if file.relative_path == "SKILL.md"), None)
     if skill_md is None:
@@ -682,7 +823,7 @@ def required_library_repo_project_slug(config: Config, skill_name: str) -> str |
 
 
 def resolve_remote_skill_project_slug(config: Config, skill_name: str, project_slug: str | None) -> str | None:
-    normalized_project_slug = first_non_blank(project_slug, config.project_slug)
+    normalized_project_slug = first_non_blank(project_slug)
     required_repo_project_slug = required_library_repo_project_slug(config, skill_name)
     if (
         required_repo_project_slug is not None

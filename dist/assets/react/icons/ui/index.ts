@@ -61,6 +61,7 @@ export { default as IconUiMinus } from "./IconUiMinus";
 export { default as IconUiMove } from "./IconUiMove";
 export { default as IconUiNavigate } from "./IconUiNavigate";
 export { default as IconUiNetwork } from "./IconUiNetwork";
+export { default as IconUiNotification } from "./IconUiNotification";
 export { default as IconUiOption } from "./IconUiOption";
 export { default as IconUiParticipant } from "./IconUiParticipant";
 export { default as IconUiParticipantsList } from "./IconUiParticipantsList";

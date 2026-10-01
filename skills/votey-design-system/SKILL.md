@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.5.1
+version: 1.13.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -40,6 +40,7 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
 | Źródłowy SVG albo integracja opublikowanego assetu | [svg-assets.md](references/svg-assets.md), [assets.md](references/assets.md) oraz referencję frameworka |
 | Device, grid, breakpoint albo layout z Figmy | [responsiveness.md](references/responsiveness.md) |
 | Publiczny komponent, wariant, wrapper lub authoring | [components.md](references/components.md); dla źródła Angular także [angular-components.md](references/angular-components.md) |
+| Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |
 | Instalacja, upgrade lub smoke test aplikacji | [consumers.md](references/consumers.md) oraz referencję frameworka |
 | `design-system-votey` albo konsument Angular | [angular.md](references/angular.md) |
@@ -76,8 +77,20 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
   natywnego `input[type=file]`, więc komponent utrzymuje lokalną synchronizację.
 - Każdy wyjątek udokumentuj w kodzie lub dokumentacji komponentu, ogranicz go do
   tego komponentu i przetestuj programową zmianę wartości oraz stan `disabled`.
+- Każdy komponent formularzowy musi spełniać wspólny kontrakt opisany w
+  `references/angular-components.md`: odziedziczony `control`, jawna semantyka
+  `label`, stany formularza, dostępność i brak równoległego `ngModel`.
+- Dla komponentów z panelem lub overlayem zweryfikuj pozycjonowanie, szerokość,
+  zamykanie poza komponentem, klawiaturę i widoczność akcji w Storybooku.
 
 ## Codzienny workflow
+
+Ważne dla CRM: `grid.admin` **nie używa już gridu BoxEs ani proporcjonalnych
+wartości `vw` per device**. Kolumny nadal wybiera `VoteyDeviceService`, natomiast
+margines i gutter interpolują między sześcioma szerokościami makiet; sidebar jest
+osobnym stanem shellu i ma próg 1024 px. Pełny kontrakt, wartości i sposób
+pozycjonowania overlayu są w [responsiveness.md](references/responsiveness.md).
+Przed zmianą gridu przeczytaj tę sekcję, nie kopiuj generatora z BoxEs.
 
 1. Dla Figmy odbierz zweryfikowany handoff ze skilla `figma`: target, struktura,
    stany, layout-driving scope, breakpointy oraz wartości potwierdzone i brakujące.
@@ -92,10 +105,25 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
    referencje potrzebne w zadaniu. Dla widoku z Figmy wczytaj też `consumers.md`.
 3. Zmapuj role UI kolejno na publiczny komponent lub lokalny prymityw, token,
    responsywność i asset. Przed nowym wrapperem sprawdź jeden najbliższy przykład.
-4. Zastosuj lokalny standard frameworka. Zachowaj zachowanie, payloady, dostępność,
+4. Przy migracji istniejącego konsumenta wczytaj `angular-consumer-migration.md`,
+   porównaj baseline historyczny, zapisz kontrakt przed zmianą i oddziel logikę
+   domenową od mapowania publicznego API Votey.
+5. Zastosuj lokalny standard frameworka. Zachowaj zachowanie, payloady, dostępność,
    stany i granicę Server/Client albo Angular Forms.
-5. Uruchom najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
+6. Dobierz najwęższą weryfikację wskazaną w referencji. Nie deklaruj uruchomienia
    testu, builda, Storybooka ani smoke testu bez dowodu z tej sesji.
+
+### Testy przy zmianie kodu
+
+Gdy zmiana dotyczy kodu runtime, publicznego API albo zachowania komponentu,
+sprawdź najbliższe istniejące testy. Jeśli test opisuje zmieniany kontrakt,
+zaktualizuj go; jeśli nowe zachowanie nie ma pokrycia, dodaj lub rozszerz
+minimalny test adekwatny do zmiany. Aktualizacja testów jest częścią implementacji
+zmiany, gdy jest konieczna — nie oznacza automatycznego uruchamiania całej suity.
+
+Nie uruchamiaj testów przy każdym prompcie. Uruchom tylko najwęższy właściwy test
+lub zestaw testów, gdy użytkownik o to poprosi, projektowy workflow tego wymaga
+albo weryfikacja jest potrzebna do potwierdzenia wykonanej zmiany.
 
 Rutynowa zmiana tokenu, assetu, komponentu, story lub eksportu pozostaje w tym
 skill-u. Eskaluj do `pleo-design-system` tylko przy audycie całego DS, zmianie
@@ -117,25 +145,12 @@ return-to: references/<plik>.md
   wersji paczki.
 - Zachowaj izolację Angular ↔ React; zmiana `shared` wymaga sprawdzenia obu outputów.
 - Dla komponentu sprawdź dostępność, wymagane stany, publiczne API i preview.
+- Dla migracji konsumenta sprawdź mapowanie legacy → publiczne API, walidację
+  formularza, brak globalnych wycieków SCSS oraz świeżość zbudowanego artefaktu.
 - Dla zmian wizualnych sprawdź route/story, theme, viewport, console, overflow oraz
   krytyczne computed values. Pixel-perfect wymaga screenshotu runtime i wartości
   potwierdzonych w handoffie.
 
 ## Historia zmian
 
-- 1.5.1 — Dodano preferowany kontrakt `VoteyFormControlApplyDirective` dla
-  Angularowych kontrolek formularzowych oraz ograniczony wyjątek dla natywnego
-  inputu pliku.
-
-- 1.5.0 — Dodano referencję synchronizacji tokenów Figma Variables: źródło URL z
-  manifestu, dwa eksporty JSON, walidację w pamięci bieżącego zadania oraz
-  wdrożenie po poprawnym eksporcie; dodano obowiązkowy routing do `assets.md` dla
-  źródłowych SVG i integracji opublikowanych assetów.
-- 1.4.0 — Dodano kontraktowy router, snapshot manifestu i wspólne referencje dla
-  tokenów, theme, SVG, responsywności, komponentów, preview i konsumentów Angular/React;
-  doprecyzowano publiczny Sass entry point `ds-device-mixins` dla responsywności Angulara.
-- 1.3.2 — Dodano preflight publicznych komponentów i lokalnych prymitywów przed implementacją UI.
-- 1.3.1 — Udokumentowano publiczny context ilustracji `info` dla szczegółowych infografik.
-- 1.3.0 — Dodano obowiązkową bramkę izolacji Angular ↔ React/PWA oraz walidację właściwych entry pointów i buildów.
-- 1.2.0 — Dodano wybór sposobu użycia publicznych assetów w Angularze i React oraz obowiązkową bramkę lokalnego osadzania SVG.
-- 1.1.0 — Dodano publiczny Angular SVG registry, provider bootstrapu i kontrakt migracji konsumentów z lokalnych rejestrów.
+Pełna historia wersji znajduje się w [references/changelog.md](references/changelog.md).

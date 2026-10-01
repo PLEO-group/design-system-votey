@@ -15,6 +15,7 @@ export { default as IlluSpotForumOff } from "./IlluSpotForumOff";
 export { default as IlluSpotForumOn } from "./IlluSpotForumOn";
 export { default as IlluSpotInteractiveVideoConference } from "./IlluSpotInteractiveVideoConference";
 export { default as IlluSpotLoginOnAnotherDevice } from "./IlluSpotLoginOnAnotherDevice";
+export { default as IlluSpotParticipantsPair } from "./IlluSpotParticipantsPair";
 export { default as IlluSpotProxyOff } from "./IlluSpotProxyOff";
 export { default as IlluSpotProxyOn } from "./IlluSpotProxyOn";
 export { default as IlluSpotProxy } from "./IlluSpotProxy";

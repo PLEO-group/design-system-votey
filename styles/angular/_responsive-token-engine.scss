@@ -131,7 +131,6 @@ $breakpoint-order: (
 
 @mixin semantic-typography-token($name, $config, $mplier) {
   & {
-    --typo-#{$name}-font-family: var(--font-family-open-sans);
     --typo-#{$name}-font-weight: #{map.get($config, "font-weight")};
     --typo-#{$name}-letter-spacing: #{map.get($config, "letter-spacing")}px;
   }

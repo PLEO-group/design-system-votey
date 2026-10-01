@@ -9,7 +9,7 @@ description: >
   Triggery: link do Figmy, pixel-perfect, "odczytaj z Figmy", "zmień hover", "dodaj wariant",
   "component set", "macierz wariantów", figma-to-code,
   get_design_context, get_screenshot, get_metadata.
-version: 1.25.2
+version: 1.27.1
 author: s.stawowy@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -20,6 +20,12 @@ tags:
 # Figma
 
 Skill obejmuje odczyt makiet Figma i wdrożenie zgodnego UI frontendowego. Nie obejmuje programowej edycji canvasu Figmy.
+## Pixel-perfect: najpierw potwierdź runtime
+
+Gdy zadanie wymaga implementacji lub korekty pixel-perfect z walidacją runtime, przed pierwszą operacją Figma wykonaj bramkę `Runtime Access Gate` z `references/runtime-pixel-perfect-loop.md`. Samo wykrycie narzędzia Playwright, status HTTP 200 albo redirect do logowania nie oznacza potwierdzonego dostępu. Jeśli Playwright nie pokaże docelowego widoku po uwierzytelnieniu, zatrzymaj pracę pixel-perfect: nie odczytuj Figmy, nie edytuj UI i zgłoś blocker. Po potwierdzeniu runtime wykonaj MCP Guard przed odczytem Figmy.
+
+Ta kolejność dotyczy zadań pixel-perfect wymagających porównania z działającą aplikacją; zwykły odczyt Figmy bez implementacji nie wymaga uruchamiania aplikacji.
+
 ## Obowiązkowy pre-check: MCP Guard
 
 **Przed każdą operacją Figma** wczytaj i wykonaj `references/mcp-guard.md`. Nie pomijaj tego kroku nawet gdy URL Figmy jest oczywisty.
@@ -37,11 +43,11 @@ Wczytaj **tylko** te referencje, które pasują do bieżącego zadania:
 Dowolna operacja Figma
   → ZAWSZE wczytaj references/mcp-guard.md (pre-check)
 
-Odczyt makiety → implementacja UI/komponentu (pixel-perfect)
+Sam odczyt makiety bez implementacji pixel-perfect
   → Instrukcje są w tym SKILL.md (poniżej)
 
-Odczyt makiety → implementacja UI/komponentu + runtime walidacja / pixel-perfect loop
-  → Wczytaj references/runtime-pixel-perfect-loop.md po MCP Guardzie i przed edycją kodu
+Odczyt makiety → implementacja UI/komponentu pixel-perfect z walidacją runtime
+  → Wczytaj references/runtime-pixel-perfect-loop.md przed operacjami Figma; wykonaj Runtime Access Gate, potem MCP Guard i odczyt
 
 Odczyt makiety → implementacja w projekcie Angular
   → Wczytaj references/angular-implementation.md po MCP Guardzie i przed edycją kodu
@@ -66,18 +72,35 @@ Nie ładuj wszystkich referencji naraz.
 Nigdy nie zgaduj wartości paddingów, marginów, gapów ani rozmiarów. Każda wartość musi pochodzić z makiety.
 Jeśli nie możesz odczytać danych krytycznych dla całego wymaganego zakresu albo krytycznych wartości zakresu, który masz implementować — powiedz o tym użytkownikowi i poczekaj na instrukcje. Możesz kontynuować implementację zakresów oznaczonych jako `verified`; zakresy `partial` i `blocked` pomiń albo nazwij fallbackiem, zgodnie z Krokiem 0.6.
 
-### Korekta bez zmiany designu
+### Cleanup / refactor bez zmiany designu
 
-Odczyt Figmy nie blokuje zmiany, która wyłącznie usuwa lokalne nadpisanie albo zbędny kod, gdy jednocześnie:
+Link do Figmy w aktualnej rozmowie nie wymaga ponownego MCP Guarda ani pełnej bramki implementacyjnej, gdy zmiana ma kontrakt **braku delty wizualnej**. Nie zwalnia to z walidacji runtime, jeśli refaktor może wpływać na render albo interakcję.
 
-- nie wybierasz ani nie zmieniasz wartości wizualnej,
-- zachowujesz istniejący wariant komponentu Design Systemu i projektowe tokeny,
+Przed edycją zapisz krótki kontrakt cleanupu:
+
+```text
+Cleanup contract:
+- zakres: <kod / komponent>
+- zachowane invariants: <layout, tokeny, wariant DS, stany widoczne>
+- zmieniane zachowanie: <brak | techniczny kontrakt bez widocznej delty>
+- poziom walidacji: <static-only | runtime-smoke>
+- walidacja: <konkretna komenda albo route, stan i assertion>
+```
+
+Pełny odczyt Figmy nie jest wtedy potrzebny, jeśli jednocześnie:
+
+- nie wybierasz ani nie zmieniasz tokenu, koloru, typografii, spacingu, rozmiaru, breakpointu ani assetu,
+- zachowujesz istniejący wariant komponentu Design Systemu i strukturę layoutu istotną dla widoku,
 - nie dodajesz klasy, stylu inline ani fallbacku wizualnego,
-- zakres potwierdzają obecny kod i API komponentu.
+- obecny kod, API komponentu i kontrakt cleanupu wystarczają do potwierdzenia invariants.
 
-Przykłady: usunięcie ręcznego nadpisania typografii przy zachowaniu wariantu, usunięcie wrappera bez zmiany layoutu albo zastąpienie ręcznego typu typem generowanym.
+`static-only` (lint, typecheck lub istniejący test) jest dozwolony wyłącznie, gdy refaktor nie zmienia renderowanego DOM, klas ani relacji selektorów CSS, event handlerów, state'u interakcji, focusu, portalu oraz API używanego przez konsumentów. Przykład: typ generowany zamiast ręcznego albo usunięcie martwego importu.
 
-Jeśli korekta wymaga wyboru wariantu, tokenu, koloru, spacingu, rozmiaru lub zachowania responsywnego, wróć do odczytu Figmy przed edycją.
+`runtime-smoke` jest obowiązkowy przy zmianie struktury DOM, wrappera, API komponentu, eventu, state'u, keyboard/pointer flow, focusu lub warstwy overlay. Sprawdź reprezentatywny route albo preview: komponent się renderuje, widoczny stan pozostaje zgodny z contractem, a zmieniona interakcja zachowuje oczekiwany focus i wynik. Jeśli runtime nie jest dostępny, oznacz ten zakres jako nieweryfikowany; nie deklaruj braku delty ani pixel-perfect.
+
+Przykłady: usunięcie ręcznego nadpisania typografii przy zachowaniu wariantu albo zastąpienie ręcznego typu typem generowanym może być `static-only`; usunięcie wrappera, duplikującego się state'u lub uproszczenie API komponentu wymaga `runtime-smoke`.
+
+Jeśli refaktor wymaga wyboru albo zmiany wariantu, tokenu, koloru, spacingu, rozmiaru, zachowania responsywnego lub widocznego stanu, wróć do odczytu Figmy przed edycją. Nie deklaruj wtedy pixel-perfect wyłącznie na podstawie cleanupu.
 
 Jeśli repo ma dedykowaną referencję stackową w tym skillu, po odczycie danych z Figmy wczytaj ją przed implementacją.
 `references/angular-implementation.md` jest wyłącznie dla projektów Angular; sam fakt użycia Design Systemu nie jest triggerem tej referencji.
@@ -107,6 +130,8 @@ to **nie wolno** przechodzić do implementacji jako "pixel-perfect". Zatrzymaj s
 
 Przed pierwszą edycją komponentu, template'u, stylów, klas Design Systemu albo treści widocznej w UI z linku do Figmy agent musi
 wypisać krótki kontrakt wejściowy. Brak kontraktu oznacza, że nie wolno kodować implementacji z makiety.
+
+Wyjątek: zmiana spełniająca warunki sekcji **Cleanup / refactor bez zmiany designu** wymaga tylko `Cleanup contract`, nie pełnej bramki poniżej.
 
 Kontrakt musi zawierać tylko pola istotne dla realnego zakresu zmiany:
 
@@ -586,6 +611,12 @@ Przed napisaniem nowego komponentu sprawdź, czy projekt ma już gotowy komponen
 W implementacji UI z Figmy sprawdź teksty, które użytkownik widzi: headingi, opisy, CTA, etykiety tabów, komunikaty,
 placeholdery i aria-labels, jeśli wynikają z makiety. Nie zastępuj ich przykładowym copy ani parafrazą, jeśli treść
 ma pochodzić z CMS/speca.
+
+Gdy projekt używa i18n, przed zakończeniem przejrzyj też teksty wpisane na sztywno w komponentach i danych mockowych
+tego zakresu. Dla każdego tekstu ustal właściciela: słownik/API tłumaczeń, CMS, dane produktu albo stała niezależna
+od języka. Teksty należące do słownika podłącz przez istniejące i18n. Nowe klucze wypisz osobno w formacie
+`KATEGORIA.CZLON1_CZLON2 = tekst`, z podziałem na języki; nie mieszaj ich z kluczami już dostępnymi w API.
+Jeśli wartości nie ma jeszcze w API, zgłoś zależność i nie deklaruj zgodności treści w runtime.
 
 Przed końcem zadania wypisz różnice:
 

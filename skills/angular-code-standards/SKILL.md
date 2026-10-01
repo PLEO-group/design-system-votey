@@ -10,7 +10,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.15.0
+version: 1.17.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -71,6 +71,9 @@ Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 - TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [playbook 3.16](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe), nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], przed validatorem lub checkerem potwierdź konieczność reguły i osiągalność błędnego stanu, dopiero potem wykonaj discovery → [playbook 3.17](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi), ocena wpływu na testy → [3.11].
 - Tłumaczenia: w każdym edytowanym pliku usuń zauważone, nietłumaczone polskie teksty UI; użyj wyłącznie istniejących prefiksów grup i wypisz użytkownikowi klucze z polskimi tekstami → [3.12].
 - Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [playbook 3.13](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu).
+- Refaktor istniejącego widoku: jeśli użytkownik wskazuje wersję historyczną, porównaj najpierw commit bazowy z bieżącym kodem i oddziel zmiany domenowe od prezentacyjnych; nie przenoś przypadkowych zmian do reguł UI.
+- Migracja kontrolek: przed podmianą komponentu zinwentaryzuj jego inputy, outputy, walidację, stan disabled/touched/error, reset, tryb edycji i selektory testowe; po podmianie sprawdź payload parity i kontrakt interakcji.
+- Style po migracji: przeskanuj zmienione pliki pod kątem globalnych selektorów (`label`, `.input`, `.select`), klas legacy, utility classes i magicznych wartości; style komponentu muszą być lokalne, zgodne z hierarchią HTML i oparte na dostępnych tokenach.
 - Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [playbook 3.15](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki).
 - Animacje: dla nowego kodu CSS + `animate.enter` / `animate.leave`, bez nowych legacy triggerów → [4].
 
@@ -405,6 +408,37 @@ Używaj `effect()` tylko dla realnych efektów ubocznych, np. synchronizacji z z
 
 Nie zapisuj do signali wewnątrz `effect()` bez wyraźnego powodu i ochrony przed pętlą aktualizacji.
 
+Wyjątek: gdy komponent ma lokalny, mutowalny signal reprezentujący wybór lub
+stan interakcji, a wartość źródłowa przychodzi z `input()`, użyj `effect()` do
+resetowania albo synchronizacji lokalnego stanu po zmianie inputu. Taki efekt
+jest uzasadniony tylko wtedy, gdy użytkownik może zmieniać lokalny signal
+niezależnie od inputu i samo `computed()` nie wystarcza. W callbacku efektu
+odczytaj aktualny input, ustaw lokalny stan na wartość pochodną od tego inputu
+i nie modyfikuj inputu ani źródła rodzica.
+
+Przed zapisaniem do signala w `effect()` sprawdź:
+
+- czy signal jest lokalnym stanem interakcji, a nie tylko wartością do
+  wyświetlenia,
+- czy input może zmienić się po utworzeniu komponentu,
+- czy synchronizacja nie tworzy pętli aktualizacji,
+- czy efekt powinien reagować tylko na input źródłowy, a nie na własny signal.
+
+Przykładowy wzorzec:
+
+```ts
+protected readonly selectedId = signal<number | null>(null);
+
+public constructor() {
+  effect((): void => {
+    this.selectedId.set(this.valueFromParent()?.id ?? null);
+  });
+}
+```
+
+Nie stosuj tego wyjątku do zwykłego mapowania danych pod template — tam nadal
+preferuj `computed()`.
+
 ### [3.8] Czyszczenie subskrypcji i zasobów
 
 Dla ręcznych subskrypcji RxJS preferuj `takeUntilDestroyed()` i `DestroyRef`.
@@ -446,6 +480,13 @@ Nie zostawiaj pozostałości "na później", jeśli nie są celowym TODO związa
 
 ### [3.11] Wpływ zmian `.ts` na testy
 
+Przed utworzeniem albo aktualizacją pliku testowego ustal faktycznie używany runner,
+komendę uruchamiającą test oraz to, czy konfiguracja obejmuje dany plik. Sama obecność
+`*.spec.ts` obok komponentu nie jest dowodem, że test jest wykonywany. Jeżeli projekt
+nie ma działającego runnera dla tego pliku, rozszerz istniejący wykonywalny harness
+albo jawnie zgłoś brak uruchamialnego pokrycia; nie deklaruj takiego testu jako
+zweryfikowanego.
+
 Jeśli modyfikujesz plik `.ts`, sprawdź, czy obok istnieje `.spec.ts`.
 Jeśli istnieje i zmiana dotyka logiki, stanu, inputów, outputów, requestów albo warunków w template, zaktualizuj test.
 Nie wymagaj aktualizacji testów tylko dla czystej zmiany SCSS.
@@ -468,6 +509,42 @@ Gotowy format:
 ```text
 Testy: zaktualizowano `<plik>.spec.ts` / brak testów w pobliżu — rekomenduję dodać `<zakres>` / nie wymagało zmian, bo dotyczyło wyłącznie SCSS.
 ```
+
+### [3.11a] Migracja istniejącego widoku bez utraty kontraktu
+
+Przy migracji istniejącego widoku do innego komponentu UI albo Design Systemu
+najpierw zapisz kontrakt przed zmianą:
+
+- dane wejściowe i wyjściowe oraz payloady requestów,
+- lokalny state otwarcia, zaznaczenia, edycji, resetu i zapisu,
+- walidację, `required`, `disabled`, `touched`, błędy i komunikaty,
+- selektory `data-cy`, semantykę HTML, ARIA i obsługę klawiatury,
+- stany pustej listy, duplikatów, błędów i braku danych.
+
+Jeśli dostępna jest wersja historyczna, użyj jej jako baseline'u i oddziel zmiany
+domenowe od zmian wyglądu lub integracji. Nie przenoś do wspólnego skilla
+jednorazowych kluczy tłumaczeń, nazw endpointów ani reguł właściwych dla jednej
+aplikacji.
+
+Po migracji sprawdź równoważność zachowania: wartości formularza, eventy,
+payloady, zamykanie, reset i warunki blokowania akcji. Dla zmienionej logiki
+zaktualizuj testy obok komponentu; dla samego SCSS testy jednostkowe nie są
+wymagane.
+
+### [3.11b] Audyt stylów po migracji komponentu
+
+Po wymianie kontrolki lub layoutu przeskanuj cały zmieniony zakres, a nie tylko
+nowe linie. Usuń albo zgłoś:
+
+- globalne selektory `label`, `.input`, `.select` i podobne override'y,
+- klasy legacy, które przestały mieć właściciela,
+- utility classes mieszające odpowiedzialność layoutu z komponentem,
+- selektory z `&`, które po kompilacji nie wskazują zamierzonego elementu,
+- korekty `transform` użyte do maskowania problemu z gridem lub wysokością pola.
+
+Wartości spacingu, typografii, koloru i radiusu mapuj na tokeny lokalnego Design
+Systemu. Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
+uzasadnione przez kontrakt komponentu albo istniejący wzorzec projektu.
 
 ### [3.12] Tłumaczenia i nowe klucze
 

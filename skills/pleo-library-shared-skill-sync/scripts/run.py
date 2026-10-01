@@ -21,6 +21,7 @@ INSTRUCTIONS_BLOCK_PATTERN = re.compile(r"(?s)(<INSTRUCTIONS>\s*)(.*?)(\s*</INST
 FRONTMATTER_PATTERN = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 FRONTMATTER_FIELD_PATTERN = re.compile(r"(?m)^([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.*?)\s*$")
 PARENT_PATH_PATTERN = re.compile(r"(^|/)\.\.(/|$)")
+TEXT_SUFFIXES = {".md", ".txt", ".yml", ".yaml", ".json", ".xml", ".java", ".js", ".ts", ".tsx", ".jsx", ".py", ".sh", ".properties", ".toml", ".ini", ".cfg", ".csv", ".sql", ".svg", ".html", ".css", ".rst", ".jsonl", ".ndjson", ".ps1"}
 
 INSTRUCTION_TYPES = ("AGENTS", "CLAUDE", "GEMINI")
 INSTRUCTION_FILENAMES = {
@@ -471,15 +472,43 @@ def write_new_skill_directory(skills_dir: Path, skill_name: str, files: list[dic
     if target_dir.exists():
         raise ScriptError(f"Skill {skill_name} już istnieje lokalnie: {target_dir}")
 
-    written_files: list[str] = []
+    normalized_files: list[tuple[str, bytes]] = []
     for file_payload in files:
         relative_path = normalize_relative_path(file_payload["relativePath"])
+        if is_python_cache(relative_path):
+            continue
         content = base64.b64decode(file_payload["contentBase64"])
+        validate_text_encoding(relative_path, file_payload.get("mimeType"), content)
+        normalized_files.append((relative_path, content))
+    if "SKILL.md" not in {path for path, _ in normalized_files}:
+        raise ScriptError(f"Brakuje pliku SKILL.md w paczce skilla {skill_name}")
+
+    written_files: list[str] = []
+    for relative_path, content in normalized_files:
         target_path = target_dir / Path(relative_path)
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_bytes(content)
         written_files.append(relative_path)
     return written_files
+
+
+def is_python_cache(relative_path: str) -> bool:
+    parts = relative_path.replace("\\", "/").lower().split("/")
+    return "__pycache__" in parts or parts[-1].endswith((".pyc", ".pyo"))
+
+
+def validate_text_encoding(relative_path: str, mime_type: str | None, content: bytes) -> None:
+    lower_path = relative_path.lower()
+    lower_mime = (mime_type or "").lower()
+    if not (Path(lower_path).suffix in TEXT_SUFFIXES or lower_path.endswith(".gitignore")
+            or lower_mime.startswith("text/") or any(kind in lower_mime for kind in ("json", "xml", "yaml", "javascript"))):
+        return
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as exception:
+        raise ScriptError(f"Plik tekstowy musi być zapisany w UTF-8: {relative_path}") from exception
+    if "\x00" in text:
+        raise ScriptError(f"Plik tekstowy zawiera bajt NUL: {relative_path}")
 
 
 def refresh_instruction_files(config: Config) -> list[dict[str, Any]]:

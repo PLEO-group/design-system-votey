@@ -3,20 +3,55 @@
 }
 
 .chip {
+  position: relative;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 0;
   min-width: 0;
-  padding-left: var(--spacing-12);
-  border-radius: var(--radius-pill);
+  max-width: 100%;
+  height: 25px;
+  padding-inline: var(--space-inset-xs) var(--space-inset-2xs);
+  border-radius: var(--radius-full);
   background-color: var(--color-accent-soft);
   border: 2px solid var(--color-accent-hover);
   white-space: nowrap;
   transition: background-color 180ms ease, border 180ms ease;
-  height: 21px;
+
+  .label {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+
+    ::ng-deep vt-text span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 
   .remove {
-    flex: 0 0 auto;
+    position: absolute;
+    top: 50%;
+    right: var(--space-inset-3xs);
+    transform: translateY(-50%);
+
+    ::ng-deep button.icon-button.small {
+      width: 24px;
+      height: 24px;
+
+      .icon {
+        flex-basis: 12px;
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
+  &:has(.remove) {
+    padding-right: calc(
+      var(--space-inset-2xs) + 12px + var(--space-gap-xs)
+    );
   }
 
   &.disabled {
@@ -24,9 +59,6 @@
     border: 2px solid var(--color-border-subtle);
   }
 
-  ::ng-deep vt-text span {
-    line-height: unset !important;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

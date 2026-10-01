@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.pagination {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 64px;
+  min-width: 0;
+  gap: var(--space-gap-s);
+  padding: 0 var(--space-inset-m);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-family: inherit;
+
+
+  .range {
+    flex: 1 1 0;
+    white-space: nowrap;
+  }
+
+  .pages {
+    display: flex;
+    align-items: center;
+    gap: var(--space-gap-2xs);
+
+    .page-button {
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-m);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+
+      &:hover:not(:disabled),
+      &.selected {
+        background: var(--color-accent-soft);
+      }
+
+      &.selected {
+        border-color: var(--color-accent-primary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-border-focus);
+        outline-offset: 2px;
+      }
+
+      &:disabled {
+        background: transparent;
+        border-color: transparent;
+        color: var(--color-text-muted);
+        cursor: default;
+      }
+
+      .page-icon {
+        display: block;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .size-control {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: flex-end;
+
+    ::ng-deep vt-select {
+      display: contents;
+      .select-wrapper {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        .field {
+          width: 120px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .pagination {
+    gap: var(--space-gap-2xs);
+
+    .range {
+      display: none;
+    }
+
+    .pages {
+      .page-button:not(:first-child):not(:last-child):not(.selected) {
+        display: none;
+      }
+    }
+
+    .size-control {
+      flex: 0 0 auto;
+
+      vt-select {
+        width: 150px;
+      }
+    }
+  }
+}

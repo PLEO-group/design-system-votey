@@ -206,10 +206,6 @@
     th { padding: 0 0 var(--space-stack-gap-s); }
   }
 
-  .mat-calendar-body tr:first-child {
-    display: none;
-  }
-
   .mat-calendar-body-cell-content {
     width: 40px;
     height: 40px;

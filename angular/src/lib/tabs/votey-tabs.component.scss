@@ -1,109 +1,95 @@
-:host {
-  display: block;
+@use "@angular/material" as mat;
+
+vt-tabs {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-}
+  min-height: 0;
+  flex: 1 1 auto;
 
-.tabs-wrapper {
-  display: block;
-  min-height: 50px;
-  overflow-x: auto;
-  background: var(--color-blue-70);
-  padding-inline: var(--vt-tabs-padding-start, var(--spacing-0)) var(--vt-tabs-padding-end, var(--spacing-0));
-  scrollbar-width: thin;
+  .tabs-wrapper {
+    @include mat.tabs-overrides(
+      (
+        active-indicator-color: var(--color-mint-green-400),
+        active-focus-indicator-color: var(--color-mint-green-400),
+        active-hover-indicator-color: var(--color-mint-green-400),
+        active-indicator-height: 4px,
+        container-height: 50px,
+        divider-height: 0,
+        inactive-label-text-color: var(--color-text-primary),
+        active-label-text-color: var(--color-text-primary),
+        pagination-icon-color: var(--color-text-primary),
+      )
+    );
+    flex: 1 1 auto;
+    min-height: 0;
 
-  .track {
-    position: relative;
-    display: flex;
-    width: max-content;
-    min-width: 100%;
-    min-height: 50px;
-    gap: var(--spacing-39);
+    // Material has no public inputs for sticky headers or tab-label spacing.
+    > .mat-mdc-tab-header {
+      position: sticky;
+      top: var(--vt-tabs-sticky-top, auto);
+      z-index: 10;
+      background: var(--color-blue-70);
+      padding-inline: var(--vt-tabs-padding-start, var(--spacing-0))
+        var(--vt-tabs-padding-end, var(--spacing-0));
 
-    .tab {
-      display: inline-flex;
-      position: relative;
-      flex: 0 0 auto;
-      align-items: center;
-      gap: var(--spacing-8);
-      min-width: 193px;
-      min-height: 50px;
-      box-sizing: border-box;
-      border: 0;
-      background: transparent;
-      color: var(--color-navy-blue-800);
-      cursor: pointer;
-      padding: 0 var(--spacing-4);
-      text-transform: uppercase;
-      white-space: nowrap;
+      .mat-mdc-tab-labels {
+        gap: var(--spacing-39);
 
-      &:hover:not(.active):not(:disabled) {
-        color: var(--color-mint-green-500);
+        .mat-mdc-tab {
+          min-width: 193px;
+          padding-inline: var(--spacing-4);
 
-        ::ng-deep vt-text.label span {
-          color: var(--color-mint-green-500);
+          &:focus-visible {
+            outline: 2px solid var(--color-mint-green-400);
+            outline-offset: -4px;
+          }
+          &:hover:not(.mdc-tab--disabled) .label span {
+            color: var(--color-text-accent);
+          }
         }
       }
+    }
 
-      &:focus-visible {
-        outline: 2px solid var(--color-mint-green-400);
-        outline-offset: -4px;
+    // Clip horizontal animation without creating a nested scroll container that breaks sticky pagination.
+    > .mat-mdc-tab-body-wrapper {
+      overflow: clip;
+      flex: 1 1 auto;
+      background: var(--color-bg-page);
+
+      > .mat-mdc-tab-body {
+        overflow: clip;
+        min-width: 0;
+
+        > .mat-mdc-tab-body-content {
+          display: flex;
+          flex-direction: column;
+          overflow: visible;
+        }
       }
+    }
 
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
+    .tab-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-8);
 
-      ::ng-deep vt-text.label span {
-        display: block;
-      }
-
-      ::ng-deep vt-text.count span {
+      .count span {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         min-width: 28px;
         height: 17px;
-        box-sizing: border-box;
         border-radius: var(--radius-full);
         background: var(--color-gray-100);
-        color: var(--color-gray-700);
-        padding: 0 var(--spacing-7);
+        color: var(--color-text-secondary);
+        padding-inline: var(--spacing-7);
       }
 
-      &.active ::ng-deep vt-text.count span {
+      &.active .count span {
         background: var(--color-mint-green-70);
-        color: var(--color-mint-green-500);
+        color: var(--color-text-accent);
       }
-    }
-
-    .indicator {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 4px;
-      background: var(--color-mint-green-400);
-      pointer-events: none;
-
-      &.ready {
-        transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), width 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      }
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tabs-wrapper .track .indicator.ready {
-    transition: none;
-  }
-}
-
-@media (max-width: 760px) {
-  .tabs-wrapper .track {
-    gap: var(--spacing-24);
-
-    .tab {
-      min-width: 180px;
     }
   }
 }

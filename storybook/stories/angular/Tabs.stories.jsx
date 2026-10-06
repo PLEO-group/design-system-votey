@@ -15,7 +15,11 @@ function AngularTabsPreview(props) {
 
     async function mount() {
       await import("@angular/compiler");
-      const [{ createComponent }, { createApplication }, { VoteyTabsComponent, VOTEY_TRANSLATOR }] = await Promise.all([
+      const [
+        { createComponent, Component, EventEmitter },
+        { createApplication },
+        { VoteyTabsComponent, VoteyTabContentDirective, VOTEY_TRANSLATOR },
+      ] = await Promise.all([
         import("@angular/core"),
         import("@angular/platform-browser"),
         import("@pleodigital/design-system-votey/angular"),
@@ -23,18 +27,41 @@ function AngularTabsPreview(props) {
       if (!mounted || !hostRef.current) return;
 
       const applicationRef = await createApplication({
-        providers: [{ provide: VOTEY_TRANSLATOR, useValue: { translate: key => key } }],
+        providers: [
+          { provide: VOTEY_TRANSLATOR, useValue: { translate: (key) => key } },
+        ],
       });
-      const host = document.createElement("vt-tabs");
+      const host = document.createElement("vt-tabs-preview");
       hostRef.current.replaceChildren(host);
-      const componentRef = createComponent(VoteyTabsComponent, {
+      class TabsPreviewHost {
+        items = [];
+        selectedId = "";
+        ariaLabel = "";
+        selectionChange = new EventEmitter();
+      }
+      Component({
+        selector: "vt-tabs-preview",
+        standalone: true,
+        imports: [VoteyTabsComponent, VoteyTabContentDirective],
+        inputs: ["items", "selectedId", "ariaLabel"],
+        outputs: ["selectionChange"],
+        template: `<vt-tabs [items]="items" [selectedId]="selectedId" [ariaLabel]="ariaLabel" (selectionChange)="selectionChange.emit($event)">
+          <ng-template vtTabContent let-tab><div class="preview-panel">{{ tab.label }}</div></ng-template>
+        </vt-tabs>`,
+        styles: [
+          `.preview-panel { min-height: 240px; padding: var(--spacing-24); background: var(--color-bg-page); color: var(--color-text-primary); }`,
+        ],
+      })(TabsPreviewHost);
+      const componentRef = createComponent(TabsPreviewHost, {
         environmentInjector: applicationRef.injector,
         hostElement: host,
       });
-      const subscription = componentRef.instance.selectionChange.subscribe(id => {
-        setSelectedId(id);
-        latestPropsRef.current.onSelectionChange(id);
-      });
+      const subscription = componentRef.instance.selectionChange.subscribe(
+        (id) => {
+          setSelectedId(id);
+          latestPropsRef.current.onSelectionChange(id);
+        },
+      );
       applicationRef.attachView(componentRef.hostView);
       runtimeRef.current = { applicationRef, componentRef, subscription };
       componentRef.setInput("items", latestPropsRef.current.items);

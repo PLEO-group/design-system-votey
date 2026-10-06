@@ -3,6 +3,7 @@ import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTrans
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatRadioChange } from '@angular/material/radio';
 import { ConnectedPosition } from '@angular/cdk/overlay';
@@ -382,28 +383,41 @@ declare class VoteyChipComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyChipComponent, "vt-chip", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": true; "isSignal": true; }; "showRemove": { "alias": "showRemove"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; }, { "removed": "removed"; }, never, never, true, never>;
 }
 
+interface VoteyTabContentContext {
+    readonly $implicit: VoteyTabItem;
+}
+declare class VoteyTabContentDirective {
+    readonly vtTabContent: InputSignal<string>;
+    readonly template: TemplateRef<VoteyTabContentContext>;
+    static ngTemplateContextGuard(_directive: VoteyTabContentDirective, context: unknown): context is VoteyTabContentContext;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTabContentDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyTabContentDirective, "ng-template[vtTabContent]", never, { "vtTabContent": { "alias": "vtTabContent"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
 interface VoteyTabItem {
     readonly id: string;
     readonly label: string;
     readonly count?: number | null;
     readonly disabled?: boolean;
 }
+interface TabView {
+    readonly item: VoteyTabItem;
+    readonly template: TemplateRef<VoteyTabContentContext> | null;
+    readonly context: VoteyTabContentContext;
+}
 declare class VoteyTabsComponent {
     readonly items: InputSignal<readonly VoteyTabItem[]>;
     readonly selectedId: InputSignal<string>;
     readonly ariaLabel: InputSignal<string>;
-    readonly panelId: InputSignal<string | null>;
-    readonly idPrefix: InputSignal<string>;
     readonly selectionChange: OutputEmitterRef<string>;
-    protected readonly tabElements: i0.Signal<readonly ElementRef<HTMLButtonElement>[]>;
-    protected readonly indicatorElement: i0.Signal<ElementRef<HTMLSpanElement>>;
-    protected readonly trackElement: i0.Signal<ElementRef<HTMLDivElement>>;
-    private readonly renderer;
-    constructor();
-    protected select(item: VoteyTabItem): void;
-    protected onKeydown(event: KeyboardEvent, item: VoteyTabItem): void;
+    private readonly contents;
+    private readonly reducedMotion;
+    protected readonly animationDuration: Signal<string>;
+    protected readonly selectedIndex: Signal<number>;
+    protected readonly tabViews: Signal<readonly TabView[]>;
+    protected select(event: MatTabChangeEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTabsComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTabsComponent, "vt-tabs", never, { "items": { "alias": "items"; "required": true; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": true; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; "panelId": { "alias": "panelId"; "required": false; "isSignal": true; }; "idPrefix": { "alias": "idPrefix"; "required": false; "isSignal": true; }; }, { "selectionChange": "selectionChange"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTabsComponent, "vt-tabs", never, { "items": { "alias": "items"; "required": true; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": true; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; }, { "selectionChange": "selectionChange"; }, ["contents"], never, true, never>;
 }
 
 interface PaginationEvent {
@@ -861,5 +875,16 @@ declare class VoteyTimePickerComponent extends PickerControl {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTimePickerComponent, "vt-time-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabItem, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+/** Coordinates document transitions, including those created by the consumer router. */
+declare class VoteyViewTransitionService {
+    private active;
+    private cleanup;
+    adopt(transition: ViewTransition, cleanup: () => void): void;
+    cancel(): void;
+    private release;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyViewTransitionService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<VoteyViewTransitionService>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

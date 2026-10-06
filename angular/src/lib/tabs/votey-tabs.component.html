@@ -1,36 +1,38 @@
-<nav class="tabs-wrapper" role="tablist" [attr.aria-label]="ariaLabel()">
-  <div #track class="track" role="presentation">
-    @for (item of items(); track item.id) {
-      <button
-        #tabButton
-        class="tab"
-        type="button"
-        role="tab"
-        [id]="idPrefix() + '-' + item.id"
-        [attr.aria-controls]="panelId()"
-        [attr.aria-selected]="selectedId() === item.id"
-        [attr.tabindex]="selectedId() === item.id ? 0 : -1"
-        [class.active]="selectedId() === item.id"
-        [disabled]="item.disabled ?? false"
-        (click)="select(item)"
-        (keydown)="onKeydown($event, item)"
-      >
-        <vt-text
-          class="label"
-          variant="action"
-          [content]="item.label | vtTranslate"
-          [uppercase]="true"
-        />
-        @if (item.count !== null && item.count !== undefined) {
+<mat-tab-group
+  class="tabs-wrapper"
+  mat-align-tabs="start"
+  [mat-stretch-tabs]="false"
+  [disableRipple]="true"
+  [selectedIndex]="selectedIndex()"
+  [animationDuration]="animationDuration()"
+  [aria-label]="ariaLabel()"
+  (selectedTabChange)="select($event)"
+>
+  @for (view of tabViews(); track view.item.id) {
+    <mat-tab [disabled]="view.item.disabled ?? false">
+      <ng-template mat-tab-label>
+        <span class="tab-label" [class.active]="selectedId() === view.item.id">
           <vt-text
-            class="count"
-            variant="caption"
-            [color]="selectedId() === item.id ? 'accent' : 'secondary'"
-            [content]="item.count"
+            class="label"
+            variant="action"
+            [content]="view.item.label | vtTranslate"
+            [uppercase]="true"
           />
-        }
-      </button>
-    }
-    <div #indicator class="indicator" aria-hidden="true"></div>
-  </div>
-</nav>
+          @if (view.item.count !== null && view.item.count !== undefined) {
+            <vt-text
+              class="count"
+              variant="caption"
+              [content]="view.item.count"
+            />
+          }
+        </span>
+      </ng-template>
+      <ng-template matTabContent>
+        <ng-container
+          [ngTemplateOutlet]="view.template"
+          [ngTemplateOutletContext]="view.context"
+        />
+      </ng-template>
+    </mat-tab>
+  }
+</mat-tab-group>

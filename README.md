@@ -121,6 +121,32 @@ komponentu.
 
 ### Angular Icon
 
+`vt-select` domyślnie udostępnia wyszukiwanie lokalne po etykiecie i opisie opcji
+(bez rozróżniania wielkości liter). `[searchable]="false"` ukrywa szukajkę.
+`customSearchFn` przyjmuje `(searchTerm: string, option: unknown) => boolean`;
+otrzymuje oryginalną opcję, przed mapowaniem przez `bindValue`.
+
+Dla wyszukiwania z API użyj `(customSearch)` i wyłącz lokalne filtrowanie przez
+predykat zwracający `true`:
+
+```html
+<vt-select
+  bindLabel="name"
+  bindValue="id"
+  [options]="options()"
+  [control]="control"
+  [customSearchFn]="acceptServerResults"
+  [searchDebounceTime]="300"
+  (customSearch)="searchOptions($event)"
+/>
+```
+
+W komponencie konsumenta: `public readonly acceptServerResults = (): boolean => true;`.
+`searchOptions` pobiera dane i aktualizuje `options`. Event emituje wpisany tekst,
+również pusty po wyczyszczeniu pola, z pominięciem kolejnych identycznych zapytań.
+`searchDebounceTime` domyślnie wynosi `0` ms i jest odczytywany przy inicjalizacji.
+Filtrowanie lokalne pozostaje natychmiastowe; debounce dotyczy eventu.
+
 Standalone `VoteyIconComponent` publikuje selector `vt-icon` i input `ico`.
 Przyjmuje wyłącznie nazwy ikon i ilustracji eksportowane przez paczkę jako
 typy `VoteyIcon` oraz `VoteyIllustration`:

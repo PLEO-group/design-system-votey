@@ -17,6 +17,8 @@ import {
   ViewEncapsulation,
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import {
   MatOption,
   MatSelect,
@@ -86,6 +88,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     this.matSelect()?.close();
   private backdropListenerTimeout: ReturnType<typeof setTimeout> | null = null;
   private overlayBackdrop: HTMLElement | null = null;
+  private readonly searchChanges: Subject<string> = new Subject<string>();
 
   public readonly options: InputSignal<readonly unknown[]> =
     input.required<readonly unknown[]>();
@@ -119,9 +122,10 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     unknown
   > = input<boolean, unknown>(true, { transform: booleanAttribute });
   public readonly searchable: InputSignalWithTransform<boolean, unknown> =
-    input<boolean, unknown>(false, { transform: booleanAttribute });
+    input<boolean, unknown>(true, { transform: booleanAttribute });
+  public readonly searchDebounceTime: InputSignal<number> = input<number>(0);
   public readonly searchPlaceholder: InputSignal<string> =
-    input<string>("COMMON.SEARCH");
+    input<string>("PLACEHOLDER.SEARCH");
   public readonly customSearchFn: InputSignal<VoteySelectSearchFn | null> =
     input<VoteySelectSearchFn | null>(null);
   public readonly withSelectionActions: InputSignalWithTransform<
@@ -160,6 +164,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   public readonly selectionChange: OutputEmitterRef<unknown> =
     output<unknown>();
   public readonly change: OutputEmitterRef<unknown> = output<unknown>();
+  public readonly customSearch: OutputEmitterRef<string> = output<string>();
 
   protected readonly isOpen = signal<boolean>(false);
   protected readonly searchTerm = signal<string>("");
@@ -201,7 +206,17 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     )
   );
 
+  protected readonly renderedOptionViews: Signal<readonly (SelectOptionView & { readonly hidden: boolean })[]> =
+    computed((): readonly (SelectOptionView & { readonly hidden: boolean })[] => {
+      const visibleOptions: ReadonlySet<SelectOptionView> = new Set(this.filteredOptionViews());
+      return this.optionViews().map((option: SelectOptionView) => ({
+        ...option,
+        hidden: !visibleOptions.has(option),
+      }));
+    });
+
   public ngOnInit(): void {
+    this.observeSearchChanges();
     this.document.addEventListener(
       "pointerdown",
       this.outsidePointerDownListener,
@@ -215,6 +230,16 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
       );
       this.removeBackdropListener();
     });
+  }
+
+  private observeSearchChanges(): void {
+    this.searchChanges
+      .pipe(
+        debounceTime(this.searchDebounceTime()),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((searchTerm: string): void => this.customSearch.emit(searchTerm));
   }
 
   protected get isRequired(): boolean {
@@ -314,6 +339,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   protected handleSearchInput(event: Event): void {
     const inputElement: HTMLInputElement = event.target as HTMLInputElement;
     this.searchTerm.set(inputElement.value);
+    this.searchChanges.next(inputElement.value);
   }
 
   protected openSelect(event: MouseEvent): void {

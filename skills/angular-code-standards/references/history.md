@@ -2,6 +2,55 @@
 
 Wczytuj ten plik tylko przy audycie wersji, analizie regresji zachowania skilla albo przygotowaniu publikacji.
 
+## 1.25.0
+
+Doprecyzowano proporcjonalność abstrakcji: nazwane sygnały dla stałych źródeł,
+mapy dla rzeczywistych kolekcji zasobów oraz ocenę kosztu komponentu pomocniczego
+względem prostego rozwiązania lokalnego. Rozróżniono komponent prezentacyjny
+od samodzielnego widgetu korzystającego ze współdzielonego serwisu. Zachowano
+jednego właściciela pobierania i cache oraz retry ograniczone do nieudanego źródła.
+
+## 1.24.0
+
+Rozszerzono ocenę kosztu na walidację i akcje użytkownika. Konkretne oznaki kosztownego rozwiązania uruchamiają przedstawienie kosztu i tańszej alternatywy, w tym propozycji rozszerzenia kontraktu BE. Discovery zaczyna się od FE, bez rutynowego sprawdzania repo BE i obowiązkowej mapy kontraktu przy każdej zmianie. Zachowano sprawdzenie semantyki identyfikatorów, pokrycia typów oraz kontrolę kosztu po zmianie.
+
+## 1.23.0
+
+Dodano zasadę pozostawiania wymiarów w px, gdy brak odpowiedniego tokenu,
+bez sztucznego składania stałych z kilku tokenów. Zachowano obliczenia wynikające
+z rzeczywistych zależności layoutu.
+
+Dodano obowiązkową bramkę SCSS przed własnymi CSS custom properties: pierwsza
+próba SCSS, konkretne ograniczenie, uzasadnienie wyjątku użytkownikowi i kontrola
+kaskady. Rozróżniono pomocnicze aliasy od publicznych tokenów DS zmienianych w
+runtime. Doprecyzowano triggery `.ts`, ograniczając je do plików z kodem
+aplikacyjnym Angulara; skrypty buildowe i konfiguracja pozostają poza zakresem.
+
+## 1.22.0
+
+Dodano przegląd analogicznych uwag CR wyłącznie w plikach ruszonych w tasku, `ngOnChanges` jako ostateczność oraz discovery projektowej konwencji plików komponentu. Uzupełniono sekwencje asynchroniczne, granice retry i rozróżnienie zakończenia od anulowania. Koszt średni lub duży wymaga ujawnienia i zgody użytkownika przed wdrożeniem lub uruchomieniem przepływu.
+
+## 1.21.0
+
+Dodano domyślny podział constructor / `ngOnInit` / prywatne metody procesów,
+z zachowaniem momentu inicjalizacji, injection context i krótkich callbacków.
+Rozszerzono zasady efektów o dynamiczne zależności, równość wyników `computed`,
+`untracked`, pośrednie pętle aktualizacji i cleanup subskrypcji między przebiegami.
+Przykłady i szczegóły są w `references/initialization-and-effects.md`.
+
+## 1.20.0
+
+Doprecyzowano ochronę ustaleń z wcześniejszych iteracji, podział odpowiedzialności FE/BE/DS oraz niezależność preferencji, routingu i cache przy współdzieleniu prezentacji. Brak kontraktu BE nie upoważnia do odtwarzania jego funkcji w FE.
+
+## 1.19.0
+
+Dodano warunkowe playbooki rozszerzania istniejącej funkcjonalności o wariant,
+bezpieczeństwa kontekstu operacji asynchronicznych oraz kosztu pobierania danych
+pomocniczych. Uzupełniono routing i odnośniki w zasadach stanu oraz requestów.
+Reguły obejmują ochronę starych wariantów, ponowne sprawdzanie uprawnień po
+oczekiwaniu, zakres providerów i blokad, zachowanie draftu, lazy loading,
+jednego właściciela debounce oraz lokalny zakres retry i odświeżenia.
+
 ## 1.16.0
 
 Doprecyzowano wyjątek dla `effect()` zapisującego do lokalnego signala, gdy

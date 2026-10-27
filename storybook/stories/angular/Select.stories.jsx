@@ -21,6 +21,7 @@ const selectInputs = [
   "showSelectionChips",
   "searchable",
   "searchPlaceholder",
+  "searchDebounceTime",
   "customSearchFn",
   "withSelectionActions",
   "withSelectionSearch",
@@ -122,6 +123,9 @@ function AngularSelectPreview(props) {
       const changeSubscription = componentRef.instance.change.subscribe((event) =>
         latestPropsRef.current.onChange(event)
       );
+      const searchSubscription = componentRef.instance.customSearch.subscribe((event) =>
+        latestPropsRef.current.onCustomSearch(event)
+      );
 
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = {
@@ -141,6 +145,7 @@ function AngularSelectPreview(props) {
       angularRuntimeRef.current.destroy = () => {
         selectionSubscription.unsubscribe();
         changeSubscription.unsubscribe();
+        searchSubscription.unsubscribe();
         applicationRef.detachView(componentRef.hostView);
         componentRef.destroy();
         applicationRef.destroy();
@@ -183,6 +188,15 @@ export default {
       control: { type: "inline-radio" },
     },
     options: { control: "object" },
+    searchDebounceTime: { control: { type: "number", min: 0 } },
+    customSearchFn: {
+      control: false,
+      description: "Custom local predicate (term, originalOption). For server search, return true and load options in (customSearch).",
+    },
+    onCustomSearch: {
+      action: "customSearch",
+      table: { category: "Events" },
+    },
     selectedValue: { control: "object" },
     required: {
       description: "Adds Validators.required to the preview FormControl.",
@@ -220,7 +234,8 @@ export default {
     clearable: false,
     clearTooltip: "BUTTON.CLEAR",
     showSelectionChips: true,
-    searchable: false,
+    searchable: true,
+    searchDebounceTime: 0,
     searchPlaceholder: "COMMON.SEARCH",
     customSearchFn: null,
     withSelectionActions: false,
@@ -242,6 +257,7 @@ export default {
     showError: false,
     onSelectionChange: fn(),
     onChange: fn(),
+    onCustomSearch: fn(),
   },
 };
 

@@ -486,6 +486,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     private readonly backdropPointerDownListener;
     private backdropListenerTimeout;
     private overlayBackdrop;
+    private readonly searchChanges;
     readonly options: InputSignal<readonly unknown[]>;
     readonly variant: InputSignal<VoteySelectVariant>;
     readonly label: InputSignal<string>;
@@ -502,6 +503,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     readonly clearTooltip: InputSignal<string>;
     readonly showSelectionChips: InputSignalWithTransform<boolean, unknown>;
     readonly searchable: InputSignalWithTransform<boolean, unknown>;
+    readonly searchDebounceTime: InputSignal<number>;
     readonly searchPlaceholder: InputSignal<string>;
     readonly customSearchFn: InputSignal<VoteySelectSearchFn | null>;
     readonly withSelectionActions: InputSignalWithTransform<boolean, unknown>;
@@ -521,6 +523,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     readonly ignoredErrors: InputSignal<string[]>;
     readonly selectionChange: OutputEmitterRef<unknown>;
     readonly change: OutputEmitterRef<unknown>;
+    readonly customSearch: OutputEmitterRef<string>;
     protected readonly isOpen: i0.WritableSignal<boolean>;
     protected readonly searchTerm: i0.WritableSignal<string>;
     protected readonly matSelect: Signal<MatSelect>;
@@ -528,7 +531,11 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected readonly optionViews: Signal<readonly SelectOptionView[]>;
     protected readonly filteredOptionViews: Signal<readonly SelectOptionView[]>;
     protected readonly resolvedTooltip: Signal<string>;
+    protected readonly renderedOptionViews: Signal<readonly (SelectOptionView & {
+        readonly hidden: boolean;
+    })[]>;
     ngOnInit(): void;
+    private observeSearchChanges;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get errorKeys(): string[];
@@ -567,7 +574,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     private toDisplayValue;
     private toArray;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteySelectComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteySelectComponent, "vt-select", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "bindLabel": { "alias": "bindLabel"; "required": false; "isSignal": true; }; "bindValue": { "alias": "bindValue"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "multiple": { "alias": "multiple"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "flagSelect": { "alias": "flagSelect"; "required": false; "isSignal": true; }; "clearable": { "alias": "clearable"; "required": false; "isSignal": true; }; "clearTooltip": { "alias": "clearTooltip"; "required": false; "isSignal": true; }; "showSelectionChips": { "alias": "showSelectionChips"; "required": false; "isSignal": true; }; "searchable": { "alias": "searchable"; "required": false; "isSignal": true; }; "searchPlaceholder": { "alias": "searchPlaceholder"; "required": false; "isSignal": true; }; "customSearchFn": { "alias": "customSearchFn"; "required": false; "isSignal": true; }; "withSelectionActions": { "alias": "withSelectionActions"; "required": false; "isSignal": true; }; "withSelectionSearch": { "alias": "withSelectionSearch"; "required": false; "isSignal": true; }; "selectionCancelText": { "alias": "selectionCancelText"; "required": false; "isSignal": true; }; "selectionUpdateText": { "alias": "selectionUpdateText"; "required": false; "isSignal": true; }; "nonRemovableValues": { "alias": "nonRemovableValues"; "required": false; "isSignal": true; }; "optionAvatarField": { "alias": "optionAvatarField"; "required": false; "isSignal": true; }; "optionDescriptionField": { "alias": "optionDescriptionField"; "required": false; "isSignal": true; }; "optionFlagField": { "alias": "optionFlagField"; "required": false; "isSignal": true; }; "flagClass": { "alias": "flagClass"; "required": false; "isSignal": true; }; "translateOptions": { "alias": "translateOptions"; "required": false; "isSignal": true; }; "closeOnSelect": { "alias": "closeOnSelect"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "selectionChange": "selectionChange"; "change": "change"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteySelectComponent, "vt-select", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "bindLabel": { "alias": "bindLabel"; "required": false; "isSignal": true; }; "bindValue": { "alias": "bindValue"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "multiple": { "alias": "multiple"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "flagSelect": { "alias": "flagSelect"; "required": false; "isSignal": true; }; "clearable": { "alias": "clearable"; "required": false; "isSignal": true; }; "clearTooltip": { "alias": "clearTooltip"; "required": false; "isSignal": true; }; "showSelectionChips": { "alias": "showSelectionChips"; "required": false; "isSignal": true; }; "searchable": { "alias": "searchable"; "required": false; "isSignal": true; }; "searchDebounceTime": { "alias": "searchDebounceTime"; "required": false; "isSignal": true; }; "searchPlaceholder": { "alias": "searchPlaceholder"; "required": false; "isSignal": true; }; "customSearchFn": { "alias": "customSearchFn"; "required": false; "isSignal": true; }; "withSelectionActions": { "alias": "withSelectionActions"; "required": false; "isSignal": true; }; "withSelectionSearch": { "alias": "withSelectionSearch"; "required": false; "isSignal": true; }; "selectionCancelText": { "alias": "selectionCancelText"; "required": false; "isSignal": true; }; "selectionUpdateText": { "alias": "selectionUpdateText"; "required": false; "isSignal": true; }; "nonRemovableValues": { "alias": "nonRemovableValues"; "required": false; "isSignal": true; }; "optionAvatarField": { "alias": "optionAvatarField"; "required": false; "isSignal": true; }; "optionDescriptionField": { "alias": "optionDescriptionField"; "required": false; "isSignal": true; }; "optionFlagField": { "alias": "optionFlagField"; "required": false; "isSignal": true; }; "flagClass": { "alias": "flagClass"; "required": false; "isSignal": true; }; "translateOptions": { "alias": "translateOptions"; "required": false; "isSignal": true; }; "closeOnSelect": { "alias": "closeOnSelect"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "selectionChange": "selectionChange"; "change": "change"; "customSearch": "customSearch"; }, never, never, true, never>;
 }
 
 type VoteyRadioButtonLabelPosition = "before" | "after";

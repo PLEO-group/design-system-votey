@@ -3,14 +3,15 @@ name: angular-code-standards
 description: >
   Standardy pisania kodu Angular 20 w tym zespole — SCSS, HTML, TypeScript.
   Wczytaj ZAWSZE gdy użytkownik prosi o: stworzenie lub modyfikację komponentu,
-  serwisu, pipe'a, dyrektywy, modalu, formularza, animacji, pliku .ts / .html / .scss
-  w projekcie Angular — nawet jeśli nie pada słowo "Angular". Dotyczy też
+  serwisu, pipe'a, dyrektywy, modalu, formularza, animacji, pliku .ts z kodem
+  aplikacyjnym Angulara albo pliku .html / .scss w projekcie Angular — nawet jeśli
+  nie pada słowo "Angular". Dotyczy też
   próśb typu "dodaj komponent", "zmień styl", "napraw modal", "edytuj template",
   "popraw SCSS", refaktoryzacji, code review, implementacji feature'ów,
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.17.1
+version: 1.25.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -29,7 +30,8 @@ Historia zmian jest w [references/history.md](references/history.md). Wczytuj j�
 
 ## Zakres skilla
 
-Dotyczy: komponenty, serwisy, pipe'y, dyrektywy, modale, formularze, pliki `.ts` / `.html` / `.scss`.
+Dotyczy: komponenty, serwisy, pipe'y, dyrektywy, modale, formularze i pliki `.ts`
+z kodem aplikacyjnym Angulara, a także pliki `.html` / `.scss` tych obszarów.
 
 Nie dotyczy: `angular.json`, `tsconfig.json`, skryptów buildowych, testów E2E, plików konfiguracyjnych poza kodem aplikacyjnym.
 
@@ -48,11 +50,13 @@ Zanim założysz strukturę katalogów, odkryj lokalny układ projektu:
 MUSISZ wczytać skill przy promptach typu:
 
 - "dodaj komponent", "wydziel komponent", "zmień styl buttona", "napraw modal",
-- "edytuj `.ts` / `.html` / `.scss`", "popraw template", "uzupełnij typy",
+- "edytuj plik `.ts` kodu aplikacyjnego Angulara", "edytuj `.html` / `.scss`", "popraw template", "uzupełnij typy",
 - "dodaj formularz", "zmień tabelę/listę/kafle", "napraw loader/empty state",
 - "sprawdź UI w Angularze", "zrób refaktor komponentu", "review kodu Angular".
 
 NIE wczytuj go dla pytań ogólnych niezwiązanych z lokalnym projektem, np. "jak działa Angular routing" bez pracy na kodzie projektu.
+Nie uruchamiaj go tylko dlatego, że prompt dotyczy skryptu `.ts` do builda lub
+narzędzi albo pliku konfiguracyjnego; te pliki pozostają poza zakresem skilla.
 Jeśli kontekst jest niejasny, zapytaj krótko:
 
 ```text
@@ -63,18 +67,26 @@ Czy mam potraktować to jako zmianę kodu Angular w tym projekcie i zastosować 
 
 ## Minimalna checklista
 
+- Zmienne pomocnicze: najpierw próba SCSS; własne `--...` tylko po wykazaniu ograniczenia SCSS i wyjaśnieniu wyjątku użytkownikowi → [1.5].
+
+Po uwadze z CR albo korekcie użytkownika sprawdź ten sam wzorzec wyłącznie w plikach rzeczywiście ruszonych w bieżącym tasku, także we wskazanych przez użytkownika poprawkach ręcznych. Ustal tę listę z zakresu zadania i diffa; jeśli workspace zawiera cudze lub niezwiązane zmiany, cały niezacommitowany diff nie jest automatycznie zakresem taska. Nie skanuj całego projektu ani repozytorium. Popraw równoważne przypadki w tym zakresie i krótko podaj wynik przeglądu; szerszy audyt wymaga osobnego polecenia. Nie dopisuj kolejnego zakazu, jeżeli istniejąca reguła wystarcza — zastosuj ją konsekwentnie do tej listy plików.
+
 Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 
+- Koszt rozwiązania: gdy planowana zmiana mnoży requesty przez elementy kolekcji, pobiera duże zbiory dla prostej decyzji albo powtarza pobrania, oceń koszt i przedstaw tańsze podejście przed implementacją; rozważ rozszerzenie istniejącego kontraktu BE → [3.20](references/conditional-playbooks.md#320-koszt-pobierania-danych-pomocniczych). Nie wymaga to rutynowego sprawdzania repo BE.
 - SCSS: hierarchia zgodna z HTML → [1.1], nazwy klas wyłącznie w kebab-case → [1.3], tylko tokeny kolorów → [1.2].
+- Wymiary: nie składaj stałych px z przypadkowych tokenów; zachowaj prostą wartość, gdy brak odpowiedniego tokenu → [1.6].
 - Design System: najpierw publiczne API komponentu, override internali tylko lokalnie i z powodem → [1.4].
 - HTML: brak stylów inline i klasy wyłącznie w kebab-case → [2.2], brak logiki wywoływanej podczas renderowania oraz audyt wywołań → [2.3], statyczne inputy bez `[]` → [2.1], długie wyrażenia w `@let` → [2.4], `@for` z stabilnym `track` → [2.7], poprawna kolejność atrybutów → [2.6].
 - TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [playbook 3.16](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe), nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], przed validatorem lub checkerem potwierdź konieczność reguły i osiągalność błędnego stanu, dopiero potem wykonaj discovery → [playbook 3.17](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi), ocena wpływu na testy → [3.11].
 - Tłumaczenia: w każdym edytowanym pliku usuń zauważone, nietłumaczone polskie teksty UI; użyj wyłącznie istniejących prefiksów grup i wypisz użytkownikowi klucze z polskimi tekstami → [3.12].
 - Refaktor UI: przed podmianą widoku wypisz kontrakt danych, stanu i interakcji; zachowaj payload parity → [playbook 3.13](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu).
 - Refaktor istniejącego widoku: jeśli użytkownik wskazuje wersję historyczną, porównaj najpierw commit bazowy z bieżącym kodem i oddziel zmiany domenowe od prezentacyjnych; nie przenoś przypadkowych zmian do reguł UI.
+- Kolejna iteracja poprawki: sprawdź zaakceptowane wcześniej zachowanie tego obszaru; konflikt nowej zmiany z takim zachowaniem nazwij przed edycją, zamiast po cichu wycofywać poprzednią poprawkę → [3.13](references/conditional-playbooks.md#313-refaktor-ui-bez-regresji-kontraktu).
 - Migracja kontrolek: przed podmianą komponentu zinwentaryzuj jego inputy, outputy, walidację, stan disabled/touched/error, reset, tryb edycji i selektory testowe; po podmianie sprawdź payload parity i kontrakt interakcji.
 - Style po migracji: przeskanuj zmienione pliki pod kątem globalnych selektorów (`label`, `.input`, `.select`), klas legacy, utility classes i magicznych wartości; style komponentu muszą być lokalne, zgodne z hierarchią HTML i oparte na dostępnych tokenach.
 - Komponenty UI bibliotek: przy regresji selected/hover/disabled sprawdź najpierw stabilność danych i stan komponentu, potem dopiero SCSS → [playbook 3.15](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki).
+- Inicjalizacja komponentu: krótki constructor rejestruje efekty, `ngOnInit` uruchamia jednorazowe procesy przez nazwane metody → [3.6a]; zależności efektu i cleanup zasobów → [3.7]–[3.8].
 - Animacje: dla nowego kodu CSS + `animate.enter` / `animate.leave`, bez nowych legacy triggerów → [4].
 
 ## Warunkowe playbooki i twarde bramki
@@ -88,6 +100,9 @@ Nie wczytuj [pełnych playbooków](references/conditional-playbooks.md) przy pro
 | Naprawiasz stan `selected`, `hover`, `disabled`, `readonly` albo `loading` komponentu bibliotecznego. | Najpierw sprawdź stabilność danych, wartość formularza i publiczne API komponentu; SCSS jest ostatnim krokiem. | [3.15 Komponenty bibliotek](references/conditional-playbooks.md#315-istniejące-komponenty-ui-oparte-o-biblioteki) |
 | Dodajesz lub zmieniasz string kontraktowy FE/BE, status, typ, rolę, permission, kod języka albo wartość słownikową. | Użyj istniejącego enuma/modelu lub jednego typowanego źródła prawdy; nie utrwalaj powtarzalnego literalu. | [3.16 Stringi kontraktowe](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe) |
 | Dodajesz validator, checker, predykat, guard wartości, normalizator albo podobny mechanizm sprawdzający. | Najpierw potwierdź, że reguła wynika z realnego kontraktu i że błędny stan jest osiągalny. Następnie wykonaj discovery publicznego API, shared utils i rozwiązań domenowych; nie duplikuj istniejącej semantyki. | [3.17 Discovery validatorów](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi) |
+| Dodajesz nowy typ, tryb lub wariant do istniejącej funkcjonalności. | Odtwórz wspólny kontrakt i konieczne różnice; wskaż dotknięte stare warianty i ich weryfikację. | [3.18 Rozszerzanie o wariant](references/conditional-playbooks.md#318-rozszerzanie-istniejącej-funkcjonalności-o-wariant) |
+| Operacja czeka na request lub modal, a zasób, uprawnienia albo widok mogą się zmienić. | Zachowaj tożsamość zasobu i sprawdź aktualny kontekst przed mutacją oraz zastosowaniem wyniku. | [3.19 Kontekst operacji](references/conditional-playbooks.md#319-kontekst-operacji-asynchronicznych) |
+| Widok pobiera listy pomocnicze, opcje selektorów, szczegóły elementów kolekcji albo odświeża dane do walidacji lub akcji użytkownika. | Oceń lokalnie koszt requestów i zakres odświeżenia. Gdy rozwiązanie jest kosztowne, przedstaw koszt i tańszą alternatywę, w tym ewentualną zmianę kontraktu BE, przed jego wdrożeniem. | [3.20 Dane pomocnicze](references/conditional-playbooks.md#320-koszt-pobierania-danych-pomocniczych) |
 
 ## Priorytet reguł przy konflikcie
 
@@ -179,6 +194,49 @@ Jeśli override jest konieczny:
 - po zmianie sprawdź przynajmniej stan default, hover, disabled i selected, jeśli komponent te stany posiada.
 
 Nie używaj `!important` poza wąskim override'em internala biblioteki, gdy publiczne API komponentu nie pozwala osiągnąć wymaganego efektu.
+
+### [1.5] Zmienne pomocnicze: SCSS przed CSS
+
+Własne pomocnicze wartości komponentu zapisuj jako zmienne SCSS (`$...`),
+parametry mixinów lub mapy SCSS. Nie twórz CSS custom properties (`--...`) tylko
+po to, by skrócić deklarację, przekazać stałą do potomka albo wygodniej opisać wariant.
+
+Obowiązkowa kolejność przed dodaniem własnej zmiennej CSS:
+
+1. Najpierw przygotuj rozwiązanie SCSS: zmienną, mixin albo mapę oraz selektory
+   stanów/rozmiarów. Sprawdź, czy pokrywa wymagane kombinacje bez zmiany kaskady.
+2. Dopiero gdy konkretne wymaganie nie może być spełnione przez to rozwiązanie,
+   możesz wypróbować CSS custom property. Sama krótsza implementacja, preferencja
+   autora ani brak pierwszej próby SCSS nie uzasadniają odstępstwa.
+3. Wyjaśnij użytkownikowi, którą próbę SCSS wykonałeś, dlaczego nie spełniła
+   wymagania oraz dlaczego CSS rozwiązuje ten problem. Zapisz krótkie uzasadnienie
+   przy deklaracji lub w dokumentacji kontraktu. Bez tego wyjątek nie przechodzi review.
+4. Weryfikuj zakres dziedziczenia, właściciela wartości i konsumentów zmiennej;
+   sprawdź stany, rozmiary i kolejność selektorów objętych zmianą. Nie deklaruj
+   powodzenia runtime na podstawie samej analizy kodu. Wymagane zgody projektu
+   na kompilację/testy/runtime nadal obowiązują.
+
+Ta bramka dotyczy **własnych zmiennych pomocniczych**. Korzystaj nadal z istniejących
+semantic tokenów DS przez `var(--...)`: theme, responsive mode i runtime override
+są częścią ich publicznego kontraktu. Zmienna SCSS może przechowywać `var(--token)`;
+nie zamrażaj jego aktualnej wartości px/koloru i nie dodawaj aliasu CSS.
+Nie przepisuj istniejącego publicznego API CSS biblioteki bez sprawdzenia jego użyć.
+Nowe tokeny DS podlegają osobnemu uzgodnieniu; lokalny alias nie staje się tokenem
+przez samą zmianę nazwy.
+
+### [1.6] Wymiary bez sztucznego składania tokenów
+
+Używaj odpowiedniego istniejącego tokenu dla danej wartości i roli. Jeśli takiego
+tokenu nie ma, istniejący wymiar może pozostać w `px`. Nie zaokrąglaj go do
+najbliższego tokenu i nie zastępuj sumą, różnicą ani wielokrotnością przypadkowych
+tokenów tylko po to, żeby usunąć piksele: `130px` jest czytelniejsze niż
+`calc(var(--spacing-128) + var(--spacing-2))`. Analogicznie zostaw
+`calc(100% - 175px)`, zamiast składać `175px` z kilku tokenów.
+
+Zachowuj obliczenia opisujące rzeczywistą zależność layoutu, np. rozmiar ikony
+plus dwukrotność paddingu albo pozostałą szerokość po odjęciu szerokości panelu.
+Nie zamieniaj na px tokenów semantycznych zależnych od motywu, responsywności
+lub runtime. Ta zasada nie zmienia wymogu używania tokenów kolorów.
 
 ---
 
@@ -323,6 +381,8 @@ Nowe modale formularzowe muszą mieć typed form:
 
 ### [3.4] Reaktywny state
 
+Dobieraj strukturę stanu do rzeczywistej liczby i tożsamości zasobów. Dla kilku stałych źródeł danych preferuj nazwane sygnały lub strumienie; mapę statusów stosuj dla kolekcji zasobów identyfikowanych kluczem, gdy widok rzeczywiście obsługuje wiele takich zasobów. Sama możliwość wystąpienia różnych urządzeń albo wariantów nie uzasadnia mapy, jeżeli aktywny widok korzysta z jednego z nich. Odczyt istniejącego sygnału serwisu nie wymaga tworzenia i synchronizowania drugiej kopii stanu. Stan zbiorczy wyliczaj przez `computed()` albo pipeline RxJS.
+
 Preferuj:
 
 - `signal()` dla lokalnego stanu komponentu,
@@ -334,6 +394,8 @@ Globalne zdarzenia środowiska, takie jak viewport albo device type, obsługuj w
 właścicielu infrastruktury i udostępniaj przez publiczny `Observable` albo signal.
 Komponent potomny ma konsumować ten stan; nie dodawaj równoległego `HostListener`
 do `window`/`document`, chyba że serwis nie udostępnia potrzebnego kontraktu.
+
+Operacje zależne od zmiennej tożsamości zasobu prowadź według [3.19](references/conditional-playbooks.md#319-kontekst-operacji-asynchronicznych); stan pochodny wyliczaj zamiast synchronizować kopie flag.
 
 ### [3.5] Nowoczesne API komponentów
 
@@ -379,12 +441,16 @@ Przed dodaniem nowego komponentu w istniejącym module sprawdź lokalne wzorce:
 - obecny sposób pobierania danych, routingu, loaderów i testów,
 - istniejące modele albo view modele w module.
 
+Sprawdź też projektową konwencję osobnych plików TS, HTML i SCSS oraz dopuszczalne wyjątki dla template/styles inline. Stosuj ją od pierwszej wersji komponentu; nie zakładaj, że mały rozmiar komponentu sam uzasadnia odstępstwo. Nie narzucaj jednej konwencji plików wszystkim projektom korzystającym z tego współdzielonego skilla.
+
 Preferuj rozwinięcie istniejącego wzorca zamiast tworzenia równoległego flow.
 Jeśli istniejący wzorzec narusza inne zasady tego skilla, poinformuj użytkownika zamiast automatycznie powielać albo refaktoryzować cały moduł.
 
-Parent/container powinien budować view model, wykonywać requesty i obsługiwać flow widoku.
-Child komponent powinien renderować przekazane dane i emitować intencje użytkownika.
-Nie przenoś requestów do child komponentu tylko dlatego, że dane są w nim wyświetlane.
+Przed dodaniem komponentu pomocniczego lub innej warstwy abstrakcji porównaj ją z prostym rozwiązaniem w istniejącym komponencie. Wydzielaj wspólny komponent, gdy upraszcza odpowiedzialność, kontrakt albo utrzymanie; samo podobieństwo kilku krótkich fragmentów HTML nie wystarcza. Uwzględnij koszt nowych plików, inputów, outputów i przekazywania zdarzeń przez pośredników. Krótkie lokalne powtórzenie może być czytelniejsze; nie oznacza to zakazu reużywalnych komponentów ani map stanu.
+
+Domyślnie parent/container buduje view model, wykonuje requesty i obsługuje flow widoku, a child prezentacyjny renderuje przekazane dane i emituje intencje użytkownika. Nie przenoś requestów do child komponentu tylko dlatego, że dane są w nim wyświetlane.
+
+Rozróżniaj child prezentacyjny od samodzielnego widgetu funkcjonalnego. Widget może odczytywać współdzielone dane i status oraz obsługiwać retry bezpośrednio przez istniejący serwis, jeśli odpowiada to jego odpowiedzialności i lokalnej architekturze. Nie przekazuj technicznych statusów i retry przez komponenty pośrednie, które ich nie wykorzystują; nie zmieniaj jednak komponentu prezentacyjnego w zależny od serwisu wyłącznie dla skrócenia bindingów. Zachowaj jednego właściciela pobierania i cache: samo utworzenie widgetu nie powinno ponownie pobierać danych już współdzielonych przez widok, a retry powinno ponawiać tylko nieudane źródło. Rodzic może nadal odczytywać stan potrzebny do układu lub widoczności; nie duplikuj przy tym stanu requestu.
 
 Jeśli komponent ma być reużywalną zawartością, nie dodawaj do niego API zależnego od konkretnego hosta, np.:
 
@@ -395,10 +461,31 @@ Jeśli komponent ma być reużywalną zawartością, nie dodawaj do niego API za
 
 Takie zachowania trzymaj w hoście: modalu, zakładkach, panelu albo kontenerze routingu.
 
+### [3.6a] Constructor, `ngOnInit` i metody inicjalizacyjne
+
+W nowych i przebudowywanych komponentach stosuj domyślny podział:
+
+- constructor: wstrzykiwanie zależności, jeśli wymaga go istniejący styl, oraz rejestracja efektów i operacji wymagających injection context;
+- `ngOnInit`: jednorazowe uruchomienie pobierania danych i subskrypcji formularza/zdarzeń, które nie wymagają ponownej rejestracji po zmianie sygnałów;
+- prywatne metody: implementacja odrębnych procesów, np. `observeSurveyChanges()`, `observeAssignmentChanges()` i `observeOptionSearch()`.
+
+Constructor i `ngOnInit` mają pozostać krótkimi punktami orkiestracji. Nie przenoś rozbudowanego konstruktora w całości do `ngOnInit`: wydziel długie pipeline'y, pętle rejestrujące subskrypcje i logikę domenową do metod nazwanych według odpowiedzialności. Zachowaj kolejność inicjalizacji i jedno miejsce rejestracji każdego procesu. Krótkie callbacki pozostaw inline zgodnie z [3.1]; nie twórz mechanicznych helperów dla pojedynczych instrukcji.
+
+To konwencja czytelności i cyklu życia, nie optymalizacja wydajności ani bezwzględny zakaz subskrypcji w constructorze. Constructor i `ngOnInit` wykonują się raz na instancję; callback efektu może wykonywać się wielokrotnie. Zachowaj uzasadniony lokalny wzorzec, gdy przeniesienie zmieniałoby wymagany moment rejestracji albo zachowanie synchronicznych emisji.
+
+W `ngOnInit` początkowe inputy są ustawione, ale hook nie obsługuje ich późniejszych zmian ani nie gwarantuje gotowego DOM/query widoku. Nie odczytuj wymaganego inputu bezpośrednio w constructorze. `ngOnInit` nie zapewnia injection context: przechwyć `DestroyRef`/`Injector` przez `inject()` w polu lub constructorze i przekazuj je jawnie do API, które ich potrzebuje, np. `takeUntilDestroyed(this.destroyRef)`. Metoda wywołana synchronicznie z constructora nadal działa w jego injection context; ta sama metoda wywołana z `ngOnInit` już go nie otrzymuje.
+
+Przed dodaniem lub przeniesieniem efektów/subskrypcji wczytaj [inicjalizację i efekty](references/initialization-and-effects.md), zwłaszcza zasady śledzenia odczytów w wydzielonych metodach i cleanupu między wykonaniami.
+
+`ngOnChanges` jest niezalecane i dopuszczalne wyłącznie w ostateczności, gdy istniejący kontrakt lub kompatybilność wyklucza prostsze rozwiązanie. Dla stanu pochodnego preferuj signalowe inputy i `computed()`; w dotykanym legacy kodzie rozważ wąskie settery inputów, jeżeli szeroka migracja zwiększa ryzyko. Skutki uboczne obsługuj zgodnie z [3.7], a requesty przez właściwy pipeline. Jeśli `ngOnChanges` jest konieczne, nazwij konkretny powód i ogranicz reakcję do istotnych zmian inputów. Nie wymieniaj go mechanicznie na efekt synchronizujący kopie stanu ani nie migruj niepowiązanego kodu.
+
 ### [3.7] `computed()` i `effect()`
 
 Używaj `computed()` dla synchronicznych wartości pochodnych z signali.
 Nie duplikuj wartości pochodnej w osobnym `signal()`, jeśli da się ją wyliczyć deterministycznie.
+Nie opakowuj zmiennych zwykłych pól w `computed()` bez reaktywnego źródła: ich zmiany nie unieważniają cache. Dla tanich getterów nie deklaruj poprawy performance bez pomiaru.
+
+Efekt śledzi wszystkie faktycznie wykonane synchroniczne odczyty sygnałów, także w wywołanych metodach; pierwsza linijka i deklaracje `const` nie mają specjalnego znaczenia. Zależności są dynamiczne. Używaj `untracked()` tylko dla celowo pomocniczych odczytów, których zmiany nie powinny uruchamiać efektu; nie maskuj nim pętli ani brakującej reaktywności. Szczegóły i przykłady: [inicjalizacja i efekty](references/initialization-and-effects.md).
 
 Używaj `effect()` tylko dla realnych efektów ubocznych, np. synchronizacji z zewnętrznym API, storage albo integracją nieangularową. Nie używaj `effect()`, gdy zachodzi którykolwiek z poniższych warunków:
 
@@ -444,6 +531,8 @@ preferuj `computed()`.
 Dla ręcznych subskrypcji RxJS preferuj `takeUntilDestroyed()` i `DestroyRef`.
 Nie dodawaj nowego `destroy$`, jeśli można użyć standardowego mechanizmu Angulara.
 
+Zasoby tworzone przy każdym wykonaniu efektu sprzątaj przez `onCleanup` przed kolejnym przebiegiem i przy zniszczeniu efektu. Samo `takeUntilDestroyed()` nie zamyka subskrypcji między przebiegami; niezależne subskrypcje rejestruj raz poza callbackiem efektu. Przykład i dobór RxJS: [inicjalizacja i efekty](references/initialization-and-effects.md#subskrypcje-i-cleanup).
+
 Dla timerów, listenerów i integracji spoza Angulara pilnuj jawnego cleanupu.
 Jeśli cleanup jest lokalny i prosty, trzymaj go blisko miejsca utworzenia zasobu.
 
@@ -464,6 +553,8 @@ Przy pollingu utrzymuj tylko jeden aktywny timer albo subskrypcję dla danego za
 
 Mocki w kodzie aplikacyjnym traktuj jako tymczasowy debt.
 Jeśli musisz dodać mock z powodu brakującego backendu, trzymaj go jawnie za flagą środowiskową, domyślnie wyłączoną, i opisz warunek usunięcia.
+
+Dla list pomocniczych i selektorów zastosuj [3.20](references/conditional-playbooks.md#320-koszt-pobierania-danych-pomocniczych). Sam `switchMap` nie usuwa zbędnych requestów uruchamianych na wejściu.
 
 ### [3.10] Sprzątanie po refaktorze
 
@@ -543,7 +634,8 @@ nowe linie. Usuń albo zgłoś:
 - korekty `transform` użyte do maskowania problemu z gridem lub wysokością pola.
 
 Wartości spacingu, typografii, koloru i radiusu mapuj na tokeny lokalnego Design
-Systemu. Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
+Systemu, z zachowaniem wyjątku dla wymiarów bez odpowiedniego tokenu z [1.6].
+Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
 uzasadnione przez kontrakt komponentu albo istniejący wzorzec projektu.
 
 ### [3.12] Tłumaczenia i nowe klucze

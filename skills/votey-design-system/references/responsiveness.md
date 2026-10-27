@@ -2,11 +2,14 @@
 
 ## Kontrakt
 
-`responsive.mode` to wyłącznie `device-contract`: device types `mobile`, `tablet`,
-`desktop` mapują na breakpointy o tych samych nazwach. Referencyjne nazwy to
-`mobile-small`, `mobile`, `tablet-small`, `tablet`, `laptop`, `desktop`; fallbacki
-to odpowiednio mobile, tablet i desktop. Nie dokładaj równoległego `css-media`
-modelu ani lokalnego detectora device.
+`responsive.mode` to wyłącznie `device-contract`: są trzy typy urządzeń
+(`mobile`, `tablet`, `desktop`) i sześć szerokości referencyjnych
+(`mobile-small`, `mobile`, `tablet-small`, `tablet`, `laptop`, `desktop`).
+Pierwsza para należy do kontraktu mobile, druga do tablet, trzecia do desktop.
+Szerokości referencyjne służą interpolacji tokenów; **nie są warunkami wykrywania
+device**. Zwężenie okna desktopowej przeglądarki nie zmienia automatycznie
+`data-device="desktop"` na `mobile` albo `tablet`. Nie dokładaj równoległego
+`css-media` modelu ani lokalnego detectora device.
 
 Angular ma responsywne outputy w `tokens.angular.css`; `VoteyDeviceService` i
 `provideVoteyDeviceDetection()` ustawiają `body[data-device]`, orientację i `--vh`.
@@ -22,6 +25,15 @@ mixin `device()`; jeżeli zmienia DOM, kolejność, obecność elementu lub beha
 użyj `VoteyDeviceService`. Nie wybieraj mechanizmu na podstawie samej szerokości
 viewportu ani nie stosuj obu dla tej samej decyzji.
 
+W Angularowym Wyborek CRM jedynym wyjątkiem dla responsywnego `@media` opartego
+na szerokości jest `max-width: 1023px`: przełącza shell z menu bocznego na górne.
+Wewnątrz tego zakresu wspólne style widoku z topbarem mogą korzystać z tego
+warunku, ale różnice między mobile, tablet i desktop nadal wymagają `device()`
+lub `VoteyDeviceService` zgodnie z rodzajem zmiany. Nie używaj np.
+`@media (max-width: 767px)` ani `@media (min-width: 768px)` do wybierania wariantu
+mobile/tablet; to myli breakpoint z device. Nie dotyczy to zapytań o cechy
+środowiska, takich jak `prefers-reduced-motion` czy `pointer`.
+
 ## Grid i patterns
 
 Grid jest włączony z wariantem `default`, źródło `tokens/grid/angular.json`,
@@ -29,46 +41,6 @@ Grid jest włączony z wariantem `default`, źródło `tokens/grid/angular.json`
 kopiuj wartości z Figmy do lokalnej siatki. Przed zmianą gridu, device map,
 mnożnika lub fallbacku przeczytaj manifest i uruchom
 `verify-responsive-config.mjs`, gdy konfiguracja generatora jest dostępna.
-
-### CRM admin grid — odrębny kontrakt od BoxEs
-
-Nie przenoś mechaniki gridu z BoxEs ani starszego `angular-design-system` do Votey.
-W CRM **liczba kolumn zależy wyłącznie od `device`** (`mobile` 4, `tablet` 8,
-`desktop` 12), które `VoteyDeviceService` rozpoznaje z urządzenia, nie z szerokości
-okna. Szerokość viewportu wybiera za to dwa ciągłe tokeny geometryczne:
-`--grid-margin` i `--grid-column-gap`. Są interpolowane liniowo między sześcioma
-punktami referencyjnymi i ograniczone do wartości brzegowych poza zakresem.
-Nie skaluj ich pojedynczym współczynnikiem `wartość / referencja * 100vw`
-przypisanym do device — ta dawna metoda nie odtwarza wszystkich sześciu makiet.
-
-| Szerokość referencyjna | Margines | Gutter |
-| --- | ---: | ---: |
-| 360 i 375 px | 16 px | 16 px |
-| 768 px | 24 px | 24 px |
-| 1024 px | 42 px | 24 px |
-| 1280 px | 32 px | 24 px |
-| 1920 px | 64 px | 40 px |
-
-Sidebar jest **trzecią, dyskretną osią**. Poniżej 1024 px aplikacja ma menu górne,
-a obie szerokości sidebaru wynoszą 0 px. Od 1024 px menu boczne ma 80 px w stanie
-`collapsed` i 140 px w stanie `expanded`; od 1920 px szerokość `expanded` to
-183 px. Te wartości pozostają stałe w swoich przedziałach, nie są interpolowane.
-Tokeny `--grid-sidebar-width-collapsed` i `--grid-sidebar-width-expanded` są
-wartościami projektu, a `--grid-sidebar-width` jest aktywną rezerwą layoutu.
-Stan menu należy do konsumenta: ustawia on na `body` atrybut
-`data-votey-sidebar-state="collapsed"` lub `"expanded"`. Bez tego atrybutu
-rezerwa wynosi 0 px, np. na stronach bez shellu CRM. Na małym ekranie wysuwane
-menu może nakładać się na treść, ale nie zmienia rezerwy grida.
-
-Grid treści i debug overlay muszą używać tej samej szerokości
-`--grid-content-width = 100vw - --grid-sidebar-width`, symetrycznych marginesów
-`--grid-margin` **wewnątrz obszaru treści** i guttera `--grid-column-gap`.
-`--grid-column-width` jest wyliczany z tego obszaru, nie z pełnego viewportu.
-Nie używaj `--grid-margin-extra`: ten token i dekoracyjne pasy zostały usunięte
-z kontraktu DS i Storybooka. Istniejący overlay w CRM trzeba zmigrować osobno;
-do czasu tej migracji nie deklaruj zgodności runtime. Przykład kontrolny:
-desktopowa przeglądarka zwężona do 768 px nadal
-może mieć 12 kolumn, lecz margines i gutter wyniosą po 24 px, a sidebar 0 px.
 
 ## Walidacja
 

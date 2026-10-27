@@ -37,8 +37,11 @@ Jeżeli zmiana wynika z pełnego eksportu Variables albo obejmuje wiele tokenów
 ten skrócony flow zastępuje procedura [figma-token-sync.md](figma-token-sync.md).
 
 1. Potwierdź collection, mode, scope, alias i wartość w Figma Variables.
-2. Znajdź użycia w paczce i konsumentach; określ Angular-only, React-only lub
-   shared oraz wpływ light/dark i responsive.
+2. Znajdź użycia w paczce i konsumentach. Oznacz zakres źródłowy jako
+   `angular-package`, `react-package` albo `shared-package` według outputów, na które
+   token wpływa. Zmiana wyłącznie sposobu użycia tokenu w CRM/PWA jest odpowiednio
+   `angular-consumer`/`react-consumer` i nie uzasadnia edycji źródła tokenu. Sprawdź
+   też wpływ light/dark i responsive.
 3. Dodaj, edytuj, zmień nazwę lub usuń źródłowy token. Przy rename/remove przygotuj
    deprecację i plan migracji, nie alias ad hoc w konsumencie.
 4. Zbuduj tokeny, sprawdź outputy frameworków i nie zostawiaj ręcznej poprawki

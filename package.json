@@ -1,6 +1,10 @@
 {
   "name": "@pleodigital/design-system-votey",
   "version": "1.0.185",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PLEO-group/design-system-votey"
+  },
   "description": "Centralny system tokenów projektowych generowany przez Style Dictionary.",
   "main": "dist/js/tailwind-preset.js",
   "exports": {
@@ -15,7 +19,7 @@
     "./dist/*": "./dist/*"
   },
   "publishConfig": {
-    "access": "public",
+    "access": "restricted",
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {

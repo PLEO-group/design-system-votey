@@ -76,6 +76,7 @@ vtTranslate;
       </mat-select-trigger>
       } @if (isSearchEnabled) {
       <div class="panel-search" (click)="stopPanelEvent($event)">
+        <vt-icon class="search-icon" ico="ui-search" aria-hidden="true" />
         <input
           aria-label="Search"
           autocomplete="off"
@@ -87,8 +88,12 @@ vtTranslate;
           (keydown)="stopPanelEvent($event)"
         />
       </div>
-      } @for (option of filteredOptionViews(); track option.value) {
-      <mat-option [value]="option.value" [disabled]="option.disabled">
+      } @for (option of renderedOptionViews(); track option.value) {
+      <mat-option
+        [class.search-hidden]="option.hidden"
+        [value]="option.value"
+        [disabled]="option.disabled || option.hidden"
+      >
         <div class="option-content">
           @if (flagSelect() && option.flagClass) {
           <span

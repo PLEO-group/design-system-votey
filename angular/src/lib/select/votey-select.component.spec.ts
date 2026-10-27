@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { FormControl, Validators } from "@angular/forms";
 import { MatSelect } from "@angular/material/select";
+import { By } from "@angular/platform-browser";
 import { VoteySelectComponent, type VtOption } from "./votey-select.component";
 
 describe("VoteySelectComponent", () => {
@@ -19,6 +20,89 @@ describe("VoteySelectComponent", () => {
       { label: "SECOND", value: "second" },
     ]);
   });
+
+  for (const multiple of [false, true]) {
+    it(`should preserve Material selection when filtering in ${multiple ? "multiple" : "single"} mode`, fakeAsync((): void => {
+      const control: FormControl<unknown> = new FormControl(multiple ? ["first", "second"] : "first");
+      fixture.componentRef.setInput("control", control);
+      fixture.componentRef.setInput("bindValue", "value");
+      fixture.componentRef.setInput("multiple", multiple);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+      const select: MatSelect = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+      const options = select.options.toArray();
+      const values: unknown[] = [];
+      control.valueChanges.subscribe((value: unknown): void => { values.push(value); });
+
+      component["handleSearchInput"]({ target: { value: "SECOND" } } as unknown as Event);
+      fixture.detectChanges();
+      tick();
+      expect(select.options.toArray()).toEqual(options);
+      expect(options[0].selected).toBeTrue();
+      expect(control.value).toEqual(multiple ? ["first", "second"] : "first");
+
+      component["handleSearchInput"]({ target: { value: "" } } as unknown as Event);
+      fixture.detectChanges();
+      tick();
+      expect(options[0].selected).toBeTrue();
+      expect(values).toEqual([]);
+    }));
+  }
+
+  it("should enable local case-insensitive search by default", (): void => {
+    fixture.detectChanges();
+    component["handleSearchInput"]({ target: { value: " first " } } as unknown as Event);
+
+    expect(component["isSearchEnabled"]).toBeTrue();
+    expect(component["filteredOptionViews"]().map((option) => option.label)).toEqual(["FIRST"]);
+
+    component["handleSearchInput"]({ target: { value: "" } } as unknown as Event);
+    expect(component["filteredOptionViews"]().length).toBe(2);
+  });
+
+  it("should allow disabling the search field", (): void => {
+    fixture.componentRef.setInput("searchable", false);
+    fixture.detectChanges();
+    expect(component["isSearchEnabled"]).toBeFalse();
+  });
+
+  it("should pass the original option to customSearchFn", (): void => {
+    const option: VtOption<string> = { label: "FIRST", value: "first" };
+    const searchFn: jasmine.Spy = jasmine.createSpy().and.returnValue(true);
+    fixture.componentRef.setInput("options", [option]);
+    fixture.componentRef.setInput("customSearchFn", searchFn);
+    fixture.detectChanges();
+    component["handleSearchInput"]({ target: { value: "remote query" } } as unknown as Event);
+
+    expect(component["filteredOptionViews"]().length).toBe(1);
+    expect(searchFn).toHaveBeenCalledWith("remote query", option);
+  });
+
+  it("should emit debounced distinct customSearch terms including a cleared query", fakeAsync((): void => {
+    const searchSpy: jasmine.Spy = jasmine.createSpy();
+    fixture.componentRef.setInput("searchDebounceTime", 100);
+    component.customSearch.subscribe(searchSpy);
+    fixture.detectChanges();
+    const search = (value: string): void => component["handleSearchInput"]({ target: { value } } as unknown as Event);
+
+    search("f");
+    tick(50);
+    search("first");
+    tick(99);
+    expect(searchSpy).not.toHaveBeenCalled();
+    tick(1);
+    search("first");
+    tick(100);
+    expect(searchSpy.calls.allArgs()).toEqual([["first"]]);
+    search("");
+    tick(100);
+    expect(searchSpy.calls.allArgs()).toEqual([["first"], [""]]);
+    search("pending");
+    fixture.destroy();
+    tick(100);
+    expect(searchSpy.calls.count()).toBe(2);
+  }));
 
   it("should expose the selected options from a multi-value control", (): void => {
     const control: FormControl<string[] | null> = new FormControl(["first"]);

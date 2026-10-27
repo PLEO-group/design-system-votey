@@ -100,6 +100,18 @@ Po wymianie kontrolki sprawdź osobno:
 Nie zakładaj, że binding `[required]` w legacy komponencie ma ten sam efekt w
 komponencie DS. Logikę walidacji trzymaj w typed formie i pokryj testem zachowania.
 
+Przed podłączeniem kontrolki sprawdź publiczne deklaracje używanej wersji paczki:
+typ wartości i eventu, `ControlValueAccessor` lub dyrektywę formularzową, outputy
+zmiany i odrzucenia oraz obsługę `disabled`, `touched` i resetu. Nie zakładaj, że
+output DS przekazuje natywny `Event`. Zweryfikuj też programowe ustawienie
+wartości podczas edycji i ponownego otwarcia widoku.
+
+Przy pickerze pliku rozdziel identyfikator/referencję zapisywaną w API od danych
+prezentacyjnych, takich jak nazwa i URL. Sprawdź kształt odpowiedzi szczegółowej
+i listowej; odtwórz istniejący załącznik w UI po ponownym otwarciu formularza,
+bez wymuszania ponownego wyboru pliku. Osobno przetestuj pusty wybór, odrzucony
+plik, poprawny plik i zachowanie niezmienionego załącznika przy zapisie.
+
 ## 5. Audyt stylów konsumenta — tylko po aktywacji bramki
 
 Nie uruchamiaj szerokiego skanu domyślnie. Aktywuj go tylko po sygnale konfliktu
@@ -117,6 +129,13 @@ Sprawdź:
 
 Spacing, typografię, kolory i radius mapuj na publiczne tokeny Votey. Nie twórz
 lokalnego tokenu tylko dla jednego ekranu; brakującą rolę zgłoś jako gap.
+
+Gdy zmiana obejmuje układ grupy opcji DS, mierz w uruchomionym widoku odstęp
+między kafelkami, szerokość grupy oraz szerokość panelu szczegółów osobno.
+Sprawdź je w rzeczywistym kontenerze i przy węższym viewportcie; poprawny
+odstęp kart nie oznacza automatycznie poprawnej szerokości panelu. W lokalnym
+SCSS konsumenta używaj klas opisujących rolę sekcji zamiast klas typu `flex`
+czy `layout-5`, a po zmianie usuń martwe selektory.
 
 ## 6. Overlay i stany interakcji
 
@@ -160,6 +179,13 @@ pełnej suity. Testuj kontrakt:
 - walidację i reset formularza,
 - duplikaty i pustą kolekcję,
 - przejście open/close oraz akcje overlayu.
+
+Jeśli migracja używa lokalnego komponentu opcji z wstrzykiwanym `ng-template`,
+sprawdź testem renderowanie każdej opcji, właściwej treści i stanu wybranego.
+Dla formularza pod panelem sprawdź też integrację z kontenerem: inicjalizację
+edycji, przełączenie opcji, ponowne otwarcie i payload po zapisie. Asercje
+geometrii opieraj na właściwych elementach: odstęp między kartami oraz
+szerokość panelu to odrębne własności.
 
 W źródle DS dodaj lub aktualizuj Storybook Playground tylko wtedy, gdy zmienia
 się publiczny komponent, wariant albo interakcja. Screenshot stanu początkowego

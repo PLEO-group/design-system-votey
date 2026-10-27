@@ -234,7 +234,15 @@ vt-select {
   box-shadow: 0 var(--spacing-8) var(--spacing-24) calc(-1 * var(--spacing-4))
     color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 
+  &:has(.panel-search) {
+    padding-top: 0;
+  }
+
   .mat-mdc-option {
+    &.search-hidden {
+      display: none;
+    }
+
     min-height: 44px;
     padding: 0 var(--space-control-padding-x);
     color: var(--color-text-primary);
@@ -309,12 +317,28 @@ vt-select {
   }
 
   .panel-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     padding: var(--spacing-8) var(--spacing-12);
+    background-color: var(--color-bg-surface);
+
+    .search-icon {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: calc(var(--spacing-12) + var(--spacing-12));
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
 
     .panel-search-input {
       box-sizing: border-box;
       width: 100%;
       padding: var(--spacing-8) var(--spacing-12);
+      padding-right: calc(var(--spacing-12) + 20px + var(--space-gap-xs));
       border: 1px solid var(--color-border-subtle);
       border-radius: var(--radius-m);
       background-color: var(--color-bg-surface);
@@ -326,7 +350,7 @@ vt-select {
       line-height: var(--typo-field-line-height);
 
       &:focus-visible {
-        outline: 1px solid var(--color-accent-primary);
+        outline: 2px solid var(--color-accent-primary);
       }
     }
   }

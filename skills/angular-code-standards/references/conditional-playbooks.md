@@ -41,6 +41,43 @@ Jeśli nowy projekt UI wymaga zmiany kontraktu interakcji, potraktuj to jako zmi
 
 Edge case: dla list filtrowanych, sortowanych, przeładowywanych albo wirtualizowanych nie używaj `track $index`; wybierz stabilne `id`, `uuid`, slug albo inny niezmienny klucz domenowy.
 
+### Migracja istniejącego widoku bez utraty kontraktu
+
+Przy migracji istniejącego widoku do innego komponentu UI albo Design Systemu
+najpierw zapisz kontrakt przed zmianą:
+
+- dane wejściowe i wyjściowe oraz payloady requestów,
+- lokalny state otwarcia, zaznaczenia, edycji, resetu i zapisu,
+- walidację, `required`, `disabled`, `touched`, błędy i komunikaty,
+- selektory `data-cy`, semantykę HTML, ARIA i obsługę klawiatury,
+- stany pustej listy, duplikatów, błędów i braku danych.
+
+Jeśli dostępna jest wersja historyczna, użyj jej jako baseline'u i oddziel zmiany
+domenowe od zmian wyglądu lub integracji. Nie przenoś do wspólnego skilla
+jednorazowych kluczy tłumaczeń, nazw endpointów ani reguł właściwych dla jednej
+aplikacji.
+
+Po migracji sprawdź równoważność zachowania: wartości formularza, eventy,
+payloady, zamykanie, reset i warunki blokowania akcji. Dla zmienionej logiki
+zaktualizuj testy obok komponentu; dla samego SCSS testy jednostkowe nie są
+wymagane.
+
+### Audyt stylów po migracji komponentu
+
+Po wymianie kontrolki lub layoutu przeskanuj cały zmieniony zakres, a nie tylko
+nowe linie. Usuń albo zgłoś:
+
+- globalne selektory `label`, `.input`, `.select` i podobne override'y,
+- klasy legacy, które przestały mieć właściciela,
+- utility classes mieszające odpowiedzialność layoutu z komponentem,
+- selektory z `&`, które po kompilacji nie wskazują zamierzonego elementu,
+- korekty `transform` użyte do maskowania problemu z gridem lub wysokością pola.
+
+Wartości spacingu, typografii, koloru i radiusu mapuj na tokeny lokalnego Design
+Systemu, z zachowaniem wyjątku dla wymiarów bez odpowiedniego tokenu z [1.6](../SKILL.md#16-wymiary-bez-sztucznego-składania-tokenów).
+Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
+uzasadnione przez kontrakt komponentu albo istniejący wzorzec projektu.
+
 ### Domknięcie refaktoru HTML i SCSS
 
 Po zmianie przejdź przez cały dotknięty template i lokalny arkusz, nie tylko nowe linie. Zastąp klasy opisujące wyłącznie mechanikę układu (np. `flex`, `layout-5`) klasami nazwanymi według roli elementu lub zawartości. Układ i wygląd komponentu trzymaj w jego SCSS, zgodnie z rzeczywistą hierarchią HTML. Samo zastąpienie tagu albo owinięcie treści w `div` nie kończy migracji. Usuń nieużywane selektory, klasy i importy po sprawdzeniu wszystkich stanów warunkowych template.

@@ -125,3 +125,11 @@ export { VoteyTimePickerComponent, VoteyTimeEntryPolicies } from "./lib/time-pic
 export type { PickerMode, PickerTimeEntryPolicy } from "./lib/picker/picker-value";
 
 export * from "./lib/tabs/votey-view-transition.service";
+export { VoteyTableComponent } from "./lib/table/votey-table.component";
+export { VoteyTableCellDirective } from "./lib/table/votey-table-cell.directive";
+export { VoteyTableHeaderVariants } from "./lib/table/table.model";
+export type {
+  VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTableFilters, VoteyTableHeaderVariant,
+  VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext,
+} from "./lib/table/table.model";
+export { VoteySearchComponent } from "./lib/search/votey-search.component";

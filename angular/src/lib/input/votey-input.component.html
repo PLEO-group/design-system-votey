@@ -48,6 +48,7 @@
     @let currentIcon = icon(); @if (currentIcon) {
     <vt-icon class="icon" [ico]="currentIcon" />
     }
+    <ng-content select="[vtInputSuffix]" />
   </div>
 
   @if (shouldShowHelper) {

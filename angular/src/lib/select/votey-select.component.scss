@@ -257,7 +257,10 @@ vt-select {
       display: none;
     }
 
-    &:hover:not(.mdc-list-item--disabled),
+    &:hover:not(.mdc-list-item--disabled) {
+      background-color: var(--color-bg-page);
+    }
+
     &.mat-mdc-option-active:not(.mdc-list-item--disabled),
     &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
       background-color: var(--color-bg-surface-tint);

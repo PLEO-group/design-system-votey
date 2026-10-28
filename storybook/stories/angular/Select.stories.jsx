@@ -236,7 +236,7 @@ export default {
     showSelectionChips: true,
     searchable: true,
     searchDebounceTime: 0,
-    searchPlaceholder: "COMMON.SEARCH",
+    searchPlaceholder: "Wyszukaj",
     customSearchFn: null,
     withSelectionActions: false,
     withSelectionSearch: false,

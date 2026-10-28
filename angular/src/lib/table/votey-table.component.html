@@ -19,7 +19,7 @@
       <caption class="accessible-label">{{ label() | vtTranslate }}</caption>
       <colgroup>
         @if (selectable()) { <col width="56" /> }
-        @for (column of columns(); track column.id) { <col [attr.width]="column.width ?? 180" /> }
+        @for (column of resolvedColumns(); track column.id) { <col [attr.width]="column.width ?? 180" /> }
       </colgroup>
       <thead [class.heavy]="headerVariant() === 'heavy'">
         <tr>
@@ -31,7 +31,7 @@
               </vt-checkbox>
             </th>
           }
-          @for (column of columns(); track column.id) {
+          @for (column of resolvedColumns(); track column.id) {
             <th scope="col" [class.actions-cell]="column.role === 'actions'"
               [class.align-center]="column.align === 'center'" [class.align-right]="column.align === 'right'">
               <vt-text variant="caption-extrabold" [color]="headerVariant() === 'heavy' ? 'inverse' : 'primary'"
@@ -45,7 +45,7 @@
           @for (index of skeletonRows(); track index) {
             <tr aria-hidden="true" class="skeleton-row">
               @if (selectable()) { <td class="selection-cell"><span class="skeleton"></span></td> }
-              @for (column of columns(); track column.id) {
+              @for (column of resolvedColumns(); track column.id) {
                 <td [class.actions-cell]="column.role === 'actions'"><span class="skeleton"></span></td>
               }
             </tr>

@@ -406,3 +406,23 @@ custom cells, skeleton, sticky corners, overflow and light/dark rendering.
 - W trybie local wspólny efektywny indeks strony jest ograniczony do aktualnego zbioru i przekazywany zarówno do wycinania rekordów, jak i do paginatora. Zmniejszenie danych na ostatniej stronie nie pozostawia pustej tabeli przy dostępnym zbiorze.
 
 - Weryfikacja poprawek review: build Angular poprawny; 55 testów Node zaliczonych i 2 legacy pominięte. Dodano regresje szybkiego ponowienia frazy po X oraz strony lokalnej po zmniejszeniu zbioru.
+
+### Wspólny szablon komórek
+
+`<ng-template vtTableCell [vtTableCellOf]="table" let-row let-column="column" let-value="value">`
+definiuje jeden szablon dla wszystkich kolumn, pozwalający użyć `@switch (column.id)`,
+`@case` oraz własnego `@default`. Kontekst nadal zawiera rekord, kolumnę, wartość i indeks.
+Kolejność wyboru: nazwany szablon `vtTableCell="id"`, następnie wspólny szablon,
+a przy braku obu — wbudowany tekst `body`. Istniejące nazwane szablony pozostają zgodne.
+
+### Opcjonalne mapowanie kolumn
+
+- `columns` domyślnie `[]`; konsument podaje definicje albo włącza `autoColumns` (domyślnie false).
+- Kolumna wymaga alternatywnie `field: Extract<keyof T, string>` albo `value(row)`. Nie obydwu. `field` odczytuje bezpośrednie pole, bez parsowania ścieżek z kropkami.
+- `autoColumns` generuje definicje z `Object.keys(rows[0])` przed wyszukiwaniem i lokalnym stronicowaniem. `id` i `field` to klucz, a `header` to `headersPrefix + klucz` (prefiks domyślnie pusty, bez uppercase).
+- Jawna definicja o tym samym id zastępuje całą wygenerowaną definicję; dodatkowe definicje dopisywane są na końcu. Przy pustych rows pozostają wyłącznie jawne definicje.
+- `excludedColumns: readonly string[]` domyślnie `[]`, usuwa kolumny po id w obu trybach.
+- Generowane kolumny nie są domyślnie searchable. Jawne nadpisanie z searchable: true włącza FE matching po tej samej wartości co komórka.
+- 0 oraz false pozostają widoczne. Null/undefined są puste. Obiekty i tablice domyślnie puste; wymagają value zwracającego prymityw albo własnego szablonu (rekord pozostaje dostępny).
+- Wspólny szablon @switch i nazwane szablony zachowują dotychczasowe pierwszeństwo.
+- Ryzyka auto: nowe pola API stają się kolumnami, pola nieobecne w pierwszym rekordzie są pomijane, schemat może zmieniać się między stronami remote. Dla stałego schematu i kolejności preferowane jawne columns. Wykluczenie pola z UI nie jest mechanizmem autoryzacji.

@@ -4,7 +4,10 @@ import "./TableApiGuide.scss";
 const inputGroups = [
   ["Dane i kolumny", [
     ["rows", "readonly T[]", "wymagane", "Rekordy do wyświetlenia. W trybie remote przekazuj bieżącą stronę; w local pełny zbiór."],
-    ["columns", "readonly VoteyTableColumn<T>[]", "wymagane", "Jedna definicja kolumn dla nagłówka, komórek i lokalnego wyszukiwania."],
+    ["columns", "readonly VoteyTableColumn<T>[]", "[]", "Jawne kolumny; przy autoColumns nadpisania po id oraz dodatkowe kolumny, np. actions."],
+    ["autoColumns", "boolean", "false", "Generuje kolumny z kluczy pierwszego rekordu. Szczegóły i ograniczenia poniżej."],
+    ["excludedColumns", "readonly string[]", "[]", "Pomija kolumny po id, również jawnie zdefiniowane."],
+    ["headersPrefix", "string", "''", "Prefiks kluczy nagłówków generowanych automatycznie; bez zmiany wielkości liter."],
     ["rowKey", "(row: T) => string | number", "wymagane", "Stabilny, unikalny klucz rekordu. Nie używaj indeksu ani referencji obiektu."],
     ["label", "string", "wymagane", "Klucz tłumaczenia dostępnej nazwy tabeli."],
     ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: tło surface (białe w light) i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
@@ -37,7 +40,8 @@ const inputGroups = [
 const columnsApi = [
   ["id", "string", "wymagane", "Unikalny identyfikator. Łączy kolumnę z vtTableCell."],
   ["header", "string", "wymagane", "Klucz tłumaczenia nagłówka. Typografia caption-extrabold."],
-  ["value", "(row: T) => VoteyTableValue", "wymagane", "Wartość domyślnej komórki i podstawa wyszukiwania FE. Obsługuje string, number, boolean, null i undefined."],
+  ["field", "Extract<keyof T, string>", "field albo value", "Typowany klucz bezpośredniego pola rekordu. Bez ścieżek z kropkami. Obiekty i tablice wymagają funkcji value lub szablonu."],
+  ["value", "(row: T) => VoteyTableValue", "value albo field", "Funkcja dla pól wyliczanych. Nie podawaj jej razem z field. Wartość zasila też wyszukiwanie FE."],
   ["width", "number", "180", "Szerokość w px. Tabela wypełnia minimum szerokość kontenera; nadmiar przewija się poziomo."],
   ["align", "'left' | 'center' | 'right'", "'left'", "Wyrównanie nagłówka i domyślnej zawartości komórki."],
   ["searchable", "boolean", "false", "Tylko kolumny z true uczestniczą w wyszukiwaniu local."],
@@ -109,9 +113,17 @@ export class MembersExampleComponent {
 
 const customCell = `<vt-table #table label="LABEL.MEMBERS"
   [rows]="rows()" [columns]="columns" [rowKey]="rowKey">
-  <ng-template vtTableCell="actions" [vtTableCellOf]="table" let-row>
-    <vt-button variant="ghost" ico="ui-edit"
-      [ariaLabel]="editLabel" (pressed)="edit(row)" />
+  <ng-template vtTableCell [vtTableCellOf]="table"
+    let-row let-column="column" let-value="value">
+    @switch (column.id) {
+      @case ('actions') {
+        <vt-button variant="ghost" ico="ui-edit"
+          [ariaLabel]="editLabel" (pressed)="edit(row)" />
+      }
+      @default {
+        <vt-text variant="body" [content]="'' + (value ?? '')" />
+      }
+    }
   </ng-template>
 </vt-table>
 
@@ -209,7 +221,7 @@ export function TableApiGuide() {
     </div>
 
     <Section id="start" number="01" title="Szybki start">
-      <p>Importuj komponent i typy wyłącznie z publicznego entry pointu. Cztery wymagane wejścia to <code>rows</code>, <code>columns</code>, <code>rowKey</code> i <code>label</code>.</p>
+      <p>Importuj komponent i typy wyłącznie z publicznego entry pointu. Wymagane wejścia to <code>rows</code>, <code>rowKey</code> i <code>label</code>. Podaj również <code>columns</code> lub włącz <code>autoColumns</code>.</p>
       <Code title="Minimalny przykład · Angular">{setup}</Code>
       <aside className="note"><strong>Przygotowanie aplikacji</strong><p>Załaduj publiczny arkusz <code>tokens.angular.css</code> i skonfiguruj adapter <code>VOTEY_TRANSLATOR</code>. Przy używaniu ikon dodaj <code>provideVoteySvgRegistry()</code> i udostępnij assety zgodnie z konfiguracją paczki.</p></aside>
     </Section>
@@ -220,9 +232,32 @@ export function TableApiGuide() {
     </Section>
 
     <Section id="columns" number="03" title="Definicja kolumny">
-      <p><code>VoteyTableColumn&lt;T&gt;</code> opisuje zawartość oraz układ. Domyślna komórka renderuje wynik <code>value(row)</code> jako tekst; null i undefined dają pusty tekst.</p>
+      <p><code>VoteyTableColumn&lt;T&gt;</code> opisuje zawartość oraz układ. Podaj <code>field</code> dla zwykłego pola albo <code>value(row)</code> dla wartości wyliczanej. Domyślna komórka zachowuje 0 i false; null i undefined dają pusty tekst.</p>
       <ApiTable rows={columnsApi} />
-      <aside className="note"><strong>Szablon nie zastępuje wartości</strong><p>Własna komórka zmienia prezentację, ale wyszukiwanie local nadal używa <code>value(row)</code>. Zwróć tu tekst, po którym użytkownik powinien móc wyszukać rekord.</p></aside>
+      <aside className="note"><strong>Szablon nie zastępuje wartości</strong><p>Własna komórka zmienia prezentację, ale wyszukiwanie local nadal używa wartości z field lub value. Włącz searchable tylko dla pól przeznaczonych do wyszukiwania.</p></aside>
+      <h3>Prostsze definicje przez field</h3>
+      <p>Najlepszy wybór dla zwykłych ekranów: zachowujesz kontrolę nad kolejnością i nagłówkami, pomijając powtarzalne funkcje. TypeScript sprawdza nazwę pola. Obiekty i tablice nie są automatycznie zamieniane na tekst — zwróć tekst przez value albo obsłuż je we własnej komórce.</p>
+      <Code title="Jawna konfiguracja · rekomendowana">{`const columns: readonly VoteyTableColumn<Member>[] = [
+  { id: 'name', header: 'LABEL.NAME', field: 'name', searchable: true },
+  { id: 'groups', header: 'LABEL.GROUPS',
+    value: row => row.groups.map(group => group.name).join(', ') },
+];`}</Code>
+      <h3>Opcjonalne generowanie przez autoColumns</h3>
+      <p>Tabela odczytuje Object.keys z pierwszego rekordu przed lokalnym filtrowaniem i stronicowaniem. Każdy klucz staje się id oraz field; nagłówek to headersPrefix + klucz, bez zmiany wielkości liter. Bez prefiksu surowy klucz trafia do tłumacza. Kolejność pochodzi z Object.keys.</p>
+      <Code title="Generowanie i nadpisania">{`<vt-table #table label="LABEL.MEMBERS"
+  [rows]="rows()" [rowKey]="rowKey"
+  [autoColumns]="true" headersPrefix="LABEL.MEMBER."
+  [excludedColumns]="['id', 'internalNotes']" [columns]="overrides" />
+
+// Definicja o tym samym id zastępuje całą wygenerowaną definicję.
+const overrides: readonly VoteyTableColumn<Member>[] = [
+  { id: 'name', header: 'LABEL.NAME', field: 'name', searchable: true },
+  { id: 'actions', header: 'LABEL.ACTIONS', role: 'actions', value: () => '' },
+];
+// np. pole email -> klucz tłumaczenia LABEL.MEMBER.email
+// actions obsłuż we wspólnym szablonie @switch (column.id).`}</Code>
+      <p>Nadpisania działają po id; dodatkowe definicje są dopisywane na końcu. excludedColumns usuwa kolumny w obu trybach. Wspólny szablon vtTableCell otrzymuje standardowy kontekst column, value i rekord — możesz użyć @switch oraz @default tak samo jak przy jawnych kolumnach.</p>
+      <aside className="note"><strong>Kiedy stosować automat</strong><p>Używaj dla prostych, płaskich danych o kontrolowanym schemacie. Nowe pole API pojawi się jako nowa kolumna, jeśli go nie wykluczysz. Przy pustym zbiorze pozostają tylko jawne definicje; pola występujące dopiero w kolejnych rekordach nie są wykrywane. W remote kolumny mogą zmienić się wraz ze stroną. Dla stałych nagłówków podczas ładowania, ustalonej kolejności i pól wewnętrznych wybierz jawne columns. Wykluczanie kolumn nie zastępuje kontroli dostępu do danych.</p></aside>
     </Section>
 
     <Section id="events" number="04" title="Zdarzenia i publiczna metoda">
@@ -244,7 +279,7 @@ export function TableApiGuide() {
         ["value", "VoteyTableValue", 'let-value="value"', "Wynik funkcji value(row)."],
         ["index", "number", 'let-index="index"', "Indeks rekordu na widocznej stronie."],
       ]} />
-      <p><code>[vtTableCellOf]="table"</code> pozwala Angularowi wywnioskować typ rekordu w strict templates. Atrybut <code>vtTableCell</code> musi odpowiadać <code>id</code> kolumny.</p>
+      <p><code>[vtTableCellOf]="table"</code> pozwala Angularowi wywnioskować typ rekordu w strict templates. Sam atrybut <code>vtTableCell</code> definiuje wspólny szablon z @switch i @default. Opcjonalne <code>vtTableCell="actions"</code> nadpisuje go dla konkretnego id kolumny. Bez szablonu tabela renderuje tekst body.</p>
       <div className="intro-grid">
         <article><h3>Toolbar</h3><p>Elementy z <code>vtTableToolbar</code> trafiają nad tabelę. Tu umieszczaj własne kontrolki filtrów i akcje dla całej tabeli.</p></article>
         <article><h3>Akcje zaznaczenia</h3><p><code>selectionActions</code> przyjmuje TemplateRef. Jego <code>$implicit</code> to wszystkie zaznaczone klucze, także z innych stron.</p></article>

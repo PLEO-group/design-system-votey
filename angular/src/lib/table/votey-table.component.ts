@@ -17,6 +17,7 @@ import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
 import { VoteyTableCellDirective } from "./votey-table-cell.directive";
 import { matchesTableSearch, updateTableSelection, resolveTablePage } from "./table-state";
+import { readTableValue, resolveTableColumns } from "./table-columns";
 import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
@@ -33,7 +34,12 @@ import type {
 })
 export class VoteyTableComponent<T> {
   public readonly rows: InputSignal<readonly T[]> = input.required<readonly T[]>();
-  public readonly columns: InputSignal<readonly VoteyTableColumn<T>[]> = input.required<readonly VoteyTableColumn<T>[]>();
+  public readonly columns: InputSignal<readonly VoteyTableColumn<T>[]> = input<readonly VoteyTableColumn<T>[]>([]);
+  public readonly autoColumns: InputSignal<boolean> = input(false);
+  public readonly excludedColumns: InputSignal<readonly string[]> = input<readonly string[]>([]);
+  public readonly headersPrefix: InputSignal<string> = input("");
+  protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]> = computed(() =>
+    resolveTableColumns(this.rows(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()));
   public readonly rowKey: InputSignal<(row: T) => VoteyTableKey> = input.required<(row: T) => VoteyTableKey>();
   public readonly label: InputSignal<string> = input.required<string>();
   public readonly headerVariant: InputSignal<VoteyTableHeaderVariant> = input<VoteyTableHeaderVariant>("standard");
@@ -77,8 +83,8 @@ export class VoteyTableComponent<T> {
   protected readonly filteredRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.rows();
     if (this.searchMode() !== "local" || !this.appliedSearch()) return rows;
-    const columns: readonly VoteyTableColumn<T>[] = this.columns().filter((column) => column.searchable);
-    return rows.filter((row: T) => matchesTableSearch(columns.map((column) => column.value(row)), this.appliedSearch()));
+    const columns: readonly VoteyTableColumn<T>[] = this.resolvedColumns().filter((column) => column.searchable);
+    return rows.filter((row: T) => matchesTableSearch(columns.map((column) => readTableValue(row, column)), this.appliedSearch()));
   });
   protected readonly visibleRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.filteredRows();
@@ -92,20 +98,21 @@ export class VoteyTableComponent<T> {
   protected readonly allSelected: Signal<boolean> = computed(() => this.visibleRows().length > 0 && this.visibleRows().every((row: T) => this.selectedKeys().includes(this.rowKey()(row))));
   protected readonly someSelected: Signal<boolean> = computed(() => !this.allSelected() && this.visibleRows().some((row: T) => this.selectedKeys().includes(this.rowKey()(row))));
   protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.paginated() ? this.size() : 5 }, (_, index: number) => index));
-  protected readonly columnCount: Signal<number> = computed(() => this.columns().length + (this.selectable() ? 1 : 0));
-  protected readonly tableWidth: Signal<number> = computed(() => this.columns().reduce(
+  protected readonly columnCount: Signal<number> = computed(() => this.resolvedColumns().length + (this.selectable() ? 1 : 0));
+  protected readonly tableWidth: Signal<number> = computed(() => this.resolvedColumns().reduce(
     (width: number, column: VoteyTableColumn<T>): number => width + (column.width ?? 180),
     this.selectable() ? 56 : 0,
   ));
-  protected readonly viewColumns: Signal<readonly { definition: VoteyTableColumn<T>; template: TemplateRef<VoteyTableCellContext<T>> | null }[]> = computed(() => this.columns().map((definition) => ({
-    definition, template: this.cellTemplates().find((cell) => cell.vtTableCell() === definition.id)?.template ?? null,
+  protected readonly viewColumns: Signal<readonly { definition: VoteyTableColumn<T>; template: TemplateRef<VoteyTableCellContext<T>> | null }[]> = computed(() => this.resolvedColumns().map((definition) => ({
+    definition, template: (this.cellTemplates().find((cell) => cell.vtTableCell() === definition.id)
+      ?? this.cellTemplates().find((cell) => cell.vtTableCell() === ""))?.template ?? null,
   })));
   protected readonly viewRows: Signal<readonly { key: VoteyTableKey; row: T; control: FormControl<boolean | null>; selected: boolean; cells: readonly VoteyTableCellContext<T>[] }[]> = computed(() => {
     return this.visibleRows().map((row: T, index: number) => {
       const key: VoteyTableKey = this.rowKey()(row);
       const selected: boolean = this.selectedKeys().includes(key);
       return { key, row, selected, control: new FormControl<boolean | null>(selected),
-        cells: this.columns().map((column) => ({ $implicit: row, column, value: column.value(row), index })) };
+        cells: this.resolvedColumns().map((column) => ({ $implicit: row, column, value: readTableValue(row, column), index })) };
     });
   });
 

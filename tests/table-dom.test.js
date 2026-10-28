@@ -347,3 +347,62 @@ test("destroy cancels queued automatic searches", async () => {
   assert.deepEqual(queries, []);
 });
 
+
+test("shared switch template renders default values and yields to named column overrides", async () => {
+  const { ng, ds, TestBed } = env;
+  class Host {
+    rows = [{ id: "a", name: "Anna", count: 0, active: false, missing: null }];
+    columns = ["name", "count", "active", "missing"].map(id => ({ id, header: id, value: row => row[id] }));
+    key = row => row.id;
+  }
+  ng.Component({ selector: "test-shared-cell-host", imports: [ds.VoteyTableComponent, ds.VoteyTableCellDirective],
+    template: `<vt-table #table label="Members" [rows]="rows" [columns]="columns" [rowKey]="key">
+      <ng-template vtTableCell [vtTableCellOf]="table" let-row let-column="column" let-value="value" let-index="index">
+        @switch (column.id) {
+          @case ('name') { <span class="switch-name">{{ row.name }}:{{ index }}</span> }
+          @default { <span class="shared-default">{{ '' + (value ?? '') }}</span> }
+        }
+      </ng-template>
+      <ng-template vtTableCell="count" [vtTableCellOf]="table" let-value="value"><b class="override">{{ value }}</b></ng-template>
+    </vt-table>` })(Host);
+  TestBed.configureTestingModule({ imports: [Host] });
+  const fixture = TestBed.createComponent(Host);
+  await env.settle(fixture);
+  assert.equal(env.by(fixture, ".switch-name").textContent, "Anna:0");
+  assert.equal(env.by(fixture, ".override").textContent, "0");
+  assert.deepEqual(env.all(fixture, ".shared-default").map(cell => cell.textContent), ["false", ""]);
+});
+
+test("field columns preserve zero and false, render missing values empty and support local search", async () => {
+  const { fixture, queries } = await createTable({ searchMode: "local", rows: [{ id: "a", name: "Anna", count: 0, active: false, nested: {} }],
+    columns: ["name", "count", "active", "missing", "nested"].map(id => ({ id, header: id, field: id, searchable: id === "name" })) });
+  assert.deepEqual(env.all(fixture, "tbody td").map(cell => cell.textContent.trim()), ["Anna", "0", "false", "", ""]);
+  env.inputValue(env.by(fixture, "vt-search input"), "Anna");
+  await click(fixture, env.all(fixture, "vt-search button").at(-1));
+  assert.equal(queries[0].search, "Anna");
+  assert.match(bodyText(fixture), /Anna/);
+});
+
+test("auto columns use first-record keys, exclusions, explicit overrides and extra action definitions", async () => {
+  const { fixture } = await createTable({ autoColumns: true, headersPrefix: "LABEL.", excludedColumns: ["id", "secret"],
+    columns: [{ id: "name", header: "Custom name", field: "name", searchable: true },
+      { id: "actions", header: "Actions", role: "actions", value: () => "Edit" }] });
+  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "Actions"]);
+  fixture.componentRef.setInput("rows", [{ id: "e", name: "Eva", count: 0 }]);
+  await env.settle(fixture);
+  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "LABEL.count", "Actions"]);
+  assert.match(bodyText(fixture), /Eva/);
+  fixture.componentRef.setInput("rows", []);
+  await env.settle(fixture);
+  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "Actions"]);
+});
+
+test("auto columns are opt-in and an empty dataset without explicit columns stays valid", async () => {
+  const { fixture } = await createTable({ columns: [], autoColumns: true, rows: [] });
+  assert.equal(env.all(fixture, "thead th").length, 0);
+  assert.match(bodyText(fixture), /MESSAGE.TABLE_EMPTY/);
+  fixture.componentRef.setInput("rows", rows);
+  fixture.componentRef.setInput("autoColumns", false);
+  await env.settle(fixture);
+  assert.equal(env.all(fixture, "thead th").length, 0);
+});

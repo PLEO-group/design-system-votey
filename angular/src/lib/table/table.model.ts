@@ -5,15 +5,19 @@ export type VoteyTableValue = string | number | boolean | null | undefined;
 export type VoteyTableSearchMode = "none" | "local" | "remote";
 export type VoteyTableFilters = Readonly<Record<string, unknown>>;
 
-export interface VoteyTableColumn<T> {
+interface VoteyTableColumnOptions {
   id: string;
   header: string;
   width?: number;
   align?: "left" | "center" | "right";
   searchable?: boolean;
   role?: "data" | "actions";
-  value: (row: T) => VoteyTableValue;
 }
+
+export type VoteyTableColumn<T> = VoteyTableColumnOptions & (
+  | { field: Extract<keyof T, string>; value?: never }
+  | { value: (row: T) => VoteyTableValue; field?: never }
+);
 
 export interface VoteyTableQuery {
   page: number;

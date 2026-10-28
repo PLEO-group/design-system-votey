@@ -1,5 +1,9 @@
 # Changelog
 
+- 1.18.0 — Dodano `angular-table.md` i routing tylko dla pracy z `vt-table`
+  w Angularze. Referencja zbiera wybór field/value i autoColumns, wspólny szablon
+  @switch, kontrakt requestów i zaznaczania, pułapki oraz ścieżki do pełnego API i testów.
+
 - 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
   dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu
   w instalacji konsumentów.

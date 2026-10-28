@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.17.1
+version: 1.18.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -51,6 +51,7 @@ i publiczne API. Katalog źródłowy nie jest dowodem eksportu.
 | Źródłowy SVG albo integracja opublikowanego assetu | [svg-assets.md](references/svg-assets.md), [assets.md](references/assets.md) oraz referencję frameworka |
 | Device, grid, breakpoint albo layout z Figmy | [responsiveness.md](references/responsiveness.md) |
 | Publiczny komponent, wariant, wrapper lub authoring | [components.md](references/components.md); dla źródła Angular także [angular-components.md](references/angular-components.md) |
+| Użycie, migracja, debugowanie lub zmiana `vt-table` w Angularze | [angular-table.md](references/angular-table.md); pomiń dla innych komponentów i React/Next |
 | Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |
 | Instalacja, upgrade lub smoke test aplikacji | [consumers.md](references/consumers.md) oraz referencję frameworka |
@@ -167,6 +168,9 @@ return-to: references/<plik>.md
   potwierdzonych w handoffie.
 
 ## Historia zmian
+
+- 1.18.0 — Dodano warunkowo ładowaną referencję tabeli Angularowej: dobór kolumn,
+  wspólny szablon, autoColumns, requesty, zaznaczanie oraz źródła i weryfikacja.
 
 - 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
   dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu

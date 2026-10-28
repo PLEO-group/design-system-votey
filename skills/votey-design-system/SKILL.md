@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.17.0
+version: 1.17.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -60,6 +60,10 @@ i publiczne API. Katalog źródłowy nie jest dowodem eksportu.
 | View transitions w CRM, kierunki przejść menu, podmenu i tabów | [view-transitions-crm.md](references/view-transitions-crm.md) |
 
 ### Granica frameworków i publicznego API
+
+Paczka npm jest prywatna (`restricted`): każda lokalna lub CI instalacja wymaga
+tokenu z prawem odczytu. Użyj `NPM_TOKEN` jako zmiennej środowiskowej
+zgodnej z `.npmrc`; nie zapisuj sekretu w repozytorium.
 
 - `angular-consumer`: kod aplikacji, DI, routing, formularze i lokalne style pozostają
   w repo konsumenta. Używaj tylko publicznego API z zainstalowanej paczki; nie poprawiaj
@@ -163,5 +167,9 @@ return-to: references/<plik>.md
   potwierdzonych w handoffie.
 
 ## Historia zmian
+
+- 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
+  dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu
+  w instalacji konsumentów.
 
 Pełna historia wersji znajduje się w [references/changelog.md](references/changelog.md).

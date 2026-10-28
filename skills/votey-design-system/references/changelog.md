@@ -1,5 +1,9 @@
 # Changelog
 
+- 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
+  dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu
+  w instalacji konsumentów.
+
 - 1.17.0 — Doprecyzowano obsługę akcji nieblokujących w `LocalLoadingState`:
   zapisy na tym samym kanale mogą działać równolegle, a stan kanału pozostaje aktywny
   do zakończenia ostatniej operacji. Przykład blokowania kontrolki używa `computed()`

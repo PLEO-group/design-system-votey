@@ -390,7 +390,7 @@ test("auto columns use first-record keys, exclusions, explicit overrides and ext
   assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "Actions"]);
   fixture.componentRef.setInput("rows", [{ id: "e", name: "Eva", count: 0 }]);
   await env.settle(fixture);
-  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "LABEL.count", "Actions"]);
+  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["Custom name", "LABEL.COUNT", "Actions"]);
   assert.match(bodyText(fixture), /Eva/);
   fixture.componentRef.setInput("rows", []);
   await env.settle(fixture);

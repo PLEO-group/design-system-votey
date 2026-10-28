@@ -419,7 +419,7 @@ a przy braku obu — wbudowany tekst `body`. Istniejące nazwane szablony pozost
 
 - `columns` domyślnie `[]`; konsument podaje definicje albo włącza `autoColumns` (domyślnie false).
 - Kolumna wymaga alternatywnie `field: Extract<keyof T, string>` albo `value(row)`. Nie obydwu. `field` odczytuje bezpośrednie pole, bez parsowania ścieżek z kropkami.
-- `autoColumns` generuje definicje z `Object.keys(rows[0])` przed wyszukiwaniem i lokalnym stronicowaniem. `id` i `field` to klucz, a `header` to `headersPrefix + klucz` (prefiks domyślnie pusty, bez uppercase).
+- `autoColumns` generuje definicje z `Object.keys(rows[0])` przed wyszukiwaniem i lokalnym stronicowaniem. `id` i `field` to klucz, a `header` to `headersPrefix + klucz` (prefiks domyślnie pusty, cały klucz zamieniany na uppercase).
 - Jawna definicja o tym samym id zastępuje całą wygenerowaną definicję; dodatkowe definicje dopisywane są na końcu. Przy pustych rows pozostają wyłącznie jawne definicje.
 - `excludedColumns: readonly string[]` domyślnie `[]`, usuwa kolumny po id w obu trybach.
 - Generowane kolumny nie są domyślnie searchable. Jawne nadpisanie z searchable: true włącza FE matching po tej samej wartości co komórka.

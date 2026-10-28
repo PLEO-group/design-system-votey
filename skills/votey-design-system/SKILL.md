@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.18.0
+version: 1.18.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend

@@ -14,7 +14,7 @@ export function resolveTableColumns<T>(
   const first: T | undefined = rows[0];
   const keys: string[] = first !== null && typeof first === "object" ? Object.keys(first) : [];
   const generated: VoteyTableColumn<T>[] = keys.map(id => columns.find(column => column.id === id)
-    ?? { id, header: headerPrefix + id, field: id as Extract<keyof T, string> });
+    ?? { id, header: (headerPrefix + id).toUpperCase(), field: id as Extract<keyof T, string> });
   return [...generated, ...columns.filter(column => !keys.includes(column.id))]
     .filter(column => !excluded.includes(column.id));
 }

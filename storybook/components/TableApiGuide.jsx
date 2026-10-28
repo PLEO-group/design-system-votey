@@ -7,7 +7,7 @@ const inputGroups = [
     ["columns", "readonly VoteyTableColumn<T>[]", "[]", "Jawne kolumny; przy autoColumns nadpisania po id oraz dodatkowe kolumny, np. actions."],
     ["autoColumns", "boolean", "false", "Generuje kolumny z kluczy pierwszego rekordu. Szczegóły i ograniczenia poniżej."],
     ["excludedColumns", "readonly string[]", "[]", "Pomija kolumny po id, również jawnie zdefiniowane."],
-    ["headersPrefix", "string", "''", "Prefiks kluczy nagłówków generowanych automatycznie; bez zmiany wielkości liter."],
+    ["headersPrefix", "string", "''", "Prefiks kluczy nagłówków generowanych automatycznie; zamienianych w całości na uppercase."],
     ["rowKey", "(row: T) => string | number", "wymagane", "Stabilny, unikalny klucz rekordu. Nie używaj indeksu ani referencji obiektu."],
     ["label", "string", "wymagane", "Klucz tłumaczenia dostępnej nazwy tabeli."],
     ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: tło surface (białe w light) i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
@@ -243,7 +243,7 @@ export function TableApiGuide() {
     value: row => row.groups.map(group => group.name).join(', ') },
 ];`}</Code>
       <h3>Opcjonalne generowanie przez autoColumns</h3>
-      <p>Tabela odczytuje Object.keys z pierwszego rekordu przed lokalnym filtrowaniem i stronicowaniem. Każdy klucz staje się id oraz field; nagłówek to headersPrefix + klucz, bez zmiany wielkości liter. Bez prefiksu surowy klucz trafia do tłumacza. Kolejność pochodzi z Object.keys.</p>
+      <p>Tabela odczytuje Object.keys z pierwszego rekordu przed lokalnym filtrowaniem i stronicowaniem. Każdy klucz staje się id oraz field; nagłówek to headersPrefix + klucz, zamienianych w całości na uppercase. Bez prefiksu klucz pola jest zamieniany na uppercase i trafia do tłumacza. Kolejność pochodzi z Object.keys.</p>
       <Code title="Generowanie i nadpisania">{`<vt-table #table label="LABEL.MEMBERS"
   [rows]="rows()" [rowKey]="rowKey"
   [autoColumns]="true" headersPrefix="LABEL.MEMBER."
@@ -254,7 +254,7 @@ const overrides: readonly VoteyTableColumn<Member>[] = [
   { id: 'name', header: 'LABEL.NAME', field: 'name', searchable: true },
   { id: 'actions', header: 'LABEL.ACTIONS', role: 'actions', value: () => '' },
 ];
-// np. pole email -> klucz tłumaczenia LABEL.MEMBER.email
+// np. pole email -> klucz tłumaczenia LABEL.MEMBER.EMAIL
 // actions obsłuż we wspólnym szablonie @switch (column.id).`}</Code>
       <p>Nadpisania działają po id; dodatkowe definicje są dopisywane na końcu. excludedColumns usuwa kolumny w obu trybach. Wspólny szablon vtTableCell otrzymuje standardowy kontekst column, value i rekord — możesz użyć @switch oraz @default tak samo jak przy jawnych kolumnach.</p>
       <aside className="note"><strong>Kiedy stosować automat</strong><p>Używaj dla prostych, płaskich danych o kontrolowanym schemacie. Nowe pole API pojawi się jako nowa kolumna, jeśli go nie wykluczysz. Przy pustym zbiorze pozostają tylko jawne definicje; pola występujące dopiero w kolejnych rekordach nie są wykrywane. W remote kolumny mogą zmienić się wraz ze stroną. Dla stałych nagłówków podczas ładowania, ustalonej kolejności i pól wewnętrznych wybierz jawne columns. Wykluczanie kolumn nie zastępuje kontroli dostępu do danych.</p></aside>

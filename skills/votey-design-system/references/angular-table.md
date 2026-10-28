@@ -45,7 +45,7 @@ Najpierw potwierdź API w zainstalowanej paczce — lokalne źródła mogą być
 
 - Domyślnie false. Generuje `id` i `field` z `Object.keys(rows[0])`, przed
   lokalnym wyszukiwaniem i stronicowaniem. Nagłówek: `headersPrefix + klucz`,
-  bez uppercase; prefiks domyślnie pusty.
+  cały klucz uppercase; prefiks domyślnie pusty.
 - Definicja z `columns` o tym samym id zastępuje całą wygenerowaną definicję;
   dodatkowe definicje dopisywane są na końcu. `excludedColumns` usuwa id w obu trybach.
 - Przy pustych danych pozostają tylko jawne definicje. Pola występujące dopiero

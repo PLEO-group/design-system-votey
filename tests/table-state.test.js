@@ -32,3 +32,27 @@ test("table and cell template directive are available through the Angular public
   assert.equal(typeof ds.VoteyTableCellDirective, "function");
   assert.equal(ds.VoteyTableComponent.ɵcmp.selectors[0][0], "vt-table");
 });
+
+
+test("local paging keeps visible rows and paginator on the same page after data shrinks", async () => {
+  const { resolveTablePage } = await import("../angular/src/lib/table/table-state.ts");
+  const page = 2, size = 10;
+  const rows = Array.from({ length: 5 }, (_, index) => index);
+  const effectivePage = resolveTablePage(page, size, rows.length);
+  assert.equal(effectivePage, 0);
+  assert.deepEqual(rows.slice(effectivePage * size, (effectivePage + 1) * size), rows);
+  assert.equal(resolveTablePage(2, 10, 21), 2);
+  assert.equal(resolveTablePage(2, 10, 20), 1);
+  assert.equal(resolveTablePage(2, 10, 0), 0);
+});
+
+test("a repeated search is emitted after a fast clear instead of being suppressed by the old draft", async () => {
+  const { TestScheduler } = require("rxjs/testing");
+  const { tableSearchTerms } = await import("../angular/src/lib/table/table-search.ts");
+  const scheduler = new TestScheduler((actual, expected) => assert.deepEqual(actual, expected));
+  scheduler.run(({ cold, expectObservable }) => {
+    // anna was applied at 300ms. X clears it at 400ms; same text is retyped at 420ms.
+    const values = cold("a 399ms b 19ms a 400ms |", { a: "anna", b: "" });
+    expectObservable(tableSearchTerms(values)).toBe("300ms a 419ms a 100ms |", { a: "anna" });
+  });
+});

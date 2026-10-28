@@ -1,14 +1,16 @@
-<vt-input
-  [label]="label()" [placeholder]="placeholder()" [ariaLabel]="ariaLabel()"
-  [control]="formControl" [disabled]="disabled()" [id]="id()" [name]="name()"
-  [dataCy]="dataCy()" inputMode="search" (keyDown)="keyDown($event)"
->
-  <div vtInputSuffix class="actions">
-    @if (hasValue) {
-      <vt-button variant="ghost" size="small" ico="ui-close" [ariaLabel]="clearLabel()"
-        [disabled]="isDisabled" (pressed)="clear()" />
-    }
-    <vt-button variant="ghost" size="small" ico="ui-search" [ariaLabel]="searchLabel()"
-      [disabled]="isDisabled" (pressed)="submit()" />
-  </div>
-</vt-input>
+<fieldset class="search-field" [disabled]="isDisabled">
+  <vt-input
+    [label]="label()" [placeholder]="placeholder()" [ariaLabel]="ariaLabel()"
+    [control]="formControl" [disabled]="disabled()" [id]="id()" [name]="name()"
+    [dataCy]="dataCy()" inputMode="search" (keyDown)="keyDown($event)"
+  >
+    <div vtInputSuffix class="actions">
+      @if (hasValue) {
+        <vt-button variant="ghost" size="small" ico="ui-close" [ariaLabel]="clearLabel()"
+          [disabled]="isDisabled" (pressed)="clear()" />
+      }
+      <vt-button variant="ghost" size="small" ico="ui-search" [ariaLabel]="searchLabel()"
+        [disabled]="isDisabled" (pressed)="submit()" />
+    </div>
+  </vt-input>
+</fieldset>

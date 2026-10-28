@@ -7,7 +7,6 @@ import { NgTemplateOutlet } from "@angular/common";
 import { Dialog, DialogModule, type DialogRef } from "@angular/cdk/dialog";
 import { FormControl } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { debounceTime, distinctUntilChanged } from "rxjs";
 import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyCheckboxComponent } from "../checkbox/votey-checkbox.component";
 import { VoteySearchComponent } from "../search/votey-search.component";
@@ -17,7 +16,8 @@ import { defaultFetchParams, type PaginationEvent } from "../pagination/paginati
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
 import { VoteyTableCellDirective } from "./votey-table-cell.directive";
-import { matchesTableSearch, updateTableSelection } from "./table-state";
+import { matchesTableSearch, updateTableSelection, resolveTablePage } from "./table-state";
+import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
   VoteyTableQuery, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
@@ -83,8 +83,10 @@ export class VoteyTableComponent<T> {
   protected readonly visibleRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.filteredRows();
     return this.searchMode() === "local" && this.paginated()
-      ? rows.slice(this.page() * this.size(), (this.page() + 1) * this.size()) : rows;
+      ? rows.slice(this.effectivePage() * this.size(), (this.effectivePage() + 1) * this.size()) : rows;
   });
+  protected readonly effectivePage: Signal<number> = computed(() => this.searchMode() === "local"
+    ? resolveTablePage(this.page(), this.size(), this.filteredRows().length) : this.page());
   protected readonly resultCount: Signal<number> = computed(() => this.searchMode() === "local" ? this.filteredRows().length : this.totalElements());
   protected readonly hasQuery: Signal<boolean> = computed(() => !!this.appliedSearch() || Object.keys(this.appliedFilters()).length > 0);
   protected readonly allSelected: Signal<boolean> = computed(() => this.visibleRows().length > 0 && this.visibleRows().every((row: T) => this.selectedKeys().includes(this.rowKey()(row))));
@@ -120,14 +122,13 @@ export class VoteyTableComponent<T> {
       this.rows(); this.page(); this.size(); this.filters(); this.search();
       this.activeDialog?.close(false);
     });
-    this.searchControl.valueChanges.pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
-      .subscribe((value: string | null) => {
-        if (this.selectedKeys().length === 0 && (value ?? "").trim().length >= 3) this.submitSearch();
+    tableSearchTerms(this.searchControl.valueChanges).pipe(takeUntilDestroyed())
+      .subscribe((value: string) => {
+        if (this.selectedKeys().length === 0 && value.length >= 3) this.submitSearch();
       });
     this.destroyRef.onDestroy(() => this.activeDialog?.close(false));
   }
 
-  /** Call before applying external filters or fetching data; cancellation leaves applied inputs intact. */
   public async requestFilters(filters: VoteyTableFilters): Promise<boolean> {
     if (this.blocked()) return false;
     const accepted: boolean = await this.confirmSelectionReset();

@@ -44,7 +44,7 @@
   }
 
   .viewport {
-    max-height: 66vh;
+    max-height: 70vh;
     overflow: auto;
     isolation: isolate;
 
@@ -91,7 +91,7 @@
           top: 0;
           z-index: 3;
           height: 60px;
-          background: var(--color-white);
+          background: var(--color-bg-surface);
           border-bottom: 1px solid var(--color-border-subtle);
 
           &.selection-cell, &.actions-cell { z-index: 4; }

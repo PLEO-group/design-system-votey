@@ -1,6 +1,10 @@
 import type { VoteyTableKey } from "./table.model";
 
-/** Changes only the visible range; selections on other pages remain intact. */
+export function resolveTablePage(page: number, size: number, total: number): number {
+  const pageCount: number = size > 0 ? Math.ceil(Math.max(0, total) / size) : 0;
+  return Math.min(Math.max(0, page), Math.max(0, pageCount - 1));
+}
+
 export function updateTableSelection(
   selected: readonly VoteyTableKey[],
   visible: readonly VoteyTableKey[],

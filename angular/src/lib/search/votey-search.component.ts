@@ -1,6 +1,6 @@
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject,
-  Input, input, output, type InputSignal, type OutputEmitterRef,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, inject,
+  Input, input, output, type InputSignal, type OutputEmitterRef, type OnInit, type OnDestroy,
 } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { type Subscription } from "rxjs";
@@ -8,7 +8,6 @@ import { VoteyFormControlApplyDirective } from "../directives/votey-form-control
 import { VoteyInputComponent } from "../input/votey-input.component";
 import { VoteyButtonComponent } from "../button/votey-button.component";
 
-/** Search field presentation; consumers own debounce, matching and requests. */
 @Component({
   selector: "vt-search",
   templateUrl: "./votey-search.component.html",
@@ -16,7 +15,7 @@ import { VoteyButtonComponent } from "../button/votey-button.component";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [VoteyInputComponent, VoteyButtonComponent],
 })
-export class VoteySearchComponent extends VoteyFormControlApplyDirective<string> {
+export class VoteySearchComponent extends VoteyFormControlApplyDirective<string> implements OnInit, OnDestroy {
   public readonly label: InputSignal<string> = input.required<string>();
   public readonly placeholder: InputSignal<string> = input("LABEL.SEARCH");
   public readonly ariaLabel: InputSignal<string> = input("LABEL.SEARCH");
@@ -30,21 +29,26 @@ export class VoteySearchComponent extends VoteyFormControlApplyDirective<string>
   public readonly cleared: OutputEmitterRef<void> = output<void>();
 
   private readonly changeDetector: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private controlSubscription: Subscription | null = null;
+  private initialized: boolean = false;
 
   @Input() public override set control(control: FormControl<string | null> | null | undefined) {
     super.control = control;
-    this.observeControl();
+    if (this.initialized) this.observeControl();
   }
 
   protected get hasValue(): boolean { return (this.formControl.value ?? "").length > 0; }
   protected get isDisabled(): boolean { return this.disabled() || this.formControl.disabled; }
 
-  public constructor() {
-    super();
+  public ngOnInit(): void {
+    this.initialized = true;
     this.observeControl();
-    this.destroyRef.onDestroy(() => this.controlSubscription?.unsubscribe());
+  }
+
+  public ngOnDestroy(): void {
+    this.initialized = false;
+    this.controlSubscription?.unsubscribe();
+    this.controlSubscription = null;
   }
 
   protected submit(): void {

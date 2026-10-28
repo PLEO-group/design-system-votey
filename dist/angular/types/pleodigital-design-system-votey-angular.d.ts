@@ -967,6 +967,7 @@ declare class VoteyTableComponent<T> {
     protected readonly blocked: Signal<boolean>;
     protected readonly filteredRows: Signal<readonly T[]>;
     protected readonly visibleRows: Signal<readonly T[]>;
+    protected readonly effectivePage: Signal<number>;
     protected readonly resultCount: Signal<number>;
     protected readonly hasQuery: Signal<boolean>;
     protected readonly allSelected: Signal<boolean>;
@@ -986,7 +987,6 @@ declare class VoteyTableComponent<T> {
         cells: readonly VoteyTableCellContext<T>[];
     }[]>;
     constructor();
-    /** Call before applying external filters or fetching data; cancellation leaves applied inputs intact. */
     requestFilters(filters: VoteyTableFilters): Promise<boolean>;
     protected submitSearch(clear?: boolean): Promise<void>;
     protected rememberSelection(event: MouseEvent): void;
@@ -1003,7 +1003,6 @@ declare class VoteyTableComponent<T> {
 
 declare class VoteyTableCellDirective<T = unknown> {
     readonly vtTableCell: InputSignal<string>;
-    /** Supplies row type inference to Angular's strict template checker. */
     readonly vtTableCellOf: InputSignal<VoteyTableComponent<T> | null>;
     readonly template: TemplateRef<VoteyTableCellContext<T>>;
     static ngTemplateContextGuard<T>(_directive: VoteyTableCellDirective<T>, context: unknown): context is VoteyTableCellContext<T>;
@@ -1011,8 +1010,7 @@ declare class VoteyTableCellDirective<T = unknown> {
     static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyTableCellDirective<any>, "ng-template[vtTableCell]", never, { "vtTableCell": { "alias": "vtTableCell"; "required": true; "isSignal": true; }; "vtTableCellOf": { "alias": "vtTableCellOf"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-/** Search field presentation; consumers own debounce, matching and requests. */
-declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string> {
+declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string> implements OnInit, OnDestroy {
     readonly label: InputSignal<string>;
     readonly placeholder: InputSignal<string>;
     readonly ariaLabel: InputSignal<string>;
@@ -1025,12 +1023,13 @@ declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string
     readonly searched: OutputEmitterRef<string>;
     readonly cleared: OutputEmitterRef<void>;
     private readonly changeDetector;
-    private readonly destroyRef;
     private controlSubscription;
+    private initialized;
     set control(control: FormControl<string | null> | null | undefined);
     protected get hasValue(): boolean;
     protected get isDisabled(): boolean;
-    constructor();
+    ngOnInit(): void;
+    ngOnDestroy(): void;
     protected submit(): void;
     protected clear(): void;
     protected keyDown(event: KeyboardEvent): void;

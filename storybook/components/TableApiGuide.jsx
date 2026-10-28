@@ -7,7 +7,7 @@ const inputGroups = [
     ["columns", "readonly VoteyTableColumn<T>[]", "wymagane", "Jedna definicja kolumn dla nagłówka, komórek i lokalnego wyszukiwania."],
     ["rowKey", "(row: T) => string | number", "wymagane", "Stabilny, unikalny klucz rekordu. Nie używaj indeksu ani referencji obiektu."],
     ["label", "string", "wymagane", "Klucz tłumaczenia dostępnej nazwy tabeli."],
-    ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: białe tło i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
+    ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: tło surface (białe w light) i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
   ]],
   ["Zaznaczanie", [
     ["selectable", "boolean", "false", "Włącza checkboxy rekordów i checkbox wszystkich widocznych."],
@@ -278,7 +278,7 @@ export function TableApiGuide() {
         ["No results", "brak rekordów", "search / filters", "Komunikat noResultsText. Filtr z wartością false nadal ma klucz i jest traktowany jako obecny filtr."],
       ]} />
       <div className="intro-grid">
-        <article><h3>Standard</h3><p>Białe tło nagłówka i tekst primary. Nagłówki: caption-extrabold. Komórki domyślne: body.</p></article>
+        <article><h3>Standard</h3><p>Tło surface (białe w light, dopasowane do dark) i tekst primary. Nagłówki: caption-extrabold. Komórki domyślne: body.</p></article>
         <article><h3>Heavy</h3><p>Tło bg-inverse, tekst inverse i zaokrąglenia pierwszej oraz ostatniej komórki zgodne z wierszami danych.</p></article>
       </div>
       <p>Kontener ma maksymalną wysokość 66vh. Nagłówki pozostają sticky u góry, checkboxy po lewej, a ostatnia kolumna actions po prawej. Szeroka tabela przewija się poziomo; nie przełącza się w karty.</p>

@@ -9,7 +9,7 @@ description: >
   Triggery: link do Figmy, pixel-perfect, "odczytaj z Figmy", "zmień hover", "dodaj wariant",
   "component set", "macierz wariantów", figma-to-code,
   get_design_context, get_screenshot, get_metadata.
-version: 1.27.1
+version: 1.28.0
 author: s.stawowy@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -207,6 +207,8 @@ Nie zakładaj automatycznie, że każdy link Figmy oznacza komplet desktop / tab
 
 - Jeśli user podał **jeden konkretny nodeId** i nie dał osobnych linków per breakpoint, czytaj dokładnie ten jeden node.
 - Jeśli user podał osobne linki per breakpoint albo spec jawnie wskazuje warianty layoutu, wtedy czytaj wszystkie breakpointy równolegle.
+
+Jeśli zakres obejmuje inne urządzenia lub warianty, nie wymagaj od razu osobnych linków: odkryj pages i odpowiednie frame'y w tym samym dostępnym pliku, używając nazw i hierarchii. Pages mogą rozdzielać rozmiary ekranu lub konteksty. Nie zakładaj kompletności pierwszej listy; gdy wynik przeczy widocznej strukturze, wykonaj dostępny odczyt hierarchii jako fallback. Potwierdź wybrane node ID i nazwy, a nie samą zgodność szerokości. Ta reguła nie rozszerza zadania dotyczącego jednego wskazanego node'a na audyt całego pliku.
 
 ### Krok 0.5 — Breakpoint diff checklist (OBOWIĄZKOWY przy >=2 breakpointach)
 
@@ -470,6 +472,10 @@ Każdą pozycję oznacz jako:
 Jeśli pozycja jest krytyczna dla layoutu albo stanu, który implementujesz, i ma status [I] lub [B], zatrzymaj implementację pixel-perfect dla tego zakresu i dopytaj usera. Nie zgłaszaj blockerów dla ilustracji, linii kroków, badge `KROK` ani innych elementów, które nie występują w module.
 
 ## Tłumaczenie wartości Figma na prymitywy projektu
+
+Przed przeniesieniem wymiaru ustal jego rolę: rozmiar wariantu komponentu, rozpiętość gridu, ograniczenie szerokości treści, rozmiar assetu albo wysokość wynikająca z przykładowej zawartości. Bounds pojedynczego frame'a nie dowodzą uniwersalnej stałej dla wszystkich stanów. Preferuj potwierdzony kontrakt layoutu i prymityw projektu; zmiana `px` na `rem`, procent lub zmienną o tej samej wartości sama nie rozwiązuje problemu. Nie ekstrapoluj reguły na nieodczytane warianty. Przy kolejnym dopasowaniu zachowaj wcześniej zaakceptowane invariants albo nazwij konflikt przed zmianą.
+
+Zakres weryfikacji dobierz do rzeczywistego komponentu: treści o różnej długości, liczebności i widoczności obszarów oraz przejścia między stanami tylko wtedy, gdy występują w jego kontrakcie. Nazwy domenowe i konkretne scenariusze aplikacji pozostają w dokumentacji projektu lub referencji właściwego stacku, nie w regułach wspólnego skilla.
 
 Przed implementacją stylów, utility classes albo Design System z Figmy wczytaj właściwy styling/design-system guide, jeśli jest dostępny w projekcie. Figma
 daje wartości i strukturę, ale `styling-guide` decyduje, jak przełożyć je na lokalne utility, tokeny, breakpointy,

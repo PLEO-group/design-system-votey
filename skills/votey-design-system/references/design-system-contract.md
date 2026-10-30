@@ -2,8 +2,9 @@
 
 ## Tożsamość i granica
 
-- Pakiet: `@pleodigital/design-system-votey`, wersja zweryfikowana `1.0.153`,
-  publiczny registry npm.
+- Pakiet: `@pleodigital/design-system-votey`, wersja zweryfikowana `1.0.186`,
+  registry npmjs z ograniczonym dostępem (`restricted`). Instalacja wymaga tokenu
+  npm z prawem odczytu paczki; sekretu nie zapisuj w repozytorium.
 - Topologia: niezależne repozytorium, package root `.`; paczka nie importuje kodu
   konsumentów i blokuje lokalny mini-DS poza zadeklarowanym rootem.
 - Publiczne entry pointy: `@pleodigital/design-system-votey/angular`,

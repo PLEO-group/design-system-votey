@@ -5,10 +5,10 @@
   "identity": {
     "product": "Votey",
     "packageName": "@pleodigital/design-system-votey",
-    "version": "1.0.153",
+    "version": "1.0.186",
     "registry": {
       "type": "npmjs",
-      "access": "public",
+      "access": "restricted",
       "url": "https://registry.npmjs.org/"
     }
   },
@@ -132,7 +132,7 @@
   "designSystemSkill": {
     "name": "votey-design-system",
     "sourcePath": "skills/votey-design-system",
-    "verifiedPackageVersion": "1.0.153",
+    "verifiedPackageVersion": "1.0.186",
     "companyStandardContracts": [
       { "id": "repository-boundary", "version": "1.0.0" },
       { "id": "foundation-tokens", "version": "1.0.0" },

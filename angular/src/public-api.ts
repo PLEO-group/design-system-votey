@@ -66,6 +66,10 @@ export type {
 export { VoteyFormControlApplyDirective } from "./lib/directives/votey-form-control-apply.directive";
 export { VoteyFormErrorComponent } from "./lib/form-error/votey-form-error.component";
 export { VoteyChipComponent } from "./lib/chip/votey-chip.component";
+export { VoteyTabsComponent } from "./lib/tabs/votey-tabs.component";
+export type { VoteyTabItem } from "./lib/tabs/votey-tabs.component";
+export { VoteyTabContentDirective } from "./lib/tabs/votey-tab-content.directive";
+export type { VoteyTabContentContext } from "./lib/tabs/votey-tab-content.directive";
 export { VoteyPaginationComponent } from "./lib/pagination/votey-pagination.component";
 export type { VoteyPaginationEvent } from "./lib/pagination/votey-pagination.component";
 export {
@@ -85,6 +89,7 @@ export {
 export type {
   VoteySelectSearchFn,
   VoteySelectVariant,
+  VoteySelectPanelPosition,
   VtOption,
 } from "./lib/select/votey-select.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
@@ -119,3 +124,13 @@ export type {
 export { VoteyDatePickerComponent, VoteyDatePickerModes } from "./lib/date-picker/votey-date-picker.component";
 export { VoteyTimePickerComponent, VoteyTimeEntryPolicies } from "./lib/time-picker/votey-time-picker.component";
 export type { PickerMode, PickerTimeEntryPolicy } from "./lib/picker/picker-value";
+
+export * from "./lib/tabs/votey-view-transition.service";
+export { VoteyTableComponent } from "./lib/table/votey-table.component";
+export { VoteyTableCellDirective } from "./lib/table/votey-table-cell.directive";
+export { VoteyTableHeaderVariants } from "./lib/table/table.model";
+export type {
+  VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableFilters, VoteyTableHeaderVariant,
+  VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext,
+} from "./lib/table/table.model";
+export { VoteySearchComponent } from "./lib/search/votey-search.component";

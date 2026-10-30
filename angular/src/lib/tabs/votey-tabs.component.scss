@@ -1,0 +1,95 @@
+@use "@angular/material" as mat;
+
+vt-tabs {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+
+  .tabs-wrapper {
+    @include mat.tabs-overrides(
+      (
+        active-indicator-color: var(--color-mint-green-400),
+        active-focus-indicator-color: var(--color-mint-green-400),
+        active-hover-indicator-color: var(--color-mint-green-400),
+        active-indicator-height: 4px,
+        container-height: 50px,
+        divider-height: 0,
+        inactive-label-text-color: var(--color-text-primary),
+        active-label-text-color: var(--color-text-primary),
+        pagination-icon-color: var(--color-text-primary),
+      )
+    );
+    flex: 1 1 auto;
+    min-height: 0;
+
+    // Material has no public inputs for sticky headers or tab-label spacing.
+    > .mat-mdc-tab-header {
+      position: sticky;
+      top: var(--vt-tabs-sticky-top, auto);
+      z-index: 10;
+      background: var(--color-blue-70);
+      padding-inline: var(--vt-tabs-padding-start, var(--spacing-0))
+        var(--vt-tabs-padding-end, var(--spacing-0));
+
+      .mat-mdc-tab-labels {
+        gap: var(--spacing-39);
+
+        .mat-mdc-tab {
+          min-width: 193px;
+          padding-inline: var(--spacing-4);
+
+          &:focus-visible {
+            outline: 2px solid var(--color-mint-green-400);
+            outline-offset: -4px;
+          }
+          &:hover:not(.mdc-tab--disabled) .label span {
+            color: var(--color-text-accent);
+          }
+        }
+      }
+    }
+
+    // Clip horizontal animation without creating a nested scroll container that breaks sticky pagination.
+    > .mat-mdc-tab-body-wrapper {
+      overflow: clip;
+      flex: 1 1 auto;
+      background: var(--color-bg-page);
+
+      > .mat-mdc-tab-body {
+        overflow: clip;
+        min-width: 0;
+
+        > .mat-mdc-tab-body-content {
+          display: flex;
+          flex-direction: column;
+          overflow: visible;
+        }
+      }
+    }
+
+    .tab-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-8);
+
+      .count span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 17px;
+        border-radius: var(--radius-full);
+        background: var(--color-gray-100);
+        color: var(--color-text-secondary);
+        padding-inline: var(--spacing-7);
+      }
+
+      &.active .count span {
+        background: var(--color-mint-green-70);
+        color: var(--color-text-accent);
+      }
+    }
+  }
+}

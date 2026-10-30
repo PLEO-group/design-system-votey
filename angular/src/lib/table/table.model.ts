@@ -1,0 +1,40 @@
+export type VoteyTableKey = string | number;
+export const VoteyTableHeaderVariants = ["standard", "heavy"] as const;
+export type VoteyTableHeaderVariant = (typeof VoteyTableHeaderVariants)[number];
+export type VoteyTableValue = string | number | boolean | null | undefined;
+export type VoteyTablePaginationMode = "none" | "local" | "remote";
+export type VoteyTableSearchMode = "none" | "local" | "remote";
+export type VoteyTableFilters = Readonly<Record<string, unknown>>;
+
+interface VoteyTableColumnOptions {
+  id: string;
+  header: string;
+  headerTooltip?: string;
+  width?: number;
+  align?: "left" | "center" | "right";
+  searchable?: boolean;
+  role?: "data" | "actions";
+}
+
+export type VoteyTableColumn<T> = VoteyTableColumnOptions & (
+  | { field: Extract<keyof T, string>; value?: never }
+  | { value: (row: T) => VoteyTableValue; field?: never }
+);
+
+export interface VoteyTableQuery {
+  page: number;
+  size: number;
+  search: string;
+  filters: VoteyTableFilters;
+}
+
+export interface VoteyTableCellContext<T> {
+  $implicit: T;
+  column: VoteyTableColumn<T>;
+  value: VoteyTableValue;
+  index: number;
+}
+
+export interface VoteyTableSelectionContext {
+  $implicit: readonly VoteyTableKey[];
+}

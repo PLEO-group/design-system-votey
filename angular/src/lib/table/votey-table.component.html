@@ -1,0 +1,107 @@
+<section class="table-region" [attr.aria-label]="label() | vtTranslate" [attr.aria-busy]="loading()">
+  <div class="toolbar">
+    <ng-content select="[vtTableToolbar]" />
+    @if (searchMode() !== 'none') {
+      <div class="search">
+        <vt-search label="" [control]="searchControl" [disabled]="blocked()"
+          (searched)="submitSearch()" (cleared)="submitSearch(true)" />
+      </div>
+    }
+  </div>
+  @if (selectable() && selectedKeys().length > 0) {
+    <div class="selection-bar" aria-live="polite">
+      <vt-text variant="body-l-bold" [content]="('MESSAGE.SELECTED_RECORDS' | vtTranslate) + ': ' + selectedKeys().length" />
+      <ng-container [ngTemplateOutlet]="selectionActions()" [ngTemplateOutletContext]="{ $implicit: selectedKeys() }" />
+    </div>
+  }
+  <div class="viewport" tabindex="0" [attr.aria-label]="label() | vtTranslate">
+    <table [attr.width]="tableWidth()">
+      <caption class="accessible-label">{{ label() | vtTranslate }}</caption>
+      <colgroup>
+        @if (selectable()) { <col width="56" /> }
+        @for (column of resolvedColumns(); track column.id) { <col [attr.width]="column.width ?? 180" /> }
+      </colgroup>
+      <thead [class.heavy]="headerVariant() === 'heavy'">
+        <tr>
+          @if (selectable()) {
+            <th scope="col" class="selection-cell">
+              <vt-checkbox [control]="selectAllControl" [indeterminate]="someSelected()" [disabled]="blocked()"
+                (changed)="selectAll($event)">
+                <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_VISIBLE' | vtTranslate }}</span>
+              </vt-checkbox>
+            </th>
+          }
+          @for (column of resolvedColumns(); track column.id) {
+            <th scope="col" [matTooltip]="(column.headerTooltip ?? '') | vtTranslate" [matTooltipDisabled]="!column.headerTooltip" [class.actions-cell]="column.role === 'actions'"
+              [class.align-center]="column.align === 'center'" [class.align-right]="column.align === 'right'">
+              <vt-text variant="caption-extrabold" [color]="headerVariant() === 'heavy' ? 'inverse' : 'primary'"
+                [wrap]="true" [content]="column.header | vtTranslate" />
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (index of skeletonRows(); track index) {
+            <tr aria-hidden="true" class="skeleton-row">
+              @if (selectable()) { <td class="selection-cell"><span class="skeleton"></span></td> }
+              @for (column of resolvedColumns(); track column.id) {
+                <td [class.actions-cell]="column.role === 'actions'"><span class="skeleton"></span></td>
+              }
+            </tr>
+          }
+        } @else if (error()) {
+          <tr><td class="state-cell" [attr.colspan]="columnCount()">
+            <div class="state" role="alert">
+              <vt-text [wrap]="true" [content]="errorText() | vtTranslate" />
+              <vt-button text="BUTTON.TABLE_RETRY" [disabled]="disabled()" (pressed)="retry.emit()" />
+            </div>
+          </td></tr>
+        } @else {
+          @for (record of viewRows(); track record.key; let index = $index) {
+            <tr [class.selected]="record.selected" (click)="activateRow(record.row, $event)">
+              @if (selectable()) {
+                <td class="selection-cell">
+                  <vt-checkbox [control]="record.control" [disabled]="blocked()"
+                    (pointerdown)="rememberSelection($event)" (changed)="selectRow(index, $event)">
+                    <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_ROW' | vtTranslate }} {{ index + 1 }}</span>
+                  </vt-checkbox>
+                </td>
+              }
+              @for (column of viewColumns(); track column.definition.id; let cellIndex = $index) {
+                @let cell = record.cells[cellIndex];
+                <td [class.actions-cell]="column.definition.role === 'actions'"
+                  [class.align-center]="column.definition.align === 'center'" [class.align-right]="column.definition.align === 'right'">
+                  @if (column.template) {
+                    <ng-container [ngTemplateOutlet]="column.template" [ngTemplateOutletContext]="cell" />
+                  } @else {
+                    <vt-text variant="body" [wrap]="true" [content]="'' + (cell.value ?? '')" />
+                  }
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td class="state-cell" [attr.colspan]="columnCount()">
+              <div class="state" role="status"><vt-text [wrap]="true" [content]="(hasQuery() ? noResultsText() : emptyText()) | vtTranslate" /></div>
+            </td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (pagination() !== "none") {
+    <vt-pagination [page]="effectivePage()" [size]="effectiveSize()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
+      [disabled]="disabled() || confirming()" [loading]="loading()" (pagination)="paginate($event)" />
+  }
+</section>
+
+<ng-template #confirmation>
+  <div class="confirmation">
+    <vt-text variant="h4" [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_TITLE' | vtTranslate" />
+    <vt-text [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_RESET' | vtTranslate" />
+    <div class="confirmation-actions">
+      <vt-button variant="secondary" text="BUTTON.TABLE_KEEP_SELECTION" (pressed)="closeConfirmation(false)" />
+      <vt-button text="BUTTON.TABLE_APPLY_AND_CLEAR" (pressed)="closeConfirmation(true)" />
+    </div>
+  </div>
+</ng-template>

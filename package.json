@@ -1,6 +1,10 @@
 {
   "name": "@pleodigital/design-system-votey",
-  "version": "1.0.182",
+  "version": "1.0.190",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PLEO-group/design-system-votey"
+  },
   "description": "Centralny system tokenów projektowych generowany przez Style Dictionary.",
   "main": "dist/js/tailwind-preset.js",
   "exports": {
@@ -15,7 +19,7 @@
     "./dist/*": "./dist/*"
   },
   "publishConfig": {
-    "access": "public",
+    "access": "restricted",
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {
@@ -29,6 +33,7 @@
     "validate:tokens": "node scripts/validate-core-colors.js",
     "test:tokens": "node --test tests/**/*.test.js",
     "test:picker": "node --test tests/picker-value.test.mjs",
+    "test:table-search": "npm run build:angular && node --test tests/search.test.js tests/search-dom.test.js tests/table-state.test.js tests/table-dom.test.js",
     "build:tokens": "npm run validate:tokens && node build-style-dictionary.mjs",
     "build:tokens:angular": "npm run validate:tokens && node build-style-dictionary.mjs --target=angular",
     "build:tokens:legacy": "npm run validate:tokens && node build-style-dictionary.mjs --target=legacy",
@@ -105,6 +110,7 @@
     "@svgr/cli": "^8.1.0",
     "@tokens-studio/sd-transforms": "2.0.3",
     "cpx": "^1.5.0",
+    "jsdom": "^30.1.3",
     "ng-packagr": "21.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

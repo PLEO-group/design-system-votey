@@ -87,6 +87,10 @@ export class VoteyPaginationComponent {
     effect((): void => {
       this.sizeControl.setValue(this.size(), { emitEvent: false });
     });
+    effect((): void => {
+      if (this.disabled() || this.loading()) this.sizeControl.disable({ emitEvent: false });
+      else this.sizeControl.enable({ emitEvent: false });
+    });
   }
 
   protected selectPage(page: number): void {

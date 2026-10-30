@@ -1,0 +1,38 @@
+<mat-tab-group
+  class="tabs-wrapper"
+  mat-align-tabs="start"
+  [mat-stretch-tabs]="false"
+  [disableRipple]="true"
+  [selectedIndex]="selectedIndex()"
+  [animationDuration]="animationDuration()"
+  [aria-label]="ariaLabel()"
+  (selectedTabChange)="select($event)"
+>
+  @for (view of tabViews(); track view.item.id) {
+    <mat-tab [disabled]="view.item.disabled ?? false">
+      <ng-template mat-tab-label>
+        <span class="tab-label" [class.active]="selectedId() === view.item.id">
+          <vt-text
+            class="label"
+            variant="action"
+            [content]="view.item.label | vtTranslate"
+            [uppercase]="true"
+          />
+          @if (view.item.count !== null && view.item.count !== undefined) {
+            <vt-text
+              class="count"
+              variant="caption"
+              [content]="view.item.count"
+            />
+          }
+        </span>
+      </ng-template>
+      <ng-template matTabContent>
+        <ng-container
+          [ngTemplateOutlet]="view.template"
+          [ngTemplateOutletContext]="view.context"
+        />
+      </ng-template>
+    </mat-tab>
+  }
+</mat-tab-group>

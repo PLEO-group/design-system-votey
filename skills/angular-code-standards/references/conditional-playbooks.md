@@ -10,6 +10,10 @@ Wczytuj tylko sekcję odpowiadającą bieżącej zmianie. Nie ładuj całego pli
 - [3.16 Powtarzalne stringi kontraktowe](#316-powtarzalne-stringi-kontraktowe)
 - [3.17 Discovery przed lokalnymi mechanizmami sprawdzającymi](#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi)
 
+- [3.18 Rozszerzanie istniejącej funkcjonalności o wariant](#318-rozszerzanie-istniejącej-funkcjonalności-o-wariant)
+- [3.19 Kontekst operacji asynchronicznych](#319-kontekst-operacji-asynchronicznych)
+- [3.20 Koszt pobierania danych pomocniczych](#320-koszt-pobierania-danych-pomocniczych)
+
 ## 3.13 Refaktor UI bez regresji kontraktu
 
 Gdy zastępujesz istniejący fragment UI nowym komponentem, modalem, formularzem, listą, tabelą albo innym widokiem, przed edycją odtwórz z kodu kontrakt zachowania:
@@ -24,6 +28,8 @@ Gdy zastępujesz istniejący fragment UI nowym komponentem, modalem, formularzem
 
 Refaktor frontend-only nie może zmienić shape obiektu wysyłanego dalej do requestu ani wartości zapisanej w istniejącej kontrolce formularza, chyba że użytkownik jawnie tego chce.
 
+W kolejnych iteracjach uwzględnij także zachowania już zaakceptowane w rozmowie. Przed poprawką wskaż tylko invariants, na które realnie wpływa diff. Jeśli nowa propozycja wycofuje takie zachowanie, nazwij konflikt i uzyskaj decyzję, chyba że użytkownik już jawnie polecił jego zmianę. Przykład: naturalna wysokość zawartości może kolidować ze stabilnym położeniem akcji podczas zmiany stanu; usunięcie stałego wymiaru nie jest automatycznie poprawą obu wymagań.
+
 Dla widoków kolekcji, niezależnie od prezentacji jako tabela, lista, kafle, drzewo, stepper albo virtual scroll:
 
 - najpierw zachowaj model danych, selekcję, disabled rules, uprawnienia i nawigację,
@@ -34,6 +40,59 @@ Dla widoków kolekcji, niezależnie od prezentacji jako tabela, lista, kafle, dr
 Jeśli nowy projekt UI wymaga zmiany kontraktu interakcji, potraktuj to jako zmianę funkcjonalną i potwierdź ją ze specyfikacją albo użytkownikiem.
 
 Edge case: dla list filtrowanych, sortowanych, przeładowywanych albo wirtualizowanych nie używaj `track $index`; wybierz stabilne `id`, `uuid`, slug albo inny niezmienny klucz domenowy.
+
+### Migracja istniejącego widoku bez utraty kontraktu
+
+Przy migracji istniejącego widoku do innego komponentu UI albo Design Systemu
+najpierw zapisz kontrakt przed zmianą:
+
+- dane wejściowe i wyjściowe oraz payloady requestów,
+- lokalny state otwarcia, zaznaczenia, edycji, resetu i zapisu,
+- walidację, `required`, `disabled`, `touched`, błędy i komunikaty,
+- selektory `data-cy`, semantykę HTML, ARIA i obsługę klawiatury,
+- stany pustej listy, duplikatów, błędów i braku danych.
+
+Jeśli dostępna jest wersja historyczna, użyj jej jako baseline'u i oddziel zmiany
+domenowe od zmian wyglądu lub integracji. Nie przenoś do wspólnego skilla
+jednorazowych kluczy tłumaczeń, nazw endpointów ani reguł właściwych dla jednej
+aplikacji.
+
+Po migracji sprawdź równoważność zachowania: wartości formularza, eventy,
+payloady, zamykanie, reset i warunki blokowania akcji. Dla zmienionej logiki
+zaktualizuj testy obok komponentu; dla samego SCSS testy jednostkowe nie są
+wymagane.
+
+### Audyt stylów po migracji komponentu
+
+Po wymianie kontrolki lub layoutu przeskanuj cały zmieniony zakres, a nie tylko
+nowe linie. Usuń albo zgłoś:
+
+- globalne selektory `label`, `.input`, `.select` i podobne override'y,
+- klasy legacy, które przestały mieć właściciela,
+- utility classes mieszające odpowiedzialność layoutu z komponentem,
+- selektory z `&`, które po kompilacji nie wskazują zamierzonego elementu,
+- korekty `transform` użyte do maskowania problemu z gridem lub wysokością pola.
+
+Wartości spacingu, typografii, koloru i radiusu mapuj na tokeny lokalnego Design
+Systemu, z zachowaniem wyjątku dla wymiarów bez odpowiedniego tokenu z [1.6](../SKILL.md#16-wymiary-bez-sztucznego-składania-tokenów).
+Pozostałe wartości techniczne mogą pozostać surowe tylko wtedy, gdy są
+uzasadnione przez kontrakt komponentu albo istniejący wzorzec projektu.
+
+### Domknięcie refaktoru HTML i SCSS
+
+Po zmianie przejdź przez cały dotknięty template i lokalny arkusz, nie tylko nowe linie. Zastąp klasy opisujące wyłącznie mechanikę układu (np. `flex`, `layout-5`) klasami nazwanymi według roli elementu lub zawartości. Układ i wygląd komponentu trzymaj w jego SCSS, zgodnie z rzeczywistą hierarchią HTML. Samo zastąpienie tagu albo owinięcie treści w `div` nie kończy migracji. Usuń nieużywane selektory, klasy i importy po sprawdzeniu wszystkich stanów warunkowych template.
+
+### Granice komponentu wielokrotnego użytku
+
+Gdy powtarzalny wybór składa się z kilku opcji o wspólnej prezentacji, rozważ jeden komponent grupy z typowaną konfiguracją opcji zamiast osobnej deklaracji komponentu dla każdego kafelka. Komponent grupy odpowiada za renderowanie opcji, wybór i wspólną ramę panelu szczegółów; treść zależna od opcji może pochodzić z przypisanego do niej `TemplateRef`/`ng-template`. Właścicielem stanu domenowego, formularzy, walidacji i payloadu pozostaje kontener. Nie uogólniaj pojedynczego, niepowtarzalnego widoku tylko dla samej abstrakcji.
+
+### Formularz w siatce i regresja edycji
+
+Jeżeli refaktor zmienia kolumny formularza, nadaj obszarom klasy wynikające z pól i funkcji sekcji, a warianty siatki powiąż z rzeczywiście obecnymi polami. Sprawdź rzeczywistą szerokość kontenera, długie wartości i komunikaty błędów; elementy siatki z treścią powinny móc się zwężać (`min-width: 0`).
+
+W trybie edycji sprawdź przepływ w obie strony: odpowiedź API → stan formularza i widoczne dane, także po zamknięciu i ponownym otwarciu; następnie zmiana pól → walidacja → payload zapisu. Uwzględnij zmianę wyboru, reset pól zależnych, disabled/readonly, istniejące załączniki i stan po zapisie, jeśli występują w danym widoku. Walidacja unikalności istniejącego rekordu powinna ignorować jego własną tożsamość, ale nadal wykrywać kolizję z innym rekordem; przetestuj oba przypadki, gdy taka walidacja jest częścią formularza.
+
+Po zmianie API komponentu zaktualizuj testy i harnessy do rzeczywistego kontraktu zamiast pozostawiać wywołania usuniętych metod lub osłabiać asercje. Przy ryzykownej zmianie obejmującej kontener, projekcję treści i formularz dodaj test integracyjny z prawdziwym template, obok testów jednostkowych logiki. Asercje powinny obejmować warunki widoczności, wartości początkowe, interakcje i dokładny kształt payloadu.
 
 ## 3.14 Widoki tabelaryczne, listy i layout kolekcji
 
@@ -115,6 +174,18 @@ Jeśli w skrajnym przypadku porównanie do pojedynczego stringa wydaje się dopu
 
 ## 3.17 Discovery przed lokalnymi mechanizmami sprawdzającymi
 
+### Sprawdzenie znaczenia danych
+
+Potwierdź niejasne znaczenie używanych identyfikatorów i relacji w najbliższym istniejącym przepływie lub modelu FE; sama nazwa pola albo zgodny typ liczbowy nie dowodzi, że identyfikator należy do zasobu danego endpointu. Nie wymagaj mapy kontraktu, raportu ani przeglądu repo BE przy każdej zmianie logiki.
+
+Nie ograniczaj reguły dotyczącej całej kolekcji do pierwszego znalezionego typu. Sprawdź reprezentację każdego typu występującego w danym przepływie oraz jego właściwe pole decydujące. Jeżeli znaczenie relacji lub pola pozostaje nieznane, sprawdź najbliższe użycia i modele zamiast implementować domysł.
+
+Jeżeli uzupełnienie brakujących danych prowadzi do kosztownego przepływu, zastosuj 3.20 przed jego implementacją.
+
+Osobno ustal aktualność danych: użycie istniejącego stanu, cache albo odświeżenie na akcję. Jeśli odpowiedź nadrzędnego zasobu zawiera komplet wymaganych pól, rozważ jedno odświeżenie tego zasobu zamiast requestów dla każdego elementu. Nie dodawaj odświeżenia automatycznie, gdy wymaganie aktualności z niego nie wynika.
+
+Po edycji sprawdź pokryte typy i pola reguły. Jeżeli wcześniej zidentyfikowano kosztowny przepływ, porównaj faktyczny koszt z wybranym rozwiązaniem, także przy ponownym kliknięciu i retry; odróżnij analizę kodu od uruchomionej weryfikacji.
+
 Przed dodaniem własnego mechanizmu, który waliduje, sprawdza, klasyfikuje albo ogranicza dane, najpierw przeprowadź bramkę konieczności, a dopiero potem discovery w projekcie i używanych bibliotekach. Dotyczy to między innymi validatorów formularzy, checkerów, predykatów, guardów wartości, funkcji normalizujących oraz pomocniczych reguł poprawności.
 
 ### Bramka konieczności
@@ -154,3 +225,65 @@ Stosuj następującą kolejność decyzji:
 Nie twórz kilku prawie identycznych lokalnych sprawdzaczy. Nowe rozwiązanie współdzielone powinno mieć neutralną nazwę, minimalne API bez zależności od konkretnego komponentu oraz testy obejmujące wartości graniczne i niepoprawne dane.
 
 Discovery nie oznacza automatycznego uogólniania. Nie używaj istniejącego rozwiązania o podobnej nazwie, jeśli ma inną semantykę, i nie przenoś jednorazowej prostej reguły do shared bez realnej korzyści z reużycia.
+
+
+## 3.18 Rozszerzanie istniejącej funkcjonalności o wariant
+
+Przy dodawaniu typu, trybu albo wariantu najpierw odczytaj najbliższy istniejący przepływ i zapisz krótką mapę:
+
+- wspólne elementy: formularz, serwis, akcje, walidacja, stan, UI i payload;
+- właściciele odpowiedzialności: FE, BE, Design System oraz źródło treści;
+- konieczne różnice wynikające z potwierdzonego kontraktu albo decyzji użytkownika;
+- dotknięte dotychczasowe warianty, w tym warunkowe sekcje, które mają zachować zachowanie;
+- najwęższy zakres weryfikacji nowego wariantu i reprezentatywnych starych wariantów.
+
+Preferuj rozszerzenie istniejącego wzorca. Osobny serwis, formularz, komponent albo skopiowany blok wymaga konkretnego uzasadnienia w kontrakcie lub czasie życia; sama nazwa nowego typu nie wystarcza. Nie wymuszaj też wspólnej abstrakcji, jeżeli zaciera potwierdzone różnice lub zwiększa zakres refaktoru.
+
+Współdzielenie prezentacji nie oznacza wspólnej tożsamości stanu: sprawdź klucze preferencji, routing, cache i formularze dla niezależnych wariantów. Potwierdź najbliższy wzorzec także w rodzicu i serwisie, nie tylko po podobieństwie template'u. Jeśli kontrakt przypisuje obliczenia albo eksport BE, brak endpointu lub pola zgłoś jako lukę; nie odtwarzaj ich w FE bez jawnej decyzji. Analogicznie nie dodawaj elementu UI tylko dlatego, że wydaje się przydatny, gdy nie wynika z uzgodnionych wymagań.
+
+Zachowaj stare warunki widoczności, kolejność istotnych sekcji, dostępność kontrolek, walidację i payloady. Nie migruj działającego przepływu na inny model asynchroniczny ani API tylko przy okazji dodawania wariantu, jeśli nie jest to potrzebne do zadania.
+
+Walidację dobierz do współdzielonej powierzchni zmiany: nowy wariant oraz stare warianty, które różnią się istotnym warunkiem. Nie wymagaj pełnej suity ani całego repo. Stosuj istniejące zasady zgody na uruchomienie; bez runtime nie deklaruj potwierdzenia wyglądu na podstawie testów logiki.
+
+## 3.19 Kontekst operacji asynchronicznych
+
+Stosuj, gdy podczas oczekiwania na request, potwierdzenie lub modal użytkownik może zmienić zasób, zakładkę, uprawnienia albo zamknąć widok. Nie dodawaj guardów dla stanów nieosiągalnych w rzeczywistym przepływie.
+
+### Czytelna sekwencja i ponawianie
+
+- Zależne etapy operacji przedstaw jako jawną sekwencję Observable albo `async`/`await`, zgodną z istniejącym kontraktem. Nie wywołuj ponownie nadrzędnego handlera zapisu tylko dlatego, że poprzedni etap miał zmienić flagę i ominąć jego początkową gałąź. Nazwij kolejny etap lub skomponuj go w pipeline.
+- Przed dodaniem callbacka wykonawczego, obiektu kontekstu lub kolejnego wrappera ustal jego realną odpowiedzialność. Jeden właściciel wykonania i blokady powinien być widoczny w przepływie; nie przekazuj tej samej operacji przez kilka warstw bez korzyści domenowej lub reużycia. Nie uogólniaj na siłę operacji o różnych kontraktach.
+- Dla retry określ, które etapy zakończyły się sukcesem. Ponawiaj nieudany etap, bez ponownej mutacji już zapisanych danych, chyba że kontrakt jawnie przewiduje idempotentne powtórzenie całości. Zachowaj blokadę wielokrotnego submitu; `switchMap` nie zastępuje takiej blokady dla mutacji.
+- Odróżniaj zakończenie źródła, anulowanie przy zniszczeniu widoku i anulowanie po zmianie zasobu. `defer` odracza utworzenie operacji; nie ogranicza liczby emisji. HTTP zwykle samo się kończy, a `take(1)` czeka na pierwszą emisję i nie zastępuje wcześniejszego anulowania. Nie dodawaj operatorów mechanicznie ani nie usuwaj ochrony kontekstu tylko dlatego, że niższa warstwa już ma `take(1)`.
+
+### Tożsamość zasobu i stan operacji
+
+- Ustal tożsamość zasobu przy rozpoczęciu operacji; mutację kieruj na ten sam zasób, zamiast ponownie odczytywać globalnie wybrany identyfikator po oczekiwaniu.
+- Przed kolejną mutacją po `await` lub zamknięciu modala sprawdź aktualne uprawnienia i kontekst. Sprawdzenie wyłącznie przy otwieraniu modala nie wystarcza.
+- Spóźniony sukces, błąd lub `finalize` nie może nadpisać formularza, komunikatu ani blokady innej operacji. Sama równość ID nie wystarcza, jeżeli można opuścić i ponownie otworzyć ten sam zasób; ustal, czy potrzebna jest tożsamość konkretnego otwarcia lub operacji.
+- Zmiana zasobu może resetować draft; odświeżenie tego samego zasobu nie powinno go kasować bez potwierdzonej reguły. Określ, jak odpowiedź współgra ze zmianami wykonanymi podczas oczekiwania.
+- Dobierz provider scope do właściciela i czasu życia stanu. Stan jednej strony nie wymaga `root`; serwis współdzielony przez jej zakładki powinien przeżyć zmianę zakładki, lecz nie pozostawać globalnie bez potrzeby.
+- Jedna blokada ma jednego właściciela. Rozdziel blokady niezależnych operacji, jeśli kontrakt pozwala je wykonywać równolegle, bez ręcznie synchronizowanych kopii flag.
+- `takeUntilDestroyed` sprząta zasoby przy zniszczeniu, lecz nie zastępuje ochrony przed zmianą kontekstu. `switchMap` stosuj do zastępowalnych odczytów; anulowanie subskrypcji mutacji nie gwarantuje cofnięcia zapisu na BE.
+
+Dla osiągalnych ryzyk przygotuj najwęższe testy: zmiana zasobu podczas oczekiwania, odebranie uprawnienia przed potwierdzeniem, spóźniona odpowiedź i przywrócenie właściwej blokady. Zachowaj istniejącą bramkę autoryzacji uruchomienia testów.
+
+## 3.20 Koszt pobierania danych pomocniczych
+
+Przy listach pomocniczych, selektorach, inicjalizacji wielu źródeł, pobieraniu szczegółów elementów kolekcji oraz odświeżaniu do walidacji lub akcji użytkownika ustal liczbę requestów na wejściu, przy pierwszej interakcji, wyszukiwaniu, ponownym otwarciu i retry. Wystarczy krótka analiza lokalnego przepływu; nie rób benchmarku ani pełnego audytu bez potrzeby.
+
+Wyzwalaczem rozmowy o kontrakcie BE jest konkretny koszt planowanego rozwiązania: request dla każdego elementu, pobranie dużego zbioru lub ciężkich szczegółów tylko po pojedynczą flagę, powtarzane pobrania albo kosztowne przetwarzanie danych po stronie FE. Przed implementacją nazwij problem, oszacuj koszt (np. N requestów na kliknięcie) i zaproponuj tańsze podejście. Gdy brakuje danych, rozważ rozszerzenie odpowiedzi istniejącego endpointu o potrzebne pola, agregat lub wynik walidacji, ewentualnie operację zbiorczą. Opisz konkretną proponowaną zmianę kontraktu i korzyść zamiast po cichu wdrażać kosztowne obejście.
+
+Zacznij od modeli, serwisów i użyć dostępnych w FE. Propozycja rozszerzenia kontraktu nie wymaga sprawdzania repo BE ani wywoływania endpointu; zaznacz, że jest propozycją, jeśli nie została potwierdzona. Sięgaj do BE dopiero przy konkretnej nierozstrzygniętej kwestii lub gdy wymaga tego zadanie. Przyjęcie przez użytkownika przyszłego kontraktu pozwala implementować FE z tym założeniem; nie jest potwierdzeniem, że BE już go wdrożył. Zwykła zmiana wykorzystująca wystarczający kontrakt nie wymaga dodatkowego raportu ani pytania o zgodę.
+
+Jeśli dane są pobierane dla elementów kolekcji, zastosuj również ocenę kosztu całego widoku z `paginated-list-table`, gdy ten skill jest dostępny. Uwzględnij mnożenie liczby wywołań przez wiersze, pola lub kolejne interakcje. Jeśli przewidywany koszt wydaje się średni lub duży, przedstaw użytkownikowi oszacowanie i tańszą alternatywę oraz uzyskaj zgodę przed wdrożeniem lub uruchomieniem kosztownego przepływu. Nie potrzebujesz ponownej zgody na konkretny koszt już jawnie zaakceptowany w zadaniu; ogólna prośba o feature nie oznacza akceptacji nieujawnionego fan-outu. Nie ustalaj uniwersalnego progu liczbowego bez kontekstu endpointów i zastosowania.
+
+- Sprawdź istniejące lekkie endpointy i ich kontrakt przed użyciem dużych list lub proponowaniem nowego endpointu.
+- Jeżeli dane nie są potrzebne do pierwszego renderu, walidacji lub odtworzenia wybranej wartości, rozważ pobranie przy pierwszym użyciu. Nie wprowadzaj lazy loading kosztem etykiety istniejącej selekcji.
+- Kolejne otwarcie może wykorzystać pobrane dane. Ustal zakres i ważność cache, uwzględniając zasób, typ, filtry, język oraz uprawnienia, jeśli wpływają na odpowiedź. Nie dodawaj globalnego cache bez potrzeby.
+- Debounce ma jednego właściciela. Sprawdź publiczne API i faktyczne zachowanie komponentu przed dodaniem opóźnienia w RxJS; nie ustawiaj dwóch debounce dla tej samej interakcji.
+- Dla zastępowalnego wyszukiwania preferuj `switchMap` zamiast ręcznych liczników odpowiedzi. Niezależne selektory zachowują niezależne loading, błędy i anulowanie.
+- Błąd jednego źródła powinien pozwalać ponowić to źródło. Nie przeładowuj całego obiektu i wszystkich opcji, jeśli błąd lub mutacja dotyczy mniejszego zakresu.
+- Filtruj lokalnie tylko kompletny zbiór, gdy odpowiada to kontraktowi. Pierwsza strona wyników nie zastępuje wyszukiwania serwerowego.
+
+Jeśli jest to istotne dla zmiany, testuj liczbę wywołań przy wejściu i ponownym otwarciu, ponowienie po błędzie oraz niezależność selektorów. Nie dodawaj testów liczących requesty, których liczba nie jest częścią oczekiwanego zachowania.

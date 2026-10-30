@@ -6,6 +6,7 @@ import "./Input.stories.scss";
 const selectInputs = [
   "options",
   "variant",
+  "panelPosition",
   "label",
   "placeholder",
   "bindLabel",
@@ -21,6 +22,7 @@ const selectInputs = [
   "showSelectionChips",
   "searchable",
   "searchPlaceholder",
+  "searchDebounceTime",
   "customSearchFn",
   "withSelectionActions",
   "withSelectionSearch",
@@ -122,6 +124,9 @@ function AngularSelectPreview(props) {
       const changeSubscription = componentRef.instance.change.subscribe((event) =>
         latestPropsRef.current.onChange(event)
       );
+      const searchSubscription = componentRef.instance.customSearch.subscribe((event) =>
+        latestPropsRef.current.onCustomSearch(event)
+      );
 
       applicationRef.attachView(componentRef.hostView);
       angularRuntimeRef.current = {
@@ -141,6 +146,7 @@ function AngularSelectPreview(props) {
       angularRuntimeRef.current.destroy = () => {
         selectionSubscription.unsubscribe();
         changeSubscription.unsubscribe();
+        searchSubscription.unsubscribe();
         applicationRef.detachView(componentRef.hostView);
         componentRef.destroy();
         applicationRef.destroy();
@@ -178,11 +184,25 @@ export default {
   component: AngularSelectPreview,
   parameters: { layout: "centered" },
   argTypes: {
+    panelPosition: {
+      options: ["below", "above"],
+      control: { type: "inline-radio" },
+      description: "Preferowana strona panelu; druga strona pozostaje fallbackiem przy braku miejsca. Paginacja używa above.",
+    },
     variant: {
       options: ["boxed", "compact"],
       control: { type: "inline-radio" },
     },
     options: { control: "object" },
+    searchDebounceTime: { control: { type: "number", min: 0 } },
+    customSearchFn: {
+      control: false,
+      description: "Custom local predicate (term, originalOption). For server search, return true and load options in (customSearch).",
+    },
+    onCustomSearch: {
+      action: "customSearch",
+      table: { category: "Events" },
+    },
     selectedValue: { control: "object" },
     required: {
       description: "Adds Validators.required to the preview FormControl.",
@@ -207,6 +227,7 @@ export default {
     ],
     selectedValue: "pl",
     variant: "boxed",
+    panelPosition: "below",
     label: "Język wydarzenia",
     placeholder: "Wybierz język",
     bindLabel: "",
@@ -220,8 +241,9 @@ export default {
     clearable: false,
     clearTooltip: "BUTTON.CLEAR",
     showSelectionChips: true,
-    searchable: false,
-    searchPlaceholder: "COMMON.SEARCH",
+    searchable: true,
+    searchDebounceTime: 0,
+    searchPlaceholder: "Wyszukaj",
     customSearchFn: null,
     withSelectionActions: false,
     withSelectionSearch: false,
@@ -242,6 +264,7 @@ export default {
     showError: false,
     onSelectionChange: fn(),
     onChange: fn(),
+    onCustomSearch: fn(),
   },
 };
 

@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.13.0
+version: 1.18.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -28,9 +28,20 @@ mini-DS.
 
 ## Kontekst i routing
 
-Najpierw rozpoznaj zmianę jako `angular-only`, `react-only` albo `shared` oraz
-potwierdź zainstalowaną wersję paczki i publiczne API. Katalog źródłowy nie jest
-dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
+Najpierw określ, czy zmieniasz konsumenta, źródła paczki, czy oba zakresy. Następnie
+oznacz właściwy framework niezależnie dla każdego zakresu. Nie używaj samego
+`Angular-only` ani `React-only`: etykieta frameworka nie określa, czy celem jest
+CRM/PWA-konsument, czy źródło Design Systemu. Potwierdź zainstalowaną wersję paczki
+i publiczne API. Katalog źródłowy nie jest dowodem eksportu.
+
+| Zakres | Znaczenie |
+| --- | --- |
+| `angular-consumer` | Zmiana wyłącznie w aplikacji Angular używającej zainstalowanej paczki, np. CRM. Nie edytuj źródeł `design-system-votey/angular/`. |
+| `react-consumer` | Zmiana wyłącznie w aplikacji React/Next używającej zainstalowanej paczki, np. PWA. Nie edytuj źródeł ani wygenerowanego outputu paczki. |
+| `angular-package` | Zmiana źródła, API lub stylów Angularowej części paczki i jej publicznego entry pointu `./angular`. |
+| `react-package` | Zmiana źródeł React/assetów dostarczanych przez publiczny entry point `./dist/assets/react`. Nie poprawiaj ręcznie wygenerowanego outputu, jeśli repo ma jego źródło. |
+| `shared-package` | Zmiana wspólnego źródła, np. tokenu lub assetu, która wpływa na output Angular i React. Nazwij oba skutki i zweryfikuj oba. |
+| zakresy łączone | Jeśli zadanie zmienia jednocześnie paczkę i konsumenta, zapisz oba zakresy oddzielnie; nie traktuj ich jako jednego `shared`. |
 
 | Kontekst | Wczytaj |
 | --- | --- |
@@ -40,25 +51,37 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
 | Źródłowy SVG albo integracja opublikowanego assetu | [svg-assets.md](references/svg-assets.md), [assets.md](references/assets.md) oraz referencję frameworka |
 | Device, grid, breakpoint albo layout z Figmy | [responsiveness.md](references/responsiveness.md) |
 | Publiczny komponent, wariant, wrapper lub authoring | [components.md](references/components.md); dla źródła Angular także [angular-components.md](references/angular-components.md) |
+| Użycie, migracja, debugowanie lub zmiana `vt-table` w Angularze | [angular-table.md](references/angular-table.md); pomiń dla innych komponentów i React/Next |
 | Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |
 | Instalacja, upgrade lub smoke test aplikacji | [consumers.md](references/consumers.md) oraz referencję frameworka |
 | `design-system-votey` albo konsument Angular | [angular.md](references/angular.md) |
 | Konsument React/Next | [react.md](references/react.md) |
+| Nowy lub refaktoryzowany loading state, `LocalLoadingState`, `app-loading-region`, retry, stany loading/empty/error, skeleton albo zakres loadera w konsumencie Angular | [loader-contract.md](references/loader-contract.md) |
+| View transitions w CRM, kierunki przejść menu, podmenu i tabów | [view-transitions-crm.md](references/view-transitions-crm.md) |
 
 ### Granica frameworków i publicznego API
 
-- `angular-only`: kod, DI, Material, komponenty `vt-*`, registry i tokeny Angular
+Paczka npm jest prywatna (`restricted`): każda lokalna lub CI instalacja wymaga
+tokenu z prawem odczytu. Użyj `NPM_TOKEN` jako zmiennej środowiskowej
+zgodnej z `.npmrc`; nie zapisuj sekretu w repozytorium.
+
+- `angular-consumer`: kod aplikacji, DI, routing, formularze i lokalne style pozostają
+  w repo konsumenta. Używaj tylko publicznego API z zainstalowanej paczki; nie poprawiaj
+  brakującego zachowania przez przypadkową edycję źródeł DS.
+- `angular-package`: kod, DI, Material, komponenty `vt-*`, registry i tokeny Angular
   pozostają w `angular/` oraz subpath `@pleodigital/design-system-votey/angular`.
   Dla responsywności tego samego DOM użyj dodatkowego, publicznego Sass entry pointu
   `@pleodigital/design-system-votey/ds-device-mixins`; runtime Angulara stosuj tylko,
   gdy zmienia się DOM lub behavior. Nie zmieniaj bundle'a ani importów Reacta.
-- `react-only`: React SVG, Tailwind i lokalne prymitywy PWA pozostają poza
-  Angularowym entry pointem. PWA nie importuje `tokens.angular.css` ani runtime'u
-  Angulara.
-- `shared`: zmieniaj źródła tokenów, assetów lub kontrakt publiczny wyłącznie wtedy,
-  gdy jest to istotą zadania. Zweryfikuj outputy Angular i React oraz wpływ na
-  konsumentów przed deklarowaniem gotowości.
+- `react-consumer`: kod aplikacji PWA/React pozostaje w repo konsumenta. PWA nie
+  importuje `tokens.angular.css` ani runtime'u Angulara.
+- `react-package`: źródła React/assetów dostarczanych przez paczkę pozostają poza
+  Angularowym entry pointem; nie edytuj outputu `./dist/assets/react` ręcznie, jeśli
+  istnieje odpowiadające mu źródło.
+- `shared-package`: zmieniaj wspólne źródła tokenów, assetów lub kontraktu publicznego
+  wyłącznie wtedy, gdy jest to istotą zadania. Zweryfikuj outputy Angular i React oraz
+  wpływ na konsumentów przed deklarowaniem gotowości.
 - Lokalny wrapper może łączyć publiczny komponent z logiką domenową, ale nie może
   kopiować komponentu, SVG ani omijać publicznego entry pointu. Brakującą rolę,
   wariant lub asset zgłoś jako `gap`.
@@ -84,13 +107,6 @@ dowodem eksportu. Dla `shared` nazwij wpływ na oba frameworki i zweryfikuj oba.
   zamykanie poza komponentem, klawiaturę i widoczność akcji w Storybooku.
 
 ## Codzienny workflow
-
-Ważne dla CRM: `grid.admin` **nie używa już gridu BoxEs ani proporcjonalnych
-wartości `vw` per device**. Kolumny nadal wybiera `VoteyDeviceService`, natomiast
-margines i gutter interpolują między sześcioma szerokościami makiet; sidebar jest
-osobnym stanem shellu i ma próg 1024 px. Pełny kontrakt, wartości i sposób
-pozycjonowania overlayu są w [responsiveness.md](references/responsiveness.md).
-Przed zmianą gridu przeczytaj tę sekcję, nie kopiuj generatora z BoxEs.
 
 1. Dla Figmy odbierz zweryfikowany handoff ze skilla `figma`: target, struktura,
    stany, layout-driving scope, breakpointy oraz wartości potwierdzone i brakujące.
@@ -152,5 +168,12 @@ return-to: references/<plik>.md
   potwierdzonych w handoffie.
 
 ## Historia zmian
+
+- 1.18.0 — Dodano warunkowo ładowaną referencję tabeli Angularowej: dobór kolumn,
+  wspólny szablon, autoColumns, requesty, zaznaczanie oraz źródła i weryfikacja.
+
+- 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
+  dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu
+  w instalacji konsumentów.
 
 Pełna historia wersji znajduje się w [references/changelog.md](references/changelog.md).

@@ -2,6 +2,7 @@
   "name": "@pleodigital/design-system-votey-angular",
   "version": "1.0.0",
   "peerDependencies": {
+    "@angular/cdk": ">=21 <22",
     "@angular/common": ">=21 <22",
     "@angular/core": ">=21 <22",
     "@angular/material": ">=21 <22",

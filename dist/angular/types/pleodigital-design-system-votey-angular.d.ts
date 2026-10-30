@@ -3,6 +3,7 @@ import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTrans
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatRadioChange } from '@angular/material/radio';
 import { ConnectedPosition } from '@angular/cdk/overlay';
@@ -382,6 +383,43 @@ declare class VoteyChipComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyChipComponent, "vt-chip", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": true; "isSignal": true; }; "showRemove": { "alias": "showRemove"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; }, { "removed": "removed"; }, never, never, true, never>;
 }
 
+interface VoteyTabContentContext {
+    readonly $implicit: VoteyTabItem;
+}
+declare class VoteyTabContentDirective {
+    readonly vtTabContent: InputSignal<string>;
+    readonly template: TemplateRef<VoteyTabContentContext>;
+    static ngTemplateContextGuard(_directive: VoteyTabContentDirective, context: unknown): context is VoteyTabContentContext;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTabContentDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyTabContentDirective, "ng-template[vtTabContent]", never, { "vtTabContent": { "alias": "vtTabContent"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+interface VoteyTabItem {
+    readonly id: string;
+    readonly label: string;
+    readonly count?: number | null;
+    readonly disabled?: boolean;
+}
+interface TabView {
+    readonly item: VoteyTabItem;
+    readonly template: TemplateRef<VoteyTabContentContext> | null;
+    readonly context: VoteyTabContentContext;
+}
+declare class VoteyTabsComponent {
+    readonly items: InputSignal<readonly VoteyTabItem[]>;
+    readonly selectedId: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly selectionChange: OutputEmitterRef<string>;
+    private readonly contents;
+    private readonly reducedMotion;
+    protected readonly animationDuration: Signal<string>;
+    protected readonly selectedIndex: Signal<number>;
+    protected readonly tabViews: Signal<readonly TabView[]>;
+    protected select(event: MatTabChangeEvent): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTabsComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTabsComponent, "vt-tabs", never, { "items": { "alias": "items"; "required": true; "isSignal": true; }; "selectedId": { "alias": "selectedId"; "required": true; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; }, { "selectionChange": "selectionChange"; }, ["contents"], never, true, never>;
+}
+
 interface PaginationEvent {
     page: number;
     size: number;
@@ -426,6 +464,7 @@ declare class VoteyPaginationComponent {
 
 declare const VoteySelectVariants: readonly ["boxed", "compact"];
 type VoteySelectVariant = (typeof VoteySelectVariants)[number];
+type VoteySelectPanelPosition = "above" | "below";
 interface VtOption<T = unknown> {
     readonly label: string;
     readonly value: T;
@@ -448,8 +487,10 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     private readonly backdropPointerDownListener;
     private backdropListenerTimeout;
     private overlayBackdrop;
+    private readonly searchChanges;
     readonly options: InputSignal<readonly unknown[]>;
     readonly variant: InputSignal<VoteySelectVariant>;
+    readonly panelPosition: InputSignal<VoteySelectPanelPosition>;
     readonly label: InputSignal<string>;
     readonly placeholder: InputSignal<string>;
     readonly bindLabel: InputSignal<string>;
@@ -464,6 +505,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     readonly clearTooltip: InputSignal<string>;
     readonly showSelectionChips: InputSignalWithTransform<boolean, unknown>;
     readonly searchable: InputSignalWithTransform<boolean, unknown>;
+    readonly searchDebounceTime: InputSignal<number>;
     readonly searchPlaceholder: InputSignal<string>;
     readonly customSearchFn: InputSignal<VoteySelectSearchFn | null>;
     readonly withSelectionActions: InputSignalWithTransform<boolean, unknown>;
@@ -483,6 +525,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     readonly ignoredErrors: InputSignal<string[]>;
     readonly selectionChange: OutputEmitterRef<unknown>;
     readonly change: OutputEmitterRef<unknown>;
+    readonly customSearch: OutputEmitterRef<string>;
     protected readonly isOpen: i0.WritableSignal<boolean>;
     protected readonly searchTerm: i0.WritableSignal<string>;
     protected readonly matSelect: Signal<MatSelect>;
@@ -490,7 +533,12 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected readonly optionViews: Signal<readonly SelectOptionView[]>;
     protected readonly filteredOptionViews: Signal<readonly SelectOptionView[]>;
     protected readonly resolvedTooltip: Signal<string>;
+    protected readonly renderedOptionViews: Signal<readonly (SelectOptionView & {
+        readonly hidden: boolean;
+    })[]>;
     ngOnInit(): void;
+    ngAfterViewInit(): void;
+    private observeSearchChanges;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
     protected get errorKeys(): string[];
@@ -529,7 +577,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     private toDisplayValue;
     private toArray;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteySelectComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteySelectComponent, "vt-select", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "bindLabel": { "alias": "bindLabel"; "required": false; "isSignal": true; }; "bindValue": { "alias": "bindValue"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "multiple": { "alias": "multiple"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "flagSelect": { "alias": "flagSelect"; "required": false; "isSignal": true; }; "clearable": { "alias": "clearable"; "required": false; "isSignal": true; }; "clearTooltip": { "alias": "clearTooltip"; "required": false; "isSignal": true; }; "showSelectionChips": { "alias": "showSelectionChips"; "required": false; "isSignal": true; }; "searchable": { "alias": "searchable"; "required": false; "isSignal": true; }; "searchPlaceholder": { "alias": "searchPlaceholder"; "required": false; "isSignal": true; }; "customSearchFn": { "alias": "customSearchFn"; "required": false; "isSignal": true; }; "withSelectionActions": { "alias": "withSelectionActions"; "required": false; "isSignal": true; }; "withSelectionSearch": { "alias": "withSelectionSearch"; "required": false; "isSignal": true; }; "selectionCancelText": { "alias": "selectionCancelText"; "required": false; "isSignal": true; }; "selectionUpdateText": { "alias": "selectionUpdateText"; "required": false; "isSignal": true; }; "nonRemovableValues": { "alias": "nonRemovableValues"; "required": false; "isSignal": true; }; "optionAvatarField": { "alias": "optionAvatarField"; "required": false; "isSignal": true; }; "optionDescriptionField": { "alias": "optionDescriptionField"; "required": false; "isSignal": true; }; "optionFlagField": { "alias": "optionFlagField"; "required": false; "isSignal": true; }; "flagClass": { "alias": "flagClass"; "required": false; "isSignal": true; }; "translateOptions": { "alias": "translateOptions"; "required": false; "isSignal": true; }; "closeOnSelect": { "alias": "closeOnSelect"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "selectionChange": "selectionChange"; "change": "change"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteySelectComponent, "vt-select", never, { "options": { "alias": "options"; "required": true; "isSignal": true; }; "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "panelPosition": { "alias": "panelPosition"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": false; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "bindLabel": { "alias": "bindLabel"; "required": false; "isSignal": true; }; "bindValue": { "alias": "bindValue"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "multiple": { "alias": "multiple"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "flagSelect": { "alias": "flagSelect"; "required": false; "isSignal": true; }; "clearable": { "alias": "clearable"; "required": false; "isSignal": true; }; "clearTooltip": { "alias": "clearTooltip"; "required": false; "isSignal": true; }; "showSelectionChips": { "alias": "showSelectionChips"; "required": false; "isSignal": true; }; "searchable": { "alias": "searchable"; "required": false; "isSignal": true; }; "searchDebounceTime": { "alias": "searchDebounceTime"; "required": false; "isSignal": true; }; "searchPlaceholder": { "alias": "searchPlaceholder"; "required": false; "isSignal": true; }; "customSearchFn": { "alias": "customSearchFn"; "required": false; "isSignal": true; }; "withSelectionActions": { "alias": "withSelectionActions"; "required": false; "isSignal": true; }; "withSelectionSearch": { "alias": "withSelectionSearch"; "required": false; "isSignal": true; }; "selectionCancelText": { "alias": "selectionCancelText"; "required": false; "isSignal": true; }; "selectionUpdateText": { "alias": "selectionUpdateText"; "required": false; "isSignal": true; }; "nonRemovableValues": { "alias": "nonRemovableValues"; "required": false; "isSignal": true; }; "optionAvatarField": { "alias": "optionAvatarField"; "required": false; "isSignal": true; }; "optionDescriptionField": { "alias": "optionDescriptionField"; "required": false; "isSignal": true; }; "optionFlagField": { "alias": "optionFlagField"; "required": false; "isSignal": true; }; "flagClass": { "alias": "flagClass"; "required": false; "isSignal": true; }; "translateOptions": { "alias": "translateOptions"; "required": false; "isSignal": true; }; "closeOnSelect": { "alias": "closeOnSelect"; "required": false; "isSignal": true; }; "tooltip": { "alias": "tooltip"; "required": false; "isSignal": true; }; "disabledNote": { "alias": "disabledNote"; "required": false; "isSignal": true; }; "removeTooltip": { "alias": "removeTooltip"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; }, { "selectionChange": "selectionChange"; "change": "change"; "customSearch": "customSearch"; }, never, never, true, never>;
 }
 
 type VoteyRadioButtonLabelPosition = "before" | "after";
@@ -684,7 +732,7 @@ declare class VoteyInputComponent extends VoteyFormControlApplyDirective<string>
     protected handleBlur(): void;
     protected handleKeyDown(event: KeyboardEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyInputComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "icon": { "alias": "icon"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "trimmer": { "alias": "trimmer"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "keyDown": "keyDown"; }, never, never, true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyInputComponent, "vt-input", never, { "variant": { "alias": "variant"; "required": false; "isSignal": true; }; "type": { "alias": "type"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "helper": { "alias": "helper"; "required": false; "isSignal": true; }; "icon": { "alias": "icon"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "inputMode": { "alias": "inputMode"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; "minLength": { "alias": "minLength"; "required": false; "isSignal": true; }; "maxLength": { "alias": "maxLength"; "required": false; "isSignal": true; }; "pattern": { "alias": "pattern"; "required": false; "isSignal": true; }; "trimmer": { "alias": "trimmer"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "ariaDescribedby": { "alias": "ariaDescribedby"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "ignoredErrors": { "alias": "ignoredErrors"; "required": false; "isSignal": true; }; "showErrors": { "alias": "showErrors"; "required": false; "isSignal": true; }; }, { "keyDown": "keyDown"; }, never, ["[vtInputSuffix]"], true, never>;
 }
 
 declare class PickerDatepickerIntl extends MatDatepickerIntl {
@@ -837,5 +885,194 @@ declare class VoteyTimePickerComponent extends PickerControl {
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTimePickerComponent, "vt-time-picker", never, { "label": { "alias": "label"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "stepMinutes": { "alias": "stepMinutes"; "required": false; "isSignal": true; }; "timeEntryPolicy": { "alias": "timeEntryPolicy"; "required": false; "isSignal": true; }; "min": { "alias": "min"; "required": false; "isSignal": true; }; "max": { "alias": "max"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+/** Coordinates document transitions, including those created by the consumer router. */
+declare class VoteyViewTransitionService {
+    private active;
+    private cleanup;
+    adopt(transition: ViewTransition, cleanup: () => void): void;
+    cancel(): void;
+    private release;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyViewTransitionService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<VoteyViewTransitionService>;
+}
+
+type VoteyTableKey = string | number;
+declare const VoteyTableHeaderVariants: readonly ["standard", "heavy"];
+type VoteyTableHeaderVariant = (typeof VoteyTableHeaderVariants)[number];
+type VoteyTableValue = string | number | boolean | null | undefined;
+type VoteyTablePaginationMode = "none" | "local" | "remote";
+type VoteyTableSearchMode = "none" | "local" | "remote";
+type VoteyTableFilters = Readonly<Record<string, unknown>>;
+interface VoteyTableColumnOptions {
+    id: string;
+    header: string;
+    headerTooltip?: string;
+    width?: number;
+    align?: "left" | "center" | "right";
+    searchable?: boolean;
+    role?: "data" | "actions";
+}
+type VoteyTableColumn<T> = VoteyTableColumnOptions & ({
+    field: Extract<keyof T, string>;
+    value?: never;
+} | {
+    value: (row: T) => VoteyTableValue;
+    field?: never;
+});
+interface VoteyTableQuery {
+    page: number;
+    size: number;
+    search: string;
+    filters: VoteyTableFilters;
+}
+interface VoteyTableCellContext<T> {
+    $implicit: T;
+    column: VoteyTableColumn<T>;
+    value: VoteyTableValue;
+    index: number;
+}
+interface VoteyTableSelectionContext {
+    $implicit: readonly VoteyTableKey[];
+}
+
+interface TableRowView<T> {
+    key: VoteyTableKey | object;
+    row: T;
+    control: FormControl<boolean | null>;
+    cells: readonly VoteyTableCellContext<T>[];
+}
+interface TableColumnView<T> {
+    definition: VoteyTableColumn<T>;
+    template: TemplateRef<VoteyTableCellContext<T>> | null;
+}
+declare class VoteyTableComponent<T> implements OnInit, OnDestroy {
+    readonly rows: InputSignal<readonly T[]>;
+    readonly columns: InputSignal<readonly VoteyTableColumn<T>[]>;
+    readonly fillContainer: InputSignal<boolean>;
+    readonly autoColumns: InputSignal<boolean>;
+    readonly excludedColumns: InputSignal<readonly string[]>;
+    readonly headersPrefix: InputSignal<string>;
+    readonly rowKey: InputSignal<((row: T) => VoteyTableKey) | undefined>;
+    readonly label: InputSignal<string>;
+    readonly headerVariant: InputSignal<VoteyTableHeaderVariant>;
+    readonly selectable: InputSignal<boolean>;
+    readonly selectedKeys: ModelSignal<readonly VoteyTableKey[]>;
+    readonly pagination: InputSignal<VoteyTablePaginationMode>;
+    readonly page: InputSignal<number>;
+    readonly size: InputSignal<number>;
+    readonly totalElements: InputSignal<number>;
+    readonly pageSizeOptions: InputSignal<readonly number[]>;
+    readonly loading: InputSignal<boolean>;
+    readonly error: InputSignal<boolean>;
+    readonly disabled: InputSignal<boolean>;
+    readonly searchMode: InputSignal<VoteyTableSearchMode>;
+    readonly search: InputSignal<string>;
+    readonly filters: InputSignal<VoteyTableFilters>;
+    readonly emptyText: InputSignal<string>;
+    readonly noResultsText: InputSignal<string>;
+    readonly errorText: InputSignal<string>;
+    readonly selectionActions: InputSignal<TemplateRef<VoteyTableSelectionContext> | null>;
+    readonly queryChange: OutputEmitterRef<VoteyTableQuery>;
+    readonly filtersCancelled: OutputEmitterRef<VoteyTableFilters>;
+    readonly retry: OutputEmitterRef<void>;
+    readonly rowClick: OutputEmitterRef<T>;
+    protected readonly searchControl: FormControl<string | null>;
+    protected readonly selectAllControl: FormControl<boolean | null>;
+    private readonly appliedSearch;
+    private readonly appliedFilters;
+    private readonly dialog;
+    private readonly translator;
+    private readonly destroyRef;
+    private readonly confirmation;
+    private readonly cellTemplates;
+    private anchor;
+    private shiftSelection;
+    private activeDialog;
+    protected readonly confirming: WritableSignal<boolean>;
+    private readonly columnKeys;
+    protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]>;
+    protected readonly blocked: Signal<boolean>;
+    protected readonly filteredRows: Signal<readonly T[]>;
+    private readonly localPagination;
+    private readonly localPage;
+    private readonly localSize;
+    protected readonly effectiveSize: Signal<number>;
+    protected readonly effectivePage: Signal<number>;
+    protected readonly resultCount: Signal<number>;
+    protected readonly visibleRows: Signal<readonly T[]>;
+    protected readonly hasQuery: Signal<boolean>;
+    private readonly selectedKeySet;
+    private readonly visibleSelectionKeys;
+    protected readonly allSelected: Signal<boolean>;
+    protected readonly someSelected: Signal<boolean>;
+    protected readonly skeletonRows: Signal<readonly number[]>;
+    protected readonly columnCount: Signal<number>;
+    protected readonly tableWidth: Signal<number>;
+    protected readonly viewColumns: Signal<readonly TableColumnView<T>[]>;
+    private readonly rowViews;
+    protected readonly viewRows: Signal<readonly (TableRowView<T> & {
+        selected: boolean;
+    })[]>;
+    constructor();
+    ngOnInit(): void;
+    ngOnDestroy(): void;
+    requestFilters(filters: VoteyTableFilters): Promise<boolean>;
+    protected submitSearch(clear?: boolean): Promise<void>;
+    protected rememberSelection(event: MouseEvent): void;
+    protected selectRow(index: number, checked: boolean): void;
+    protected selectAll(checked: boolean): void;
+    protected paginate(event: PaginationEvent): void;
+    protected activateRow(row: T, event: MouseEvent): void;
+    protected closeConfirmation(accepted: boolean): void;
+    private resolveRowKey;
+    private selectionKey;
+    private synchronizeQueryInputs;
+    private synchronizeSelectionControls;
+    private observeTableContext;
+    private observeSearchTerms;
+    private updateQuery;
+    private emitQuery;
+    private confirmSelectionReset;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTableComponent<any>, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTableComponent<any>, "vt-table", never, { "rows": { "alias": "rows"; "required": true; "isSignal": true; }; "columns": { "alias": "columns"; "required": false; "isSignal": true; }; "fillContainer": { "alias": "fillContainer"; "required": false; "isSignal": true; }; "autoColumns": { "alias": "autoColumns"; "required": false; "isSignal": true; }; "excludedColumns": { "alias": "excludedColumns"; "required": false; "isSignal": true; }; "headersPrefix": { "alias": "headersPrefix"; "required": false; "isSignal": true; }; "rowKey": { "alias": "rowKey"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "headerVariant": { "alias": "headerVariant"; "required": false; "isSignal": true; }; "selectable": { "alias": "selectable"; "required": false; "isSignal": true; }; "selectedKeys": { "alias": "selectedKeys"; "required": false; "isSignal": true; }; "pagination": { "alias": "pagination"; "required": false; "isSignal": true; }; "page": { "alias": "page"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "totalElements": { "alias": "totalElements"; "required": false; "isSignal": true; }; "pageSizeOptions": { "alias": "pageSizeOptions"; "required": false; "isSignal": true; }; "loading": { "alias": "loading"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "searchMode": { "alias": "searchMode"; "required": false; "isSignal": true; }; "search": { "alias": "search"; "required": false; "isSignal": true; }; "filters": { "alias": "filters"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "noResultsText": { "alias": "noResultsText"; "required": false; "isSignal": true; }; "errorText": { "alias": "errorText"; "required": false; "isSignal": true; }; "selectionActions": { "alias": "selectionActions"; "required": false; "isSignal": true; }; }, { "selectedKeys": "selectedKeysChange"; "queryChange": "queryChange"; "filtersCancelled": "filtersCancelled"; "retry": "retry"; "rowClick": "rowClick"; }, ["cellTemplates"], ["[vtTableToolbar]"], true, never>;
+}
+
+declare class VoteyTableCellDirective<T = unknown> {
+    readonly vtTableCell: InputSignal<string>;
+    readonly vtTableCellOf: InputSignal<VoteyTableComponent<T> | null>;
+    readonly template: TemplateRef<VoteyTableCellContext<T>>;
+    static ngTemplateContextGuard<T>(_directive: VoteyTableCellDirective<T>, context: unknown): context is VoteyTableCellContext<T>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTableCellDirective<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyTableCellDirective<any>, "ng-template[vtTableCell]", never, { "vtTableCell": { "alias": "vtTableCell"; "required": false; "isSignal": true; }; "vtTableCellOf": { "alias": "vtTableCellOf"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+
+declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string> implements OnInit, OnDestroy {
+    readonly label: InputSignal<string>;
+    readonly placeholder: InputSignal<string>;
+    readonly ariaLabel: InputSignal<string>;
+    readonly searchLabel: InputSignal<string>;
+    readonly clearLabel: InputSignal<string>;
+    readonly disabled: InputSignal<boolean>;
+    readonly id: InputSignal<string>;
+    readonly name: InputSignal<string>;
+    readonly dataCy: InputSignal<string>;
+    readonly searched: OutputEmitterRef<string>;
+    readonly cleared: OutputEmitterRef<void>;
+    private readonly changeDetector;
+    private controlSubscription;
+    private initialized;
+    set control(control: FormControl<string | null> | null | undefined);
+    protected get hasValue(): boolean;
+    protected get isDisabled(): boolean;
+    ngOnInit(): void;
+    ngOnDestroy(): void;
+    protected submit(): void;
+    protected clear(): void;
+    protected keyDown(event: KeyboardEvent): void;
+    private observeControl;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteySearchComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteySearchComponent, "vt-search", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "searchLabel": { "alias": "searchLabel"; "required": false; "isSignal": true; }; "clearLabel": { "alias": "clearLabel"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "control": { "alias": "control"; "required": false; }; }, { "searched": "searched"; "cleared": "cleared"; }, never, never, true, never>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectPanelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableHeaderVariant, VoteyTableKey, VoteyTablePaginationMode, VoteyTableQuery, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableValue, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org/'
 
       - name: 🔧 Install dependencies
@@ -51,9 +51,7 @@ jobs:
       # 3. Publikuj przed commitem wersji. Jeśli token jest niepoprawny,
       # workflow zakończy się bez wypchnięcia kolejnego numeru wersji.
       - name: 🚀 Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access restricted
 
       # 4. Konfiguracja Git dla commita
       - name: ⚙️ Configure Git User

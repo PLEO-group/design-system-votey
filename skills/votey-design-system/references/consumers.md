@@ -1,5 +1,26 @@
 # Konsumenci Votey
 
+## Instalacja prywatnej paczki
+
+`@pleodigital/design-system-votey` jest publikowany w `https://registry.npmjs.org/`
+z ograniczonym dostępem. Instalacja i `npm ci` wymagają tokenu npm z prawem
+odczytu paczki. W CI ustaw sekret `NPM_TOKEN`; w Bitbucket dodaj go jako
+zabezpieczoną zmienną repozytorium `NPM_TOKEN`. Wartość pozostaje sekretem
+CI i nie może trafić do pliku ani logów.
+
+Projektowy `.npmrc` może zawierać odwołanie do zmiennej środowiskowej:
+
+```ini
+@pleodigital:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+```
+
+W Bitbucket można też utworzyć `~/.npmrc` przed `npm ci` z tokenu
+`NPM_TOKEN`. Sprawdź dostęp poleceniem
+`npm view @pleodigital/design-system-votey version --registry=https://registry.npmjs.org/`.
+Odpowiedź `404` może oznaczać brak uprawnień do prywatnej paczki albo niedostępną
+wersję; potwierdź dostęp tokenu i opublikowaną wersję.
+
 Kanoniczne manifesty konsumentów nie są jeszcze zarejestrowane w manifeście
 pakietu (`consumerRoots` jest puste). Nie zgaduj wersji paczki, aliasów ani rootów:
 przed zmianą odczytaj `package.json`, manifest konsumenta i faktycznie zainstalowany

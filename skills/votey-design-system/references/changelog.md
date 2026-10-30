@@ -1,8 +1,41 @@
 # Changelog
 
-- 1.13.0 — Dodano odrębny kontrakt grida CRM: kolumny według device, interpolowane
-  marginesy i gutter według sześciu szerokości, skokowy sidebar oraz usunięcie
-  `margin-extra`; wyjaśniono różnicę względem grida BoxEs.
+- 1.18.0 — Dodano `angular-table.md` i routing tylko dla pracy z `vt-table`
+  w Angularze. Referencja zbiera wybór field/value i autoColumns, wspólny szablon
+  @switch, kontrakt requestów i zaznaczania, pułapki oraz ścieżki do pełnego API i testów.
+
+- 1.17.1 — Zaktualizowano snapshot manifestu do Votey `1.0.186` i prywatnego
+  dostępu npm; opisano wymagany token `NPM_TOKEN` oraz weryfikację dostępu
+  w instalacji konsumentów.
+
+- 1.17.0 — Doprecyzowano obsługę akcji nieblokujących w `LocalLoadingState`:
+  zapisy na tym samym kanale mogą działać równolegle, a stan kanału pozostaje aktywny
+  do zakończenia ostatniej operacji. Przykład blokowania kontrolki używa `computed()`
+  w komponencie zamiast wywoływać predykat bezpośrednio w szablonie.
+
+- 1.16.0 — Ujednolicono obsługę loaderów requestów w CRM: usunięto `withApiLoader`,
+  opt-in interceptor, API contextu i oczekiwanie bootstrapowego loadera na stare
+  liczniki API. Referencja wskazuje `LocalLoadingState` z `app-loading-region` jako
+  standard dla requestów HTTP; ręczne hosty `LoaderService`/`ngx-ui-loader` pozostają
+  wyłącznie dla istniejących integracji kontrolek. Doprecyzowano zakres blokowania
+  formularza przez `action()` i dodano `isActionPending(channel)` dla blokowania tylko
+  kontrolek kolidujących z zapisem.
+
+- 1.15.0 — Dodano migrację `vt-tabs` do `mat-tab-group`, deklaratywne szablony
+  `vtTabContent`, izolację danych paneli i usunięcie autorskiej animacji treści tabów.
+  Ustanowiono jedno źródło kolejności nawigacji, role stałych warstw i rozszerzono
+  polską referencję przejść CRM, rozdzielając animacje routera od lokalnych tabów
+  obsługiwanych przez Angular Material i usuwając nieaktualny kontrakt autorskich
+  animacji tabów. Rozszerzono kontrakt loaderów CRM o
+  `LocalLoadingState`, wrapper, obsługę błędów, retry, anulowanie i zakres blokowania.
+  Doprecyzowano routing skilla tak, by odróżniał zmiany w konsumencie od zmian źródła
+  paczki oraz zmian wspólnych dla Angular i React.
+
+- 1.14.0 — Dodano kontrakt loaderów dla konsumentów Angular: zakres odpowiedzialności,
+  nazewnictwo, stany loading/empty/error i zasady unikania nakładających się loaderów.
+
+- 1.12.1 — Rozdzielono trzy typy urządzeń od sześciu szerokości referencyjnych
+  i doprecyzowano jedyny wyjątek szerokościowy dla topbara Wyborek CRM (1023 px).
 - 1.12.0 — Doprecyzowano semantykę wymaganych signal inputs dla nazw dostępnych
   kontrolek oraz obowiązek jawnego priorytetu i walidacji złożonych stanów UI.
 - 1.11.0 — Przeniesiono historię zmian do osobnej referencji `references/changelog.md`.

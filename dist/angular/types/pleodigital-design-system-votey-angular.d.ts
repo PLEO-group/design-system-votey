@@ -481,7 +481,6 @@ type SelectOptionView = {
     readonly value: unknown;
 };
 declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown> {
-    private readonly injector;
     private readonly document;
     private readonly destroyRef;
     private readonly outsidePointerDownListener;
@@ -538,7 +537,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
         readonly hidden: boolean;
     })[]>;
     ngOnInit(): void;
-    private synchronizePanelPosition;
+    ngAfterViewInit(): void;
     private observeSearchChanges;
     protected get isRequired(): boolean;
     protected get hasError(): boolean;
@@ -901,7 +900,7 @@ type VoteyTableKey = string | number;
 declare const VoteyTableHeaderVariants: readonly ["standard", "heavy"];
 type VoteyTableHeaderVariant = (typeof VoteyTableHeaderVariants)[number];
 type VoteyTableValue = string | number | boolean | null | undefined;
-type VoteyTablePaginationMode = "local" | "remote";
+type VoteyTablePaginationMode = "none" | "local" | "remote";
 type VoteyTableSearchMode = "none" | "local" | "remote";
 type VoteyTableFilters = Readonly<Record<string, unknown>>;
 interface VoteyTableColumnOptions {
@@ -958,8 +957,7 @@ declare class VoteyTableComponent<T> implements OnInit, OnDestroy {
     readonly headerVariant: InputSignal<VoteyTableHeaderVariant>;
     readonly selectable: InputSignal<boolean>;
     readonly selectedKeys: ModelSignal<readonly VoteyTableKey[]>;
-    readonly paginated: InputSignal<boolean>;
-    readonly paginationMode: InputSignal<VoteyTablePaginationMode | undefined>;
+    readonly pagination: InputSignal<VoteyTablePaginationMode>;
     readonly page: InputSignal<number>;
     readonly size: InputSignal<number>;
     readonly totalElements: InputSignal<number>;
@@ -1032,10 +1030,11 @@ declare class VoteyTableComponent<T> implements OnInit, OnDestroy {
     private synchronizeSelectionControls;
     private observeTableContext;
     private observeSearchTerms;
+    private updateQuery;
     private emitQuery;
     private confirmSelectionReset;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyTableComponent<any>, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTableComponent<any>, "vt-table", never, { "rows": { "alias": "rows"; "required": true; "isSignal": true; }; "columns": { "alias": "columns"; "required": false; "isSignal": true; }; "fillContainer": { "alias": "fillContainer"; "required": false; "isSignal": true; }; "autoColumns": { "alias": "autoColumns"; "required": false; "isSignal": true; }; "excludedColumns": { "alias": "excludedColumns"; "required": false; "isSignal": true; }; "headersPrefix": { "alias": "headersPrefix"; "required": false; "isSignal": true; }; "rowKey": { "alias": "rowKey"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "headerVariant": { "alias": "headerVariant"; "required": false; "isSignal": true; }; "selectable": { "alias": "selectable"; "required": false; "isSignal": true; }; "selectedKeys": { "alias": "selectedKeys"; "required": false; "isSignal": true; }; "paginated": { "alias": "paginated"; "required": false; "isSignal": true; }; "paginationMode": { "alias": "paginationMode"; "required": false; "isSignal": true; }; "page": { "alias": "page"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "totalElements": { "alias": "totalElements"; "required": false; "isSignal": true; }; "pageSizeOptions": { "alias": "pageSizeOptions"; "required": false; "isSignal": true; }; "loading": { "alias": "loading"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "searchMode": { "alias": "searchMode"; "required": false; "isSignal": true; }; "search": { "alias": "search"; "required": false; "isSignal": true; }; "filters": { "alias": "filters"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "noResultsText": { "alias": "noResultsText"; "required": false; "isSignal": true; }; "errorText": { "alias": "errorText"; "required": false; "isSignal": true; }; "selectionActions": { "alias": "selectionActions"; "required": false; "isSignal": true; }; }, { "selectedKeys": "selectedKeysChange"; "queryChange": "queryChange"; "filtersCancelled": "filtersCancelled"; "retry": "retry"; "rowClick": "rowClick"; }, ["cellTemplates"], ["[vtTableToolbar]"], true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyTableComponent<any>, "vt-table", never, { "rows": { "alias": "rows"; "required": true; "isSignal": true; }; "columns": { "alias": "columns"; "required": false; "isSignal": true; }; "fillContainer": { "alias": "fillContainer"; "required": false; "isSignal": true; }; "autoColumns": { "alias": "autoColumns"; "required": false; "isSignal": true; }; "excludedColumns": { "alias": "excludedColumns"; "required": false; "isSignal": true; }; "headersPrefix": { "alias": "headersPrefix"; "required": false; "isSignal": true; }; "rowKey": { "alias": "rowKey"; "required": false; "isSignal": true; }; "label": { "alias": "label"; "required": true; "isSignal": true; }; "headerVariant": { "alias": "headerVariant"; "required": false; "isSignal": true; }; "selectable": { "alias": "selectable"; "required": false; "isSignal": true; }; "selectedKeys": { "alias": "selectedKeys"; "required": false; "isSignal": true; }; "pagination": { "alias": "pagination"; "required": false; "isSignal": true; }; "page": { "alias": "page"; "required": false; "isSignal": true; }; "size": { "alias": "size"; "required": false; "isSignal": true; }; "totalElements": { "alias": "totalElements"; "required": false; "isSignal": true; }; "pageSizeOptions": { "alias": "pageSizeOptions"; "required": false; "isSignal": true; }; "loading": { "alias": "loading"; "required": false; "isSignal": true; }; "error": { "alias": "error"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "searchMode": { "alias": "searchMode"; "required": false; "isSignal": true; }; "search": { "alias": "search"; "required": false; "isSignal": true; }; "filters": { "alias": "filters"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "noResultsText": { "alias": "noResultsText"; "required": false; "isSignal": true; }; "errorText": { "alias": "errorText"; "required": false; "isSignal": true; }; "selectionActions": { "alias": "selectionActions"; "required": false; "isSignal": true; }; }, { "selectedKeys": "selectedKeysChange"; "queryChange": "queryChange"; "filtersCancelled": "filtersCancelled"; "retry": "retry"; "rowClick": "rowClick"; }, ["cellTemplates"], ["[vtTableToolbar]"], true, never>;
 }
 
 declare class VoteyTableCellDirective<T = unknown> {

@@ -8,6 +8,7 @@ export type VoteyTableFilters = Readonly<Record<string, unknown>>;
 interface VoteyTableColumnOptions {
   id: string;
   header: string;
+  headerTooltip?: string;
   width?: number;
   align?: "left" | "center" | "right";
   searchable?: boolean;

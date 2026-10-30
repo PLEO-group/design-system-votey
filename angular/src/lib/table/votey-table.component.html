@@ -32,7 +32,7 @@
             </th>
           }
           @for (column of resolvedColumns(); track column.id) {
-            <th scope="col" [class.actions-cell]="column.role === 'actions'"
+            <th scope="col" [matTooltip]="(column.headerTooltip ?? '') | vtTranslate" [matTooltipDisabled]="!column.headerTooltip" [class.actions-cell]="column.role === 'actions'"
               [class.align-center]="column.align === 'center'" [class.align-right]="column.align === 'right'">
               <vt-text variant="caption-extrabold" [color]="headerVariant() === 'heavy' ? 'inverse' : 'primary'"
                 [wrap]="true" [content]="column.header | vtTranslate" />

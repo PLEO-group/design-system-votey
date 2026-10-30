@@ -1,3 +1,4 @@
+import { MatTooltip } from "@angular/material/tooltip";
 import {
   ChangeDetectionStrategy, Component, computed, contentChildren, DestroyRef,
   effect, inject, input, model, output, signal, TemplateRef, viewChild,
@@ -26,15 +27,17 @@ import type {
 
 @Component({
   selector: "vt-table",
+  host: { "[class.fill-container]": "fillContainer()" },
   templateUrl: "./votey-table.component.html",
   styleUrl: "./votey-table.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, DialogModule, VoteyButtonComponent, VoteyCheckboxComponent,
+  imports: [MatTooltip, NgTemplateOutlet, DialogModule, VoteyButtonComponent, VoteyCheckboxComponent,
     VoteySearchComponent, VoteyTextComponent, VoteyPaginationComponent, VoteyTranslatePipe],
 })
 export class VoteyTableComponent<T> {
   public readonly rows: InputSignal<readonly T[]> = input.required<readonly T[]>();
   public readonly columns: InputSignal<readonly VoteyTableColumn<T>[]> = input<readonly VoteyTableColumn<T>[]>([]);
+  public readonly fillContainer: InputSignal<boolean> = input(false);
   public readonly autoColumns: InputSignal<boolean> = input(false);
   public readonly excludedColumns: InputSignal<readonly string[]> = input<readonly string[]>([]);
   public readonly headersPrefix: InputSignal<string> = input("");

@@ -426,3 +426,15 @@ a przy braku obu — wbudowany tekst `body`. Istniejące nazwane szablony pozost
 - 0 oraz false pozostają widoczne. Null/undefined są puste. Obiekty i tablice domyślnie puste; wymagają value zwracającego prymityw albo własnego szablonu (rekord pozostaje dostępny).
 - Wspólny szablon @switch i nazwane szablony zachowują dotychczasowe pierwszeństwo.
 - Ryzyka auto: nowe pola API stają się kolumnami, pola nieobecne w pierwszym rekordzie są pomijane, schemat może zmieniać się między stronami remote. Dla stałego schematu i kolejności preferowane jawne columns. Wykluczenie pola z UI nie jest mechanizmem autoryzacji.
+
+### Podpowiedzi nagłówków
+
+Kolumna może podać `headerTooltip?: string` (tekst lub klucz tłumaczenia).
+Tabela używa MatTooltip tak jak istniejący button Votey. Brak wartości wyłącza tooltip.
+
+### Wypełnianie wysokości kontenera
+
+`fillContainer` (domyślnie false) dopasowuje tabelę do wysokości rodzica.
+Kontener rodzica musi mieć ograniczoną wysokość i min-height: 0 w układzie flex.
+Toolbar i paginator nie kurczą się; viewport wierszy zajmuje pozostałe miejsce
+z własnym overflow. W tym trybie limit 70vh jest wyłączony.

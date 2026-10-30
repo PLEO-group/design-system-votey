@@ -406,3 +406,23 @@ test("auto columns are opt-in and an empty dataset without explicit columns stay
   await env.settle(fixture);
   assert.equal(env.all(fixture, "thead th").length, 0);
 });
+
+test("column header tooltips preserve full question text and are disabled when absent", async () => {
+  const { By } = await import("@angular/platform-browser");
+  const { MatTooltip } = await import("@angular/material/tooltip");
+  const { fixture } = await createTable({ columns: [{ id: "name", header: "Name", field: "name", headerTooltip: "Full question text" }] });
+  const tooltip = fixture.debugElement.query(By.css("thead th")).injector.get(MatTooltip);
+  assert.equal(tooltip.message, "Full question text");
+  assert.equal(tooltip.disabled, false);
+  fixture.componentRef.setInput("columns", [{ id: "name", header: "Name", field: "name" }]);
+  await env.settle(fixture);
+  assert.equal(tooltip.disabled, true);
+});
+
+test("fillContainer is opt-in and applies the container layout class", async () => {
+  const { fixture } = await createTable();
+  assert.equal(fixture.nativeElement.classList.contains("fill-container"), false);
+  fixture.componentRef.setInput("fillContainer", true);
+  await env.settle(fixture);
+  assert.equal(fixture.nativeElement.classList.contains("fill-container"), true);
+});

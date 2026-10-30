@@ -5,6 +5,7 @@ const inputGroups = [
   ["Dane i kolumny", [
     ["rows", "readonly T[]", "wymagane", "Rekordy do wyświetlenia. W trybie remote przekazuj bieżącą stronę; w local pełny zbiór."],
     ["columns", "readonly VoteyTableColumn<T>[]", "[]", "Jawne kolumny; przy autoColumns nadpisania po id oraz dodatkowe kolumny, np. actions."],
+    ["fillContainer", "boolean", "false", "Wypełnia kontener o ustalonej wysokości. Przewija tylko wiersze; toolbar i paginacja pozostają widoczne. Rodzic flex wymaga min-height: 0."],
     ["autoColumns", "boolean", "false", "Generuje kolumny z kluczy pierwszego rekordu. Szczegóły i ograniczenia poniżej."],
     ["excludedColumns", "readonly string[]", "[]", "Pomija kolumny po id, również jawnie zdefiniowane."],
     ["headersPrefix", "string", "''", "Prefiks kluczy nagłówków generowanych automatycznie; zamienianych w całości na uppercase."],
@@ -38,6 +39,7 @@ const inputGroups = [
 ];
 
 const columnsApi = [
+  ["headerTooltip", "string", "brak", "Opcjonalna podpowiedź nagłówka, np. pełna treść pytania. Obsługuje klucz tłumaczenia lub tekst."],
   ["id", "string", "wymagane", "Unikalny identyfikator. Łączy kolumnę z vtTableCell."],
   ["header", "string", "wymagane", "Klucz tłumaczenia nagłówka. Typografia caption-extrabold."],
   ["field", "Extract<keyof T, string>", "field albo value", "Typowany klucz bezpośredniego pola rekordu. Bez ścieżek z kropkami. Obiekty i tablice wymagają funkcji value lub szablonu."],

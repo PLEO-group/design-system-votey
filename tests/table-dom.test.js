@@ -443,3 +443,52 @@ test("fillContainer is opt-in and applies the container layout class", async () 
   await env.settle(fixture);
   assert.equal(fixture.nativeElement.classList.contains("fill-container"), true);
 });
+
+test("default keys preserve id zero and selection after refreshing records", async () => {
+ const { fixture, table } = await createTable({ rowKey: undefined, selectable: true, rows: [{ id: 0, name: "First" }] });
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.deepEqual(table.selectedKeys(), [0]);
+ fixture.componentRef.setInput("rows", [{ id: 0, name: "Updated" }]);
+ await env.settle(fixture);
+ assert.equal(rowChecks(fixture)[0].checked, true);
+});
+test("anonymous rows track objects through reordering", async () => {
+ const first = { name: "same" }, second = { name: "same" };
+ const { fixture } = await createTable({ rowKey: undefined, rows: [first, second] });
+ const original = env.all(fixture, "tbody tr");
+ fixture.componentRef.setInput("rows", [second, first]);
+ await env.settle(fixture);
+ assert.equal(env.all(fixture, "tbody tr")[0], original[1]);
+ assert.equal(env.all(fixture, "tbody tr")[1], original[0]);
+});
+test("selectable anonymous rows require stable keys", async () => {
+ await assert.rejects(() => createTable({ rowKey: undefined, selectable: true, rows: [{ name: "Anonymous" }] }), /vt-table:.*rowKey/);
+});
+test("explicit keys override ids", async () => {
+ const { fixture, table } = await createTable({ rows: [{ id: 0, name: "Custom" }], selectable: true, rowKey: row => row.name });
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.deepEqual(table.selectedKeys(), ["Custom"]);
+});
+
+test("selection reuses row controls and cell values instead of recomputing them", async () => {
+ let reads = 0;
+ const { fixture, table } = await createTable({ selectable: true, columns: [
+  { id: "name", header: "Name", value: row => { reads++; return row.name; } },
+ ] });
+ const initialRows = table.viewRows();
+ const initialReads = reads;
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.equal(reads, initialReads);
+ assert.equal(table.viewRows()[0].control, initialRows[0].control);
+ assert.equal(table.viewRows()[0].cells, initialRows[0].cells);
+ assert.equal(table.viewRows()[0].control.value, true);
+ fixture.componentRef.setInput("selectedKeys", ["b"]);
+ await env.settle(fixture);
+ assert.equal(rowChecks(fixture)[0].checked, false);
+ assert.equal(rowChecks(fixture)[1].checked, true);
+ assert.equal(reads, initialReads);
+ fixture.componentRef.setInput("rows", [{ id: "a", name: "Updated" }]);
+ await env.settle(fixture);
+ assert.match(bodyText(fixture), /Updated/);
+ assert.ok(reads > initialReads);
+});

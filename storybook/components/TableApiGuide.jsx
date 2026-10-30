@@ -9,7 +9,7 @@ const inputGroups = [
     ["autoColumns", "boolean", "false", "Generuje kolumny z kluczy pierwszego rekordu. Szczegóły i ograniczenia poniżej."],
     ["excludedColumns", "readonly string[]", "[]", "Pomija kolumny po id, również jawnie zdefiniowane."],
     ["headersPrefix", "string", "''", "Prefiks kluczy nagłówków generowanych automatycznie; zamienianych w całości na uppercase."],
-    ["rowKey", "(row: T) => string | number", "wymagane", "Stabilny, unikalny klucz rekordu. Nie używaj indeksu ani referencji obiektu."],
+    ["rowKey", "(row: T) => string | number", "opcjonalne", "Domyślnie id (string/number, również 0). Bez id i bez zaznaczania tabela śledzi obiekt. Zaznaczanie wymaga trwałego id lub własnego rowKey; dla rekordów prymitywnych podaj rowKey."],
     ["label", "string", "wymagane", "Klucz tłumaczenia dostępnej nazwy tabeli."],
     ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: tło surface (białe w light) i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
   ]],
@@ -223,7 +223,7 @@ export function TableApiGuide() {
     </div>
 
     <Section id="start" number="01" title="Szybki start">
-      <p>Importuj komponent i typy wyłącznie z publicznego entry pointu. Wymagane wejścia to <code>rows</code>, <code>rowKey</code> i <code>label</code>. Podaj również <code>columns</code> lub włącz <code>autoColumns</code>.</p>
+      <p>Importuj komponent i typy wyłącznie z publicznego entry pointu. Wymagane wejścia to <code>rows</code> i <code>label</code>. Opcjonalny <code>rowKey</code> nadpisuje domyślną identyfikację: id lub referencję obiektu dla tabel bez zaznaczania. Podaj również <code>columns</code> lub włącz <code>autoColumns</code>.</p>
       <Code title="Minimalny przykład · Angular">{setup}</Code>
       <aside className="note"><strong>Przygotowanie aplikacji</strong><p>Załaduj publiczny arkusz <code>tokens.angular.css</code> i skonfiguruj adapter <code>VOTEY_TRANSLATOR</code>. Przy używaniu ikon dodaj <code>provideVoteySvgRegistry()</code> i udostępnij assety zgodnie z konfiguracją paczki.</p></aside>
     </Section>

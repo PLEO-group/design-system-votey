@@ -18,7 +18,7 @@ import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
 import { VoteyTableCellDirective } from "./votey-table-cell.directive";
 import { matchesTableSearch, updateTableSelection, resolveTablePage } from "./table-state";
-import { readTableValue, resolveTableColumns } from "./table-columns";
+import { readTableValue, resolveTableColumnsFromKeys, tableColumnKeys } from "./table-columns";
 import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
@@ -41,8 +41,13 @@ export class VoteyTableComponent<T> {
   public readonly autoColumns: InputSignal<boolean> = input(false);
   public readonly excludedColumns: InputSignal<readonly string[]> = input<readonly string[]>([]);
   public readonly headersPrefix: InputSignal<string> = input("");
+  private readonly columnKeys: Signal<readonly string[]> = computed(
+    () => this.autoColumns() ? tableColumnKeys(this.rows()) : [],
+    { equal: (previous, current) => previous.length === current.length
+      && previous.every((key, index) => key === current[index]) },
+  );
   protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]> = computed(() =>
-    resolveTableColumns(this.rows(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()));
+    resolveTableColumnsFromKeys(this.columnKeys(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()));
   public readonly rowKey: InputSignal<(row: T) => VoteyTableKey> = input.required<(row: T) => VoteyTableKey>();
   public readonly label: InputSignal<string> = input.required<string>();
   public readonly headerVariant: InputSignal<VoteyTableHeaderVariant> = input<VoteyTableHeaderVariant>("standard");

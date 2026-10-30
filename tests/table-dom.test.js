@@ -407,6 +407,23 @@ test("auto columns are opt-in and an empty dataset without explicit columns stay
   assert.equal(env.all(fixture, "thead th").length, 0);
 });
 
+test("auto columns retain definitions for new records with the same fields and react to schema and configuration changes", async () => {
+  const { fixture, table } = await createTable({ columns: [], autoColumns: true });
+  const initial = table.resolvedColumns();
+  fixture.componentRef.setInput("rows", [{ id: "next", name: "New name", secret: "new" }]);
+  await env.settle(fixture);
+  assert.equal(table.resolvedColumns(), initial);
+  assert.match(bodyText(fixture), /New name/);
+  fixture.componentRef.setInput("rows", [{ id: "next", name: "New name", count: 0 }]);
+  await env.settle(fixture);
+  assert.notEqual(table.resolvedColumns(), initial);
+  assert.deepEqual(table.resolvedColumns().map(column => column.id), ["id", "name", "count"]);
+  fixture.componentRef.setInput("headersPrefix", "LABEL.");
+  fixture.componentRef.setInput("excludedColumns", ["id"]);
+  await env.settle(fixture);
+  assert.deepEqual(env.all(fixture, "thead th").map(cell => cell.textContent.trim()), ["LABEL.NAME", "LABEL.COUNT"]);
+});
+
 test("column header tooltips preserve full question text and are disabled when absent", async () => {
   const { By } = await import("@angular/platform-browser");
   const { MatTooltip } = await import("@angular/material/tooltip");

@@ -938,6 +938,7 @@ declare class VoteyTableComponent<T> {
     readonly autoColumns: InputSignal<boolean>;
     readonly excludedColumns: InputSignal<readonly string[]>;
     readonly headersPrefix: InputSignal<string>;
+    private readonly columnKeys;
     protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]>;
     readonly rowKey: InputSignal<(row: T) => VoteyTableKey>;
     readonly label: InputSignal<string>;

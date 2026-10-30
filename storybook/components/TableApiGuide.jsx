@@ -245,6 +245,7 @@ export function TableApiGuide() {
     value: row => row.groups.map(group => group.name).join(', ') },
 ];`}</Code>
       <h3>Opcjonalne generowanie przez autoColumns</h3>
+      <p>Definicje automatycznych kolumn są utrzymywane przez tabelę. Nowa tablica rekordów o tych samych polach w tej samej kolejności aktualizuje wartości komórek bez ponownego tworzenia kolumn. Nie dodawaj własnego cache dla autoColumns. Zmiana pól lub konfiguracji aktualizuje kolumny automatycznie. Jawne nadpisania columns definiuj jako pole albo computed; tabela nie zatrzyma wykonywania gettera w komponencie rodzica.</p>
       <p>Tabela odczytuje Object.keys z pierwszego rekordu przed lokalnym filtrowaniem i stronicowaniem. Każdy klucz staje się id oraz field; nagłówek to headersPrefix + klucz, zamienianych w całości na uppercase. Bez prefiksu klucz pola jest zamieniany na uppercase i trafia do tłumacza. Kolejność pochodzi z Object.keys.</p>
       <Code title="Generowanie i nadpisania">{`<vt-table #table label="LABEL.MEMBERS"
   [rows]="rows()" [rowKey]="rowKey"

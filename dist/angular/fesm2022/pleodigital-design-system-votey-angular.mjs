@@ -3277,10 +3277,15 @@ function readTableValue(row, column) {
         ? value : undefined;
 }
 function resolveTableColumns(rows, columns, auto, excluded, headerPrefix) {
+    return resolveTableColumnsFromKeys(tableColumnKeys(rows), columns, auto, excluded, headerPrefix);
+}
+function tableColumnKeys(rows) {
+    const first = rows[0];
+    return first !== null && typeof first === "object" ? Object.keys(first) : [];
+}
+function resolveTableColumnsFromKeys(keys, columns, auto, excluded, headerPrefix) {
     if (!auto)
         return columns.filter(column => !excluded.includes(column.id));
-    const first = rows[0];
-    const keys = first !== null && typeof first === "object" ? Object.keys(first) : [];
     const generated = keys.map(id => columns.find(column => column.id === id)
         ?? { id, header: (headerPrefix + id).toUpperCase(), field: id });
     return [...generated, ...columns.filter(column => !keys.includes(column.id))]
@@ -3299,7 +3304,9 @@ class VoteyTableComponent {
     autoColumns = input(false, ...(ngDevMode ? [{ debugName: "autoColumns" }] : /* istanbul ignore next */ []));
     excludedColumns = input([], ...(ngDevMode ? [{ debugName: "excludedColumns" }] : /* istanbul ignore next */ []));
     headersPrefix = input("", ...(ngDevMode ? [{ debugName: "headersPrefix" }] : /* istanbul ignore next */ []));
-    resolvedColumns = computed(() => resolveTableColumns(this.rows(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()), ...(ngDevMode ? [{ debugName: "resolvedColumns" }] : /* istanbul ignore next */ []));
+    columnKeys = computed(() => this.autoColumns() ? tableColumnKeys(this.rows()) : [], { ...(ngDevMode ? { debugName: "columnKeys" } : /* istanbul ignore next */ {}), equal: (previous, current) => previous.length === current.length
+            && previous.every((key, index) => key === current[index]) });
+    resolvedColumns = computed(() => resolveTableColumnsFromKeys(this.columnKeys(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()), ...(ngDevMode ? [{ debugName: "resolvedColumns" }] : /* istanbul ignore next */ []));
     rowKey = input.required(...(ngDevMode ? [{ debugName: "rowKey" }] : /* istanbul ignore next */ []));
     label = input.required(...(ngDevMode ? [{ debugName: "label" }] : /* istanbul ignore next */ []));
     headerVariant = input("standard", ...(ngDevMode ? [{ debugName: "headerVariant" }] : /* istanbul ignore next */ []));

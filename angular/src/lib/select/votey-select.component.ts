@@ -18,6 +18,7 @@ import {
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { OVERLAY_DEFAULT_CONFIG, type ConnectedPosition } from "@angular/cdk/overlay";
 import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import {
   MatOption,
@@ -37,6 +38,16 @@ import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 export const VoteySelectVariants = ["boxed", "compact"] as const;
 
 export type VoteySelectVariant = (typeof VoteySelectVariants)[number];
+export type VoteySelectPanelPosition = "above" | "below";
+
+const belowPositions: ConnectedPosition[] = [
+  { originX: "start", originY: "bottom", overlayX: "start", overlayY: "top" },
+  { originX: "end", originY: "bottom", overlayX: "end", overlayY: "top" },
+];
+const abovePositions: ConnectedPosition[] = [
+  { originX: "start", originY: "top", overlayX: "start", overlayY: "bottom", panelClass: "mat-mdc-select-panel-above" },
+  { originX: "end", originY: "top", overlayX: "end", overlayY: "bottom", panelClass: "mat-mdc-select-panel-above" },
+];
 
 export interface VtOption<T = unknown> {
   readonly label: string;
@@ -65,6 +76,7 @@ type SelectOptionView = {
   styleUrl: "./votey-select.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [{ provide: OVERLAY_DEFAULT_CONFIG, useValue: { usePopover: false } }],
   imports: [
     MatOption,
     MatSelect,
@@ -94,6 +106,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     input.required<readonly unknown[]>();
   public readonly variant: InputSignal<VoteySelectVariant> =
     input<VoteySelectVariant>("boxed");
+  public readonly panelPosition: InputSignal<VoteySelectPanelPosition> = input<VoteySelectPanelPosition>("below");
   public readonly label: InputSignal<string> = input<string>("");
   public readonly placeholder: InputSignal<string> = input<string>("");
   public readonly bindLabel: InputSignal<string> = input<string>("");
@@ -232,6 +245,16 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
     });
   }
 
+  public ngAfterViewInit(): void {
+    const select: MatSelect | undefined = this.matSelect();
+    if (!select) return;
+
+    const positions: ConnectedPosition[] = this.panelPosition() === "above"
+      ? [...abovePositions, ...belowPositions]
+      : [...belowPositions, ...abovePositions];
+    select._positions.splice(0, select._positions.length, ...positions);
+  }
+
   private observeSearchChanges(): void {
     this.searchChanges
       .pipe(
@@ -343,6 +366,7 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
   }
 
   protected openSelect(event: MouseEvent): void {
+    if (this.disabled() || this.formControl.disabled) return;
     const target: EventTarget | null = event.target;
 
     if (target instanceof Element && target.closest(".cdk-overlay-popover")) {

@@ -2,6 +2,10 @@
 
 Wczytuj ten plik tylko przy audycie wersji, analizie regresji zachowania skilla albo przygotowaniu publikacji.
 
+## 1.28.0
+
+Dodano zasady ograniczania zakresu obserwatorów DOM, rozdzielania odkrywania elementów od pomiarów, scalania zgłoszeń przez RAF, współdzielenia odczytów i odrzucania niezmienionej geometrii przed wejściem do NgZone. Zachowano wyjątki dla wymagań synchronicznych i aplikacji zoneless.
+
 ## 1.25.0
 
 Doprecyzowano proporcjonalność abstrakcji: nazwane sygnały dla stałych źródeł,

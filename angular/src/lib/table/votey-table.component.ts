@@ -1,7 +1,7 @@
 import { MatTooltip } from "@angular/material/tooltip";
 import {
   ChangeDetectionStrategy, Component, computed, contentChildren, DestroyRef,
-  effect, inject, input, model, output, signal, TemplateRef, viewChild,
+  effect, inject, input, linkedSignal, model, output, signal, TemplateRef, viewChild,
   type OnInit, type OnDestroy, type InputSignal, type ModelSignal, type OutputEmitterRef, type Signal, type WritableSignal,
 } from "@angular/core";
 import { NgTemplateOutlet } from "@angular/common";
@@ -22,7 +22,7 @@ import { readTableValue, resolveTableColumnsFromKeys, tableColumnKeys } from "./
 import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
-  VoteyTableQuery, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
+  VoteyTableQuery, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
 } from "./table.model";
 
 interface TableRowView<T> {
@@ -58,7 +58,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   public readonly headerVariant: InputSignal<VoteyTableHeaderVariant> = input<VoteyTableHeaderVariant>("standard");
   public readonly selectable: InputSignal<boolean> = input(false);
   public readonly selectedKeys: ModelSignal<readonly VoteyTableKey[]> = model<readonly VoteyTableKey[]>([]);
-  public readonly paginated: InputSignal<boolean> = input(false);
+  public readonly pagination: InputSignal<VoteyTablePaginationMode> = input<VoteyTablePaginationMode>("none");
   public readonly page: InputSignal<number> = input(defaultFetchParams.page);
   public readonly size: InputSignal<number> = input(defaultFetchParams.size);
   public readonly totalElements: InputSignal<number> = input(0);
@@ -108,14 +108,19 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     const columns: readonly VoteyTableColumn<T>[] = this.resolvedColumns().filter((column) => column.searchable);
     return rows.filter((row: T) => matchesTableSearch(columns.map((column) => readTableValue(row, column)), search));
   });
+  private readonly localPagination: Signal<boolean> = computed(() =>
+    this.pagination() === "local");
+  private readonly localPage: WritableSignal<number> = linkedSignal(() => this.page());
+  private readonly localSize: WritableSignal<number> = linkedSignal(() => this.size());
+  protected readonly effectiveSize: Signal<number> = computed(() => this.localPagination() ? this.localSize() : this.size());
+  protected readonly effectivePage: Signal<number> = computed(() => this.localPagination()
+    ? resolveTablePage(this.localPage(), this.effectiveSize(), this.filteredRows().length) : this.page());
+  protected readonly resultCount: Signal<number> = computed(() => this.localPagination() ? this.filteredRows().length : this.totalElements());
   protected readonly visibleRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.filteredRows();
-    return this.searchMode() === "local" && this.paginated()
-      ? rows.slice(this.effectivePage() * this.size(), (this.effectivePage() + 1) * this.size()) : rows;
+    const start: number = this.effectivePage() * this.effectiveSize();
+    return this.localPagination() ? rows.slice(start, start + this.effectiveSize()) : rows;
   });
-  protected readonly effectivePage: Signal<number> = computed(() => this.searchMode() === "local"
-    ? resolveTablePage(this.page(), this.size(), this.filteredRows().length) : this.page());
-  protected readonly resultCount: Signal<number> = computed(() => this.searchMode() === "local" ? this.filteredRows().length : this.totalElements());
   protected readonly hasQuery: Signal<boolean> = computed(() => !!this.appliedSearch() || Object.keys(this.appliedFilters()).length > 0);
   private readonly selectedKeySet: Signal<ReadonlySet<VoteyTableKey>> = computed(() => new Set(this.selectedKeys()));
   private readonly visibleSelectionKeys: Signal<readonly VoteyTableKey[]> = computed(() =>
@@ -124,7 +129,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     && this.visibleSelectionKeys().every((key: VoteyTableKey) => this.selectedKeySet().has(key)));
   protected readonly someSelected: Signal<boolean> = computed(() => !this.allSelected()
     && this.visibleSelectionKeys().some((key: VoteyTableKey) => this.selectedKeySet().has(key)));
-  protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.paginated() ? this.size() : 5 }, (_, index: number) => index));
+  protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.pagination() !== "none" ? this.effectiveSize() : 5 }, (_, index: number) => index));
   protected readonly columnCount: Signal<number> = computed(() => this.resolvedColumns().length + (this.selectable() ? 1 : 0));
   protected readonly tableWidth: Signal<number> = computed(() => this.resolvedColumns().reduce(
     (width: number, column: VoteyTableColumn<T>): number => width + (column.width ?? 180),
@@ -175,7 +180,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
       return false;
     }
     this.appliedFilters.set(filters);
-    this.emitQuery(0);
+    this.updateQuery(0);
     return true;
   }
 
@@ -195,7 +200,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     }
     this.searchControl.setValue(search, { emitEvent: false });
     this.appliedSearch.set(search);
-    this.emitQuery(0);
+    this.updateQuery(0);
   }
 
   protected rememberSelection(event: MouseEvent): void { this.shiftSelection = event.shiftKey; }
@@ -215,7 +220,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   }
 
   protected paginate(event: PaginationEvent): void {
-    if (!this.blocked()) this.emitQuery(event.page, event.size);
+    if (!this.blocked()) this.updateQuery(event.page, event.size);
   }
 
   protected activateRow(row: T, event: MouseEvent): void {
@@ -278,7 +283,16 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
       });
   }
 
-  private emitQuery(page: number, size: number = this.size()): void {
+  private updateQuery(page: number, size: number = this.effectiveSize()): void {
+    if (this.localPagination()) {
+      this.localSize.set(size);
+      this.localPage.set(page);
+      page = this.effectivePage();
+    }
+    this.emitQuery(page, size);
+  }
+
+  private emitQuery(page: number, size: number): void {
     this.queryChange.emit({ page, size, search: this.appliedSearch(), filters: this.appliedFilters() });
   }
 

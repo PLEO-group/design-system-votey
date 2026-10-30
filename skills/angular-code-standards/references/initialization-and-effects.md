@@ -87,3 +87,14 @@ Weryfikuj szczegóły API i schedulingu w wersji używanej przez projekt:
 - [Angular: cleanup efektu](https://angular.dev/guide/signals/effect)
 - [Angular: cykl życia komponentu](https://angular.dev/guide/components/lifecycle)
 - [Angular: takeUntilDestroyed](https://angular.dev/ecosystem/rxjs-interop/take-until-destroyed)
+
+## Zakres obserwacji i pomiary DOM
+
+- Przed dodaniem `MutationObserver`, `ResizeObserver` lub listenera określ właściciela, obszar obserwacji, zdarzenia wymagające reakcji i moment odłączenia. Nie rejestruj kolejnych obserwatorów na każdy render lub przebieg efektu bez cleanupu poprzednich.
+- Dla `MutationObserver` wybierz najwęższy stabilny kontener oraz potrzebne typy zmian i atrybuty. Obserwację całego dokumentu uzasadnij np. dynamicznym pojawianiem się kontenera poza dostępnym lokalnym rootem. Jeśli służy odkrywaniu elementów, ogranicz ją do zmian struktury; atrybuty obserwuj przy właściwych kontenerach. Uwzględnij wpływ przodków na widoczność i ponowne podłączenie obserwacji po wymianie kontenera.
+- Wyszukiwanie elementów oddziel od odczytu geometrii: nie skanuj całego dokumentu przy każdym resize, jeśli zbiór obserwowanych elementów nie mógł się zmienić.
+- Powtarzające się zgłoszenia pomiaru z wielu źródeł scalaj w jeden przebieg `requestAnimationFrame`, jeżeli kontrakt nie wymaga reakcji synchronicznej. Anuluj oczekującą klatkę przy zakończeniu właściwego zakresu życia; unikaj pętli observer -> zapis layoutu -> observer.
+- Zbierz potrzebne prostokąty i style raz na przebieg. Grupuj odczyty przed zapisami wpływającymi na layout. Nie utrwalaj pomiarów między przebiegami bez reguły unieważniania po zmianie treści, fontu lub rozmiaru.
+- Dla pomiarów zależnych od wyrenderowanego Angular DOM dobierz render hook, np. `afterRenderEffect`, zamiast zakładać gotowość widoku w zwykłym `effect`. Jeśli delegujesz pracę do RAF, jawnie odczytaj sygnały wyzwalające w callbacku efektu — odczyty w przyszłej klatce nie są jego zależnościami.
+- W aplikacji korzystającej z NgZone porównaj geometrię z poprzednim wynikiem jeszcze poza strefą. Dopiero zmieniony wynik przekaż przez `ngZone.run()`; `distinctUntilChanged()` po wejściu do strefy nie usuwa kosztu tego wejścia. Nie dodawaj NgZone wyłącznie dla tej reguły w aplikacji zoneless.
+- Zakres weryfikacji dobierz do ryzyka: przy zmianie schedulingu sprawdź scalenie serii zgłoszeń i cleanup; przy zmianie filtrowania także brak emisji identycznej geometrii oraz aktualizację po dodaniu, usunięciu lub ukryciu przeszkody. Nie deklaruj mierzalnego przyspieszenia bez porównania runtime.

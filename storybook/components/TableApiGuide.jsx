@@ -19,10 +19,10 @@ const inputGroups = [
     ["selectionActions", "TemplateRef<VoteyTableSelectionContext> | null", "null", "Treść paska akcji nad tabelą. $implicit to wszystkie wybrane klucze."],
   ]],
   ["Paginacja i zapytanie", [
-    ["paginated", "boolean", "false", "Pokazuje istniejący komponent vt-pagination."],
-    ["page", "number", "0", "Indeks strony od zera. Konsument aktualizuje go po queryChange."],
+    ["pagination", "'none' | 'local' | 'remote'", "'none'", "none: bez paginacji. local: tabela dzieli pełny zbiór. remote: aplikacja dostarcza stronę i totalElements. Niezależne od searchMode."],
+    ["page", "number", "0", "Indeks strony od zera. W remote kontroluje go aplikacja; w local tabela obsługuje zmiany wewnętrznie, a zmiana inputu pozwala ją ustawić z zewnątrz."],
     ["size", "number", "20", "Liczba rekordów na stronie i liczba wierszy skeletonu w trybie paginowanym."],
-    ["totalElements", "number", "0", "Łączna liczba wyników z serwera. W local tabela oblicza ją po wyszukiwaniu."],
+    ["totalElements", "number", "0", "Łączna liczba wyników z serwera. Przy pagination=local tabela oblicza ją ze zbioru po ewentualnym wyszukiwaniu."],
     ["pageSizeOptions", "readonly number[]", "[10, 20, 50, 100]", "Dostępne rozmiary stron w paginatorze."],
     ["searchMode", "'none' | 'local' | 'remote'", "'none'", "Wybiera sposób wyszukiwania; szczegóły w sekcji Tryby danych."],
     ["search", "string", "''", "Zastosowana fraza, a nie szkic aktualnie wpisywany w pole."],
@@ -136,7 +136,7 @@ const customCell = `<vt-table #table label="LABEL.MEMBERS"
 
 const remote = `<vt-table label="LABEL.MEMBERS"
   [rows]="rows()" [columns]="columns" [rowKey]="rowKey"
-  [paginated]="true" searchMode="remote"
+  pagination="remote" searchMode="remote"
   [page]="query().page" [size]="query().size"
   [search]="query().search" [filters]="query().filters"
   [totalElements]="totalElements()"
@@ -292,10 +292,16 @@ const overrides: readonly VoteyTableColumn<Member>[] = [
 
     <Section id="data" number="06" title="Tryby danych i obsługa requestów">
       <div className="mode-grid">
-        <article><code>none</code><h3>Bez wyszukiwarki</h3><p>Przekazuj gotowe dane. Jeśli paginacja jest włączona, aplikacja dostarcza bieżącą stronę.</p></article>
-        <article><code>local</code><h3>Pełny zbiór w pamięci</h3><p>Tabela przeszukuje kolumny searchable i opcjonalnie dzieli wyniki na strony. Zaktualizuj page i size po queryChange, bez requestu wyszukiwania.</p></article>
+        <article><code>none</code><h3>Bez wyszukiwarki</h3><p>Nie pokazuje szukajki. Paginacja działa niezależnie: lokalnie na pełnym zbiorze albo na stronie z serwera.</p></article>
+        <article><code>local</code><h3>Pełny zbiór w pamięci</h3><p>Tabela przeszukuje kolumny searchable. pagination określa osobno, gdzie dane są dzielone na strony.</p></article>
         <article><code>remote</code><h3>Wyszukiwanie serwerowe</h3><p>queryChange uruchamia pobranie po stronie aplikacji. Przekaż stronę odpowiedzi i liczbę wszystkich wyników.</p></article>
       </div>
+      <h3>Lokalna paginacja bez wyszukiwarki</h3>
+      <p>Przekaż pełną kolekcję i pagination="local". Nie wycinaj rekordów przez slice i nie przechowuj strony w aplikacji. Tabela obsługuje stronę, rozmiar i licznik. queryChange nadal informuje o zmianach; nie trzeba go obsługiwać dla samej lokalnej paginacji. Inputy page i size mogą ustawić stan z zewnątrz. Filtry przekazane przez requestFilters pozostają zadaniem aplikacji.</p>
+      <Code title="Pełny zbiór · lokalne strony">{`<vt-table label="MESSAGE.ORGANIZATIONS_TITLE"
+  [rows]="organizations()" [columns]="columns"
+  pagination="local" />`}</Code>
+      <p>Przy pagination="remote" podaj bieżącą stronę rows, totalElements i obsłuż queryChange requestem. Nie używaj local dla pojedynczej strony z backendu. Pominięcie pagination oznacza brak paginacji, niezależnie od searchMode.</p>
       <Code title="Kontrolowane zapytanie · schemat integracji remote">{remote}</Code>
       <aside className="note"><strong>Jedno źródło danych</strong><p>Nie przekazuj pojedynczej strony serwerowej do trybu local, jeśli wyszukiwarka ma obejmować całą bazę. Przy nakładających się requestach aplikacja powinna anulować poprzedni lub ignorować nieaktualną odpowiedź.</p></aside>
       <h3>Zasady wyszukiwania</h3>

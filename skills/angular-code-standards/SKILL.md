@@ -11,7 +11,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.25.1
+version: 1.28.0
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -110,19 +110,19 @@ Stosuj kolejność:
 
 1. jawna decyzja użytkownika albo specyfikacja,
 2. lokalny kontrakt danych, requestów i zachowania UI,
-3. istniejący wzorzec w edytowanym module,
+3. istniejący wzorzec w edytowanym module, po potwierdzeniu jego poprawności,
 4. zasady tego skilla,
 5. ogólne preferencje Angulara.
 
-Jeśli lokalny wzorzec narusza ten skill, nie rób szerokiego refaktoru bez zgody. Nazwij konflikt i zaproponuj jedną z krótkich opcji:
+### Reuse poprzedzony weryfikacją
 
-```text
-Widzę konflikt: lokalny wzorzec robi X, a standard skilla zaleca Y. W tej zmianie zachowuję lokalny wzorzec, bo minimalizuje ryzyko regresji.
-```
+Preferuj istniejące schematy projektu i Design Systemu zamiast nowych poziomów abstrakcji. Dotyczy to również obsługi dat, plików i komponentów typografii.
 
-```text
-Widzę konflikt: lokalny wzorzec robi X, a standard skilla zaleca Y. Proponuję dostosować ten fragment do standardu; szerszy refaktor wymaga osobnego zadania.
-```
+1. Przed dodaniem własnego rozwiązania znajdź najbliższy schemat projektu lub publiczne API DS i sprawdź, czy pokrywa wymaganie.
+2. Nie uznawaj istniejącego użycia za poprawne tylko dlatego, że występuje w projekcie. Sprawdź kontrakt, wartości domyślne oraz działanie istotne dla zmiany; gdy deklaracja API nie wystarcza, zajrzyj do implementacji, testu lub runtime.
+3. Jeśli schemat jest poprawny i wystarczający, użyj go bez dodatkowych adapterów, wrapperów i równoległych mechanizmów.
+4. Jeśli wykryjesz nieścisłość albo brak możliwości, wskaż użytkownikowi dowód, wpływ na zadanie i najmniejszą propozycję rozwiązania. Nie przebudowuj mechanizmu ani nie twórz obejścia bez uzgodnienia obejmującego tę zmianę. Wcześniejsze wyraźne zlecenie takiego rozszerzenia pozostaje ważne; ogólne polecenie poprawy widoku nie oznacza zgody na przebudowę wspólnych mechanizmów.
+5. Po wdrożeniu sprawdź zachowanie, którego dotyczyła zmiana, oraz kompatybilność dotkniętych użyć. Wyraźnie oddziel weryfikację kodu od sprawdzenia działania.
 
 ## Minimalna weryfikacja po zmianach
 
@@ -534,6 +534,10 @@ public constructor() {
 Nie stosuj tego wyjątku do zwykłego mapowania danych pod template — tam nadal
 preferuj `computed()`.
 
+### [3.7a] Obserwatory i pomiary DOM
+
+Przy dodawaniu lub zmianie obserwatora albo powtarzalnych pomiarów layoutu stosuj [zasady zakresu obserwacji i pomiarów](references/initialization-and-effects.md#zakres-obserwacji-i-pomiary-dom). Ustal realne zdarzenia wyzwalające, ogranicz obszar obserwacji i współdziel odczyty w jednym przebiegu; nie uznawaj samego RAF ani pracy poza strefą Angulara za dowód optymalizacji.
+
 ### [3.8] Czyszczenie subskrypcji i zasobów
 
 Dla ręcznych subskrypcji RxJS preferuj `takeUntilDestroyed()` i `DestroyRef`.
@@ -545,6 +549,8 @@ Dla timerów, listenerów i integracji spoza Angulara pilnuj jawnego cleanupu.
 Jeśli cleanup jest lokalny i prosty, trzymaj go blisko miejsca utworzenia zasobu.
 
 ### [3.9] Requesty i refresh flow
+
+W SkillBox i GoCouriers napotkany podczas pracy select z opcjami pobieranymi przez `noPaginationParams`, `MapPaginatedContent` albo równoważny fetch-all przełącz na paginowany loader DS według [guide’a migracji selectów](../boxes-design-system/references/select-pagination-migration.md). Wczytaj go tylko w tym przypadku, przed edycją; zachowaj kontrakt formularza i zgłoś konkretny blocker API, jeśli bezpieczna migracja nie jest możliwa. Nie obejmuj tą regułą statycznych list ani pozostałych zastosowań pełnej kolekcji.
 
 Dla jednej akcji użytkownika wybieraj jedno źródło odświeżenia danych:
 

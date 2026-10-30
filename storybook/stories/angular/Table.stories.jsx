@@ -97,7 +97,7 @@ function AngularTablePreview(props) {
               rows = rows.filter(row => [row.name, row.email, row.group].some(value => value.toLocaleLowerCase().includes(phrase)));
             }
             this.count = rows.length;
-            this.rows = this.args.paginated && this.args.searchMode !== "local"
+            this.rows = this.args.pagination === "remote"
               ? rows.slice(this.page * this.size, (this.page + 1) * this.size) : rows;
             this.loading = this.args.loading;
             this.changeDetector.markForCheck();
@@ -127,7 +127,7 @@ function AngularTablePreview(props) {
         template: `
           <vt-table #table label="LABEL.TABLE_DEMO" [rows]="rows" [columns]="columns" [rowKey]="key"
             [headerVariant]="args.headerVariant"
-            [selectable]="args.selectable" [paginated]="args.paginated" [page]="page" [size]="size"
+            [selectable]="args.selectable" [pagination]="args.pagination" [page]="page" [size]="size"
             [totalElements]="count" [loading]="loading" [error]="error" [disabled]="args.disabled"
             [searchMode]="args.searchMode" [search]="search" [filters]="filters"
             [selectedKeys]="selected" [selectionActions]="bulkActions"
@@ -183,11 +183,12 @@ export default {
   title: "ANGULAR COMPONENTS/Table", component: AngularTablePreview,
   parameters: { layout: "padded" },
   argTypes: {
+    pagination: { control: "select", options: ["none", "local", "remote"] },
     searchMode: { control: "select", options: ["none", "local", "remote"] },
     headerVariant: { control: "select", options: ["standard", "heavy"] },
   },
   args: {
-    selectable: false, paginated: false, searchMode: "none", custom: false, headerVariant: "standard",
+    selectable: false, pagination: "none", searchMode: "none", custom: false, headerVariant: "standard",
     loading: false, empty: false, error: false, disabled: false, wide: false,
     onQueryChange: fn(), onSelectionChange: fn(), onRowAction: fn(), onBulkAction: fn(), onRetry: fn(),
   },
@@ -202,9 +203,10 @@ export const ApiAndUsage = {
 export const HeavyHeader = { args: { headerVariant: "heavy", selectable: true } };
 export const CustomCellsAndActions = { args: { custom: true } };
 export const Selection = { args: { selectable: true, searchMode: "local" } };
-export const Pagination = { args: { paginated: true, searchMode: "remote" } };
-export const SelectionAndPagination = { args: { selectable: true, paginated: true, searchMode: "remote" } };
-export const Loading = { args: { loading: true, selectable: true, paginated: true } };
+export const LocalPaginationWithoutSearch = { args: { pagination: "local", searchMode: "none" } };
+export const Pagination = { args: { pagination: "remote", searchMode: "remote" } };
+export const SelectionAndPagination = { args: { selectable: true, pagination: "remote", searchMode: "remote" } };
+export const Loading = { args: { loading: true, selectable: true, pagination: "remote" } };
 export const Empty = { args: { empty: true } };
 export const Error = { args: { error: true } };
 export const WideTable = { args: { wide: true, selectable: true, custom: true } };

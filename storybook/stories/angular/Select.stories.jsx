@@ -6,6 +6,7 @@ import "./Input.stories.scss";
 const selectInputs = [
   "options",
   "variant",
+  "panelPosition",
   "label",
   "placeholder",
   "bindLabel",
@@ -183,6 +184,11 @@ export default {
   component: AngularSelectPreview,
   parameters: { layout: "centered" },
   argTypes: {
+    panelPosition: {
+      options: ["below", "above"],
+      control: { type: "inline-radio" },
+      description: "Preferowana strona panelu; druga strona pozostaje fallbackiem przy braku miejsca. Paginacja używa above.",
+    },
     variant: {
       options: ["boxed", "compact"],
       control: { type: "inline-radio" },
@@ -221,6 +227,7 @@ export default {
     ],
     selectedValue: "pl",
     variant: "boxed",
+    panelPosition: "below",
     label: "Język wydarzenia",
     placeholder: "Wybierz język",
     bindLabel: "",

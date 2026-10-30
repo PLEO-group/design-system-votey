@@ -1,4 +1,4 @@
-# WERSJA 1.0.4
+# WERSJA 1.1.0
 
 # Specyfikacja komponentu Table
 
@@ -277,7 +277,7 @@ the package has no corresponding Votey components.
 ```html
 <vt-table #table label="LABEL.MEMBERS" [rows]="rows()" [columns]="columns"
   [rowKey]="rowKey" [selectable]="true" [(selectedKeys)]="selectedKeys"
-  [paginated]="true" [page]="page()" [size]="size()"
+  pagination="remote" [page]="page()" [size]="size()"
   [totalElements]="totalElements()" [loading]="loading()" [error]="error()"
   searchMode="remote" [search]="appliedSearch()" [filters]="appliedFilters()"
   (queryChange)="fetch($event)" (retry)="retry()">
@@ -322,12 +322,19 @@ interactive descendants. Mark other custom controls `data-table-interactive`.
 pagination uses `vt-pagination`; the default size is 20 and size options are
 10, 20, 50, 100. There are no requests inside the table.
 
-- `searchMode="none"`: no built-in search; paginated rows are supplied by the consumer.
-- `searchMode="remote"`: supply the server's current page and `totalElements`.
-- `searchMode="local"`: supply the entire dataset. The table searches values of
-  columns with `searchable: true` and, when paginated, slices the result using
-  the controlled `page` and `size`. `queryChange` still informs the consumer to
-  update controlled page parameters, but no search HTTP request is needed.
+- `pagination="none"` (default): no paginator and no slicing.
+- `pagination="local"`: supply the entire dataset. The table owns the current
+  page and size, slices filtered rows and calculates the total. Changes to the
+  `page` and `size` inputs can override the local state. `queryChange` remains
+  informational; the parent does not need to echo page changes back.
+- `pagination="remote"`: supply the current page and `totalElements`; the parent
+  handles `queryChange` and updates `rows`, `page` and `size` after fetching data.
+- `searchMode` is independent of pagination: `none` hides search, `local`
+  searches supplied rows using columns with `searchable: true`, and `remote`
+  delegates search to the consumer through `queryChange`. Local search with
+  remote pagination only searches the supplied page.
+- `pagination` replaces `paginated` and `paginationMode`. Search mode no longer
+  determines pagination mode; existing consumers must choose it explicitly.
 
 Search is debounced 300 ms, with at least 3 trimmed characters. With a selection,
 Enter or the search button is required, then a built-in dialog confirms resetting

@@ -52,11 +52,13 @@ pageCount() - 1;
   <div class="size-control">
     <vt-select
       variant="compact"
+      panelPosition="above"
       label="LABEL.ITEMS_PER_PAGE"
       [options]="pageSizeOptions()"
       [control]="sizeControl"
       [disabled]="interactionDisabled"
       [translateOptions]="false"
+      [searchable]="false"
       (change)="selectSize($event)"
     />
   </div>

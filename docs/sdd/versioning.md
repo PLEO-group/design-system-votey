@@ -14,4 +14,4 @@ radio-button: 1.0.0
 
 textarea: 1.0.0
 
-table: 1.0.4
+table: 1.1.0

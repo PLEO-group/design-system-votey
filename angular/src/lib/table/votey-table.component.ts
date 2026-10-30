@@ -1,8 +1,8 @@
 import { MatTooltip } from "@angular/material/tooltip";
 import {
   ChangeDetectionStrategy, Component, computed, contentChildren, DestroyRef,
-  effect, inject, input, model, output, signal, TemplateRef, viewChild,
-  type InputSignal, type ModelSignal, type OutputEmitterRef, type Signal, type WritableSignal,
+  effect, inject, input, linkedSignal, model, output, signal, TemplateRef, viewChild,
+  type OnInit, type OnDestroy, type InputSignal, type ModelSignal, type OutputEmitterRef, type Signal, type WritableSignal,
 } from "@angular/core";
 import { NgTemplateOutlet } from "@angular/common";
 import { Dialog, DialogModule, type DialogRef } from "@angular/cdk/dialog";
@@ -22,8 +22,20 @@ import { readTableValue, resolveTableColumnsFromKeys, tableColumnKeys } from "./
 import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
-  VoteyTableQuery, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
+  VoteyTableQuery, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
 } from "./table.model";
+
+interface TableRowView<T> {
+  key: VoteyTableKey | object;
+  row: T;
+  control: FormControl<boolean | null>;
+  cells: readonly VoteyTableCellContext<T>[];
+}
+
+interface TableColumnView<T> {
+  definition: VoteyTableColumn<T>;
+  template: TemplateRef<VoteyTableCellContext<T>> | null;
+}
 
 @Component({
   selector: "vt-table",
@@ -34,26 +46,19 @@ import type {
   imports: [MatTooltip, NgTemplateOutlet, DialogModule, VoteyButtonComponent, VoteyCheckboxComponent,
     VoteySearchComponent, VoteyTextComponent, VoteyPaginationComponent, VoteyTranslatePipe],
 })
-export class VoteyTableComponent<T> {
+export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   public readonly rows: InputSignal<readonly T[]> = input.required<readonly T[]>();
   public readonly columns: InputSignal<readonly VoteyTableColumn<T>[]> = input<readonly VoteyTableColumn<T>[]>([]);
   public readonly fillContainer: InputSignal<boolean> = input(false);
   public readonly autoColumns: InputSignal<boolean> = input(false);
   public readonly excludedColumns: InputSignal<readonly string[]> = input<readonly string[]>([]);
   public readonly headersPrefix: InputSignal<string> = input("");
-  private readonly columnKeys: Signal<readonly string[]> = computed(
-    () => this.autoColumns() ? tableColumnKeys(this.rows()) : [],
-    { equal: (previous, current) => previous.length === current.length
-      && previous.every((key, index) => key === current[index]) },
-  );
-  protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]> = computed(() =>
-    resolveTableColumnsFromKeys(this.columnKeys(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()));
-  public readonly rowKey: InputSignal<(row: T) => VoteyTableKey> = input.required<(row: T) => VoteyTableKey>();
+  public readonly rowKey: InputSignal<((row: T) => VoteyTableKey) | undefined> = input<(row: T) => VoteyTableKey>();
   public readonly label: InputSignal<string> = input.required<string>();
   public readonly headerVariant: InputSignal<VoteyTableHeaderVariant> = input<VoteyTableHeaderVariant>("standard");
   public readonly selectable: InputSignal<boolean> = input(false);
   public readonly selectedKeys: ModelSignal<readonly VoteyTableKey[]> = model<readonly VoteyTableKey[]>([]);
-  public readonly paginated: InputSignal<boolean> = input(false);
+  public readonly pagination: InputSignal<VoteyTablePaginationMode> = input<VoteyTablePaginationMode>("none");
   public readonly page: InputSignal<number> = input(defaultFetchParams.page);
   public readonly size: InputSignal<number> = input(defaultFetchParams.size);
   public readonly totalElements: InputSignal<number> = input(0);
@@ -87,61 +92,83 @@ export class VoteyTableComponent<T> {
   private activeDialog: DialogRef<boolean> | null = null;
   protected readonly confirming: WritableSignal<boolean> = signal(false);
 
+  private readonly columnKeys: Signal<readonly string[]> = computed(
+    () => this.autoColumns() ? tableColumnKeys(this.rows()) : [],
+    { equal: (previous, current) => previous.length === current.length
+      && previous.every((key, index) => key === current[index]) },
+  );
+  protected readonly resolvedColumns: Signal<readonly VoteyTableColumn<T>[]> = computed(() =>
+    resolveTableColumnsFromKeys(this.columnKeys(), this.columns(), this.autoColumns(), this.excludedColumns(), this.headersPrefix()));
+
   protected readonly blocked: Signal<boolean> = computed(() => this.loading() || this.disabled() || this.confirming());
   protected readonly filteredRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.rows();
-    if (this.searchMode() !== "local" || !this.appliedSearch()) return rows;
+    const search: string = this.appliedSearch();
+    if (this.searchMode() !== "local" || !search) return rows;
     const columns: readonly VoteyTableColumn<T>[] = this.resolvedColumns().filter((column) => column.searchable);
-    return rows.filter((row: T) => matchesTableSearch(columns.map((column) => readTableValue(row, column)), this.appliedSearch()));
+    return rows.filter((row: T) => matchesTableSearch(columns.map((column) => readTableValue(row, column)), search));
   });
+  private readonly localPagination: Signal<boolean> = computed(() =>
+    this.pagination() === "local");
+  private readonly localPage: WritableSignal<number> = linkedSignal(() => this.page());
+  private readonly localSize: WritableSignal<number> = linkedSignal(() => this.size());
+  protected readonly effectiveSize: Signal<number> = computed(() => this.localPagination() ? this.localSize() : this.size());
+  protected readonly effectivePage: Signal<number> = computed(() => this.localPagination()
+    ? resolveTablePage(this.localPage(), this.effectiveSize(), this.filteredRows().length) : this.page());
+  protected readonly resultCount: Signal<number> = computed(() => this.localPagination() ? this.filteredRows().length : this.totalElements());
   protected readonly visibleRows: Signal<readonly T[]> = computed(() => {
     const rows: readonly T[] = this.filteredRows();
-    return this.searchMode() === "local" && this.paginated()
-      ? rows.slice(this.effectivePage() * this.size(), (this.effectivePage() + 1) * this.size()) : rows;
+    const start: number = this.effectivePage() * this.effectiveSize();
+    return this.localPagination() ? rows.slice(start, start + this.effectiveSize()) : rows;
   });
-  protected readonly effectivePage: Signal<number> = computed(() => this.searchMode() === "local"
-    ? resolveTablePage(this.page(), this.size(), this.filteredRows().length) : this.page());
-  protected readonly resultCount: Signal<number> = computed(() => this.searchMode() === "local" ? this.filteredRows().length : this.totalElements());
   protected readonly hasQuery: Signal<boolean> = computed(() => !!this.appliedSearch() || Object.keys(this.appliedFilters()).length > 0);
-  protected readonly allSelected: Signal<boolean> = computed(() => this.visibleRows().length > 0 && this.visibleRows().every((row: T) => this.selectedKeys().includes(this.rowKey()(row))));
-  protected readonly someSelected: Signal<boolean> = computed(() => !this.allSelected() && this.visibleRows().some((row: T) => this.selectedKeys().includes(this.rowKey()(row))));
-  protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.paginated() ? this.size() : 5 }, (_, index: number) => index));
+  private readonly selectedKeySet: Signal<ReadonlySet<VoteyTableKey>> = computed(() => new Set(this.selectedKeys()));
+  private readonly visibleSelectionKeys: Signal<readonly VoteyTableKey[]> = computed(() =>
+    this.selectable() ? this.visibleRows().map((row: T) => this.selectionKey(row)) : []);
+  protected readonly allSelected: Signal<boolean> = computed(() => this.visibleSelectionKeys().length > 0
+    && this.visibleSelectionKeys().every((key: VoteyTableKey) => this.selectedKeySet().has(key)));
+  protected readonly someSelected: Signal<boolean> = computed(() => !this.allSelected()
+    && this.visibleSelectionKeys().some((key: VoteyTableKey) => this.selectedKeySet().has(key)));
+  protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.pagination() !== "none" ? this.effectiveSize() : 5 }, (_, index: number) => index));
   protected readonly columnCount: Signal<number> = computed(() => this.resolvedColumns().length + (this.selectable() ? 1 : 0));
   protected readonly tableWidth: Signal<number> = computed(() => this.resolvedColumns().reduce(
     (width: number, column: VoteyTableColumn<T>): number => width + (column.width ?? 180),
     this.selectable() ? 56 : 0,
   ));
-  protected readonly viewColumns: Signal<readonly { definition: VoteyTableColumn<T>; template: TemplateRef<VoteyTableCellContext<T>> | null }[]> = computed(() => this.resolvedColumns().map((definition) => ({
-    definition, template: (this.cellTemplates().find((cell) => cell.vtTableCell() === definition.id)
-      ?? this.cellTemplates().find((cell) => cell.vtTableCell() === ""))?.template ?? null,
-  })));
-  protected readonly viewRows: Signal<readonly { key: VoteyTableKey; row: T; control: FormControl<boolean | null>; selected: boolean; cells: readonly VoteyTableCellContext<T>[] }[]> = computed(() => {
-    return this.visibleRows().map((row: T, index: number) => {
-      const key: VoteyTableKey = this.rowKey()(row);
-      const selected: boolean = this.selectedKeys().includes(key);
-      return { key, row, selected, control: new FormControl<boolean | null>(selected),
-        cells: this.resolvedColumns().map((column) => ({ $implicit: row, column, value: readTableValue(row, column), index })) };
-    });
+  protected readonly viewColumns: Signal<readonly TableColumnView<T>[]> = computed(() => {
+    const templates: Map<string, TemplateRef<VoteyTableCellContext<T>>> = new Map();
+    for (const cell of this.cellTemplates()) {
+      const id: string = cell.vtTableCell();
+      if (!templates.has(id)) templates.set(id, cell.template);
+    }
+    return this.resolvedColumns().map((definition: VoteyTableColumn<T>) => ({
+      definition, template: templates.get(definition.id) ?? templates.get("") ?? null,
+    }));
   });
+  private readonly rowViews: Signal<readonly TableRowView<T>[]> = computed(() =>
+    this.visibleRows().map((row: T, index: number) => ({
+      key: this.resolveRowKey(row), row,
+      control: new FormControl<boolean | null>(false),
+      cells: this.resolvedColumns().map((column: VoteyTableColumn<T>) =>
+        ({ $implicit: row, column, value: readTableValue(row, column), index })),
+    })));
+  protected readonly viewRows: Signal<readonly (TableRowView<T> & { selected: boolean })[]> = computed(() =>
+    this.rowViews().map((record: TableRowView<T>) => ({
+      ...record, selected: this.selectable() && this.selectedKeySet().has(this.selectionKey(record.row)),
+    })));
 
   public constructor() {
-    effect(() => {
-      const search: string = this.search();
-      this.appliedSearch.set(search);
-      this.searchControl.setValue(search, { emitEvent: false });
-    });
-    effect(() => this.appliedFilters.set(this.filters()));
-    effect(() => this.selectAllControl.setValue(this.allSelected(), { emitEvent: false }));
-    effect(() => { this.visibleRows(); this.anchor = null; });
-    effect(() => {
-      this.rows(); this.page(); this.size(); this.filters(); this.search();
-      this.activeDialog?.close(false);
-    });
-    tableSearchTerms(this.searchControl.valueChanges).pipe(takeUntilDestroyed())
-      .subscribe((value: string) => {
-        if (this.selectedKeys().length === 0 && value.length >= 3) this.submitSearch();
-      });
-    this.destroyRef.onDestroy(() => this.activeDialog?.close(false));
+    this.synchronizeQueryInputs();
+    this.synchronizeSelectionControls();
+    this.observeTableContext();
+  }
+
+  public ngOnInit(): void {
+    this.observeSearchTerms();
+  }
+
+  public ngOnDestroy(): void {
+    this.activeDialog?.close(false);
   }
 
   public async requestFilters(filters: VoteyTableFilters): Promise<boolean> {
@@ -153,7 +180,7 @@ export class VoteyTableComponent<T> {
       return false;
     }
     this.appliedFilters.set(filters);
-    this.emitQuery(0);
+    this.updateQuery(0);
     return true;
   }
 
@@ -173,14 +200,14 @@ export class VoteyTableComponent<T> {
     }
     this.searchControl.setValue(search, { emitEvent: false });
     this.appliedSearch.set(search);
-    this.emitQuery(0);
+    this.updateQuery(0);
   }
 
   protected rememberSelection(event: MouseEvent): void { this.shiftSelection = event.shiftKey; }
 
   protected selectRow(index: number, checked: boolean): void {
     if (this.blocked()) return;
-    const keys: readonly VoteyTableKey[] = this.visibleRows().map(this.rowKey());
+    const keys: readonly VoteyTableKey[] = this.visibleSelectionKeys();
     this.selectedKeys.set(updateTableSelection(this.selectedKeys(), keys, checked, index, this.shiftSelection ? this.anchor : null));
     this.anchor = index;
     this.shiftSelection = false;
@@ -188,12 +215,12 @@ export class VoteyTableComponent<T> {
 
   protected selectAll(checked: boolean): void {
     if (this.blocked()) return;
-    this.selectedKeys.set(updateTableSelection(this.selectedKeys(), this.visibleRows().map(this.rowKey()), checked));
+    this.selectedKeys.set(updateTableSelection(this.selectedKeys(), this.visibleSelectionKeys(), checked));
     this.anchor = null;
   }
 
   protected paginate(event: PaginationEvent): void {
-    if (!this.blocked()) this.emitQuery(event.page, event.size);
+    if (!this.blocked()) this.updateQuery(event.page, event.size);
   }
 
   protected activateRow(row: T, event: MouseEvent): void {
@@ -203,7 +230,69 @@ export class VoteyTableComponent<T> {
 
   protected closeConfirmation(accepted: boolean): void { this.activeDialog?.close(accepted); }
 
-  private emitQuery(page: number, size: number = this.size()): void {
+  private resolveRowKey(row: T): VoteyTableKey | object {
+    const custom: ((row: T) => VoteyTableKey) | undefined = this.rowKey();
+    if (custom) return custom(row);
+    if (row !== null && typeof row === "object") {
+      const id: unknown = "id" in row ? row.id : undefined;
+      if (typeof id === "string" || typeof id === "number") return id;
+      if (!this.selectable()) return row;
+    }
+    throw new Error("vt-table: provide rowKey for selectable records without a string/number id or for primitive records.");
+  }
+
+  private selectionKey(row: T): VoteyTableKey {
+    const key: VoteyTableKey | object = this.resolveRowKey(row);
+    if (typeof key === "string" || typeof key === "number") return key;
+    throw new Error("vt-table: selection requires a stable rowKey or a string/number id.");
+  }
+
+  private synchronizeQueryInputs(): void {
+    effect(() => {
+      const search: string = this.search();
+      this.appliedSearch.set(search);
+      this.searchControl.setValue(search, { emitEvent: false });
+    });
+    effect(() => this.appliedFilters.set(this.filters()));
+  }
+
+  private synchronizeSelectionControls(): void {
+    effect(() => this.selectAllControl.setValue(this.allSelected(), { emitEvent: false }));
+    effect(() => {
+      for (const record of this.viewRows()) {
+        record.control.setValue(record.selected, { emitEvent: false });
+      }
+    });
+  }
+
+  private observeTableContext(): void {
+    effect(() => {
+      this.visibleRows();
+      this.anchor = null;
+    });
+    effect(() => {
+      this.rows(); this.page(); this.size(); this.filters(); this.search();
+      this.activeDialog?.close(false);
+    });
+  }
+
+  private observeSearchTerms(): void {
+    tableSearchTerms(this.searchControl.valueChanges).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: string) => {
+        if (this.selectedKeys().length === 0 && value.length >= 3) void this.submitSearch();
+      });
+  }
+
+  private updateQuery(page: number, size: number = this.effectiveSize()): void {
+    if (this.localPagination()) {
+      this.localSize.set(size);
+      this.localPage.set(page);
+      page = this.effectivePage();
+    }
+    this.emitQuery(page, size);
+  }
+
+  private emitQuery(page: number, size: number): void {
     this.queryChange.emit({ page, size, search: this.appliedSearch(), filters: this.appliedFilters() });
   }
 

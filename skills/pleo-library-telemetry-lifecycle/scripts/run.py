@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import errno
 import json
+import math
 import os
+import socket
+import ssl
 import sys
 import time
 import urllib.error
@@ -17,6 +21,10 @@ from typing import Any
 DEFAULT_API_PATH = "/api/agent-telemetry/events"
 PLEO_LIBRARY_PREFIX = "pleo-library-"
 TELEMETRY_USER_ID_ENV = "TELEMETRY_USER_ID"
+DRY_RUN_USER_ID = "<redacted>"
+MAX_RETRIES = 3
+MAX_TIMEOUT_SECONDS = 30.0
+MAX_RETRY_DELAY_SECONDS = 5.0
 SUPPORTED_COMMANDS = ("start", "progress", "finish", "interrupt")
 DEFAULT_STAGE_BY_COMMAND = {
     "start": "started",
@@ -49,6 +57,7 @@ class ClientConfig:
     retry_delay_seconds: float
     dry_run: bool
     allow_pleo_library_skill: bool
+    project_slug: str | None = None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -162,12 +171,12 @@ def parse_created_at(value: str | None) -> str:
 
 
 def build_config(args: argparse.Namespace) -> ClientConfig:
-    if args.retries < 0:
-        raise ScriptError("--retries must be >= 0.")
-    if args.retry_delay_seconds < 0:
-        raise ScriptError("--retry-delay-seconds must be >= 0.")
-    if args.timeout_seconds <= 0:
-        raise ScriptError("--timeout-seconds must be > 0.")
+    if not 0 <= args.retries <= MAX_RETRIES:
+        raise ScriptError(f"--retries must be between 0 and {MAX_RETRIES}.")
+    if not math.isfinite(args.retry_delay_seconds) or not 0 <= args.retry_delay_seconds <= MAX_RETRY_DELAY_SECONDS:
+        raise ScriptError(f"--retry-delay-seconds must be between 0 and {MAX_RETRY_DELAY_SECONDS}.")
+    if not math.isfinite(args.timeout_seconds) or not 0 < args.timeout_seconds <= MAX_TIMEOUT_SECONDS:
+        raise ScriptError(f"--timeout-seconds must be > 0 and <= {MAX_TIMEOUT_SECONDS}.")
 
     return ClientConfig(
         base_url=load_library_base_url(),
@@ -178,18 +187,24 @@ def build_config(args: argparse.Namespace) -> ClientConfig:
         retry_delay_seconds=args.retry_delay_seconds,
         dry_run=bool(args.dry_run),
         allow_pleo_library_skill=bool(args.allow_pleo_library_skill),
+        project_slug=args.project_slug or load_default_project_slug(),
     )
 
 
 def build_payload(config: ClientConfig, args: argparse.Namespace) -> dict[str, Any]:
     validate_tracked_skill_name(args.skill, config.allow_pleo_library_skill)
-    details = parse_optional_json_object(args.details_json)
-    library_user_id = load_required_library_user_id()
+    details = parse_optional_json_object(args.details_json) or {}
+    # skillVersion describes the installed artifact, not an unverified caller claim.
+    details.pop("skillVersion", None)
+    skill_version = load_local_skill_version(args.skill)
+    if skill_version is not None:
+        details["skillVersion"] = skill_version
+    library_user_id = DRY_RUN_USER_ID if config.dry_run else load_required_library_user_id()
     payload: dict[str, Any] = {
         "eventType": args.command,
         "runId": args.run_id,
         "skillName": args.skill,
-        "projectSlug": args.project_slug,
+        "projectSlug": config.project_slug,
         "telemetryUserId": library_user_id,
         "libraryUserId": library_user_id,
         "stage": args.stage,
@@ -198,7 +213,7 @@ def build_payload(config: ClientConfig, args: argparse.Namespace) -> dict[str, A
         "source": config.source,
         "createdAt": args.created_at,
     }
-    if details is not None:
+    if details:
         payload["details"] = details
     clean_payload(payload)
     return payload
@@ -206,7 +221,7 @@ def build_payload(config: ClientConfig, args: argparse.Namespace) -> dict[str, A
 
 def send_event(config: ClientConfig, payload: dict[str, Any]) -> None:
     if config.dry_run:
-        print(json.dumps(payload, ensure_ascii=False))
+        print(json.dumps(redact_identity(payload), ensure_ascii=False))
         return
 
     url = config.base_url + config.api_path
@@ -221,19 +236,25 @@ def send_event(config: ClientConfig, payload: dict[str, Any]) -> None:
         request = urllib.request.Request(url, data=body, headers=headers, method="POST")
         try:
             with urllib.request.urlopen(request, timeout=config.timeout_seconds) as response:
-                response.read()
+                # Only the successful HTTP status is needed; never print response content.
+                pass
             return
         except urllib.error.HTTPError as exc:
-            response_text = exc.read().decode("utf-8", errors="replace")
+            exc.close()
             if should_retry_http(exc.code) and attempt < attempts:
                 time.sleep(config.retry_delay_seconds)
                 continue
-            raise ScriptError(f"HTTP {exc.code} for {url}: {extract_error_message(response_text)}") from exc
+            raise ScriptError(f"Telemetry delivery failed: HTTP {exc.code} after {attempt} attempt(s).") from exc
         except urllib.error.URLError as exc:
-            if attempt < attempts:
+            if is_retryable_connection_error(exc.reason) and attempt < attempts:
                 time.sleep(config.retry_delay_seconds)
                 continue
-            raise ScriptError(f"Connection error for {url}: {exc.reason}") from exc
+            raise ScriptError(f"Telemetry connection failed after {attempt} attempt(s).") from exc
+        except OSError as exc:
+            if is_retryable_connection_error(exc) and attempt < attempts:
+                time.sleep(config.retry_delay_seconds)
+                continue
+            raise ScriptError(f"Telemetry transport failed after {attempt} attempt(s).") from exc
 
 
 def validate_tracked_skill_name(skill_name: str, allow_pleo_library_skill: bool) -> None:
@@ -248,7 +269,18 @@ def validate_tracked_skill_name(skill_name: str, allow_pleo_library_skill: bool)
 
 
 def should_retry_http(code: int) -> bool:
-    return 500 <= code <= 599 or code == 429
+    return code in {408, 429, 500, 502, 503, 504}
+
+
+def is_retryable_connection_error(error: Any) -> bool:
+    if isinstance(error, ssl.SSLError):
+        return False
+    if isinstance(error, (TimeoutError, ConnectionError, socket.gaierror)):
+        return True
+    return isinstance(error, OSError) and error.errno in {
+        errno.ETIMEDOUT, errno.ECONNRESET, errno.ECONNREFUSED,
+        errno.EHOSTUNREACH, errno.ENETUNREACH, errno.ECONNABORTED,
+    }
 
 
 def parse_optional_json_object(value: str | None) -> dict[str, Any] | None:
@@ -263,20 +295,16 @@ def parse_optional_json_object(value: str | None) -> dict[str, Any] | None:
     return parsed
 
 
-def extract_error_message(payload: str) -> str:
-    payload = payload.strip()
-    if not payload:
-        return "empty error response"
-    try:
-        parsed = json.loads(payload)
-    except json.JSONDecodeError:
-        return payload
-    if isinstance(parsed, dict):
-        for key in ("message", "error", "detail"):
-            value = parsed.get(key)
-            if isinstance(value, str) and value.strip():
-                return value.strip()
-    return payload
+def redact_identity(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: DRY_RUN_USER_ID if key.lower() in {"telemetryuserid", "libraryuserid", "userid"}
+            else redact_identity(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [redact_identity(item) for item in value]
+    return value
 
 
 def clean_payload(payload: dict[str, Any]) -> None:
@@ -308,6 +336,32 @@ def load_library_base_url() -> str:
     if not isinstance(value, str) or not value.strip():
         raise ScriptError("Brakuje libraryBaseUrl w .agent-library.yaml.")
     return value.strip().rstrip("/")
+
+
+def load_default_project_slug() -> str | None:
+    repo_root = find_repo_root(Path(__file__).resolve())
+    value = parse_simple_yaml(repo_root / ".agent-library.yaml").get("projectSlug")
+    return normalize_optional_text(value) if isinstance(value, str) else None
+
+
+def load_local_skill_version(skill_name: str) -> str | None:
+    try:
+        skills_root = Path(__file__).resolve().parents[2]
+        skill_path = (skills_root / skill_name / "SKILL.md").resolve()
+        skill_path.relative_to(skills_root)
+        lines = skill_path.read_text(encoding="utf-8-sig").splitlines()
+    except (OSError, ValueError, UnicodeError):
+        return None
+    if not lines or lines[0].strip() != "---":
+        return None
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        key, separator, raw_value = line.partition(":")
+        if separator and key == "version":
+            value = parse_yaml_scalar(raw_value.strip())
+            return value if isinstance(value, str) and 0 < len(value) <= 64 else None
+    return None
 
 
 def find_repo_root(start_path: Path) -> Path:

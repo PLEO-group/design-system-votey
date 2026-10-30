@@ -95,7 +95,7 @@ test("new objects and page changes retain selected identities and reset the Shif
 });
 
 test("local slicing and paginator agree when the collection shrinks", async () => {
-  const { fixture } = await createTable({ searchMode: "local", paginated: true, page: 2, size: 2,
+  const { fixture } = await createTable({ searchMode: "local", pagination: "local", page: 2, size: 2,
     rows: [...rows, { id: "e", name: "Eva" }] });
   assert.match(bodyText(fixture), /Eva/);
   fixture.componentRef.setInput("rows", rows.slice(0, 1));
@@ -106,7 +106,7 @@ test("local slicing and paginator agree when the collection shrinks", async () =
 });
 
 test("real paginator emits controlled zero-based query and keeps selection", async () => {
-  const { fixture, queries, table } = await createTable({ paginated: true, size: 10, totalElements: 40,
+  const { fixture, queries, table } = await createTable({ pagination: "remote", size: 10, totalElements: 40,
     selectable: true, selectedKeys: ["a"], search: "Anna", filters: { active: true } });
   const buttons = env.all(fixture, "vt-pagination .page-button");
   await click(fixture, buttons[buttons.length - 1]);
@@ -173,7 +173,7 @@ test("loading wins over error, uses the correct skeleton count and preserves sel
   assert.equal(env.all(fixture, ".skeleton-row").length, 5);
   assert.equal(env.by(fixture, "[role=alert]"), null);
   assert.equal(env.by(fixture, "section").getAttribute("aria-busy"), "true");
-  fixture.componentRef.setInput("paginated", true);
+  fixture.componentRef.setInput("pagination", "remote");
   fixture.componentRef.setInput("size", 10);
   await env.settle(fixture);
   assert.equal(env.all(fixture, ".skeleton-row").length, 10);
@@ -442,4 +442,145 @@ test("fillContainer is opt-in and applies the container layout class", async () 
   fixture.componentRef.setInput("fillContainer", true);
   await env.settle(fixture);
   assert.equal(fixture.nativeElement.classList.contains("fill-container"), true);
+});
+
+test("default keys preserve id zero and selection after refreshing records", async () => {
+ const { fixture, table } = await createTable({ rowKey: undefined, selectable: true, rows: [{ id: 0, name: "First" }] });
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.deepEqual(table.selectedKeys(), [0]);
+ fixture.componentRef.setInput("rows", [{ id: 0, name: "Updated" }]);
+ await env.settle(fixture);
+ assert.equal(rowChecks(fixture)[0].checked, true);
+});
+test("anonymous rows track objects through reordering", async () => {
+ const first = { name: "same" }, second = { name: "same" };
+ const { fixture } = await createTable({ rowKey: undefined, rows: [first, second] });
+ const original = env.all(fixture, "tbody tr");
+ fixture.componentRef.setInput("rows", [second, first]);
+ await env.settle(fixture);
+ assert.equal(env.all(fixture, "tbody tr")[0], original[1]);
+ assert.equal(env.all(fixture, "tbody tr")[1], original[0]);
+});
+test("selectable anonymous rows require stable keys", async () => {
+ await assert.rejects(() => createTable({ rowKey: undefined, selectable: true, rows: [{ name: "Anonymous" }] }), /vt-table:.*rowKey/);
+});
+test("explicit keys override ids", async () => {
+ const { fixture, table } = await createTable({ rows: [{ id: 0, name: "Custom" }], selectable: true, rowKey: row => row.name });
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.deepEqual(table.selectedKeys(), ["Custom"]);
+});
+
+test("selection reuses row controls and cell values instead of recomputing them", async () => {
+ let reads = 0;
+ const { fixture, table } = await createTable({ selectable: true, columns: [
+  { id: "name", header: "Name", value: row => { reads++; return row.name; } },
+ ] });
+ const initialRows = table.viewRows();
+ const initialReads = reads;
+ await click(fixture, rowChecks(fixture)[0]);
+ assert.equal(reads, initialReads);
+ assert.equal(table.viewRows()[0].control, initialRows[0].control);
+ assert.equal(table.viewRows()[0].cells, initialRows[0].cells);
+ assert.equal(table.viewRows()[0].control.value, true);
+ fixture.componentRef.setInput("selectedKeys", ["b"]);
+ await env.settle(fixture);
+ assert.equal(rowChecks(fixture)[0].checked, false);
+ assert.equal(rowChecks(fixture)[1].checked, true);
+ assert.equal(reads, initialReads);
+ fixture.componentRef.setInput("rows", [{ id: "a", name: "Updated" }]);
+ await env.settle(fixture);
+ assert.match(bodyText(fixture), /Updated/);
+ assert.ok(reads > initialReads);
+});
+
+test("local search does not enable pagination when pagination is omitted", async () => {
+ const { fixture } = await createTable({ searchMode: "local", size: 2 });
+ assert.equal(env.by(fixture, "vt-pagination"), null);
+ assert.equal(env.all(fixture, "tbody tr").length, rows.length);
+});
+
+test("local pagination works without search or parent state updates and preserves selection", async () => {
+ const { fixture, table, queries } = await createTable({ pagination: "local", size: 2, selectable: true });
+ assert.equal(env.by(fixture, "vt-search"), null);
+ assert.equal(env.all(fixture, "tbody tr").length, 2);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /1–2 \/ 4/);
+ await click(fixture, rowChecks(fixture)[0]);
+ await click(fixture, env.all(fixture, "vt-pagination .page-button").at(-1));
+ assert.match(bodyText(fixture), /Maria/);
+ assert.doesNotMatch(bodyText(fixture), /Anna/);
+ assert.deepEqual(queries.at(-1), { page: 1, size: 2, search: "", filters: {} });
+ assert.deepEqual(table.selectedKeys(), ["a"]);
+ table.paginate({ page: 0, size: 3 });
+ await env.settle(fixture);
+ assert.equal(env.all(fixture, "tbody tr").length, 3);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /1–3 \/ 4/);
+ assert.equal(rowChecks(fixture)[0].checked, true);
+ fixture.componentRef.setInput("page", 1);
+ fixture.componentRef.setInput("size", 1);
+ await env.settle(fixture);
+ assert.match(bodyText(fixture), /Jan/);
+ fixture.componentRef.setInput("rows", rows.slice(0, 1));
+ await env.settle(fixture);
+ assert.match(bodyText(fixture), /Anna/);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /1–1 \/ 1/);
+});
+test("local search resets locally paginated results to the first page", async () => {
+ const { fixture, queries } = await createTable({ pagination: "local", searchMode: "local", page: 1, size: 2 });
+ const input = env.by(fixture, "vt-search input");
+ input.value = "Anna";
+ input.dispatchEvent(new Event("input", { bubbles: true }));
+ await click(fixture, env.all(fixture, "vt-search button").at(-1));
+ assert.match(bodyText(fixture), /Anna/);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /1–1 \/ 1/);
+ assert.equal(queries.at(-1).page, 0);
+});
+test("explicit remote pagination keeps server rows and totals independently of search mode", async () => {
+ const { fixture, queries } = await createTable({ pagination: "remote", searchMode: "local", page: 1, size: 2, totalElements: 40 });
+ assert.equal(env.all(fixture, "tbody tr").length, 4);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /3–4 \/ 40/);
+ await click(fixture, env.all(fixture, "vt-pagination .page-button").at(-1));
+ assert.equal(queries.at(-1).page, 2);
+ assert.match(env.by(fixture, "vt-pagination .range").textContent, /3–4 \/ 40/);
+});
+
+test("page-size select is disabled during loading and confirmation and re-enables afterwards", async () => {
+ const { By } = await import("@angular/platform-browser");
+ const { MatSelect } = await import("@angular/material/select");
+ const { fixture, table } = await createTable({ pagination: "remote", loading: true, selectedKeys: ["a"] });
+ const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+ const field = env.by(fixture, "vt-pagination vt-select .field");
+ assert.equal(select.disabled, true);
+ field.click();
+ select.open();
+ await env.settle(fixture);
+ assert.equal(document.querySelector(".vt-select-panel"), null);
+ fixture.componentRef.setInput("loading", false);
+ await env.settle(fixture);
+ assert.equal(select.disabled, false);
+ const pending = table.requestFilters({ active: true });
+ await env.settle(fixture);
+ assert.equal(select.disabled, true);
+ field.click();
+ assert.equal(document.querySelector(".vt-select-panel"), null);
+ await closeDialog(fixture, false);
+ await pending;
+ assert.equal(select.disabled, false);
+});
+
+test("pagination opens an anchored size menu with above preference and no search", async () => {
+ const { By } = await import("@angular/platform-browser");
+ const { MatSelect } = await import("@angular/material/select");
+ const { fixture } = await createTable({ pagination: "remote" });
+ const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+ env.by(fixture, "vt-pagination vt-select .field").click();
+ await env.settle(fixture);
+ const panel = document.querySelector(".vt-select-panel");
+ assert.ok(panel);
+ assert.ok(panel.closest(".cdk-overlay-container"));
+ assert.equal(panel.querySelector(".panel-search"), null);
+ assert.equal(select._positions[0].originY, "top");
+ assert.equal(select._positions[0].overlayY, "bottom");
+ assert.ok(select._positions.some(position => position.originY === "bottom"));
+ select.close();
+ await env.settle(fixture);
 });

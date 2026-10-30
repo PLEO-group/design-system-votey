@@ -89,8 +89,8 @@
       </tbody>
     </table>
   </div>
-  @if (paginated()) {
-    <vt-pagination [page]="effectivePage()" [size]="size()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
+  @if (pagination() !== "none") {
+    <vt-pagination [page]="effectivePage()" [size]="effectiveSize()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
       [disabled]="disabled() || confirming()" [loading]="loading()" (pagination)="paginate($event)" />
   }
 </section>

@@ -89,6 +89,7 @@ export {
 export type {
   VoteySelectSearchFn,
   VoteySelectVariant,
+  VoteySelectPanelPosition,
   VtOption,
 } from "./lib/select/votey-select.component";
 export { VoteyRadioButtonComponent } from "./lib/radio-button/votey-radio-button.component";
@@ -129,7 +130,7 @@ export { VoteyTableComponent } from "./lib/table/votey-table.component";
 export { VoteyTableCellDirective } from "./lib/table/votey-table-cell.directive";
 export { VoteyTableHeaderVariants } from "./lib/table/table.model";
 export type {
-  VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTableFilters, VoteyTableHeaderVariant,
+  VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableFilters, VoteyTableHeaderVariant,
   VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext,
 } from "./lib/table/table.model";
 export { VoteySearchComponent } from "./lib/search/votey-search.component";

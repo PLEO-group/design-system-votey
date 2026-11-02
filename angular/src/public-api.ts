@@ -131,6 +131,6 @@ export { VoteyTableCellDirective } from "./lib/table/votey-table-cell.directive"
 export { VoteyTableHeaderVariants } from "./lib/table/table.model";
 export type {
   VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableFilters, VoteyTableHeaderVariant,
-  VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext,
+  VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext, VoteyTableReorderEvent, VoteyTableRowConfig,
 } from "./lib/table/table.model";
 export { VoteySearchComponent } from "./lib/search/votey-search.component";

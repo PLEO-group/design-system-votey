@@ -7,6 +7,8 @@ const labels = {
   "LABEL.TABLE_CLEAR_SEARCH": "Wyczyść wyszukiwanie",
   "LABEL.TABLE_SELECT_VISIBLE": "Zaznacz wszystkie widoczne rekordy",
   "LABEL.TABLE_SELECT_ROW": "Zaznacz rekord",
+  "LABEL.TABLE_REORDER": "Zmień kolejność wiersza (przeciągnij lub użyj strzałek góra/dół)",
+  "LABEL.TABLE_SHARES": "Liczba udziałów",
   "MESSAGE.SELECTED_RECORDS": "Zaznaczone rekordy",
   "MESSAGE.TABLE_EMPTY": "Brak danych",
   "MESSAGE.TABLE_NO_RESULTS": "Brak wyników wyszukiwania lub filtrowania",
@@ -38,6 +40,11 @@ const sourceRows = Array.from({ length: 57 }, (_, index) => ({
   email: `uczestnik.${index + 1}@przyklad.pl`,
   group: index % 3 === 0 ? "Wspólnicy" : "Uczestnicy",
   active: index % 3 !== 0,
+  shares: index + 1,
+  children: index % 3 === 0 ? [
+    { id: `related-${index}-a`, name: "Osoba reprezentowana z długim nazwiskiem i opisem, który zawija się w wąskiej kolumnie", email: "reprezentowana@przyklad.pl", shares: 2, active: true },
+    { id: `related-${index}-b`, name: "Druga osoba", email: "druga@przyklad.pl", shares: 3, active: true },
+  ] : [],
 }));
 
 const columns = [
@@ -62,6 +69,7 @@ function AngularTablePreview(props) {
         import("@angular/core"), import("@angular/platform-browser"),
         import("@pleodigital/design-system-votey/angular"),
       ]);
+      const { FormControl } = await import("@angular/forms");
       if (!mounted) return;
       class TableDemo {
         constructor() {
@@ -70,6 +78,7 @@ function AngularTablePreview(props) {
           this.page = 0;
           this.size = 10;
           this.rows = [];
+          this.source = structuredClone(sourceRows);
           this.count = 0;
           this.loading = false;
           this.selected = [];
@@ -77,6 +86,9 @@ function AngularTablePreview(props) {
           this.search = "";
           this.columns = columns;
           this.key = row => row.id;
+          this.related = row => row.children ?? [];
+          this.activeId = null;
+          this.editControl = new FormControl("");
           this.timer = null;
           ng.inject(ng.DestroyRef).onDestroy(() => clearTimeout(this.timer));
           this.update(this.args);
@@ -85,12 +97,14 @@ function AngularTablePreview(props) {
           this.args = args;
           this.error = args.error;
           this.columns = args.wide ? columns.map(column => ({ ...column, width: column.id === "email" ? 500 : 260 })) : columns;
+          if (args.editable) this.columns = [...this.columns.slice(0, -1),
+            { id: "shares", header: "LABEL.TABLE_SHARES", width: 180, field: "shares" }, this.columns.at(-1)];
           this.fetch(false);
         }
         fetch(delay) {
           clearTimeout(this.timer);
           const apply = () => {
-            let rows = this.args.empty ? [] : sourceRows;
+            let rows = this.args.empty ? [] : this.source;
             if (this.filters.active) rows = rows.filter(row => row.active);
             if (this.args.searchMode === "remote" && this.search) {
               const phrase = this.search.toLocaleLowerCase();
@@ -115,6 +129,21 @@ function AngularTablePreview(props) {
           latest.current.onQueryChange(event);
           this.fetch(this.args.searchMode === "remote");
         }
+        reorder(event) {
+          const visibleKeys = new Set(event.rows.map(row => row.id));
+          let index = 0;
+          this.source = this.source.map(row => visibleKeys.has(row.id) ? event.rows[index++] : row);
+          this.fetch(false);
+          latest.current.onRowReorder(event);
+        }
+        beginEdit(row) { this.activeId = row.id; this.editControl.setValue(String(row.shares)); }
+        saveShares(table, context) {
+          const next = table.nextCell(context);
+          context.$implicit.shares = this.editControl.value;
+          latest.current.onCellSave({ row: context.$implicit, value: this.editControl.value });
+          this.activeId = next?.$implicit.id ?? null;
+          if (next) this.editControl.setValue(String(next.$implicit.shares));
+        }
         selection(keys) { this.selected = keys; latest.current.onSelectionChange(keys); }
         edit(row) { latest.current.onRowAction(row); }
         bulk() { latest.current.onBulkAction(this.selected); }
@@ -123,10 +152,11 @@ function AngularTablePreview(props) {
       // JIT demo host composes only public package components and directives.
       ng.Component({
         selector: "vt-table-demo", standalone: true,
-        imports: [ds.VoteyTableComponent, ds.VoteyTableCellDirective, ds.VoteyButtonComponent, ds.VoteyTextComponent],
+        imports: [ds.VoteyTableComponent, ds.VoteyTableCellDirective, ds.VoteyButtonComponent, ds.VoteyTextComponent, ds.VoteyInputComponent],
         template: `
           <vt-table #table label="LABEL.TABLE_DEMO" [rows]="rows" [columns]="columns" [rowKey]="key"
-            [headerVariant]="args.headerVariant"
+            [headerVariant]="args.headerVariant" [relatedRows]="args.related ? related : undefined"
+            [reorderable]="args.reorderable" (rowReorder)="reorder($event)"
             [selectable]="args.selectable" [pagination]="args.pagination" [page]="page" [size]="size"
             [totalElements]="count" [loading]="loading" [error]="error" [disabled]="args.disabled"
             [searchMode]="args.searchMode" [search]="search" [filters]="filters"
@@ -140,6 +170,18 @@ function AngularTablePreview(props) {
             <ng-template vtTableCell="actions" [vtTableCellOf]="table" let-row>
               <vt-button variant="ghost" ico="ui-edit" text="BUTTON.TABLE_DEMO_EDIT" [disabled]="args.disabled || loading" (pressed)="edit(row)" />
             </ng-template>
+            @if (args.editable) {
+              <ng-template vtTableCell="shares" [vtTableCellOf]="table" let-row let-parent="parent"
+                let-childIndex="childIndex" let-index="index" let-column="column" let-value="value">
+                @if (activeId === row.id) {
+                  <vt-input label="LABEL.TABLE_SHARES" [control]="editControl" [disabled]="args.disabled || loading"
+                    (keydown.enter)="saveShares(table, { $implicit: row, parent, childIndex, index, column, value })"
+                    (keydown.escape)="activeId = null" />
+                } @else {
+                  <vt-button variant="link" [text]="'' + row.shares" [disabled]="args.disabled || loading" (pressed)="beginEdit(row)" />
+                }
+              </ng-template>
+            }
             @if (args.custom) {
               <ng-template vtTableCell="status" [vtTableCellOf]="table" let-row>
                 <vt-text variant="caption-extrabold" [color]="row.active ? 'accent' : 'muted'" [content]="row.active ? 'Aktywny' : 'Nieaktywny'" />
@@ -189,8 +231,9 @@ export default {
   },
   args: {
     selectable: false, pagination: "none", searchMode: "none", custom: false, headerVariant: "standard",
+    related: false, reorderable: false, editable: false,
     loading: false, empty: false, error: false, disabled: false, wide: false,
-    onQueryChange: fn(), onSelectionChange: fn(), onRowAction: fn(), onBulkAction: fn(), onRetry: fn(),
+    onQueryChange: fn(), onSelectionChange: fn(), onRowAction: fn(), onBulkAction: fn(), onRetry: fn(), onRowReorder: fn(), onCellSave: fn(),
   },
 };
 
@@ -210,3 +253,6 @@ export const Loading = { args: { loading: true, selectable: true, pagination: "r
 export const Empty = { args: { empty: true } };
 export const Error = { args: { error: true } };
 export const WideTable = { args: { wide: true, selectable: true, custom: true } };
+
+export const RelatedRowsAndEditors = { args: { related: true, editable: true, selectable: true, pagination: "local" } };
+export const ReorderRows = { args: { reorderable: true } };

@@ -33,7 +33,7 @@ async function createTable(inputs = {}) {
 
 const rowChecks = fixture => env.all(fixture, 'tbody input[type="checkbox"]');
 const headerCheck = fixture => env.by(fixture, 'thead input[type="checkbox"]');
-const bodyText = fixture => env.by(fixture, "tbody").textContent;
+const bodyText = fixture => env.all(fixture, "tbody").map(body => body.textContent).join(" ");
 async function click(fixture, element) { element.click(); await env.settle(fixture); }
 async function closeDialog(fixture, accept) {
   const buttons = [...document.querySelectorAll(".confirmation button")];
@@ -583,4 +583,163 @@ test("pagination opens an anchored size menu with above preference and no search
  assert.ok(select._positions.some(position => position.originY === "bottom"));
  select.close();
  await env.settle(fixture);
+});
+const groupedRows = [
+  { id: 'owner', name: 'Owner', children: [
+    { id: 'child-1', name: 'Represented Anna' }, { id: 'child-2', name: 'Represented Jan' },
+  ] },
+  { id: 'other', name: 'Other', children: [] },
+];
+const relatedRows = row => row.children ?? [];
+
+test('related records use native rows, shared columns and one selection per root group', async () => {
+  const { fixture, table, clicks } = await createTable({ rows: groupedRows, relatedRows, selectable: true });
+  assert.equal(env.all(fixture, 'tbody').length, 2);
+  assert.deepEqual(env.all(fixture, 'tbody tr').map(row => row.cells.length), [3, 3, 3, 3]);
+  assert.equal(env.by(fixture, 'tbody .selection-cell').rowSpan, 1);
+  assert.equal(env.all(fixture, '.related-row .selection-cell[aria-hidden="true"]').length, 2);
+  assert.equal(env.all(fixture, 'tbody.grouped .relation-cell').length, 3);
+  assert.equal(env.all(fixture, 'tbody:not(.grouped) .relation-cell').length, 0);
+  assert.equal(rowChecks(fixture).length, 2);
+  await click(fixture, rowChecks(fixture)[0]);
+  assert.deepEqual(table.selectedKeys(), ['owner']);
+  assert.ok(env.by(fixture, 'tbody.selected .related-row'));
+  await click(fixture, env.by(fixture, '.related-row td'));
+  assert.equal(clicks[0], groupedRows[0].children[0]);
+  await click(fixture, headerCheck(fixture));
+  assert.deepEqual(table.selectedKeys(), ['owner', 'other']);
+});
+
+test('paging counts root groups and local search on a related row preserves its complete group', async () => {
+  const { fixture } = await createTable({ rows: groupedRows, relatedRows, pagination: 'local', size: 1,
+    searchMode: 'local', search: 'Represented Jan' });
+  assert.equal(env.all(fixture, 'tbody tr').length, 3);
+  assert.match(bodyText(fixture), /Owner.*Represented Anna.*Represented Jan/s);
+  assert.equal(env.all(fixture, 'tbody').length, 1);
+  assert.match(env.by(fixture, 'vt-pagination .range').textContent, /1–1 \/ 1/);
+});
+
+test('cell context identifies parent and child; nextCell follows the CRM sibling lanes without wrapping', async () => {
+  const { fixture, table } = await createTable({ rows: groupedRows, relatedRows });
+  const groups = table.viewRows();
+  const root = groups[0].cells[0];
+  const child = groups[0].related[0].cells[0];
+  assert.equal(root.parent, null);
+  assert.equal(root.childIndex, null);
+  assert.equal(child.parent, groupedRows[0]);
+  assert.equal(child.index, 0);
+  assert.equal(child.childIndex, 0);
+  assert.equal(table.nextCell(root).$implicit, groupedRows[1]);
+  assert.equal(table.nextCell(child).$implicit, groupedRows[0].children[1]);
+  assert.equal(table.nextCell(groups[0].related[1].cells[0]), null);
+  assert.equal(table.nextCell(groups[1].cells[0]), null);
+  fixture.componentRef.setInput('rows', groupedRows.map(row => ({ ...row })));
+  await env.settle(fixture);
+  assert.equal(table.nextCell(root), null, 'stale context must not address replacement rows');
+  fixture.componentRef.setInput('disabled', true);
+  await env.settle(fixture);
+  assert.equal(table.nextCell(table.viewRows()[0].cells[0]), null);
+});
+
+test('related cell templates keep per-person actions and values, including uneven content', async () => {
+  const { ng, ds, TestBed } = env;
+  class Host {
+    rows = groupedRows;
+    related = relatedRows;
+    columns = columns;
+    actions = [];
+  }
+  ng.Component({ selector: 'test-related-host', imports: [ds.VoteyTableComponent, ds.VoteyTableCellDirective, ds.VoteyButtonComponent],
+    template: `<vt-table #table label="Members" [rows]="rows" [columns]="columns" [relatedRows]="related">
+      <ng-template vtTableCell="name" [vtTableCellOf]="table" let-row let-parent="parent" let-child="childIndex" let-index="index">
+        <span class="relation">{{ parent?.id ?? 'root' }}:{{ child }}:{{ index }}</span>
+        <vt-button [text]="row.name" (pressed)="actions.push(row.id)" />
+      </ng-template></vt-table>` })(Host);
+  TestBed.configureTestingModule({ imports: [Host] });
+  const fixture = TestBed.createComponent(Host);
+  await env.settle(fixture);
+  assert.deepEqual(env.all(fixture, '.relation').map(node => node.textContent), ['root::0', 'owner:0:0', 'owner:1:0', 'root::1']);
+  await click(fixture, env.all(fixture, 'tbody button')[1]);
+  assert.deepEqual(fixture.componentInstance.actions, ['child-1']);
+});
+
+test('CDK reorder emits a copy of visible root groups, keeps related rows and rejects stale drags', async () => {
+  const { CdkDrag, CdkDropList } = await import('@angular/cdk/drag-drop');
+  const { fixture, table } = await createTable({ rows: groupedRows, relatedRows, reorderable: true });
+  const events = [];
+  table.rowReorder.subscribe(event => events.push(event));
+  const listNode = fixture.debugElement.query(node => node.providerTokens.includes(CdkDropList));
+  const dragNode = fixture.debugElement.query(node => node.providerTokens.includes(CdkDrag));
+  const list = listNode.injector.get(CdkDropList);
+  const item = dragNode.injector.get(CdkDrag);
+  const event = { previousIndex: 0, currentIndex: 1, container: list, previousContainer: list, item, isPointerOverContainer: true };
+  item.started.emit({ source: item });
+  item.ended.emit({ source: item });
+  list.dropped.emit(event);
+  assert.equal(events.length, 1);
+  assert.deepEqual(events[0], { row: groupedRows[0], rows: [groupedRows[1], groupedRows[0]], previousIndex: 0, currentIndex: 1 });
+  assert.equal(groupedRows[0].id, 'owner', 'input is never mutated');
+  assert.equal(env.all(fixture, 'tbody tr').length, 4);
+  item.started.emit({ source: item });
+  fixture.componentRef.setInput('rows', [...groupedRows]);
+  await env.settle(fixture);
+  list.dropped.emit(event);
+  assert.equal(events.length, 1);
+  item.started.emit({ source: item });
+  fixture.componentRef.setInput('search', 'new remote context');
+  await env.settle(fixture);
+  list.dropped.emit(event);
+  assert.equal(events.length, 1, 'changing the query cancels the drag even before new rows arrive');
+  fixture.componentRef.setInput('disabled', true);
+  await env.settle(fixture);
+  item.started.emit({ source: item });
+  list.dropped.emit(event);
+  assert.equal(events.length, 1);
+});
+
+test('reorder handle supports keyboard and blocks boundary moves, row activation and disabled actions', async () => {
+  const { fixture, table, clicks } = await createTable({ reorderable: true });
+  const events = [];
+  table.rowReorder.subscribe(event => events.push(event));
+  const handle = env.by(fixture, 'tbody .drag-cell button');
+  handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+  assert.equal(events.length, 0);
+  handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+  assert.deepEqual(events[0].rows.map(row => row.id), ['b', 'a', 'c', 'd']);
+  await click(fixture, handle);
+  assert.deepEqual(clicks, []);
+  fixture.componentRef.setInput('loading', true);
+  await env.settle(fixture);
+  handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+  assert.equal(events.length, 1);
+  assert.equal(env.all(fixture, 'thead th').length, 3);
+  assert.equal(env.all(fixture, '.skeleton-row td').length, 15);
+});
+test('row configuration preserves data attributes, group boundaries and opt-in keyboard activation', async () => {
+  const { fixture, clicks } = await createTable({ rows: groupedRows, relatedRows, rowKeyboardActivation: true,
+    rowConfig: row => ({ tone: 'error', tooltip: 'Warning', attributes: { 'data-record': row.id }, groupAttributes: { 'data-group': row.id } }) });
+  const root = env.by(fixture, 'tr[data-record="owner"]');
+  assert.ok(root.classList.contains('row-error'));
+  assert.equal(root.getAttribute('tabindex'), '0');
+  assert.equal(env.by(fixture, 'tbody[data-group="owner"]').rows.length, 3);
+  root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  assert.equal(clicks[0], groupedRows[0]);
+  fixture.componentRef.setInput('rowConfig', () => ({}));
+  await env.settle(fixture);
+  assert.equal(root.getAttribute('data-record'), null);
+  assert.equal(env.by(fixture, 'tbody[data-group]'), null);
+  fixture.componentRef.setInput('disabled', true);
+  await env.settle(fixture);
+  root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  assert.equal(clicks.length, 1);
+});
+
+test('table control test ids survive rendering without adding row activation to control events', async () => {
+  const { fixture, clicks } = await createTable({ selectable: true, reorderable: true, selectionDataCy: 'row-check', selectAllDataCy: 'all-check', reorderDataCy: 'row-drag', rowKeyboardActivation: true });
+  assert.ok(env.by(fixture, 'thead [data-cy="all-check"] input'));
+  assert.ok(env.by(fixture, 'tbody [data-cy="row-check"] input'));
+  assert.ok(env.by(fixture, 'tbody [data-cy="row-drag"] button'));
+  await click(fixture, env.by(fixture, 'tbody [data-cy="row-check"] input'));
+  env.by(fixture, 'tbody [data-cy="row-drag"] button').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  assert.deepEqual(clicks, []);
 });

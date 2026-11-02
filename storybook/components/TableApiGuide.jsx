@@ -13,6 +13,13 @@ const inputGroups = [
     ["label", "string", "wymagane", "Klucz tłumaczenia dostępnej nazwy tabeli."],
     ["headerVariant", "'standard' | 'heavy'", "'standard'", "Standard: tło surface (białe w light) i tekst primary. Heavy: bg-inverse, tekst inverse i zaokrąglone końce."],
   ]],
+  ["Grupy i kolejność", [
+    ["rowConfig", "(row: T) => VoteyTableRowConfig", "brak", "tone: default/accent/error, tooltip, attributes: atrybuty data-* wiersza, groupAttributes: atrybuty data-* grupy tbody. Atrybuty poprzedniej konfiguracji są usuwane przy aktualizacji."],
+    ["rowKeyboardActivation", "boolean", "false", "Włącza tabindex wiersza i aktywację Enterem przez rowClick. Kontrolki w komórkach zachowują własną obsługę."],
+    ["selectionDataCy / selectAllDataCy / reorderDataCy", "string", "''", "Opcjonalne data-cy kontrolek zaznaczania i uchwytu przeciągania."],
+    ["relatedRows", "(row: T) => readonly T[]", "brak", "Jeden poziom powiązanych rekordów. Wspólne kolumny i osobne natywne wiersze; checkbox i paginacja dotyczą grupy. Kontekst komórki zawiera parent i childIndex."],
+    ["reorderable", "boolean", "false", "Przeciąganie całej grupy i strzałki góra/dół na uchwycie. Konsument obsługuje rowReorder, aktualizuje rows i zapisuje kolejność."],
+  ]],
   ["Zaznaczanie", [
     ["selectable", "boolean", "false", "Włącza checkboxy rekordów i checkbox wszystkich widocznych."],
     ["selectedKeys", "readonly VoteyTableKey[]", "[]", "Model z bindingiem dwukierunkowym. Przechowuje identyfikatory również z innych stron."],
@@ -51,6 +58,7 @@ const columnsApi = [
 ];
 
 const events = [
+  ["rowReorder", "VoteyTableReorderEvent<T>", "{ row, rows, previousIndex, currentIndex }. Nowa tablica widocznych grup, indeksy od zera na bieżącej stronie. Bez mutacji inputu. Aplikacja scala fragment z pełnym zbiorem i zapisuje go."],
   ["queryChange", "VoteyTableQuery", "Zatwierdzona zmiana strony, rozmiaru, wyszukiwania lub filtrów. Zaktualizuj stan kontrolowany; w remote pobierz dane."],
   ["selectedKeysChange", "readonly VoteyTableKey[]", "Zdarzenie modelu selectedKeys. Wygodna integracja: [(selectedKeys)]."],
   ["filtersCancelled", "VoteyTableFilters", "Odrzucony kandydat filtrów. Możesz przywrócić szkic formularza do zastosowanych wartości."],
@@ -59,6 +67,7 @@ const events = [
 ];
 
 const translations = [
+  ["LABEL.TABLE_REORDER", "Zmień kolejność wiersza (przeciągnij lub użyj strzałek góra/dół)"],
   ["LABEL.TABLE_CLEAR_SEARCH", "Wyczyść wyszukiwanie"],
   ["LABEL.TABLE_SELECT_VISIBLE", "Zaznacz wszystkie widoczne rekordy"],
   ["LABEL.TABLE_SELECT_ROW", "Zaznacz rekord"],
@@ -280,9 +289,16 @@ const overrides: readonly VoteyTableColumn<Member>[] = [
         ["$implicit", "T", "let-row", "Bieżący rekord."],
         ["column", "VoteyTableColumn<T>", 'let-column="column"', "Definicja renderowanej kolumny."],
         ["value", "VoteyTableValue", 'let-value="value"', "Wynik funkcji value(row)."],
-        ["index", "number", 'let-index="index"', "Indeks rekordu na widocznej stronie."],
+        ["index", "number", 'let-index="index"', "Indeks głównego rekordu/grupy na widocznej stronie."],
+        ["parent", "T | null", 'let-parent="parent"', "Rekord główny dla osoby powiązanej; null dla głównego wiersza."],
+        ["childIndex", "number | null", 'let-childIndex="childIndex"', "Indeks osoby w relatedRows(parent); null dla głównego wiersza."],
       ]} />
       <p><code>[vtTableCellOf]="table"</code> pozwala Angularowi wywnioskować typ rekordu w strict templates. Sam atrybut <code>vtTableCell</code> definiuje wspólny szablon z @switch i @default. Opcjonalne <code>vtTableCell="actions"</code> nadpisuje go dla konkretnego id kolumny. Bez szablonu tabela renderuje tekst body.</p>
+      <div className="method-card"><h3><code>nextCell(context): VoteyTableCellContext&lt;T&gt; | null</code></h3>
+        <p>Wywołaj w handlerze Enter przed zapisem. Dla głównego rekordu zwraca tę samą kolumnę następnej widocznej grupy; dla powiązanego — następnej osoby tego samego rodzica. Nie przechodzi na inną stronę ani nie zawija. Brak celu, nieaktualny kontekst lub blokada zwracają null.</p>
+        <p>FormControl, walidacja, request, focus i aktywny edytor należą do aplikacji. Zapamiętaj cel, zapisz wartość, a dopiero po sukcesie i sprawdzeniu aktualności widoku otwórz kolejny edytor. Przy błędzie zachowaj aktualny.</p>
+        <p>relatedRows zachowuje całą grupę również przy wyszukaniu osoby powiązanej. Jej komórki współdzielą model kolumn i wysokości wynikające z treści. Załączniki, edytory i akcje każdej osoby renderuj przez vtTableCell; parent pozwala wybrać pola dostępne tylko dla głównego uczestnika.</p>
+      </div>
       <div className="intro-grid">
         <article><h3>Toolbar</h3><p>Elementy z <code>vtTableToolbar</code> trafiają nad tabelę. Tu umieszczaj własne kontrolki filtrów i akcje dla całej tabeli.</p></article>
         <article><h3>Akcje zaznaczenia</h3><p><code>selectionActions</code> przyjmuje TemplateRef. Jego <code>$implicit</code> to wszystkie zaznaczone klucze, także z innych stron.</p></article>

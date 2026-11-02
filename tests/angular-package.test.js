@@ -433,11 +433,12 @@ test("checkbox applies a passed form control and emits changed output", async ()
   const {
     FormControl,
     Injector,
+    ɵChangeDetectionScheduler,
     runInInjectionContext,
     VoteyCheckboxComponent,
   } = await loadAngularRuntime();
   const checkbox = runInInjectionContext(
-    Injector.create({ providers: [] }),
+    Injector.create({ providers: [{ provide: ɵChangeDetectionScheduler, useValue: { notify() {} } }] }),
     () => new VoteyCheckboxComponent(),
   );
   const changedValues = [];
@@ -986,6 +987,7 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
     DomSanitizer,
     Injector,
     MatIconRegistry,
+    ɵChangeDetectionScheduler,
     runInInjectionContext,
     VoteyIconRegistryEntries,
     VoteyIllustrationRegistryEntries,
@@ -995,6 +997,7 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
   const sanitizedUrls = [];
   const injector = Injector.create({
     providers: [
+      { provide: ɵChangeDetectionScheduler, useValue: { notify() {} } },
       {
         provide: MatIconRegistry,
         useValue: {

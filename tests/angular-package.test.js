@@ -430,17 +430,14 @@ test("menu emits enabled item selections and dismissal intents", async () => {
 });
 
 test("checkbox applies a passed form control and emits changed output", async () => {
+  const { TestBed } = await import("./helpers/angular-dom.mjs");
   const {
     FormControl,
-    Injector,
-    ɵChangeDetectionScheduler,
-    runInInjectionContext,
     VoteyCheckboxComponent,
   } = await loadAngularRuntime();
-  const checkbox = runInInjectionContext(
-    Injector.create({ providers: [{ provide: ɵChangeDetectionScheduler, useValue: { notify() {} } }] }),
-    () => new VoteyCheckboxComponent(),
-  );
+  TestBed.configureTestingModule({ imports: [VoteyCheckboxComponent] });
+  const fixture = TestBed.createComponent(VoteyCheckboxComponent);
+  const checkbox = fixture.componentInstance;
   const changedValues = [];
   const subscription = checkbox.changed.subscribe((value) =>
     changedValues.push(value),
@@ -462,6 +459,8 @@ test("checkbox applies a passed form control and emits changed output", async ()
   assert.equal(checkbox.formControl.disabled, true);
 
   subscription.unsubscribe();
+  fixture.destroy();
+  TestBed.resetTestingModule();
 });
 
 test("file picker supports drops, batches, validation and clearing", async () => {
@@ -987,7 +986,6 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
     DomSanitizer,
     Injector,
     MatIconRegistry,
-    ɵChangeDetectionScheduler,
     runInInjectionContext,
     VoteyIconRegistryEntries,
     VoteyIllustrationRegistryEntries,
@@ -997,7 +995,6 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
   const sanitizedUrls = [];
   const injector = Injector.create({
     providers: [
-      { provide: ɵChangeDetectionScheduler, useValue: { notify() {} } },
       {
         provide: MatIconRegistry,
         useValue: {
@@ -1042,18 +1039,18 @@ test("SVG registry registers every public Votey asset exactly once", async () =>
 });
 
 test("SVG registry and checkbox share the configured asset base URL", async () => {
+  const { TestBed } = await import("./helpers/angular-dom.mjs");
   const {
     DomSanitizer,
-    Injector,
     MatIconRegistry,
-    runInInjectionContext,
     VOTEY_SVG_REGISTRY_CONFIG,
     VoteyCheckboxComponent,
     VoteySvgRegistryService,
   } = await loadAngularRuntime();
   const registrations = [];
   const config = { assetBaseUrl: "portal/assets/votey/" };
-  const injector = Injector.create({
+  TestBed.configureTestingModule({
+    imports: [VoteyCheckboxComponent],
     providers: [
       { provide: VOTEY_SVG_REGISTRY_CONFIG, useValue: config },
       {
@@ -1074,10 +1071,9 @@ test("SVG registry and checkbox share the configured asset base URL", async () =
       },
     ],
   });
-  const { checkbox, service } = runInInjectionContext(injector, () => ({
-    checkbox: new VoteyCheckboxComponent(),
-    service: new VoteySvgRegistryService(),
-  }));
+  const fixture = TestBed.createComponent(VoteyCheckboxComponent);
+  const checkbox = fixture.componentInstance;
+  const service = TestBed.inject(VoteySvgRegistryService);
 
   service.register();
 
@@ -1088,6 +1084,8 @@ test("SVG registry and checkbox share the configured asset base URL", async () =
     checkbox.checkmarkMaskUrl,
     'url("portal/assets/votey/icons/special/icon_sp_check.svg")',
   );
+  fixture.destroy();
+  TestBed.resetTestingModule();
 
   const checkboxTemplate = fs.readFileSync(
     path.join(

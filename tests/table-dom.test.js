@@ -743,3 +743,38 @@ test('table control test ids survive rendering without adding row activation to 
   env.by(fixture, 'tbody [data-cy="row-drag"] button').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
   assert.deepEqual(clicks, []);
 });
+
+test("ordinary tables do not initialize CDK drag directives and toggling restores handles", async () => {
+  const { fixture } = await createTable();
+  assert.equal(env.by(fixture, '.cdk-drop-list'), null);
+  assert.equal(env.by(fixture, '.cdk-drag'), null);
+  fixture.componentRef.setInput('reorderable', true);
+  await env.settle(fixture);
+  assert.equal(env.all(fixture, 'tbody.cdk-drag').length, rows.length);
+  fixture.componentRef.setInput('reorderable', false);
+  await env.settle(fixture);
+  assert.equal(env.by(fixture, '.cdk-drag'), null);
+});
+
+test("row configuration and related changes retain selection controls", async () => {
+  const { fixture, table } = await createTable({ selectable: true });
+  const control = table.viewRows()[0].control;
+  const cells = table.viewRows()[0].cells;
+  fixture.componentRef.setInput('rowConfig', () => ({ tone: 'error' }));
+  await env.settle(fixture);
+  assert.equal(table.viewRows()[0].control, control);
+  assert.equal(table.viewRows()[0].cells, cells);
+  fixture.componentRef.setInput('relatedRows', () => []);
+  await env.settle(fixture);
+  assert.equal(table.viewRows()[0].control, control);
+});
+
+test("search skips related lookup when parent matches", async () => {
+  let calls = 0;
+  const { fixture } = await createTable({ rows: [rows[0]], searchMode: 'local', search: 'Anna', relatedRows: () => { calls++; return []; } });
+  calls = 0;
+  fixture.componentRef.setInput('search', 'Ann');
+  await env.settle(fixture);
+  assert.equal(calls, 1, "only rendering reads related rows; matching the parent skips the search lookup");
+  assert.match(bodyText(fixture), /Anna/);
+});

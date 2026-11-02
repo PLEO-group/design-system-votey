@@ -321,6 +321,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "accent",
     "error",
     "on-sidebar",
+    "state-warning",
+    "state-info",
   ]);
   const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
   const chipDependencies = VoteyChipComponent.ɵcmp.dependencies();

@@ -15,9 +15,49 @@
     </div>
   }
   <div class="viewport" tabindex="0" [attr.aria-label]="label() | vtTranslate">
+    @if (reorderable()) {
     <table cdkDropList cdkDropListOrientation="vertical" [attr.width]="tableWidth()"
-      [cdkDropListData]="visibleRows()" [cdkDropListDisabled]="!reorderable() || blocked() || error()"
+      [cdkDropListData]="visibleRows()" [cdkDropListDisabled]="blocked() || error()"
       (cdkDropListDropped)="reorder($event)">
+      <ng-container [ngTemplateOutlet]="tableContent" />
+    </table>
+    } @else {
+      <table [attr.width]="tableWidth()"><ng-container [ngTemplateOutlet]="tableContent" /></table>
+    }
+  </div>
+  @if (pagination() !== "none") {
+    <vt-pagination [page]="effectivePage()" [size]="effectiveSize()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
+      [disabled]="disabled() || confirming()" [loading]="loading()" (pagination)="paginate($event)" />
+  }
+</section>
+
+<ng-template #confirmation>
+  <div class="confirmation">
+    <vt-text variant="h4" [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_TITLE' | vtTranslate" />
+    <vt-text [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_RESET' | vtTranslate" />
+    <div class="confirmation-actions">
+      <vt-button variant="secondary" text="BUTTON.TABLE_KEEP_SELECTION" (pressed)="closeConfirmation(false)" />
+      <vt-button text="BUTTON.TABLE_APPLY_AND_CLEAR" (pressed)="closeConfirmation(true)" />
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #dataCells let-cells let-relatedGroup="relatedGroup">
+  @for (column of viewColumns(); track column.definition.id; let cellIndex = $index) {
+    @let cell = cells[cellIndex];
+    <td [class.actions-cell]="column.definition.role === 'actions'"
+      [class.relation-cell]="relatedGroup && cellIndex === 0"
+      [class.align-center]="column.definition.align === 'center'" [class.align-right]="column.definition.align === 'right'">
+      @if (column.template) {
+        <ng-container [ngTemplateOutlet]="column.template" [ngTemplateOutletContext]="cell" />
+      } @else {
+        <vt-text variant="body" [wrap]="true" [content]="'' + (cell.value ?? '')" />
+      }
+    </td>
+  }
+</ng-template>
+
+<ng-template #tableContent>
       <caption class="accessible-label">{{ label() | vtTranslate }}</caption>
       <colgroup>
         @if (reorderable()) { <col width="56" /> }
@@ -65,12 +105,30 @@
         </td></tr></tbody>
       } @else {
         @for (record of viewRows(); track record.key; let index = $index) {
+          @if (reorderable()) {
           <tbody cdkDrag cdkDragLockAxis="y" cdkDragPreviewContainer="parent"
             [vtTableRow]="record.config" [vtTableRowGroup]="true"
             [class.selected]="record.selected" [class.striped]="index % 2 === 1"
             [class.grouped]="record.related.length > 0" [class.with-drag]="reorderable()"
             [cdkDragData]="record.row" [cdkDragDisabled]="!reorderable() || blocked()"
             (cdkDragStarted)="beginReorder()">
+            <ng-container [ngTemplateOutlet]="groupRows" [ngTemplateOutletContext]="{ $implicit: record, index: index }" />
+          </tbody>
+          } @else {
+          <tbody [vtTableRow]="record.config" [vtTableRowGroup]="true"
+            [class.selected]="record.selected" [class.striped]="index % 2 === 1" [class.grouped]="record.related.length > 0">
+            <ng-container [ngTemplateOutlet]="groupRows" [ngTemplateOutletContext]="{ $implicit: record, index: index }" />
+          </tbody>
+          }
+        } @empty {
+          <tbody><tr><td class="state-cell" [attr.colspan]="columnCount()">
+            <div class="state" role="status"><vt-text [wrap]="true" [content]="(hasQuery() ? noResultsText() : emptyText()) | vtTranslate" /></div>
+          </td></tr></tbody>
+        }
+      }
+</ng-template>
+
+<ng-template #groupRows let-record let-index="index">
             <tr [vtTableRow]="record.config" [class.row-accent]="record.config.tone === 'accent'" [class.row-error]="record.config.tone === 'error'"
               [matTooltip]="(record.config.tooltip ?? '') | vtTranslate" [matTooltipDisabled]="!record.config.tooltip"
               [attr.tabindex]="rowKeyboardActivation() ? 0 : null"
@@ -99,43 +157,4 @@
                 <ng-container [ngTemplateOutlet]="dataCells" [ngTemplateOutletContext]="{ $implicit: related.cells, relatedGroup: true }" />
               </tr>
             }
-          </tbody>
-        } @empty {
-          <tbody><tr><td class="state-cell" [attr.colspan]="columnCount()">
-            <div class="state" role="status"><vt-text [wrap]="true" [content]="(hasQuery() ? noResultsText() : emptyText()) | vtTranslate" /></div>
-          </td></tr></tbody>
-        }
-      }
-    </table>
-  </div>
-  @if (pagination() !== "none") {
-    <vt-pagination [page]="effectivePage()" [size]="effectiveSize()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
-      [disabled]="disabled() || confirming()" [loading]="loading()" (pagination)="paginate($event)" />
-  }
-</section>
-
-<ng-template #confirmation>
-  <div class="confirmation">
-    <vt-text variant="h4" [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_TITLE' | vtTranslate" />
-    <vt-text [wrap]="true" [content]="'MESSAGE.TABLE_CONFIRM_RESET' | vtTranslate" />
-    <div class="confirmation-actions">
-      <vt-button variant="secondary" text="BUTTON.TABLE_KEEP_SELECTION" (pressed)="closeConfirmation(false)" />
-      <vt-button text="BUTTON.TABLE_APPLY_AND_CLEAR" (pressed)="closeConfirmation(true)" />
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #dataCells let-cells let-relatedGroup="relatedGroup">
-  @for (column of viewColumns(); track column.definition.id; let cellIndex = $index) {
-    @let cell = cells[cellIndex];
-    <td [class.actions-cell]="column.definition.role === 'actions'"
-      [class.relation-cell]="relatedGroup && cellIndex === 0"
-      [class.align-center]="column.definition.align === 'center'" [class.align-right]="column.definition.align === 'right'">
-      @if (column.template) {
-        <ng-container [ngTemplateOutlet]="column.template" [ngTemplateOutletContext]="cell" />
-      } @else {
-        <vt-text variant="body" [wrap]="true" [content]="'' + (cell.value ?? '')" />
-      }
-    </td>
-  }
 </ng-template>

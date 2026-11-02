@@ -1040,6 +1040,8 @@ declare class VoteyTableComponent<T> implements OnInit, OnDestroy {
     protected readonly columnCount: Signal<number>;
     protected readonly tableWidth: Signal<number>;
     protected readonly viewColumns: Signal<readonly TableColumnView<T>[]>;
+    private readonly selectionControls;
+    private readonly baseRowViews;
     private readonly rowViews;
     protected readonly viewRows: Signal<readonly (TableRowView<T> & {
         selected: boolean;
@@ -1060,6 +1062,7 @@ declare class VoteyTableComponent<T> implements OnInit, OnDestroy {
     protected paginate(event: PaginationEvent): void;
     protected activateRow(row: T, event: Event): void;
     protected closeConfirmation(accepted: boolean): void;
+    private rowControl;
     private resolveRowKey;
     private selectionKey;
     private synchronizeQueryInputs;

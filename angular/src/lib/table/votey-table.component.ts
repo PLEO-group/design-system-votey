@@ -119,8 +119,8 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     const search: string = this.appliedSearch();
     if (this.searchMode() !== "local" || !search) return rows;
     const columns: readonly VoteyTableColumn<T>[] = this.resolvedColumns().filter((column) => column.searchable);
-    return rows.filter((row: T) => [row, ...(this.relatedRows()?.(row) ?? [])].some((record: T) =>
-      matchesTableSearch(columns.map((column) => readTableValue(record, column)), search)));
+    const matches = (record: T): boolean => matchesTableSearch(columns.map((column) => readTableValue(record, column)), search);
+    return rows.filter((row: T) => matches(row) || (this.relatedRows()?.(row) ?? []).some(matches));
   });
   private readonly localPagination: Signal<boolean> = computed(() =>
     this.pagination() === "local");
@@ -159,18 +159,23 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
       definition, template: templates.get(definition.id) ?? templates.get("") ?? null,
     }));
   });
-  private readonly rowViews: Signal<readonly TableRowView<T>[]> = computed(() =>
+  private readonly selectionControls: Map<VoteyTableKey | object, FormControl<boolean | null>> = new Map();
+  private readonly baseRowViews = computed(() =>
     this.visibleRows().map((row: T, index: number) => ({
-      key: this.resolveRowKey(row), row, config: this.rowConfig()?.(row) ?? {},
-      control: new FormControl<boolean | null>(false),
+      key: this.resolveRowKey(row), row,
+      control: this.rowControl(row),
       cells: this.resolvedColumns().map((column: VoteyTableColumn<T>) =>
         ({ $implicit: row, column, value: readTableValue(row, column), index, parent: null, childIndex: null })),
       related: (this.relatedRows()?.(row) ?? []).map((child: T, childIndex: number) => ({
-        key: this.resolveRowKey(child), row: child, config: this.rowConfig()?.(child) ?? {},
+        key: this.resolveRowKey(child), row: child,
         cells: this.resolvedColumns().map((column: VoteyTableColumn<T>) =>
           ({ $implicit: child, column, value: readTableValue(child, column), index, parent: row, childIndex })),
       })),
     })));
+  private readonly rowViews: Signal<readonly TableRowView<T>[]> = computed(() => this.baseRowViews().map(record => ({
+    ...record, config: this.rowConfig()?.(record.row) ?? {},
+    related: record.related.map(child => ({ ...child, config: this.rowConfig()?.(child.row) ?? {} })),
+  })));
   protected readonly viewRows: Signal<readonly (TableRowView<T> & { selected: boolean })[]> = computed(() =>
     this.rowViews().map((record: TableRowView<T>) => ({
       ...record, selected: this.selectable() && this.selectedKeySet().has(this.selectionKey(record.row)),
@@ -290,6 +295,16 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
 
   protected closeConfirmation(accepted: boolean): void { this.activeDialog?.close(accepted); }
 
+  private rowControl(row: T): FormControl<boolean | null> {
+    const key: VoteyTableKey | object = this.resolveRowKey(row);
+    let control: FormControl<boolean | null> | undefined = this.selectionControls.get(key);
+    if (!control) {
+      control = new FormControl<boolean | null>(false);
+      this.selectionControls.set(key, control);
+    }
+    return control;
+  }
+
   private resolveRowKey(row: T): VoteyTableKey | object {
     const custom: ((row: T) => VoteyTableKey) | undefined = this.rowKey();
     if (custom) return custom(row);
@@ -327,7 +342,8 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
 
   private observeTableContext(): void {
     effect(() => {
-      this.visibleRows();
+      const keys = new Set(this.visibleRows().map(row => this.resolveRowKey(row)));
+      for (const key of this.selectionControls.keys()) if (!keys.has(key)) this.selectionControls.delete(key);
       this.anchor = null;
     });
     effect(() => {

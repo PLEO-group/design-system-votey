@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   input,
   type InputSignal,
@@ -52,6 +53,17 @@ export class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<boole
   public readonly value: InputSignal<string> = input<string>("");
   public readonly ignoredErrors: InputSignal<string[]> = input<string[]>([]);
   public readonly changed: OutputEmitterRef<boolean> = output<boolean>();
+
+  public constructor() {
+    super();
+    effect((onCleanup): void => {
+      const control = this.formControl;
+      if (!this.disabled() || control.disabled) return;
+
+      control.disable();
+      onCleanup((): void => control.enable());
+    });
+  }
 
   protected get errorKeys(): string[] {
     return this.formControl.invalid && this.formControl.touched

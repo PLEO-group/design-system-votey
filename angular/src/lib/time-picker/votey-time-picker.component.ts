@@ -61,8 +61,15 @@ export class VoteyTimePickerComponent extends PickerControl {
       if (this.configurationError()) this.opened.set(false);
       this.refreshValidation();
     });
-    effect((): void => {
-      if (this.disabled()) this.opened.set(false);
+    effect((onCleanup): void => {
+      const control = this.formControl;
+      if (!this.disabled()) return;
+
+      this.opened.set(false);
+      if (control.disabled) return;
+
+      control.disable();
+      onCleanup((): void => control.enable());
     });
   }
 
@@ -94,6 +101,7 @@ export class VoteyTimePickerComponent extends PickerControl {
     const parsed = parseTimeInput(value);
     if (parsed.error === "format") return { value: null, error: { voteyPickerFormat: { expected: this.expectedFormat } } };
     if (parsed.error === "time") return { value: null, error: { voteyPickerTime: { input: value } } };
+    if (!parsed.value) return { value: null, error: { voteyPickerTime: { input: value } } };
     if (!isTimeWithinBounds(value, this.min(), this.max())) {
       return { value: null, error: { voteyPickerRange: { min: this.min(), max: this.max() } } };
     }

@@ -230,6 +230,7 @@ declare class VoteyCheckboxComponent extends VoteyFormControlApplyDirective<bool
     readonly value: InputSignal<string>;
     readonly ignoredErrors: InputSignal<string[]>;
     readonly changed: OutputEmitterRef<boolean>;
+    constructor();
     protected get errorKeys(): string[];
     private readonly svgRegistryConfig;
     protected readonly checkmarkMaskUrl: string;
@@ -537,6 +538,7 @@ declare class VoteySelectComponent extends VoteyFormControlApplyDirective<unknow
     protected readonly renderedOptionViews: Signal<readonly (SelectOptionView & {
         readonly hidden: boolean;
     })[]>;
+    constructor();
     ngOnInit(): void;
     ngAfterViewInit(): void;
     private observeSearchChanges;

@@ -1,4 +1,5 @@
 import { MatTooltip } from "@angular/material/tooltip";
+import { CdkDrag, CdkDragHandle, CdkDropList, moveItemInArray, type CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
   ChangeDetectionStrategy, Component, computed, contentChildren, DestroyRef,
   effect, inject, input, linkedSignal, model, output, signal, TemplateRef, viewChild,
@@ -16,20 +17,23 @@ import { VoteyPaginationComponent } from "../pagination/votey-pagination.compone
 import { defaultFetchParams, type PaginationEvent } from "../pagination/pagination.model";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import { injectVoteyTranslator, type VoteyTranslator } from "../translation/votey-translation";
+import { VoteyTableRowDirective } from "./votey-table-row.directive";
 import { VoteyTableCellDirective } from "./votey-table-cell.directive";
 import { matchesTableSearch, updateTableSelection, resolveTablePage } from "./table-state";
 import { readTableValue, resolveTableColumnsFromKeys, tableColumnKeys } from "./table-columns";
 import { tableSearchTerms } from "./table-search";
 import type {
   VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableKey,
-  VoteyTableQuery, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableSelectionContext, VoteyTableHeaderVariant,
+  VoteyTableQuery, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableSelectionContext, VoteyTableHeaderVariant, VoteyTableReorderEvent, VoteyTableRowConfig,
 } from "./table.model";
 
 interface TableRowView<T> {
   key: VoteyTableKey | object;
   row: T;
+  config: VoteyTableRowConfig;
   control: FormControl<boolean | null>;
   cells: readonly VoteyTableCellContext<T>[];
+  related: readonly { key: VoteyTableKey | object; cells: readonly VoteyTableCellContext<T>[]; row: T; config: VoteyTableRowConfig }[];
 }
 
 interface TableColumnView<T> {
@@ -43,7 +47,7 @@ interface TableColumnView<T> {
   templateUrl: "./votey-table.component.html",
   styleUrl: "./votey-table.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTooltip, NgTemplateOutlet, DialogModule, VoteyButtonComponent, VoteyCheckboxComponent,
+  imports: [VoteyTableRowDirective, CdkDrag, CdkDragHandle, CdkDropList, MatTooltip, NgTemplateOutlet, DialogModule, VoteyButtonComponent, VoteyCheckboxComponent,
     VoteySearchComponent, VoteyTextComponent, VoteyPaginationComponent, VoteyTranslatePipe],
 })
 export class VoteyTableComponent<T> implements OnInit, OnDestroy {
@@ -57,6 +61,14 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   public readonly label: InputSignal<string> = input.required<string>();
   public readonly headerVariant: InputSignal<VoteyTableHeaderVariant> = input<VoteyTableHeaderVariant>("standard");
   public readonly selectable: InputSignal<boolean> = input(false);
+  public readonly relatedRows: InputSignal<((row: T) => readonly T[]) | undefined> = input<(row: T) => readonly T[]>();
+  public readonly rowConfig: InputSignal<((row: T) => VoteyTableRowConfig) | undefined> = input<(row: T) => VoteyTableRowConfig>();
+  public readonly rowKeyboardActivation: InputSignal<boolean> = input(false);
+  public readonly selectionDataCy: InputSignal<string> = input("");
+  public readonly selectAllDataCy: InputSignal<string> = input("");
+  public readonly reorderDataCy: InputSignal<string> = input("");
+  public readonly reorderable: InputSignal<boolean> = input(false);
+  public readonly rowReorder: OutputEmitterRef<VoteyTableReorderEvent<T>> = output<VoteyTableReorderEvent<T>>();
   public readonly selectedKeys: ModelSignal<readonly VoteyTableKey[]> = model<readonly VoteyTableKey[]>([]);
   public readonly pagination: InputSignal<VoteyTablePaginationMode> = input<VoteyTablePaginationMode>("none");
   public readonly page: InputSignal<number> = input(defaultFetchParams.page);
@@ -90,6 +102,7 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   private anchor: number | null = null;
   private shiftSelection: boolean = false;
   private activeDialog: DialogRef<boolean> | null = null;
+  private dragRows: readonly T[] | null = null;
   protected readonly confirming: WritableSignal<boolean> = signal(false);
 
   private readonly columnKeys: Signal<readonly string[]> = computed(
@@ -106,7 +119,8 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     const search: string = this.appliedSearch();
     if (this.searchMode() !== "local" || !search) return rows;
     const columns: readonly VoteyTableColumn<T>[] = this.resolvedColumns().filter((column) => column.searchable);
-    return rows.filter((row: T) => matchesTableSearch(columns.map((column) => readTableValue(row, column)), search));
+    const matches = (record: T): boolean => matchesTableSearch(columns.map((column) => readTableValue(record, column)), search);
+    return rows.filter((row: T) => matches(row) || (this.relatedRows()?.(row) ?? []).some(matches));
   });
   private readonly localPagination: Signal<boolean> = computed(() =>
     this.pagination() === "local");
@@ -130,10 +144,10 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   protected readonly someSelected: Signal<boolean> = computed(() => !this.allSelected()
     && this.visibleSelectionKeys().some((key: VoteyTableKey) => this.selectedKeySet().has(key)));
   protected readonly skeletonRows: Signal<readonly number[]> = computed(() => Array.from({ length: this.pagination() !== "none" ? this.effectiveSize() : 5 }, (_, index: number) => index));
-  protected readonly columnCount: Signal<number> = computed(() => this.resolvedColumns().length + (this.selectable() ? 1 : 0));
+  protected readonly columnCount: Signal<number> = computed(() => this.resolvedColumns().length + (this.selectable() ? 1 : 0) + (this.reorderable() ? 1 : 0));
   protected readonly tableWidth: Signal<number> = computed(() => this.resolvedColumns().reduce(
     (width: number, column: VoteyTableColumn<T>): number => width + (column.width ?? 180),
-    this.selectable() ? 56 : 0,
+    (this.selectable() ? 56 : 0) + (this.reorderable() ? 56 : 0),
   ));
   protected readonly viewColumns: Signal<readonly TableColumnView<T>[]> = computed(() => {
     const templates: Map<string, TemplateRef<VoteyTableCellContext<T>>> = new Map();
@@ -145,13 +159,23 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
       definition, template: templates.get(definition.id) ?? templates.get("") ?? null,
     }));
   });
-  private readonly rowViews: Signal<readonly TableRowView<T>[]> = computed(() =>
+  private readonly selectionControls: Map<VoteyTableKey | object, FormControl<boolean | null>> = new Map();
+  private readonly baseRowViews = computed(() =>
     this.visibleRows().map((row: T, index: number) => ({
       key: this.resolveRowKey(row), row,
-      control: new FormControl<boolean | null>(false),
+      control: this.rowControl(row),
       cells: this.resolvedColumns().map((column: VoteyTableColumn<T>) =>
-        ({ $implicit: row, column, value: readTableValue(row, column), index })),
+        ({ $implicit: row, column, value: readTableValue(row, column), index, parent: null, childIndex: null })),
+      related: (this.relatedRows()?.(row) ?? []).map((child: T, childIndex: number) => ({
+        key: this.resolveRowKey(child), row: child,
+        cells: this.resolvedColumns().map((column: VoteyTableColumn<T>) =>
+          ({ $implicit: child, column, value: readTableValue(child, column), index, parent: row, childIndex })),
+      })),
     })));
+  private readonly rowViews: Signal<readonly TableRowView<T>[]> = computed(() => this.baseRowViews().map(record => ({
+    ...record, config: this.rowConfig()?.(record.row) ?? {},
+    related: record.related.map(child => ({ ...child, config: this.rowConfig()?.(child.row) ?? {} })),
+  })));
   protected readonly viewRows: Signal<readonly (TableRowView<T> & { selected: boolean })[]> = computed(() =>
     this.rowViews().map((record: TableRowView<T>) => ({
       ...record, selected: this.selectable() && this.selectedKeySet().has(this.selectionKey(record.row)),
@@ -170,6 +194,47 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.activeDialog?.close(false);
   }
+
+  public nextCell(context: VoteyTableCellContext<T>): VoteyTableCellContext<T> | null {
+    if (this.blocked() || this.error()) return null;
+    const groups: readonly TableRowView<T>[] = this.rowViews();
+    const groupIndex: number = groups.findIndex((group: TableRowView<T>) =>
+      context.parent === null ? group.row === context.$implicit : group.row === context.parent);
+    const group: TableRowView<T> | undefined = groups[groupIndex];
+    if (!group) return null;
+    const cells: readonly VoteyTableCellContext<T>[] | undefined = context.childIndex === null
+      ? groups[groupIndex + 1]?.cells
+      : group.related.findIndex((child) => child.row === context.$implicit) === context.childIndex
+        ? group.related[context.childIndex + 1]?.cells : undefined;
+    return cells?.find((cell: VoteyTableCellContext<T>) => cell.column.id === context.column.id) ?? null;
+  }
+
+  protected reorder(event: CdkDragDrop<readonly T[]>): void {
+    const rows: readonly T[] = this.visibleRows();
+    const dragRows: readonly T[] | null = this.dragRows;
+    this.dragRows = null;
+    if (!this.reorderable() || this.blocked() || this.error() || !event.isPointerOverContainer
+      || event.container !== event.previousContainer || dragRows !== rows
+      || event.previousIndex === event.currentIndex || event.item.data !== rows[event.previousIndex]) return;
+    this.emitReorder(rows, event.previousIndex, event.currentIndex);
+  }
+
+  protected moveRow(index: number, offset: number, event: Event): void {
+    event.preventDefault();
+    const rows: readonly T[] = this.visibleRows();
+    const target: number = index + offset;
+    if (this.reorderable() && !this.blocked() && !this.error() && target >= 0 && target < rows.length) {
+      this.emitReorder(rows, index, target);
+    }
+  }
+
+  private emitReorder(rows: readonly T[], previousIndex: number, currentIndex: number): void {
+    const reordered: T[] = [...rows];
+    moveItemInArray(reordered, previousIndex, currentIndex);
+    this.rowReorder.emit({ row: rows[previousIndex], rows: reordered, previousIndex, currentIndex });
+  }
+
+  protected beginReorder(): void { this.dragRows = this.visibleRows(); }
 
   public async requestFilters(filters: VoteyTableFilters): Promise<boolean> {
     if (this.blocked()) return false;
@@ -223,12 +288,22 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
     if (!this.blocked()) this.updateQuery(event.page, event.size);
   }
 
-  protected activateRow(row: T, event: MouseEvent): void {
+  protected activateRow(row: T, event: Event): void {
     const target: EventTarget | null = event.target;
     if (!this.blocked() && target instanceof Element && !target.closest("button, a, input, select, textarea, vt-checkbox, [data-table-interactive]")) this.rowClick.emit(row);
   }
 
   protected closeConfirmation(accepted: boolean): void { this.activeDialog?.close(accepted); }
+
+  private rowControl(row: T): FormControl<boolean | null> {
+    const key: VoteyTableKey | object = this.resolveRowKey(row);
+    let control: FormControl<boolean | null> | undefined = this.selectionControls.get(key);
+    if (!control) {
+      control = new FormControl<boolean | null>(false);
+      this.selectionControls.set(key, control);
+    }
+    return control;
+  }
 
   private resolveRowKey(row: T): VoteyTableKey | object {
     const custom: ((row: T) => VoteyTableKey) | undefined = this.rowKey();
@@ -267,11 +342,13 @@ export class VoteyTableComponent<T> implements OnInit, OnDestroy {
 
   private observeTableContext(): void {
     effect(() => {
-      this.visibleRows();
+      const keys = new Set(this.visibleRows().map(row => this.resolveRowKey(row)));
+      for (const key of this.selectionControls.keys()) if (!keys.has(key)) this.selectionControls.delete(key);
       this.anchor = null;
     });
     effect(() => {
       this.rows(); this.page(); this.size(); this.filters(); this.search();
+      this.dragRows = null;
       this.activeDialog?.close(false);
     });
   }

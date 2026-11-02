@@ -5,6 +5,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   input,
   signal,
@@ -227,6 +228,17 @@ export class VoteySelectComponent extends VoteyFormControlApplyDirective<unknown
         hidden: !visibleOptions.has(option),
       }));
     });
+
+  public constructor() {
+    super();
+    effect((onCleanup): void => {
+      const control: FormControl<unknown | null> = this.selectionControl;
+      if (!this.disabled() || control.disabled) return;
+
+      control.disable();
+      onCleanup((): void => control.enable());
+    });
+  }
 
   public ngOnInit(): void {
     this.observeSearchChanges();

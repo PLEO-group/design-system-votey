@@ -6,6 +6,13 @@ export type VoteyTablePaginationMode = "none" | "local" | "remote";
 export type VoteyTableSearchMode = "none" | "local" | "remote";
 export type VoteyTableFilters = Readonly<Record<string, unknown>>;
 
+export interface VoteyTableRowConfig {
+  tone?: "default" | "accent" | "error";
+  tooltip?: string;
+  attributes?: Readonly<Record<`data-${string}`, string | number | null>>;
+  groupAttributes?: Readonly<Record<`data-${string}`, string | number | null>>;
+}
+
 interface VoteyTableColumnOptions {
   id: string;
   header: string;
@@ -33,6 +40,15 @@ export interface VoteyTableCellContext<T> {
   column: VoteyTableColumn<T>;
   value: VoteyTableValue;
   index: number;
+  parent: T | null;
+  childIndex: number | null;
+}
+
+export interface VoteyTableReorderEvent<T> {
+  row: T;
+  rows: readonly T[];
+  previousIndex: number;
+  currentIndex: number;
 }
 
 export interface VoteyTableSelectionContext {

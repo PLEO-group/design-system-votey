@@ -11,7 +11,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.28.0
+version: 1.28.1
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -603,6 +603,11 @@ Walidacja runtime/Chrome Debug również wymaga jawnej zgody zgodnie z instrukcj
 Ta bramka autoryzacji ma pierwszeństwo nad przykładami komend z sekcji
 „Minimalna weryfikacja po zmianach”.
 
+Gdy test tworzy instancję Angulara przez `new` z `Injector.create()` lub
+`runInInjectionContext` poza fixture `TestBed`, albo diagnozujesz brak providera
+w takim harnessie, wczytaj [component-testing.md](references/component-testing.md).
+Sama obecność `effect()` w komponencie nie uruchamia tej referencji.
+
 W odpowiedzi końcowej krótko zaznacz wpływ zmian `.ts` na testy:
 
 - jeśli trzeba było zmienić testy, napisz czy zostały zmienione,
@@ -617,17 +622,12 @@ Testy: zaktualizowano `<plik>.spec.ts` / brak testów w pobliżu — rekomenduj�
 
 ### [3.12] Tłumaczenia i nowe klucze
 
-Jeżeli po handoffie użytkownik prosi o kompletne query, INSERT, UPSERT albo
-migrację tłumaczeń dla GoCouriers, wczytaj
-`skills/gocouriers-translation-query/SKILL.md`. Ten skill pozostaje właścicielem
-generowania wielojęzycznego SQL i jego walidacji; nie rozszerzaj zasad Angulara o
-schemat bazy ani samodzielnie nie stosuj angielskich fallbacków.
+Przy pracy z tłumaczeniami wczytaj [translations.md](references/translations.md):
+proces uzupełniania słowników, handoff, błędy backendu i routing zapytań SQL.
+
 
 Nie dodawaj nowych wpisów do plików i18n/tłumaczeń podczas implementacji FE, chyba że użytkownik jawnie poprosi o edycję słowników.
 
-Jeżeli projekt ma potwierdzony proces dodawania tłumaczeń przez osobne UI, CMS albo panel administracyjny, pełny nowy klucz użyty w kodzie nie musi jeszcze istnieć w słownikach trzymanych w repo. Traktuj listę kluczy z polskimi tekstami przekazaną użytkownikowi jako prawidłowy handoff do tego procesu.
-
-W takim projekcie nie klasyfikuj samego braku wpisu słownikowego jako blockera implementacji, błędu runtime ani findingu blokującego code review lub publikację skilla. Nie wymagaj też dopisania wpisu do repo w tym samym zadaniu. Zgłoś brak wyłącznie informacyjnie w formacie wymaganym niżej. Blocker występuje dopiero wtedy, gdy projekt nie ma potwierdzonego zewnętrznego procesu uzupełniania tłumaczeń albo użytkownik jawnie wymaga kompletnego słownika przed wdrożeniem.
 
 W każdym pliku edytowanym podczas bieżącej pracy sprawdź zauważone literały w języku polskim, które są wyświetlane użytkownikowi albo przekazywane do komponentu UI, np. etykiety, tooltipy, placeholdery, komunikaty, tytuły, teksty przycisków i opisy `aria`.
 
@@ -647,7 +647,7 @@ Jeśli wdrożenie wymaga nowych etykiet, komunikatów, empty state, nazw akcji, 
 KLUCZ.TLUMACZENIA: Tłumaczenie po polsku
 ```
 
-Dla błędów numerycznych z backendu używaj klasycznego wzorca `ERRORS.<numer>` i również wypisz brakujące tłumaczenia zamiast dopisywać je samodzielnie do plików i18n.
+
 
 ---
 

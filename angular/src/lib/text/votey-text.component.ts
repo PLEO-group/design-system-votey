@@ -43,6 +43,8 @@ export const VoteyTextColors = [
   "accent",
   "error",
   "on-sidebar",
+  "state-warning",
+  "state-info",
 ] as const;
 
 export type VoteyTextVariant = (typeof VoteyTextVariants)[number];

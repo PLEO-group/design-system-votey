@@ -1,4 +1,4 @@
-# WERSJA 1.1.0
+# WERSJA 1.2.0
 
 # Specyfikacja komponentu Table
 
@@ -133,7 +133,7 @@ Zakres został potwierdzony: pierwsza wersja obejmuje podstawową tabelę, pagin
 
 ### 5.1 Funkcjonalności do wprowadzenia później i ich konsumenci CRM
 
-Ta lista jest backlogiem potwierdzonych potrzeb kolejnych iteracji, a nie deklaracją ich obsługi w pierwszej wersji.
+Lista dokumentuje potrzeby odłożone w pierwszej wersji. Implementację rozszerzeń w iteracji 1.2.0 opisuje sekcja 16; pozostały zakres sekcji 5 nadal jest odłożony.
 
 | Funkcjonalność późniejszej iteracji | Komponent CRM, który jej potrzebuje | Uwagi |
 | --- | --- | --- |
@@ -445,3 +445,34 @@ Tabela używa MatTooltip tak jak istniejący button Votey. Brak wartości wyłą
 Kontener rodzica musi mieć ograniczoną wysokość i min-height: 0 w układzie flex.
 Toolbar i paginator nie kurczą się; viewport wierszy zajmuje pozostałe miejsce
 z własnym overflow. W tym trybie limit 70vh jest wyłączony.
+
+
+## 16. Rozszerzenia migracyjne CRM — 1.2.0
+
+Zakres: źródła Angularowej paczki i Storybook. Bez migracji ekranów, requestów i formularzy CRM.
+
+### 16.1 Kontrakt sprawdzony w CRM
+
+- `VoteEventComponent.drop` przestawia elementy wybranego dnia. CRM następnie buduje pełną listę ID wszystkich dni i zapisuje ją przez `changeOrder(eventId, agendaIds)`.
+- Email/SMS: zaznaczany jest główny uczestnik po `voterEventAccessId`, bez osobnych checkboxów osób reprezentowanych. Wspólne kolumny muszą zachować wyrównanie także przy zawijaniu i edycji.
+- Dodawanie Email/SMS: `principals` mają własne dane, załączniki i usuwanie. Akcja rodzica odnosi się do całej grupy. Nie jest to rozwijana tabela.
+- Email/SMS: `navigateToNextRow` zapisuje udziały, a po sukcesie otwiera następny główny rekord albo następną osobę tego samego rodzica. Nie przechodzi z końca osób do kolejnej grupy. Błąd zachowuje edytor; helper DS udostępnia tę nawigację obu konsumentom.
+
+### 16.2 Publiczne rozszerzenia
+
+- `relatedRows?: (row: T) => readonly T[]`: jeden poziom powiązań tego samego modelu T. Konsument może przygotować wspólny view model dla różnych typów źródłowych. Każda grupa jest natywnym tbody; każda osoba osobnym tr ze wspólnymi kolumnami i naturalną wysokością wynikającą z treści.
+- Checkbox znajduje się w głównym wierszu i obejmuje całą grupę. Powiązane wiersze mają puste komórki zaznaczania, aby zachować wyrównanie kolumn. Zaznaczanie, Shift, licznik i klucze dotyczą wyłącznie rekordów głównych. Paginacja nie rozcina grup. Wyszukiwanie local sprawdza searchable kolumny rodzica oraz osób i zachowuje całą dopasowaną grupę.
+- Pierwszą kolumnę danych grupy łączy linia w kolorze `--color-accent-strong`: od środka głównego wiersza do środka ostatniej osoby, z odnogami przy osobach powiązanych. Linia dopasowuje się do rzeczywistych wysokości wierszy. Zaokrąglenia obejmują zewnętrzne narożniki całej grupy; wewnętrzne wiersze nie mają osobnych zaokrągleń.
+- Kontekst komórki ma `parent: T | null` i `childIndex: number | null`; `index` pozostaje indeksem głównego rekordu na widocznej stronie. Szablony nazwane i wspólne działają również dla osób; parent rozróżnia ich akcje i puste pola domenowe. Klucze osób muszą być stabilne w obrębie grupy.
+- `reorderable=false`: uchwyt CDK Drag/Drop przeciąga całą grupę wraz z osobami. Strzałki góra/dół na uchwycie są alternatywą klawiaturową. Loading, disabled, error i monit blokują zmianę kolejności. Zmiana danych podczas przeciągania unieważnia operację.
+- `rowReorder: VoteyTableReorderEvent<T>` emituje `{ row, rows, previousIndex, currentIndex }`. rows to nowa tablica **widocznych głównych rekordów** w proponowanej kolejności; indeksy są lokalne, od zera. Tabela nie mutuje inputu. Konsument aktualizuje rows; przy paginacji, filtrach lub agendzie wielu dni scala fragment z pełnym zbiorem i zapisuje payload. Nie obsługujemy przenoszenia między tabelami ani sortowania kolumn.
+- `nextCell(context)` zwraca tę samą kolumnę następnego głównego rekordu albo następnej osoby tego samego rodzica. Na końcu grupy/strony zwraca null, bez zawijania. Nieaktualna tożsamość wiersza/rodzica i blokada również zwracają null. Wywoływać w handlerze Enter przed requestem; aplikacja przechowuje cel i po sukcesie sprawdza aktualność widoku przed otwarciem edytora. Walidacja, błąd, focus i aktywny edytor należą do konsumenta.
+
+### 16.3 Preview, tłumaczenia i weryfikacja
+
+Na potrzeby migracji CRM dodano `rowConfig(row): VoteyTableRowConfig`: `tone` (`default`, `accent`, `error`), `tooltip`, atrybuty `data-*` w `attributes` dla wiersza i `groupAttributes` dla całej grupy tbody. Pozwala to zachować zakres selektorów obejmujących także osoby reprezentowane. `rowKeyboardActivation` opcjonalnie włącza focus wiersza i Enter, z ochroną kontrolek wewnętrznych. `selectionDataCy`, `selectAllDataCy` i `reorderDataCy` nadają selektory wbudowanym kontrolkom. Domyślne zachowanie dotychczasowych konsumentów pozostaje bez zmian.
+
+Storybook: kontrolki related, editable, reorderable; historie RelatedRowsAndEditors i ReorderRows. Edytor demonstracyjny zapisuje lokalnie, bez requestów CRM.
+Nowy klucz: `LABEL.TABLE_REORDER` — „Zmień kolejność wiersza (przeciągnij lub użyj strzałek góra/dół)”.
+
+Testy table-dom obejmują grupy, wyrównanie komórek zaznaczania, zaznaczanie, wyszukiwanie i paginację grup, konteksty/akcje osób, nawigację edytora, output CDK, niezmienność inputu, anulowanie nieaktualnego przeciągania i klawiaturę. Geometrię, sticky i faktyczny gest przeciągania sprawdzamy w przeglądarce.

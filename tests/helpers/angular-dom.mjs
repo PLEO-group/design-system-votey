@@ -30,7 +30,7 @@ export async function settle(fixture) {
   const registry = TestBed.inject(MatIconRegistry);
   const sanitizer = TestBed.inject(DomSanitizer);
   // Decorative asset loading is outside these component tests; keep real MatIcon.
-  for (const name of ["ui-search", "ui-close", "ui-edit", "ui-chevron-left", "ui-chevron-right", "ui-chevron-down"]) {
+  for (const name of ["ui-search", "ui-close", "ui-edit", "ui-move", "ui-chevron-left", "ui-chevron-right", "ui-chevron-down"]) {
     registry.addSvgIconLiteral(name, sanitizer.bypassSecurityTrustHtml('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 0h20v20H0z"/></svg>'));
   }
   fixture.detectChanges();

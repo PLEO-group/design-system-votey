@@ -15,79 +15,15 @@
     </div>
   }
   <div class="viewport" tabindex="0" [attr.aria-label]="label() | vtTranslate">
-    <table [attr.width]="tableWidth()">
-      <caption class="accessible-label">{{ label() | vtTranslate }}</caption>
-      <colgroup>
-        @if (selectable()) { <col width="56" /> }
-        @for (column of resolvedColumns(); track column.id) { <col [attr.width]="column.width ?? 180" /> }
-      </colgroup>
-      <thead [class.heavy]="headerVariant() === 'heavy'">
-        <tr>
-          @if (selectable()) {
-            <th scope="col" class="selection-cell">
-              <vt-checkbox [control]="selectAllControl" [indeterminate]="someSelected()" [disabled]="blocked()"
-                (changed)="selectAll($event)">
-                <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_VISIBLE' | vtTranslate }}</span>
-              </vt-checkbox>
-            </th>
-          }
-          @for (column of resolvedColumns(); track column.id) {
-            <th scope="col" [matTooltip]="(column.headerTooltip ?? '') | vtTranslate" [matTooltipDisabled]="!column.headerTooltip" [class.actions-cell]="column.role === 'actions'"
-              [class.align-center]="column.align === 'center'" [class.align-right]="column.align === 'right'">
-              <vt-text variant="caption-extrabold" [color]="headerVariant() === 'heavy' ? 'inverse' : 'primary'"
-                [wrap]="true" [content]="column.header | vtTranslate" />
-            </th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          @for (index of skeletonRows(); track index) {
-            <tr aria-hidden="true" class="skeleton-row">
-              @if (selectable()) { <td class="selection-cell"><span class="skeleton"></span></td> }
-              @for (column of resolvedColumns(); track column.id) {
-                <td [class.actions-cell]="column.role === 'actions'"><span class="skeleton"></span></td>
-              }
-            </tr>
-          }
-        } @else if (error()) {
-          <tr><td class="state-cell" [attr.colspan]="columnCount()">
-            <div class="state" role="alert">
-              <vt-text [wrap]="true" [content]="errorText() | vtTranslate" />
-              <vt-button text="BUTTON.TABLE_RETRY" [disabled]="disabled()" (pressed)="retry.emit()" />
-            </div>
-          </td></tr>
-        } @else {
-          @for (record of viewRows(); track record.key; let index = $index) {
-            <tr [class.selected]="record.selected" (click)="activateRow(record.row, $event)">
-              @if (selectable()) {
-                <td class="selection-cell">
-                  <vt-checkbox [control]="record.control" [disabled]="blocked()"
-                    (pointerdown)="rememberSelection($event)" (changed)="selectRow(index, $event)">
-                    <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_ROW' | vtTranslate }} {{ index + 1 }}</span>
-                  </vt-checkbox>
-                </td>
-              }
-              @for (column of viewColumns(); track column.definition.id; let cellIndex = $index) {
-                @let cell = record.cells[cellIndex];
-                <td [class.actions-cell]="column.definition.role === 'actions'"
-                  [class.align-center]="column.definition.align === 'center'" [class.align-right]="column.definition.align === 'right'">
-                  @if (column.template) {
-                    <ng-container [ngTemplateOutlet]="column.template" [ngTemplateOutletContext]="cell" />
-                  } @else {
-                    <vt-text variant="body" [wrap]="true" [content]="'' + (cell.value ?? '')" />
-                  }
-                </td>
-              }
-            </tr>
-          } @empty {
-            <tr><td class="state-cell" [attr.colspan]="columnCount()">
-              <div class="state" role="status"><vt-text [wrap]="true" [content]="(hasQuery() ? noResultsText() : emptyText()) | vtTranslate" /></div>
-            </td></tr>
-          }
-        }
-      </tbody>
+    @if (reorderable()) {
+    <table cdkDropList cdkDropListOrientation="vertical" [attr.width]="tableWidth()"
+      [cdkDropListData]="visibleRows()" [cdkDropListDisabled]="blocked() || error()"
+      (cdkDropListDropped)="reorder($event)">
+      <ng-container [ngTemplateOutlet]="tableContent" />
     </table>
+    } @else {
+      <table [attr.width]="tableWidth()"><ng-container [ngTemplateOutlet]="tableContent" /></table>
+    }
   </div>
   @if (pagination() !== "none") {
     <vt-pagination [page]="effectivePage()" [size]="effectiveSize()" [totalElements]="resultCount()" [pageSizeOptions]="pageSizeOptions()"
@@ -104,4 +40,121 @@
       <vt-button text="BUTTON.TABLE_APPLY_AND_CLEAR" (pressed)="closeConfirmation(true)" />
     </div>
   </div>
+</ng-template>
+
+<ng-template #dataCells let-cells let-relatedGroup="relatedGroup">
+  @for (column of viewColumns(); track column.definition.id; let cellIndex = $index) {
+    @let cell = cells[cellIndex];
+    <td [class.actions-cell]="column.definition.role === 'actions'"
+      [class.relation-cell]="relatedGroup && cellIndex === 0"
+      [class.align-center]="column.definition.align === 'center'" [class.align-right]="column.definition.align === 'right'">
+      @if (column.template) {
+        <ng-container [ngTemplateOutlet]="column.template" [ngTemplateOutletContext]="cell" />
+      } @else {
+        <vt-text variant="body" [wrap]="true" [content]="'' + (cell.value ?? '')" />
+      }
+    </td>
+  }
+</ng-template>
+
+<ng-template #tableContent>
+      <caption class="accessible-label">{{ label() | vtTranslate }}</caption>
+      <colgroup>
+        @if (reorderable()) { <col width="56" /> }
+        @if (selectable()) { <col width="56" /> }
+        @for (column of resolvedColumns(); track column.id) { <col [attr.width]="column.width ?? 180" /> }
+      </colgroup>
+      <thead [class.heavy]="headerVariant() === 'heavy'">
+        <tr>
+          @if (reorderable()) { <th scope="col" class="drag-cell"><span class="accessible-label">{{ 'LABEL.TABLE_REORDER' | vtTranslate }}</span></th> }
+          @if (selectable()) {
+            <th scope="col" class="selection-cell">
+              <vt-checkbox [attr.data-cy]="selectAllDataCy() || null" [control]="selectAllControl" [indeterminate]="someSelected()" [disabled]="blocked()"
+                (changed)="selectAll($event)">
+                <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_VISIBLE' | vtTranslate }}</span>
+              </vt-checkbox>
+            </th>
+          }
+          @for (column of resolvedColumns(); track column.id) {
+            <th scope="col" [matTooltip]="(column.headerTooltip ?? '') | vtTranslate" [matTooltipDisabled]="!column.headerTooltip" [class.actions-cell]="column.role === 'actions'"
+              [class.align-center]="column.align === 'center'" [class.align-right]="column.align === 'right'">
+              <vt-text variant="caption-extrabold" [color]="headerVariant() === 'heavy' ? 'inverse' : 'primary'"
+                [wrap]="true" [content]="column.header | vtTranslate" />
+            </th>
+          }
+        </tr>
+      </thead>
+      @if (loading()) {
+        <tbody>
+          @for (index of skeletonRows(); track index) {
+            <tr aria-hidden="true" class="skeleton-row">
+              @if (reorderable()) { <td class="drag-cell"><span class="skeleton"></span></td> }
+              @if (selectable()) { <td class="selection-cell"><span class="skeleton"></span></td> }
+              @for (column of resolvedColumns(); track column.id) {
+                <td [class.actions-cell]="column.role === 'actions'"><span class="skeleton"></span></td>
+              }
+            </tr>
+          }
+        </tbody>
+      } @else if (error()) {
+        <tbody><tr><td class="state-cell" [attr.colspan]="columnCount()">
+          <div class="state" role="alert">
+            <vt-text [wrap]="true" [content]="errorText() | vtTranslate" />
+            <vt-button text="BUTTON.TABLE_RETRY" [disabled]="disabled()" (pressed)="retry.emit()" />
+          </div>
+        </td></tr></tbody>
+      } @else {
+        @for (record of viewRows(); track record.key; let index = $index) {
+          @if (reorderable()) {
+          <tbody cdkDrag cdkDragLockAxis="y" cdkDragPreviewContainer="parent"
+            [vtTableRow]="record.config" [vtTableRowGroup]="true"
+            [class.selected]="record.selected" [class.striped]="index % 2 === 1"
+            [class.grouped]="record.related.length > 0" [class.with-drag]="reorderable()"
+            [cdkDragData]="record.row" [cdkDragDisabled]="!reorderable() || blocked()"
+            (cdkDragStarted)="beginReorder()">
+            <ng-container [ngTemplateOutlet]="groupRows" [ngTemplateOutletContext]="{ $implicit: record, index: index }" />
+          </tbody>
+          } @else {
+          <tbody [vtTableRow]="record.config" [vtTableRowGroup]="true"
+            [class.selected]="record.selected" [class.striped]="index % 2 === 1" [class.grouped]="record.related.length > 0">
+            <ng-container [ngTemplateOutlet]="groupRows" [ngTemplateOutletContext]="{ $implicit: record, index: index }" />
+          </tbody>
+          }
+        } @empty {
+          <tbody><tr><td class="state-cell" [attr.colspan]="columnCount()">
+            <div class="state" role="status"><vt-text [wrap]="true" [content]="(hasQuery() ? noResultsText() : emptyText()) | vtTranslate" /></div>
+          </td></tr></tbody>
+        }
+      }
+</ng-template>
+
+<ng-template #groupRows let-record let-index="index">
+            <tr [vtTableRow]="record.config" [class.row-accent]="record.config.tone === 'accent'" [class.row-error]="record.config.tone === 'error'"
+              [matTooltip]="(record.config.tooltip ?? '') | vtTranslate" [matTooltipDisabled]="!record.config.tooltip"
+              [attr.tabindex]="rowKeyboardActivation() ? 0 : null"
+              (keydown.enter)="rowKeyboardActivation() && activateRow(record.row, $event)" (click)="activateRow(record.row, $event)">
+              @if (reorderable()) {
+                <td class="drag-cell" [attr.rowspan]="record.related.length + 1">
+                  <vt-button cdkDragHandle variant="ghost" ico="ui-move" tooltipText="LABEL.TABLE_REORDER"
+                    [attr.data-cy]="reorderDataCy() || null"
+                    [disabled]="blocked()" (keydown.arrowup)="moveRow(index, -1, $event)"
+                    (keydown.arrowdown)="moveRow(index, 1, $event)" />
+                </td>
+              }
+              @if (selectable()) {
+                <td class="selection-cell">
+                  <vt-checkbox [attr.data-cy]="selectionDataCy() || null" [control]="record.control" [disabled]="blocked()"
+                    (pointerdown)="rememberSelection($event)" (changed)="selectRow(index, $event)">
+                    <span class="accessible-label">{{ 'LABEL.TABLE_SELECT_ROW' | vtTranslate }} {{ index + 1 }}</span>
+                  </vt-checkbox>
+                </td>
+              }
+              <ng-container [ngTemplateOutlet]="dataCells" [ngTemplateOutletContext]="{ $implicit: record.cells, relatedGroup: record.related.length > 0 }" />
+            </tr>
+            @for (related of record.related; track related.key) {
+              <tr class="related-row" [vtTableRow]="related.config" [class.row-error]="related.config.tone === 'error'" (click)="activateRow(related.row, $event)">
+                @if (selectable()) { <td class="selection-cell" aria-hidden="true"></td> }
+                <ng-container [ngTemplateOutlet]="dataCells" [ngTemplateOutletContext]="{ $implicit: related.cells, relatedGroup: true }" />
+              </tr>
+            }
 </ng-template>

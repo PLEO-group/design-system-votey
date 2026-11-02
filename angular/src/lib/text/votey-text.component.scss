@@ -32,6 +32,8 @@ $text-colors: (
   "accent": var(--color-text-accent),
   "error": var(--color-state-error),
   "on-sidebar": var(--color-text-on-sidebar),
+  "state-warning": var(--color-state-warning),
+  "state-info": var(--color-state-info),
 );
 
 @mixin text-variant($variant) {

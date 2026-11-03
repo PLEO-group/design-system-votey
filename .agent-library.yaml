@@ -12,3 +12,7 @@ paths:
 
 publish:
   defaultScope: PROJECT
+
+stack:
+  BE: []
+  FE: Angular

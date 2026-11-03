@@ -1,5 +1,5 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef, OnInit, ChangeDetectorRef } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, PipeTransform, OutputEmitterRef, Signal, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef, OnInit, ChangeDetectorRef, Injector, ViewContainerRef, Type } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -1115,5 +1115,134 @@ declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteySearchComponent, "vt-search", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "searchLabel": { "alias": "searchLabel"; "required": false; "isSignal": true; }; "clearLabel": { "alias": "clearLabel"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "control": { "alias": "control"; "required": false; }; }, { "searched": "searched"; "cleared": "cleared"; }, never, never, true, never>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectPanelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableHeaderVariant, VoteyTableKey, VoteyTablePaginationMode, VoteyTableQuery, VoteyTableReorderEvent, VoteyTableRowConfig, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableValue, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+declare const VoteyModalSizes: readonly ["small", "standard", "wide"];
+type VoteyModalSize = (typeof VoteyModalSizes)[number];
+declare const VoteyModalCloseReasons: readonly ["action", "cancel", "close-button", "backdrop", "escape", "navigation"];
+type VoteyModalCloseReason = (typeof VoteyModalCloseReasons)[number];
+interface VoteyModalResult<TResult> {
+    readonly reason: VoteyModalCloseReason;
+    readonly value: TResult | undefined;
+}
+type VoteyModalCallback<TResult = unknown> = (modal: VoteyModalRef<TResult>) => void | Observable<unknown> | Promise<unknown>;
+interface VoteyModalActions<TResult = unknown> {
+    confirmText?: string;
+    confirmDataCy?: string;
+    onConfirm?: VoteyModalCallback<TResult>;
+    confirmVariant?: VoteyButtonVariant;
+    confirmDisabled?: boolean | Signal<boolean>;
+    cancelText?: string;
+    cancelDataCy?: string;
+    onCancel?: VoteyModalCallback<TResult>;
+    thirdActionText?: string;
+    thirdActionDataCy?: string;
+    onThirdAction?: VoteyModalCallback<TResult>;
+    hideModalActions?: boolean;
+    busyText?: string;
+    busy?: Signal<boolean>;
+}
+interface VoteyModalConfig<TData = unknown, TResult = unknown> extends VoteyModalActions<TResult> {
+    title: string;
+    dataCy?: string;
+    description?: string;
+    message?: string;
+    closeLabel?: string;
+    size?: VoteyModalSize;
+    id?: string;
+    data?: TData;
+    showCloseButton?: boolean;
+    closeOnBackdrop?: boolean;
+    closeOnEscape?: boolean;
+    closeOnNavigation?: boolean;
+    autoFocus?: "dialog" | "first-tabbable" | "first-heading";
+    restoreFocus?: boolean;
+    injector?: Injector;
+    viewContainerRef?: ViewContainerRef;
+    beforeClose?: (result: VoteyModalResult<TResult>) => boolean | Promise<boolean>;
+}
+interface VoteyModalTemplateContext<TData = unknown, TResult = unknown> {
+    $implicit: TData | undefined;
+    modal: VoteyModalRef<TResult>;
+}
+declare const VOTEY_MODAL_DATA: InjectionToken<unknown>;
+interface ModalData {
+    config: VoteyModalConfig;
+    content: Type<unknown> | TemplateRef<VoteyModalTemplateContext> | null;
+}
+
+interface ModalController<TResult> {
+    readonly busy: Signal<boolean>;
+    readonly closing: Signal<boolean>;
+    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
+    setBusy(busy: boolean): void;
+    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
+}
+declare class VoteyModalRef<TResult = unknown> {
+    readonly id: string;
+    private readonly result;
+    private controller;
+    readonly closed: Observable<VoteyModalResult<TResult>>;
+    constructor(id: string);
+    get busy(): Signal<boolean>;
+    get closing(): Signal<boolean>;
+    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
+    setBusy(busy: boolean): void;
+    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
+    /** @internal */
+    connect(controller: ModalController<TResult>): void;
+    /** @internal */
+    finish(result: VoteyModalResult<TResult>): void;
+}
+
+declare class VoteyModalComponent implements OnDestroy {
+    protected readonly data: ModalData;
+    protected readonly ref: VoteyModalRef;
+    protected readonly injector: Injector;
+    private readonly dialogRef;
+    private readonly errorHandler;
+    private readonly manualBusy;
+    private readonly callbackPending;
+    private readonly closePending;
+    protected readonly actions: WritableSignal<VoteyModalActions>;
+    private finished;
+    private invokingAction;
+    private readonly destroyRef;
+    private acceptedResult;
+    private readonly requestBusy;
+    readonly closing: Signal<boolean>;
+    readonly busy: Signal<boolean>;
+    protected readonly blocked: Signal<boolean>;
+    protected readonly confirmDisabled: Signal<boolean>;
+    protected readonly hasThirdAction: Signal<boolean>;
+    protected readonly hasActions: Signal<boolean>;
+    protected readonly template: TemplateRef<VoteyModalTemplateContext> | null;
+    protected readonly component: Type<unknown> | null;
+    protected readonly context: VoteyModalTemplateContext;
+    constructor();
+    setBusy(busy: boolean): void;
+    updateActions(actions: Partial<VoteyModalActions>): void;
+    close(value?: unknown, reason?: VoteyModalCloseReason): Promise<boolean>;
+    protected confirm(): void;
+    protected cancel(): void;
+    protected thirdAction(): void;
+    private runAction;
+    ngOnDestroy(): void;
+    /** @internal */
+    finish(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyModalComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyModalComponent, "vt-modal", never, {}, {}, never, never, true, never>;
+}
+
+declare class VoteyModalService {
+    private readonly dialog;
+    private readonly translator;
+    private readonly location;
+    private readonly refs;
+    open<TData = unknown, TResult = unknown>(content: Type<unknown> | TemplateRef<VoteyModalTemplateContext<TData, TResult>> | null, config: VoteyModalConfig<TData, TResult>): VoteyModalRef<TResult>;
+    confirm<TResult = boolean>(config: VoteyModalConfig<unknown, TResult>): VoteyModalRef<TResult>;
+    getById(id: string): VoteyModalRef<unknown> | undefined;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyModalService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<VoteyModalService>;
+}
+
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_MODAL_DATA, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyModalCloseReasons, VoteyModalComponent, VoteyModalRef, VoteyModalService, VoteyModalSizes, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyModalActions, VoteyModalCallback, VoteyModalCloseReason, VoteyModalConfig, VoteyModalResult, VoteyModalSize, VoteyModalTemplateContext, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectPanelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableHeaderVariant, VoteyTableKey, VoteyTablePaginationMode, VoteyTableQuery, VoteyTableReorderEvent, VoteyTableRowConfig, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableValue, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

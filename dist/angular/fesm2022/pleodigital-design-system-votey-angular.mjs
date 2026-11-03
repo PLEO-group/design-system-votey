@@ -1,8 +1,8 @@
-import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet, NgComponentOutlet, Location } from '@angular/common';
 import * as i0 from '@angular/core';
-import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, viewChildren, signal, Input, Directive, model, effect, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, TemplateRef, contentChildren, forwardRef, LOCALE_ID, ChangeDetectorRef, Renderer2, linkedSignal } from '@angular/core';
+import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, viewChildren, signal, Input, Directive, model, effect, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, TemplateRef, contentChildren, forwardRef, LOCALE_ID, ChangeDetectorRef, Renderer2, linkedSignal, Injector, ErrorHandler } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
-import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, map, ReplaySubject, from, isObservable, finalize, takeUntil, filter } from 'rxjs';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -20,7 +20,7 @@ import * as i1$2 from '@angular/material/core';
 import { NativeDateAdapter, provideNativeDateAdapter, DateAdapter, MAT_NATIVE_DATE_FORMATS, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepickerIntl, MatCalendar } from '@angular/material/datepicker';
 import { moveItemInArray, CdkDrag, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
-import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { Dialog, DialogModule, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 
 const DEFAULT_DIMENSIONS = {
     width: 0,
@@ -3716,9 +3716,277 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
 
 const VoteyTableHeaderVariants = ["standard", "heavy"];
 
+class VoteyModalRef {
+    id;
+    result = new ReplaySubject(1);
+    controller;
+    closed = this.result.asObservable();
+    constructor(id) {
+        this.id = id;
+    }
+    get busy() {
+        return this.controller.busy;
+    }
+    get closing() {
+        return this.controller.closing;
+    }
+    close(value, reason = "action") {
+        return this.controller.close(value, reason);
+    }
+    setBusy(busy) {
+        this.controller.setBusy(busy);
+    }
+    updateActions(actions) {
+        this.controller.updateActions(actions);
+    }
+    /** @internal */
+    connect(controller) {
+        this.controller = controller;
+    }
+    /** @internal */
+    finish(result) {
+        this.result.next(result);
+        this.result.complete();
+    }
+}
+
+class VoteyModalComponent {
+    data = inject(DIALOG_DATA);
+    ref = inject(VoteyModalRef);
+    injector = inject(Injector);
+    dialogRef = inject(DialogRef);
+    errorHandler = inject(ErrorHandler);
+    manualBusy = signal(false, ...(ngDevMode ? [{ debugName: "manualBusy" }] : /* istanbul ignore next */ []));
+    callbackPending = signal(false, ...(ngDevMode ? [{ debugName: "callbackPending" }] : /* istanbul ignore next */ []));
+    closePending = signal(false, ...(ngDevMode ? [{ debugName: "closePending" }] : /* istanbul ignore next */ []));
+    actions = signal(this.data.config, ...(ngDevMode ? [{ debugName: "actions" }] : /* istanbul ignore next */ []));
+    finished = false;
+    invokingAction = false;
+    destroyRef = inject(DestroyRef);
+    acceptedResult;
+    requestBusy = computed(() => {
+        const source = this.actions().busy;
+        return source ? source() : this.manualBusy();
+    }, ...(ngDevMode ? [{ debugName: "requestBusy" }] : /* istanbul ignore next */ []));
+    closing = this.closePending.asReadonly();
+    busy = computed(() => this.requestBusy() || this.callbackPending(), ...(ngDevMode ? [{ debugName: "busy" }] : /* istanbul ignore next */ []));
+    blocked = computed(() => this.busy() || this.closing(), ...(ngDevMode ? [{ debugName: "blocked" }] : /* istanbul ignore next */ []));
+    confirmDisabled = computed(() => {
+        const disabled = this.actions().confirmDisabled;
+        return (this.blocked() ||
+            !this.actions().onConfirm ||
+            (typeof disabled === "function" ? disabled() : disabled ?? false));
+    }, ...(ngDevMode ? [{ debugName: "confirmDisabled" }] : /* istanbul ignore next */ []));
+    hasThirdAction = computed(() => Boolean(this.actions().thirdActionText && this.actions().onThirdAction), ...(ngDevMode ? [{ debugName: "hasThirdAction" }] : /* istanbul ignore next */ []));
+    hasActions = computed(() => !this.actions().hideModalActions &&
+        Boolean(this.actions().confirmText ||
+            this.actions().cancelText ||
+            this.hasThirdAction()), ...(ngDevMode ? [{ debugName: "hasActions" }] : /* istanbul ignore next */ []));
+    template = this.data.content instanceof TemplateRef ? this.data.content : null;
+    component = this.data.content instanceof TemplateRef ? null : this.data.content;
+    context = {
+        $implicit: this.data.config.data,
+        modal: this.ref,
+    };
+    constructor() {
+        this.ref.connect(this);
+    }
+    setBusy(busy) {
+        if (this.actions().busy)
+            throw new Error("This modal uses a bound busy signal; update its owner instead of calling setBusy.");
+        this.manualBusy.set(busy);
+    }
+    updateActions(actions) {
+        this.actions.update((current) => ({
+            ...current,
+            ...actions,
+        }));
+    }
+    async close(value, reason = "action") {
+        if (this.finished ||
+            this.requestBusy() ||
+            this.closing() ||
+            (this.callbackPending() && reason !== "action" && reason !== "cancel"))
+            return false;
+        const result = { value, reason };
+        this.closePending.set(true);
+        try {
+            if (this.data.config.beforeClose &&
+                !(await this.data.config.beforeClose(result)))
+                return false;
+            if (this.finished || this.requestBusy())
+                return false;
+            this.acceptedResult = result;
+            this.dialogRef.close();
+            return true;
+        }
+        catch (error) {
+            this.errorHandler.handleError(error);
+            return false;
+        }
+        finally {
+            this.closePending.set(false);
+        }
+    }
+    confirm() {
+        if (!this.confirmDisabled())
+            this.runAction(this.actions().onConfirm);
+    }
+    cancel() {
+        if (this.blocked())
+            return;
+        if (this.actions().onCancel)
+            void this.runAction(this.actions().onCancel);
+        else
+            void this.close(undefined, "cancel");
+    }
+    thirdAction() {
+        if (!this.blocked())
+            void this.runAction(this.actions().onThirdAction);
+    }
+    runAction(callback) {
+        if (!callback || this.blocked() || this.finished || this.invokingAction)
+            return;
+        this.invokingAction = true;
+        try {
+            const result = callback(this.ref);
+            if (!result) {
+                this.callbackPending.set(false);
+                return;
+            }
+            if (this.finished)
+                return;
+            this.callbackPending.set(true);
+            (isObservable(result) ? result : from(result))
+                .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.callbackPending.set(false)))
+                .subscribe({
+                error: (error) => this.errorHandler.handleError(error),
+            });
+        }
+        catch (error) {
+            this.callbackPending.set(false);
+            this.errorHandler.handleError(error);
+        }
+        finally {
+            this.invokingAction = false;
+        }
+    }
+    ngOnDestroy() {
+        this.finished = true;
+    }
+    /** @internal */
+    finish() {
+        this.ref.finish(this.acceptedResult ?? { value: undefined, reason: "navigation" });
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyModalComponent, isStandalone: true, selector: "vt-modal", host: { properties: { "class.small": "data.config.size === \"small\"", "class.wide": "data.config.size === \"wide\"" } }, ngImport: i0, template: "<section class=\"frame\" [attr.data-cy]=\"data.config.dataCy ?? null\" [attr.aria-busy]=\"busy()\">\r\n  <header class=\"header\">\r\n    <div class=\"heading\">\r\n      <h2 [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-title' : null\" [id]=\"ref.id + '-title'\">\r\n        <vt-text\r\n          variant=\"h3\"\r\n          [content]=\"data.config.title | vtTranslate\"\r\n          [wrap]=\"true\"\r\n        />\r\n      </h2>\r\n      @if (data.config.description) {\r\n      <vt-text\r\n        color=\"secondary\"\r\n        [content]=\"data.config.description | vtTranslate\"\r\n        [wrap]=\"true\"\r\n      />\r\n      }\r\n    </div>\r\n    @if (data.config.showCloseButton ?? true) {\r\n    <vt-button\r\n      variant=\"primary\"\r\n      size=\"small\"\r\n      ico=\"ui-close\"\r\n      [ariaLabel]=\"data.config.closeLabel ?? 'BUTTON.CLOSE'\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"close(undefined, 'close-button')\"\r\n    />\r\n    }\r\n  </header>\r\n  <div class=\"body\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-content' : null\">\r\n    @if (data.config.message) {\r\n    <vt-text [content]=\"data.config.message | vtTranslate\" [wrap]=\"true\" /> }\r\n    @if (template) {\r\n    <ng-container\r\n      [ngTemplateOutlet]=\"template\"\r\n      [ngTemplateOutletContext]=\"context\"\r\n    />\r\n    } @else if (component) {\r\n    <ng-container\r\n      [ngComponentOutlet]=\"component\"\r\n      [ngComponentOutletInjector]=\"injector\"\r\n    />\r\n    }\r\n  </div>\r\n  @if (hasActions()) {\r\n  <footer class=\"actions\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-footer' : null\">\r\n    @if (busy()) {\r\n    <span class=\"progress\" role=\"status\"\r\n      ><span class=\"spinner\" aria-hidden=\"true\"></span\r\n      >{{ actions().busyText ?? \"\" | vtTranslate }}</span\r\n    >\r\n    } @if (hasThirdAction()) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().thirdActionText ?? ''\"\r\n      [attr.data-cy]=\"actions().thirdActionDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"thirdAction()\"\r\n    />\r\n    } @if (actions().cancelText) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().cancelText ?? ''\"\r\n      [attr.data-cy]=\"actions().cancelDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"cancel()\"\r\n    />\r\n    } @if (actions().confirmText) {\r\n    <vt-button\r\n      [text]=\"actions().confirmText ?? ''\"\r\n      [attr.data-cy]=\"actions().confirmDataCy ?? null\"\r\n      [variant]=\"actions().confirmVariant ?? 'primary'\"\r\n      [disabled]=\"confirmDisabled()\"\r\n      (pressed)=\"confirm()\"\r\n    />\r\n    }\r\n  </footer>\r\n  }\r\n</section>\r\n", styles: ["::ng-deep .votey-modal-overlay>.cdk-dialog-container{outline:none}:host{display:block;outline:none;min-width:0;width:55vw}:host.small{width:40vw}:host.wide{width:75vw}@media(max-width:768px){:host,:host.small,:host.wide{width:92vw}}:host .frame{display:flex;flex-direction:column;max-height:calc(100dvh - 48px);overflow:hidden;background:var(--color-bg-surface);color:var(--color-text-primary);border:1px solid var(--color-border-subtle);border-radius:var(--radius-2xl);box-shadow:0 24px 70px color-mix(in srgb,var(--color-navy-blue-900) 24%,transparent)}:host .frame .header{display:flex;flex:0 0 auto;align-items:flex-start;justify-content:space-between;gap:var(--space-gap-s);padding:var(--space-inset-l)}:host .frame .header .heading{display:flex;flex-direction:column;gap:var(--space-gap-xs);min-width:0;overflow-wrap:anywhere}:host .frame .header .heading h2{margin:0;outline:none}:host .frame .body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 var(--space-inset-l) var(--space-inset-l);overflow-wrap:anywhere}:host .frame .actions{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;gap:var(--space-gap-s);padding:var(--space-inset-m) var(--space-inset-l);border-top:1px solid var(--color-border-subtle)}:host .frame .actions .progress{display:inline-flex;align-items:center;gap:var(--space-gap-xs);color:var(--color-text-secondary)}:host .frame .actions .progress .spinner{width:16px;height:16px;border:2px solid var(--color-border-subtle);border-top-color:var(--color-text-primary);border-radius:var(--radius-full);animation:modal-progress .8s linear infinite}@media(prefers-reduced-motion:reduce){:host .frame .actions .progress .spinner{animation:none}}:host .frame .actions:empty{display:none}@keyframes modal-progress{to{transform:rotate(360deg)}}\n"], dependencies: [{ kind: "directive", type: NgComponentOutlet, selector: "[ngComponentOutlet]", inputs: ["ngComponentOutlet", "ngComponentOutletInputs", "ngComponentOutletInjector", "ngComponentOutletEnvironmentInjector", "ngComponentOutletContent", "ngComponentOutletNgModule"], exportAs: ["ngComponentOutlet"] }, { kind: "directive", type: NgTemplateOutlet, selector: "[ngTemplateOutlet]", inputs: ["ngTemplateOutletContext", "ngTemplateOutlet", "ngTemplateOutletInjector"] }, { kind: "component", type: VoteyButtonComponent, selector: "vt-button", inputs: ["disabled", "type", "variant", "size", "text", "ariaLabel", "ico", "badge", "tooltipText", "disabledNote", "ariaExpanded", "ariaHasPopup", "ariaControls", "iconColor"], outputs: ["pressed"] }, { kind: "component", type: VoteyTextComponent, selector: "vt-text", inputs: ["content", "variant", "color", "uppercase", "italic", "wrap", "maxLines"] }, { kind: "pipe", type: VoteyTranslatePipe, name: "vtTranslate" }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "vt-modal", changeDetection: ChangeDetectionStrategy.OnPush, host: {
+                        "[class.small]": 'data.config.size === "small"',
+                        "[class.wide]": 'data.config.size === "wide"',
+                    }, imports: [
+                        NgComponentOutlet,
+                        NgTemplateOutlet,
+                        VoteyButtonComponent,
+                        VoteyTextComponent,
+                        VoteyTranslatePipe,
+                    ], template: "<section class=\"frame\" [attr.data-cy]=\"data.config.dataCy ?? null\" [attr.aria-busy]=\"busy()\">\r\n  <header class=\"header\">\r\n    <div class=\"heading\">\r\n      <h2 [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-title' : null\" [id]=\"ref.id + '-title'\">\r\n        <vt-text\r\n          variant=\"h3\"\r\n          [content]=\"data.config.title | vtTranslate\"\r\n          [wrap]=\"true\"\r\n        />\r\n      </h2>\r\n      @if (data.config.description) {\r\n      <vt-text\r\n        color=\"secondary\"\r\n        [content]=\"data.config.description | vtTranslate\"\r\n        [wrap]=\"true\"\r\n      />\r\n      }\r\n    </div>\r\n    @if (data.config.showCloseButton ?? true) {\r\n    <vt-button\r\n      variant=\"primary\"\r\n      size=\"small\"\r\n      ico=\"ui-close\"\r\n      [ariaLabel]=\"data.config.closeLabel ?? 'BUTTON.CLOSE'\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"close(undefined, 'close-button')\"\r\n    />\r\n    }\r\n  </header>\r\n  <div class=\"body\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-content' : null\">\r\n    @if (data.config.message) {\r\n    <vt-text [content]=\"data.config.message | vtTranslate\" [wrap]=\"true\" /> }\r\n    @if (template) {\r\n    <ng-container\r\n      [ngTemplateOutlet]=\"template\"\r\n      [ngTemplateOutletContext]=\"context\"\r\n    />\r\n    } @else if (component) {\r\n    <ng-container\r\n      [ngComponentOutlet]=\"component\"\r\n      [ngComponentOutletInjector]=\"injector\"\r\n    />\r\n    }\r\n  </div>\r\n  @if (hasActions()) {\r\n  <footer class=\"actions\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-footer' : null\">\r\n    @if (busy()) {\r\n    <span class=\"progress\" role=\"status\"\r\n      ><span class=\"spinner\" aria-hidden=\"true\"></span\r\n      >{{ actions().busyText ?? \"\" | vtTranslate }}</span\r\n    >\r\n    } @if (hasThirdAction()) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().thirdActionText ?? ''\"\r\n      [attr.data-cy]=\"actions().thirdActionDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"thirdAction()\"\r\n    />\r\n    } @if (actions().cancelText) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().cancelText ?? ''\"\r\n      [attr.data-cy]=\"actions().cancelDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"cancel()\"\r\n    />\r\n    } @if (actions().confirmText) {\r\n    <vt-button\r\n      [text]=\"actions().confirmText ?? ''\"\r\n      [attr.data-cy]=\"actions().confirmDataCy ?? null\"\r\n      [variant]=\"actions().confirmVariant ?? 'primary'\"\r\n      [disabled]=\"confirmDisabled()\"\r\n      (pressed)=\"confirm()\"\r\n    />\r\n    }\r\n  </footer>\r\n  }\r\n</section>\r\n", styles: ["::ng-deep .votey-modal-overlay>.cdk-dialog-container{outline:none}:host{display:block;outline:none;min-width:0;width:55vw}:host.small{width:40vw}:host.wide{width:75vw}@media(max-width:768px){:host,:host.small,:host.wide{width:92vw}}:host .frame{display:flex;flex-direction:column;max-height:calc(100dvh - 48px);overflow:hidden;background:var(--color-bg-surface);color:var(--color-text-primary);border:1px solid var(--color-border-subtle);border-radius:var(--radius-2xl);box-shadow:0 24px 70px color-mix(in srgb,var(--color-navy-blue-900) 24%,transparent)}:host .frame .header{display:flex;flex:0 0 auto;align-items:flex-start;justify-content:space-between;gap:var(--space-gap-s);padding:var(--space-inset-l)}:host .frame .header .heading{display:flex;flex-direction:column;gap:var(--space-gap-xs);min-width:0;overflow-wrap:anywhere}:host .frame .header .heading h2{margin:0;outline:none}:host .frame .body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 var(--space-inset-l) var(--space-inset-l);overflow-wrap:anywhere}:host .frame .actions{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;gap:var(--space-gap-s);padding:var(--space-inset-m) var(--space-inset-l);border-top:1px solid var(--color-border-subtle)}:host .frame .actions .progress{display:inline-flex;align-items:center;gap:var(--space-gap-xs);color:var(--color-text-secondary)}:host .frame .actions .progress .spinner{width:16px;height:16px;border:2px solid var(--color-border-subtle);border-top-color:var(--color-text-primary);border-radius:var(--radius-full);animation:modal-progress .8s linear infinite}@media(prefers-reduced-motion:reduce){:host .frame .actions .progress .spinner{animation:none}}:host .frame .actions:empty{display:none}@keyframes modal-progress{to{transform:rotate(360deg)}}\n"] }]
+        }], ctorParameters: () => [] });
+
+const VoteyModalSizes = ["small", "standard", "wide"];
+const VoteyModalCloseReasons = [
+    "action",
+    "cancel",
+    "close-button",
+    "backdrop",
+    "escape",
+    "navigation",
+];
+const VOTEY_MODAL_DATA = new InjectionToken("VOTEY_MODAL_DATA");
+
+class VoteyModalService {
+    dialog = inject(Dialog);
+    translator = inject(VOTEY_TRANSLATOR);
+    location = inject(Location, {
+        optional: true,
+    });
+    refs = new Map();
+    open(content, config) {
+        if (config.id && this.refs.has(config.id))
+            throw new Error(`Modal '${config.id}' is already open.`);
+        let ref;
+        const dialogRef = this.dialog.open(VoteyModalComponent, {
+            id: config.id,
+            maxWidth: "92vw",
+            panelClass: "votey-modal-overlay",
+            disableClose: true,
+            closeOnNavigation: false,
+            closeOnOverlayDetachments: false,
+            autoFocus: config.autoFocus ?? "first-heading",
+            restoreFocus: config.restoreFocus ?? true,
+            ariaLabel: this.translator.translate(config.title),
+            ariaLabelledBy: null,
+            injector: config.injector,
+            viewContainerRef: config.viewContainerRef,
+            data: { config, content },
+            providers: (cdkRef) => {
+                ref = new VoteyModalRef(cdkRef.id);
+                return [
+                    { provide: VoteyModalRef, useValue: ref },
+                    { provide: VOTEY_MODAL_DATA, useValue: config.data },
+                ];
+            },
+        });
+        const modalRef = ref;
+        const componentInstance = dialogRef.componentInstance;
+        this.refs.set(modalRef.id, modalRef);
+        dialogRef.backdropClick.pipe(takeUntil(dialogRef.closed)).subscribe(() => {
+            if (config.closeOnBackdrop ?? true)
+                void modalRef.close(undefined, "backdrop");
+        });
+        dialogRef.keydownEvents
+            .pipe(filter((event) => event.key === "Escape" &&
+            !event.altKey &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !event.shiftKey), takeUntil(dialogRef.closed))
+            .subscribe((event) => {
+            if (config.closeOnEscape ?? true) {
+                event.preventDefault();
+                void modalRef.close(undefined, "escape");
+            }
+        });
+        const stopLocationListener = config.closeOnNavigation ?? true
+            ? this.location?.onUrlChange(() => {
+                void modalRef.close(undefined, "navigation");
+            })
+            : undefined;
+        dialogRef.closed.subscribe(() => {
+            stopLocationListener?.();
+            this.refs.delete(modalRef.id);
+            componentInstance.finish();
+        });
+        return modalRef;
+    }
+    confirm(config) {
+        return this.open(null, config);
+    }
+    getById(id) {
+        return this.refs.get(id);
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, providedIn: "root" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: "root" }]
+        }] });
+
 /**
  * Generated bundle index. Do not edit.
  */
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_MODAL_DATA, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyModalCloseReasons, VoteyModalComponent, VoteyModalRef, VoteyModalService, VoteyModalSizes, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

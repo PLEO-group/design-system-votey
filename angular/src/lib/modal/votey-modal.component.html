@@ -1,0 +1,79 @@
+<section class="frame" [attr.data-cy]="data.config.dataCy ?? null" [attr.aria-busy]="busy()">
+  <header class="header">
+    <div class="heading">
+      <h2 [attr.data-cy]="data.config.dataCy ? data.config.dataCy + '-title' : null" [id]="ref.id + '-title'">
+        <vt-text
+          variant="h3"
+          [content]="data.config.title | vtTranslate"
+          [wrap]="true"
+        />
+      </h2>
+      @if (data.config.description) {
+      <vt-text
+        color="secondary"
+        [content]="data.config.description | vtTranslate"
+        [wrap]="true"
+      />
+      }
+    </div>
+    @if (data.config.showCloseButton ?? true) {
+    <vt-button
+      variant="primary"
+      size="small"
+      ico="ui-close"
+      [ariaLabel]="data.config.closeLabel ?? 'BUTTON.CLOSE'"
+      [disabled]="blocked()"
+      (pressed)="close(undefined, 'close-button')"
+    />
+    }
+  </header>
+  <div class="body" [attr.data-cy]="data.config.dataCy ? data.config.dataCy + '-content' : null">
+    @if (data.config.message) {
+    <vt-text [content]="data.config.message | vtTranslate" [wrap]="true" /> }
+    @if (template) {
+    <ng-container
+      [ngTemplateOutlet]="template"
+      [ngTemplateOutletContext]="context"
+    />
+    } @else if (component) {
+    <ng-container
+      [ngComponentOutlet]="component"
+      [ngComponentOutletInjector]="injector"
+    />
+    }
+  </div>
+  @if (hasActions()) {
+  <footer class="actions" [attr.data-cy]="data.config.dataCy ? data.config.dataCy + '-footer' : null">
+    @if (busy()) {
+    <span class="progress" role="status"
+      ><span class="spinner" aria-hidden="true"></span
+      >{{ actions().busyText ?? "" | vtTranslate }}</span
+    >
+    } @if (hasThirdAction()) {
+    <vt-button
+      variant="secondary"
+      [text]="actions().thirdActionText ?? ''"
+      [attr.data-cy]="actions().thirdActionDataCy ?? null"
+      [disabled]="blocked()"
+      (pressed)="thirdAction()"
+    />
+    } @if (actions().cancelText) {
+    <vt-button
+      variant="secondary"
+      [text]="actions().cancelText ?? ''"
+      [attr.data-cy]="actions().cancelDataCy ?? null"
+      [disabled]="blocked()"
+      (pressed)="cancel()"
+    />
+    } @if (actions().confirmText) {
+    <vt-button
+      [text]="actions().confirmText ?? ''"
+      [attr.data-cy]="actions().confirmDataCy ?? null"
+      [variant]="actions().confirmVariant ?? 'primary'"
+      [disabled]="confirmDisabled()"
+      (pressed)="confirm()"
+    />
+    }
+  </footer>
+  }
+</section>

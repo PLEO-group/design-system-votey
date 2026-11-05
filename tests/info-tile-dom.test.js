@@ -20,7 +20,7 @@ test("info tile renders arbitrary data including zero and escapes text", async (
     title: "<b>Summary</b>",
     items: [{ id: "count", icon: "ui-search", value: 0 }],
   });
-  assert.equal(env.by(fixture, "article").getAttribute("aria-label"), "<b>Summary</b>");
+  assert.equal(env.by(fixture, ".tile").getAttribute("aria-label"), "<b>Summary</b>");
   assert.equal(env.by(fixture, ".title").textContent.trim(), "<b>Summary</b>");
   assert.equal(env.by(fixture, ".title b"), null);
   assert.equal(env.by(fixture, ".value").textContent.trim(), "0");

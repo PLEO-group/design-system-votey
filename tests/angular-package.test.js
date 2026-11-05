@@ -312,6 +312,12 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "column-header",
     "label",
     "field",
+    "body-xl-light",
+    "overline",
+    "caption-s-bold",
+    "body-bold",
+    "body-semibold",
+    "body-s-bold",
   ]);
   assert.deepEqual(VoteyTextColors, [
     "primary",
@@ -323,6 +329,8 @@ test("Angular subpath exports components, device and SVG registry runtimes witho
     "on-sidebar",
     "state-warning",
     "state-info",
+    "eyebrow",
+    "description",
   ]);
   const buttonDependencies = VoteyButtonComponent.ɵcmp.dependencies();
   const chipDependencies = VoteyChipComponent.ɵcmp.dependencies();

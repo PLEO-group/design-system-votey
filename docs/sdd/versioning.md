@@ -15,3 +15,5 @@ radio-button: 1.0.0
 textarea: 1.0.0
 
 table: 1.2.0
+
+modal: 1.0.0

@@ -1,0 +1,26 @@
+.angular-info-tile-story {
+  width: 288px;
+  max-width: 100%;
+}
+
+.angular-info-tile-states {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--spacing-24);
+  padding: var(--spacing-24);
+
+  .state-preview {
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: var(--spacing-16);
+
+    .state-label {
+      margin: 0 0 var(--spacing-16);
+      color: var(--color-text-primary);
+      font-size: var(--typo-body-l-font-size);
+      font-weight: var(--typo-body-l-bold-font-weight);
+      line-height: var(--typo-body-l-line-height);
+    }
+  }
+}

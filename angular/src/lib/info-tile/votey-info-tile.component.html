@@ -1,0 +1,27 @@
+<div [class]="tileClasses()" [attr.aria-label]="title()">
+  @if (illustration(); as asset) {
+    <div class="illustration" aria-hidden="true">
+      <vt-icon [ico]="asset" />
+    </div>
+  }
+  <div class="card-wrap">
+    <div class="card">
+      <div class="title">
+        <vt-text variant="body-l" [content]="title()" [wrap]="true" />
+      </div>
+      @if (items().length) {
+        <ul class="meta">
+          @for (item of items(); track item.id) {
+            <li class="row">
+              <span class="icon" aria-hidden="true"><vt-icon [ico]="item.icon" /></span>
+              <span class="value"><vt-text variant="caption-s" [content]="item.value" [wrap]="true" /></span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    @if (showStatus()) {
+      <span class="status">{{ statusLabel() }}</span>
+    }
+  </div>
+</div>

@@ -22,6 +22,8 @@ export type {
   VoteySvgRegistryEntry,
 } from "./lib/votey-assets";
 export { VoteyIconComponent } from "./lib/icon/votey-icon.component";
+export { VoteyInfoTileComponent, VoteyInfoTileStates } from "./lib/info-tile/votey-info-tile.component";
+export type { VoteyInfoTileItem, VoteyInfoTileState } from "./lib/info-tile/votey-info-tile.component";
 export {
   provideVoteySvgRegistry,
   VOTEY_SVG_REGISTRY_CONFIG,
@@ -121,16 +123,51 @@ export type {
   VoteyInputType,
   VoteyInputVariant,
 } from "./lib/input/votey-input.component";
-export { VoteyDatePickerComponent, VoteyDatePickerModes } from "./lib/date-picker/votey-date-picker.component";
-export { VoteyTimePickerComponent, VoteyTimeEntryPolicies } from "./lib/time-picker/votey-time-picker.component";
-export type { PickerMode, PickerTimeEntryPolicy } from "./lib/picker/picker-value";
+export {
+  VoteyDatePickerComponent,
+  VoteyDatePickerModes,
+} from "./lib/date-picker/votey-date-picker.component";
+export {
+  VoteyTimePickerComponent,
+  VoteyTimeEntryPolicies,
+} from "./lib/time-picker/votey-time-picker.component";
+export type {
+  PickerMode,
+  PickerTimeEntryPolicy,
+} from "./lib/picker/picker-value";
 
 export * from "./lib/tabs/votey-view-transition.service";
 export { VoteyTableComponent } from "./lib/table/votey-table.component";
 export { VoteyTableCellDirective } from "./lib/table/votey-table-cell.directive";
 export { VoteyTableHeaderVariants } from "./lib/table/table.model";
 export type {
-  VoteyTableKey, VoteyTableValue, VoteyTableSearchMode, VoteyTablePaginationMode, VoteyTableFilters, VoteyTableHeaderVariant,
-  VoteyTableColumn, VoteyTableQuery, VoteyTableCellContext, VoteyTableSelectionContext, VoteyTableReorderEvent, VoteyTableRowConfig,
+  VoteyTableKey,
+  VoteyTableValue,
+  VoteyTableSearchMode,
+  VoteyTablePaginationMode,
+  VoteyTableFilters,
+  VoteyTableHeaderVariant,
+  VoteyTableColumn,
+  VoteyTableQuery,
+  VoteyTableCellContext,
+  VoteyTableSelectionContext,
+  VoteyTableReorderEvent,
+  VoteyTableRowConfig,
 } from "./lib/table/table.model";
 export { VoteySearchComponent } from "./lib/search/votey-search.component";
+export { VoteyModalComponent } from "./lib/modal/votey-modal.component";
+export { VoteyModalService } from "./lib/modal/votey-modal.service";
+export { VoteyModalRef } from "./lib/modal/votey-modal-ref";
+export { VoteyModalSizes, VoteyModalCloseReasons } from "./lib/modal/modal.model";
+export { VOTEY_MODAL_DATA } from "./lib/modal/modal-content.model";
+export type {
+  VoteyModalSize,
+  VoteyModalCloseReason,
+  VoteyModalResult,
+} from "./lib/modal/modal.model";
+export type { VoteyModalConfig } from "./lib/modal/modal-config.model";
+export type { VoteyModalTemplateContext } from "./lib/modal/modal-content.model";
+export type {
+  VoteyModalActions,
+  VoteyModalCallback,
+} from "./lib/modal/modal-actions.model";

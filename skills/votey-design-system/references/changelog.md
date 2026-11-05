@@ -1,5 +1,24 @@
 # Changelog
 
+- 1.20.2 — Modale nie mają osobnych tras: kontekst przekazujemy jawnie w danych modala,
+  anulowanie zachowuje URL, a właściciel widoku obsługuje wynik i odświeżenie.
+
+- 1.20.1 — Modale zawierające wyłącznie tekst i akcje, w tym potwierdzenia,
+  muszą jawnie używać `size: "small"`; reguła obejmuje także migracje.
+
+- 1.20.0 — Akcje modala preferują Observable: jedna subskrypcja w DS, busy do
+  complete/error i cleanup przy zniszczeniu dialogu. Opisano wynik kolejek autosave
+  bez adapterów Promise/onComplete oraz kolejność obsługi sukcesu i close.
+  Zachowano Promise dla naturalnie asynchronicznych API SDK i Routera.
+
+- 1.19.0 — Dodano obowiązkową referencję modali Angular: jeden komponent, standardowe
+  callbacki akcji, własna belka przez hideModalActions, kontrakt loadera, requestów,
+  sukcesu, failure/retry, cleanupu i dostępności.
+
+- 1.18.2 — Doprecyzowano weryfikację runtime'u konsumenta po zmianie paczki:
+  sprawdzenie wersji zainstalowanej, aktualizację lokalnego archiwum `file:` i
+  lockfile oraz build konsumenta w zakresie zadania.
+
 - 1.18.0 — Dodano `angular-table.md` i routing tylko dla pracy z `vt-table`
   w Angularze. Referencja zbiera wybór field/value i autoColumns, wspólny szablon
   @switch, kontrakt requestów i zaznaczania, pułapki oraz ścieżki do pełnego API i testów.

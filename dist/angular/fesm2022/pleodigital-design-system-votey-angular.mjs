@@ -1,8 +1,8 @@
-import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet, NgComponentOutlet, Location } from '@angular/common';
 import * as i0 from '@angular/core';
-import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, Pipe, numberAttribute, computed, output, viewChildren, signal, Input, Directive, model, effect, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, TemplateRef, contentChildren, forwardRef, LOCALE_ID, ChangeDetectorRef, Renderer2, linkedSignal } from '@angular/core';
+import { InjectionToken, inject, PLATFORM_ID, Injectable, makeEnvironmentProviders, provideEnvironmentInitializer, input, ChangeDetectionStrategy, Component, numberAttribute, computed, Pipe, output, viewChildren, signal, Input, Directive, model, effect, ViewEncapsulation, DOCUMENT as DOCUMENT$1, ElementRef, DestroyRef, booleanAttribute, viewChild, TemplateRef, contentChildren, forwardRef, LOCALE_ID, ChangeDetectorRef, Renderer2, linkedSignal, Injector, ErrorHandler } from '@angular/core';
 import DeviceDetector from 'node-device-detector';
-import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, map, ReplaySubject, from, isObservable, finalize, takeUntil, filter, take } from 'rxjs';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -20,7 +20,7 @@ import * as i1$2 from '@angular/material/core';
 import { NativeDateAdapter, provideNativeDateAdapter, DateAdapter, MAT_NATIVE_DATE_FORMATS, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepickerIntl, MatCalendar } from '@angular/material/datepicker';
 import { moveItemInArray, CdkDrag, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
-import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { Dialog, DialogModule, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 
 const DEFAULT_DIMENSIONS = {
     width: 0,
@@ -609,6 +609,99 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
             args: [{ selector: "vt-icon", changeDetection: ChangeDetectionStrategy.OnPush, imports: [MatIcon], template: "<mat-icon\r\n  [svgIcon]=\"ico()\"\r\n  [attr.aria-hidden]=\"ariaLabel().trim() ? null : true\"\r\n  [attr.aria-label]=\"ariaLabel().trim() || null\"\r\n  [class.accent]=\"color() === 'accent'\"\r\n  [class.white]=\"color() === 'white'\"\r\n  [class.muted]=\"color() === 'muted'\"\r\n/>\r\n", styles: [":host{display:contents}mat-icon{display:block;width:100%;height:100%}mat-icon.accent{color:var(--color-accent-primary)}mat-icon.white{color:var(--color-white)}mat-icon.muted{color:var(--color-text-muted)}:host ::ng-deep mat-icon.accent svg[fill]:not([fill=none]),:host ::ng-deep mat-icon.accent svg [fill]:not([fill=none]){fill:var(--color-accent-primary)!important}:host ::ng-deep mat-icon.accent svg[stroke]:not([stroke=none]),:host ::ng-deep mat-icon.accent svg [stroke]:not([stroke=none]){stroke:var(--color-accent-primary)!important}:host ::ng-deep mat-icon.white svg[fill]:not([fill=none]),:host ::ng-deep mat-icon.white svg [fill]:not([fill=none]){fill:var(--color-white)!important}:host ::ng-deep mat-icon.white svg[stroke]:not([stroke=none]),:host ::ng-deep mat-icon.white svg [stroke]:not([stroke=none]){stroke:var(--color-white)!important}:host ::ng-deep mat-icon.muted svg[fill]:not([fill=none]),:host ::ng-deep mat-icon.muted svg [fill]:not([fill=none]){fill:var(--color-text-muted)!important}:host ::ng-deep mat-icon.muted svg[stroke]:not([stroke=none]),:host ::ng-deep mat-icon.muted svg [stroke]:not([stroke=none]){stroke:var(--color-text-muted)!important}\n"] }]
         }], propDecorators: { ico: [{ type: i0.Input, args: [{ isSignal: true, alias: "ico", required: false }] }], ariaLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ariaLabel", required: false }] }], color: [{ type: i0.Input, args: [{ isSignal: true, alias: "color", required: false }] }] } });
 
+const VoteyTextVariants = [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "display-l",
+    "body-2xl",
+    "body-xl",
+    "body-l",
+    "body-l-semibold",
+    "body-l-bold",
+    "body",
+    "body-s",
+    "caption",
+    "caption-extrabold",
+    "caption-light",
+    "caption-s",
+    "micro",
+    "action",
+    "action-s",
+    "column-header",
+    "label",
+    "field",
+    "body-xl-light",
+    "overline",
+    "caption-s-bold",
+    "body-bold",
+    "body-semibold",
+    "body-s-bold",
+];
+const VoteyTextColors = [
+    "primary",
+    "secondary",
+    "muted",
+    "inverse",
+    "accent",
+    "error",
+    "on-sidebar",
+    "state-warning",
+    "state-info",
+    "eyebrow",
+    "description",
+];
+class VoteyTextComponent {
+    content = input.required(...(ngDevMode ? [{ debugName: "content" }] : /* istanbul ignore next */ []));
+    variant = input("body", ...(ngDevMode ? [{ debugName: "variant" }] : /* istanbul ignore next */ []));
+    color = input("primary", ...(ngDevMode ? [{ debugName: "color" }] : /* istanbul ignore next */ []));
+    uppercase = input(false, ...(ngDevMode ? [{ debugName: "uppercase" }] : /* istanbul ignore next */ []));
+    italic = input(false, ...(ngDevMode ? [{ debugName: "italic" }] : /* istanbul ignore next */ []));
+    wrap = input(false, ...(ngDevMode ? [{ debugName: "wrap" }] : /* istanbul ignore next */ []));
+    maxLines = input(0, { ...(ngDevMode ? { debugName: "maxLines" } : /* istanbul ignore next */ {}), transform: (value) => {
+            const lines = numberAttribute(value);
+            return Number.isSafeInteger(lines) && lines > 0 ? lines : 0;
+        } });
+    lineClampEnabled = computed(() => !this.wrap() && this.maxLines() > 0, ...(ngDevMode ? [{ debugName: "lineClampEnabled" }] : /* istanbul ignore next */ []));
+    textClasses = computed(() => [
+        "text",
+        this.variant(),
+        this.color(),
+        this.uppercase() ? "uppercase" : "",
+        this.italic() ? "italic" : "",
+        this.wrap() ? "wrap" : "",
+        this.lineClampEnabled() ? "ellipsis" : "",
+        this.wrap() || this.lineClampEnabled() ? "constrained" : "",
+    ]
+        .filter(Boolean)
+        .join(" "), ...(ngDevMode ? [{ debugName: "textClasses" }] : /* istanbul ignore next */ []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTextComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "21.2.17", type: VoteyTextComponent, isStandalone: true, selector: "vt-text", inputs: { content: { classPropertyName: "content", publicName: "content", isSignal: true, isRequired: true, transformFunction: null }, variant: { classPropertyName: "variant", publicName: "variant", isSignal: true, isRequired: false, transformFunction: null }, color: { classPropertyName: "color", publicName: "color", isSignal: true, isRequired: false, transformFunction: null }, uppercase: { classPropertyName: "uppercase", publicName: "uppercase", isSignal: true, isRequired: false, transformFunction: null }, italic: { classPropertyName: "italic", publicName: "italic", isSignal: true, isRequired: false, transformFunction: null }, wrap: { classPropertyName: "wrap", publicName: "wrap", isSignal: true, isRequired: false, transformFunction: null }, maxLines: { classPropertyName: "maxLines", publicName: "maxLines", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: "<span [class]=\"textClasses()\" [style.--vt-text-max-lines]=\"maxLines()\">\n  {{ content() }}\n</span>\n", styles: [":host{display:contents}.text{color:var(--color-text-primary)}.text.h1{font-size:var(--typo-h1-font-size);font-weight:var(--typo-h1-font-weight);letter-spacing:var(--typo-h1-letter-spacing);line-height:var(--typo-h1-line-height)}.text.h2{font-size:var(--typo-h2-font-size);font-weight:var(--typo-h2-font-weight);letter-spacing:var(--typo-h2-letter-spacing);line-height:var(--typo-h2-line-height)}.text.h3{font-size:var(--typo-h3-font-size);font-weight:var(--typo-h3-font-weight);letter-spacing:var(--typo-h3-letter-spacing);line-height:var(--typo-h3-line-height)}.text.h4{font-size:var(--typo-h4-font-size);font-weight:var(--typo-h4-font-weight);letter-spacing:var(--typo-h4-letter-spacing);line-height:var(--typo-h4-line-height)}.text.h5{font-size:var(--typo-h5-font-size);font-weight:var(--typo-h5-font-weight);letter-spacing:var(--typo-h5-letter-spacing);line-height:var(--typo-h5-line-height)}.text.display-l{font-size:var(--typo-display-l-font-size);font-weight:var(--typo-display-l-font-weight);letter-spacing:var(--typo-display-l-letter-spacing);line-height:var(--typo-display-l-line-height)}.text.body-2xl{font-size:var(--typo-body-2xl-font-size);font-weight:var(--typo-body-2xl-font-weight);letter-spacing:var(--typo-body-2xl-letter-spacing);line-height:var(--typo-body-2xl-line-height)}.text.body-xl{font-size:var(--typo-body-xl-font-size);font-weight:var(--typo-body-xl-font-weight);letter-spacing:var(--typo-body-xl-letter-spacing);line-height:var(--typo-body-xl-line-height)}.text.body-l{font-size:var(--typo-body-l-font-size);font-weight:var(--typo-body-l-font-weight);letter-spacing:var(--typo-body-l-letter-spacing);line-height:var(--typo-body-l-line-height)}.text.body-l-semibold{font-size:var(--typo-body-l-semibold-font-size);font-weight:var(--typo-body-l-semibold-font-weight);letter-spacing:var(--typo-body-l-semibold-letter-spacing);line-height:var(--typo-body-l-semibold-line-height)}.text.body-l-bold{font-size:var(--typo-body-l-bold-font-size);font-weight:var(--typo-body-l-bold-font-weight);letter-spacing:var(--typo-body-l-bold-letter-spacing);line-height:var(--typo-body-l-bold-line-height)}.text.body{font-size:var(--typo-body-font-size);font-weight:var(--typo-body-font-weight);letter-spacing:var(--typo-body-letter-spacing);line-height:var(--typo-body-line-height)}.text.body-s{font-size:var(--typo-body-s-font-size);font-weight:var(--typo-body-s-font-weight);letter-spacing:var(--typo-body-s-letter-spacing);line-height:var(--typo-body-s-line-height)}.text.caption{font-size:var(--typo-caption-font-size);font-weight:var(--typo-caption-font-weight);letter-spacing:var(--typo-caption-letter-spacing);line-height:var(--typo-caption-line-height)}.text.caption-extrabold{font-size:var(--typo-caption-extrabold-font-size);font-weight:var(--typo-caption-extrabold-font-weight);letter-spacing:var(--typo-caption-extrabold-letter-spacing);line-height:var(--typo-caption-extrabold-line-height)}.text.caption-light{font-size:var(--typo-caption-light-font-size);font-weight:var(--typo-caption-light-font-weight);letter-spacing:var(--typo-caption-light-letter-spacing);line-height:var(--typo-caption-light-line-height)}.text.caption-s{font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.text.micro{font-size:var(--typo-micro-font-size);font-weight:var(--typo-micro-font-weight);letter-spacing:var(--typo-micro-letter-spacing);line-height:var(--typo-micro-line-height)}.text.action{font-size:var(--typo-action-font-size);font-weight:var(--typo-action-font-weight);letter-spacing:var(--typo-action-letter-spacing);line-height:var(--typo-action-line-height)}.text.action-s{font-size:var(--typo-action-s-font-size);font-weight:var(--typo-action-s-font-weight);letter-spacing:var(--typo-action-s-letter-spacing);line-height:var(--typo-action-s-line-height)}.text.column-header{font-size:var(--typo-column-header-font-size);font-weight:var(--typo-column-header-font-weight);letter-spacing:var(--typo-column-header-letter-spacing);line-height:var(--typo-column-header-line-height)}.text.label{font-size:var(--typo-label-font-size);font-weight:var(--typo-label-font-weight);letter-spacing:var(--typo-label-letter-spacing);line-height:var(--typo-label-line-height)}.text.field{font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.text.body-xl-light{font-size:var(--typo-body-xl-light-font-size);font-weight:var(--typo-body-xl-light-font-weight);letter-spacing:var(--typo-body-xl-light-letter-spacing);line-height:var(--typo-body-xl-light-line-height)}.text.overline{font-size:var(--typo-overline-font-size);font-weight:var(--typo-overline-font-weight);letter-spacing:var(--typo-overline-letter-spacing);line-height:var(--typo-overline-line-height)}.text.caption-s-bold{font-size:var(--typo-caption-s-bold-font-size);font-weight:var(--typo-caption-s-bold-font-weight);letter-spacing:var(--typo-caption-s-bold-letter-spacing);line-height:var(--typo-caption-s-bold-line-height)}.text.body-bold{font-size:var(--typo-body-bold-font-size);font-weight:var(--typo-body-bold-font-weight);letter-spacing:var(--typo-body-bold-letter-spacing);line-height:var(--typo-body-bold-line-height)}.text.body-semibold{font-size:var(--typo-body-semibold-font-size);font-weight:var(--typo-body-semibold-font-weight);letter-spacing:var(--typo-body-semibold-letter-spacing);line-height:var(--typo-body-semibold-line-height)}.text.body-s-bold{font-size:var(--typo-body-s-bold-font-size);font-weight:var(--typo-body-s-bold-font-weight);letter-spacing:var(--typo-body-s-bold-letter-spacing);line-height:var(--typo-body-s-bold-line-height)}.text.primary{color:var(--color-text-primary)}.text.secondary{color:var(--color-text-secondary)}.text.muted{color:var(--color-text-muted)}.text.inverse{color:var(--color-text-inverse)}.text.accent{color:var(--color-text-accent)}.text.error{color:var(--color-state-error)}.text.on-sidebar{color:var(--color-text-on-sidebar)}.text.state-warning{color:var(--color-state-warning)}.text.state-info{color:var(--color-state-info)}.text.eyebrow{color:var(--color-text-eyebrow)}.text.description{color:var(--color-text-description)}.text.constrained{display:block;min-width:0;max-width:100%}.text.uppercase{text-transform:uppercase}.text.italic{font-style:italic}.text.ellipsis{display:-webkit-box;width:100%;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:var(--vt-text-max-lines)}.text.wrap{white-space:normal;overflow-wrap:anywhere}\n"], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTextComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "vt-text", changeDetection: ChangeDetectionStrategy.OnPush, template: "<span [class]=\"textClasses()\" [style.--vt-text-max-lines]=\"maxLines()\">\n  {{ content() }}\n</span>\n", styles: [":host{display:contents}.text{color:var(--color-text-primary)}.text.h1{font-size:var(--typo-h1-font-size);font-weight:var(--typo-h1-font-weight);letter-spacing:var(--typo-h1-letter-spacing);line-height:var(--typo-h1-line-height)}.text.h2{font-size:var(--typo-h2-font-size);font-weight:var(--typo-h2-font-weight);letter-spacing:var(--typo-h2-letter-spacing);line-height:var(--typo-h2-line-height)}.text.h3{font-size:var(--typo-h3-font-size);font-weight:var(--typo-h3-font-weight);letter-spacing:var(--typo-h3-letter-spacing);line-height:var(--typo-h3-line-height)}.text.h4{font-size:var(--typo-h4-font-size);font-weight:var(--typo-h4-font-weight);letter-spacing:var(--typo-h4-letter-spacing);line-height:var(--typo-h4-line-height)}.text.h5{font-size:var(--typo-h5-font-size);font-weight:var(--typo-h5-font-weight);letter-spacing:var(--typo-h5-letter-spacing);line-height:var(--typo-h5-line-height)}.text.display-l{font-size:var(--typo-display-l-font-size);font-weight:var(--typo-display-l-font-weight);letter-spacing:var(--typo-display-l-letter-spacing);line-height:var(--typo-display-l-line-height)}.text.body-2xl{font-size:var(--typo-body-2xl-font-size);font-weight:var(--typo-body-2xl-font-weight);letter-spacing:var(--typo-body-2xl-letter-spacing);line-height:var(--typo-body-2xl-line-height)}.text.body-xl{font-size:var(--typo-body-xl-font-size);font-weight:var(--typo-body-xl-font-weight);letter-spacing:var(--typo-body-xl-letter-spacing);line-height:var(--typo-body-xl-line-height)}.text.body-l{font-size:var(--typo-body-l-font-size);font-weight:var(--typo-body-l-font-weight);letter-spacing:var(--typo-body-l-letter-spacing);line-height:var(--typo-body-l-line-height)}.text.body-l-semibold{font-size:var(--typo-body-l-semibold-font-size);font-weight:var(--typo-body-l-semibold-font-weight);letter-spacing:var(--typo-body-l-semibold-letter-spacing);line-height:var(--typo-body-l-semibold-line-height)}.text.body-l-bold{font-size:var(--typo-body-l-bold-font-size);font-weight:var(--typo-body-l-bold-font-weight);letter-spacing:var(--typo-body-l-bold-letter-spacing);line-height:var(--typo-body-l-bold-line-height)}.text.body{font-size:var(--typo-body-font-size);font-weight:var(--typo-body-font-weight);letter-spacing:var(--typo-body-letter-spacing);line-height:var(--typo-body-line-height)}.text.body-s{font-size:var(--typo-body-s-font-size);font-weight:var(--typo-body-s-font-weight);letter-spacing:var(--typo-body-s-letter-spacing);line-height:var(--typo-body-s-line-height)}.text.caption{font-size:var(--typo-caption-font-size);font-weight:var(--typo-caption-font-weight);letter-spacing:var(--typo-caption-letter-spacing);line-height:var(--typo-caption-line-height)}.text.caption-extrabold{font-size:var(--typo-caption-extrabold-font-size);font-weight:var(--typo-caption-extrabold-font-weight);letter-spacing:var(--typo-caption-extrabold-letter-spacing);line-height:var(--typo-caption-extrabold-line-height)}.text.caption-light{font-size:var(--typo-caption-light-font-size);font-weight:var(--typo-caption-light-font-weight);letter-spacing:var(--typo-caption-light-letter-spacing);line-height:var(--typo-caption-light-line-height)}.text.caption-s{font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.text.micro{font-size:var(--typo-micro-font-size);font-weight:var(--typo-micro-font-weight);letter-spacing:var(--typo-micro-letter-spacing);line-height:var(--typo-micro-line-height)}.text.action{font-size:var(--typo-action-font-size);font-weight:var(--typo-action-font-weight);letter-spacing:var(--typo-action-letter-spacing);line-height:var(--typo-action-line-height)}.text.action-s{font-size:var(--typo-action-s-font-size);font-weight:var(--typo-action-s-font-weight);letter-spacing:var(--typo-action-s-letter-spacing);line-height:var(--typo-action-s-line-height)}.text.column-header{font-size:var(--typo-column-header-font-size);font-weight:var(--typo-column-header-font-weight);letter-spacing:var(--typo-column-header-letter-spacing);line-height:var(--typo-column-header-line-height)}.text.label{font-size:var(--typo-label-font-size);font-weight:var(--typo-label-font-weight);letter-spacing:var(--typo-label-letter-spacing);line-height:var(--typo-label-line-height)}.text.field{font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.text.body-xl-light{font-size:var(--typo-body-xl-light-font-size);font-weight:var(--typo-body-xl-light-font-weight);letter-spacing:var(--typo-body-xl-light-letter-spacing);line-height:var(--typo-body-xl-light-line-height)}.text.overline{font-size:var(--typo-overline-font-size);font-weight:var(--typo-overline-font-weight);letter-spacing:var(--typo-overline-letter-spacing);line-height:var(--typo-overline-line-height)}.text.caption-s-bold{font-size:var(--typo-caption-s-bold-font-size);font-weight:var(--typo-caption-s-bold-font-weight);letter-spacing:var(--typo-caption-s-bold-letter-spacing);line-height:var(--typo-caption-s-bold-line-height)}.text.body-bold{font-size:var(--typo-body-bold-font-size);font-weight:var(--typo-body-bold-font-weight);letter-spacing:var(--typo-body-bold-letter-spacing);line-height:var(--typo-body-bold-line-height)}.text.body-semibold{font-size:var(--typo-body-semibold-font-size);font-weight:var(--typo-body-semibold-font-weight);letter-spacing:var(--typo-body-semibold-letter-spacing);line-height:var(--typo-body-semibold-line-height)}.text.body-s-bold{font-size:var(--typo-body-s-bold-font-size);font-weight:var(--typo-body-s-bold-font-weight);letter-spacing:var(--typo-body-s-bold-letter-spacing);line-height:var(--typo-body-s-bold-line-height)}.text.primary{color:var(--color-text-primary)}.text.secondary{color:var(--color-text-secondary)}.text.muted{color:var(--color-text-muted)}.text.inverse{color:var(--color-text-inverse)}.text.accent{color:var(--color-text-accent)}.text.error{color:var(--color-state-error)}.text.on-sidebar{color:var(--color-text-on-sidebar)}.text.state-warning{color:var(--color-state-warning)}.text.state-info{color:var(--color-state-info)}.text.eyebrow{color:var(--color-text-eyebrow)}.text.description{color:var(--color-text-description)}.text.constrained{display:block;min-width:0;max-width:100%}.text.uppercase{text-transform:uppercase}.text.italic{font-style:italic}.text.ellipsis{display:-webkit-box;width:100%;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:var(--vt-text-max-lines)}.text.wrap{white-space:normal;overflow-wrap:anywhere}\n"] }]
+        }], propDecorators: { content: [{ type: i0.Input, args: [{ isSignal: true, alias: "content", required: true }] }], variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], color: [{ type: i0.Input, args: [{ isSignal: true, alias: "color", required: false }] }], uppercase: [{ type: i0.Input, args: [{ isSignal: true, alias: "uppercase", required: false }] }], italic: [{ type: i0.Input, args: [{ isSignal: true, alias: "italic", required: false }] }], wrap: [{ type: i0.Input, args: [{ isSignal: true, alias: "wrap", required: false }] }], maxLines: [{ type: i0.Input, args: [{ isSignal: true, alias: "maxLines", required: false }] }] } });
+
+const VoteyInfoTileStates = ["default", "running", "completed", "test", "not-launched", "scheduled"];
+class VoteyInfoTileComponent {
+    title = input.required(...(ngDevMode ? [{ debugName: "title" }] : /* istanbul ignore next */ []));
+    items = input([], ...(ngDevMode ? [{ debugName: "items" }] : /* istanbul ignore next */ []));
+    illustration = input("", ...(ngDevMode ? [{ debugName: "illustration" }] : /* istanbul ignore next */ []));
+    state = input("default", ...(ngDevMode ? [{ debugName: "state" }] : /* istanbul ignore next */ []));
+    statusLabel = input("", ...(ngDevMode ? [{ debugName: "statusLabel" }] : /* istanbul ignore next */ []));
+    tileClasses = computed(() => ["tile", this.state(), this.illustration() ? "has-illustration" : ""].filter(Boolean).join(" "), ...(ngDevMode ? [{ debugName: "tileClasses" }] : /* istanbul ignore next */ []));
+    showStatus = computed(() => this.state() !== "default" && this.statusLabel().length > 0, ...(ngDevMode ? [{ debugName: "showStatus" }] : /* istanbul ignore next */ []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyInfoTileComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyInfoTileComponent, isStandalone: true, selector: "vt-info-tile", inputs: { title: { classPropertyName: "title", publicName: "title", isSignal: true, isRequired: true, transformFunction: null }, items: { classPropertyName: "items", publicName: "items", isSignal: true, isRequired: false, transformFunction: null }, illustration: { classPropertyName: "illustration", publicName: "illustration", isSignal: true, isRequired: false, transformFunction: null }, state: { classPropertyName: "state", publicName: "state", isSignal: true, isRequired: false, transformFunction: null }, statusLabel: { classPropertyName: "statusLabel", publicName: "statusLabel", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: "<div [class]=\"tileClasses()\" [attr.aria-label]=\"title()\">\n  @if (illustration(); as asset) {\n    <div class=\"illustration\" aria-hidden=\"true\">\n      <vt-icon [ico]=\"asset\" />\n    </div>\n  }\n  <div class=\"card-wrap\">\n    <div class=\"card\">\n      <div class=\"title\">\n        <vt-text variant=\"body-l\" [content]=\"title()\" [wrap]=\"true\" />\n      </div>\n      @if (items().length) {\n        <ul class=\"meta\">\n          @for (item of items(); track item.id) {\n            <li class=\"row\">\n              <span class=\"icon\" aria-hidden=\"true\"><vt-icon [ico]=\"item.icon\" /></span>\n              <span class=\"value\"><vt-text variant=\"caption-s\" [content]=\"item.value\" [wrap]=\"true\" /></span>\n            </li>\n          }\n        </ul>\n      }\n    </div>\n    @if (showStatus()) {\n      <span class=\"status\">{{ statusLabel() }}</span>\n    }\n  </div>\n</div>\n", styles: [":host{display:block;min-width:0;width:100%}.tile{display:flex;flex-direction:column;align-items:center;isolation:isolate;color:var(--color-text-primary)}.tile .illustration{position:relative;z-index:2;flex:0 0 auto;width:150px;height:105px;margin-bottom:-52px}.tile .card-wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;min-width:0}.tile .card-wrap .card{box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-section-gap);width:100%;padding:var(--space-section-gap) var(--space-inset-m);border-radius:var(--radius-2xl);background:var(--color-bg-surface)}.tile .card-wrap .card .title{min-width:0;text-align:center}.tile .card-wrap .card .meta{display:flex;flex-direction:column;gap:var(--space-stack-gap-m);min-width:0;margin:0;padding:0 0 0 var(--space-gap-xs);list-style:none}.tile .card-wrap .card .meta .row{display:flex;align-items:center;gap:var(--space-inset-l);min-width:0}.tile .card-wrap .card .meta .row .icon{flex:0 0 26px;width:26px;height:26px}.tile .card-wrap .card .meta .row .value{min-width:0}.tile .card-wrap .status{position:relative;box-sizing:border-box;max-width:100%;margin-top:-14px;padding:var(--space-inset-3xs) var(--space-stack-gap-m);border:2px solid var(--color-accent-primary);border-radius:var(--radius-xs);background:var(--color-bg-surface);font-size:var(--typo-caption-s-bold-font-size);font-weight:var(--typo-caption-s-bold-font-weight);line-height:var(--typo-caption-s-bold-line-height);letter-spacing:var(--typo-caption-s-bold-letter-spacing);overflow-wrap:anywhere;text-align:center}.tile.has-illustration .card-wrap .card{padding-top:62px}.tile.running .card-wrap .card,.tile.scheduled .card-wrap .card{border:2px solid var(--color-accent-primary)}.tile.test .card-wrap .card{border:2px solid var(--color-orange-300)}.tile.test .card-wrap .status{border-color:var(--color-orange-300)}.tile.not-launched .card-wrap .status{border-color:var(--color-yellow-400);color:var(--color-yellow-400)}.tile.scheduled .card-wrap .status{border-color:var(--color-navy-blue-70)}.tile.completed .card-wrap{opacity:.6}.tile.completed .card-wrap .status{border-color:var(--color-navy-blue-100)}\n"], dependencies: [{ kind: "component", type: VoteyIconComponent, selector: "vt-icon", inputs: ["ico", "ariaLabel", "color"] }, { kind: "component", type: VoteyTextComponent, selector: "vt-text", inputs: ["content", "variant", "color", "uppercase", "italic", "wrap", "maxLines"] }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyInfoTileComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "vt-info-tile", imports: [VoteyIconComponent, VoteyTextComponent], changeDetection: ChangeDetectionStrategy.OnPush, template: "<div [class]=\"tileClasses()\" [attr.aria-label]=\"title()\">\n  @if (illustration(); as asset) {\n    <div class=\"illustration\" aria-hidden=\"true\">\n      <vt-icon [ico]=\"asset\" />\n    </div>\n  }\n  <div class=\"card-wrap\">\n    <div class=\"card\">\n      <div class=\"title\">\n        <vt-text variant=\"body-l\" [content]=\"title()\" [wrap]=\"true\" />\n      </div>\n      @if (items().length) {\n        <ul class=\"meta\">\n          @for (item of items(); track item.id) {\n            <li class=\"row\">\n              <span class=\"icon\" aria-hidden=\"true\"><vt-icon [ico]=\"item.icon\" /></span>\n              <span class=\"value\"><vt-text variant=\"caption-s\" [content]=\"item.value\" [wrap]=\"true\" /></span>\n            </li>\n          }\n        </ul>\n      }\n    </div>\n    @if (showStatus()) {\n      <span class=\"status\">{{ statusLabel() }}</span>\n    }\n  </div>\n</div>\n", styles: [":host{display:block;min-width:0;width:100%}.tile{display:flex;flex-direction:column;align-items:center;isolation:isolate;color:var(--color-text-primary)}.tile .illustration{position:relative;z-index:2;flex:0 0 auto;width:150px;height:105px;margin-bottom:-52px}.tile .card-wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;min-width:0}.tile .card-wrap .card{box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-section-gap);width:100%;padding:var(--space-section-gap) var(--space-inset-m);border-radius:var(--radius-2xl);background:var(--color-bg-surface)}.tile .card-wrap .card .title{min-width:0;text-align:center}.tile .card-wrap .card .meta{display:flex;flex-direction:column;gap:var(--space-stack-gap-m);min-width:0;margin:0;padding:0 0 0 var(--space-gap-xs);list-style:none}.tile .card-wrap .card .meta .row{display:flex;align-items:center;gap:var(--space-inset-l);min-width:0}.tile .card-wrap .card .meta .row .icon{flex:0 0 26px;width:26px;height:26px}.tile .card-wrap .card .meta .row .value{min-width:0}.tile .card-wrap .status{position:relative;box-sizing:border-box;max-width:100%;margin-top:-14px;padding:var(--space-inset-3xs) var(--space-stack-gap-m);border:2px solid var(--color-accent-primary);border-radius:var(--radius-xs);background:var(--color-bg-surface);font-size:var(--typo-caption-s-bold-font-size);font-weight:var(--typo-caption-s-bold-font-weight);line-height:var(--typo-caption-s-bold-line-height);letter-spacing:var(--typo-caption-s-bold-letter-spacing);overflow-wrap:anywhere;text-align:center}.tile.has-illustration .card-wrap .card{padding-top:62px}.tile.running .card-wrap .card,.tile.scheduled .card-wrap .card{border:2px solid var(--color-accent-primary)}.tile.test .card-wrap .card{border:2px solid var(--color-orange-300)}.tile.test .card-wrap .status{border-color:var(--color-orange-300)}.tile.not-launched .card-wrap .status{border-color:var(--color-yellow-400);color:var(--color-yellow-400)}.tile.scheduled .card-wrap .status{border-color:var(--color-navy-blue-70)}.tile.completed .card-wrap{opacity:.6}.tile.completed .card-wrap .status{border-color:var(--color-navy-blue-100)}\n"] }]
+        }], propDecorators: { title: [{ type: i0.Input, args: [{ isSignal: true, alias: "title", required: true }] }], items: [{ type: i0.Input, args: [{ isSignal: true, alias: "items", required: false }] }], illustration: [{ type: i0.Input, args: [{ isSignal: true, alias: "illustration", required: false }] }], state: [{ type: i0.Input, args: [{ isSignal: true, alias: "state", required: false }] }], statusLabel: [{ type: i0.Input, args: [{ isSignal: true, alias: "statusLabel", required: false }] }] } });
+
 const VOTEY_SVG_REGISTRY_CONFIG = new InjectionToken("VOTEY_SVG_REGISTRY_CONFIG");
 const DEFAULT_ASSET_BASE_URL = "assets/votey";
 function getVoteySvgAssetUrl(assetPath, config = {}) {
@@ -680,74 +773,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
                     pure: false,
                 }]
         }] });
-
-const VoteyTextVariants = [
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "display-l",
-    "body-2xl",
-    "body-xl",
-    "body-l",
-    "body-l-semibold",
-    "body-l-bold",
-    "body",
-    "body-s",
-    "caption",
-    "caption-extrabold",
-    "caption-light",
-    "caption-s",
-    "micro",
-    "action",
-    "action-s",
-    "column-header",
-    "label",
-    "field",
-];
-const VoteyTextColors = [
-    "primary",
-    "secondary",
-    "muted",
-    "inverse",
-    "accent",
-    "error",
-    "on-sidebar",
-    "state-warning",
-    "state-info",
-];
-class VoteyTextComponent {
-    content = input.required(...(ngDevMode ? [{ debugName: "content" }] : /* istanbul ignore next */ []));
-    variant = input("body", ...(ngDevMode ? [{ debugName: "variant" }] : /* istanbul ignore next */ []));
-    color = input("primary", ...(ngDevMode ? [{ debugName: "color" }] : /* istanbul ignore next */ []));
-    uppercase = input(false, ...(ngDevMode ? [{ debugName: "uppercase" }] : /* istanbul ignore next */ []));
-    italic = input(false, ...(ngDevMode ? [{ debugName: "italic" }] : /* istanbul ignore next */ []));
-    wrap = input(false, ...(ngDevMode ? [{ debugName: "wrap" }] : /* istanbul ignore next */ []));
-    maxLines = input(0, { ...(ngDevMode ? { debugName: "maxLines" } : /* istanbul ignore next */ {}), transform: (value) => {
-            const lines = numberAttribute(value);
-            return Number.isSafeInteger(lines) && lines > 0 ? lines : 0;
-        } });
-    lineClampEnabled = computed(() => !this.wrap() && this.maxLines() > 0, ...(ngDevMode ? [{ debugName: "lineClampEnabled" }] : /* istanbul ignore next */ []));
-    textClasses = computed(() => [
-        "text",
-        this.variant(),
-        this.color(),
-        this.uppercase() ? "uppercase" : "",
-        this.italic() ? "italic" : "",
-        this.wrap() ? "wrap" : "",
-        this.lineClampEnabled() ? "ellipsis" : "",
-        this.wrap() || this.lineClampEnabled() ? "constrained" : "",
-    ]
-        .filter(Boolean)
-        .join(" "), ...(ngDevMode ? [{ debugName: "textClasses" }] : /* istanbul ignore next */ []));
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTextComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "21.2.17", type: VoteyTextComponent, isStandalone: true, selector: "vt-text", inputs: { content: { classPropertyName: "content", publicName: "content", isSignal: true, isRequired: true, transformFunction: null }, variant: { classPropertyName: "variant", publicName: "variant", isSignal: true, isRequired: false, transformFunction: null }, color: { classPropertyName: "color", publicName: "color", isSignal: true, isRequired: false, transformFunction: null }, uppercase: { classPropertyName: "uppercase", publicName: "uppercase", isSignal: true, isRequired: false, transformFunction: null }, italic: { classPropertyName: "italic", publicName: "italic", isSignal: true, isRequired: false, transformFunction: null }, wrap: { classPropertyName: "wrap", publicName: "wrap", isSignal: true, isRequired: false, transformFunction: null }, maxLines: { classPropertyName: "maxLines", publicName: "maxLines", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: "<span [class]=\"textClasses()\" [style.--vt-text-max-lines]=\"maxLines()\">\n  {{ content() }}\n</span>\n", styles: [":host{display:contents}.text{color:var(--color-text-primary)}.text.h1{font-size:var(--typo-h1-font-size);font-weight:var(--typo-h1-font-weight);letter-spacing:var(--typo-h1-letter-spacing);line-height:var(--typo-h1-line-height)}.text.h2{font-size:var(--typo-h2-font-size);font-weight:var(--typo-h2-font-weight);letter-spacing:var(--typo-h2-letter-spacing);line-height:var(--typo-h2-line-height)}.text.h3{font-size:var(--typo-h3-font-size);font-weight:var(--typo-h3-font-weight);letter-spacing:var(--typo-h3-letter-spacing);line-height:var(--typo-h3-line-height)}.text.h4{font-size:var(--typo-h4-font-size);font-weight:var(--typo-h4-font-weight);letter-spacing:var(--typo-h4-letter-spacing);line-height:var(--typo-h4-line-height)}.text.h5{font-size:var(--typo-h5-font-size);font-weight:var(--typo-h5-font-weight);letter-spacing:var(--typo-h5-letter-spacing);line-height:var(--typo-h5-line-height)}.text.display-l{font-size:var(--typo-display-l-font-size);font-weight:var(--typo-display-l-font-weight);letter-spacing:var(--typo-display-l-letter-spacing);line-height:var(--typo-display-l-line-height)}.text.body-2xl{font-size:var(--typo-body-2xl-font-size);font-weight:var(--typo-body-2xl-font-weight);letter-spacing:var(--typo-body-2xl-letter-spacing);line-height:var(--typo-body-2xl-line-height)}.text.body-xl{font-size:var(--typo-body-xl-font-size);font-weight:var(--typo-body-xl-font-weight);letter-spacing:var(--typo-body-xl-letter-spacing);line-height:var(--typo-body-xl-line-height)}.text.body-l{font-size:var(--typo-body-l-font-size);font-weight:var(--typo-body-l-font-weight);letter-spacing:var(--typo-body-l-letter-spacing);line-height:var(--typo-body-l-line-height)}.text.body-l-semibold{font-size:var(--typo-body-l-semibold-font-size);font-weight:var(--typo-body-l-semibold-font-weight);letter-spacing:var(--typo-body-l-semibold-letter-spacing);line-height:var(--typo-body-l-semibold-line-height)}.text.body-l-bold{font-size:var(--typo-body-l-bold-font-size);font-weight:var(--typo-body-l-bold-font-weight);letter-spacing:var(--typo-body-l-bold-letter-spacing);line-height:var(--typo-body-l-bold-line-height)}.text.body{font-size:var(--typo-body-font-size);font-weight:var(--typo-body-font-weight);letter-spacing:var(--typo-body-letter-spacing);line-height:var(--typo-body-line-height)}.text.body-s{font-size:var(--typo-body-s-font-size);font-weight:var(--typo-body-s-font-weight);letter-spacing:var(--typo-body-s-letter-spacing);line-height:var(--typo-body-s-line-height)}.text.caption{font-size:var(--typo-caption-font-size);font-weight:var(--typo-caption-font-weight);letter-spacing:var(--typo-caption-letter-spacing);line-height:var(--typo-caption-line-height)}.text.caption-extrabold{font-size:var(--typo-caption-extrabold-font-size);font-weight:var(--typo-caption-extrabold-font-weight);letter-spacing:var(--typo-caption-extrabold-letter-spacing);line-height:var(--typo-caption-extrabold-line-height)}.text.caption-light{font-size:var(--typo-caption-light-font-size);font-weight:var(--typo-caption-light-font-weight);letter-spacing:var(--typo-caption-light-letter-spacing);line-height:var(--typo-caption-light-line-height)}.text.caption-s{font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.text.micro{font-size:var(--typo-micro-font-size);font-weight:var(--typo-micro-font-weight);letter-spacing:var(--typo-micro-letter-spacing);line-height:var(--typo-micro-line-height)}.text.action{font-size:var(--typo-action-font-size);font-weight:var(--typo-action-font-weight);letter-spacing:var(--typo-action-letter-spacing);line-height:var(--typo-action-line-height)}.text.action-s{font-size:var(--typo-action-s-font-size);font-weight:var(--typo-action-s-font-weight);letter-spacing:var(--typo-action-s-letter-spacing);line-height:var(--typo-action-s-line-height)}.text.column-header{font-size:var(--typo-column-header-font-size);font-weight:var(--typo-column-header-font-weight);letter-spacing:var(--typo-column-header-letter-spacing);line-height:var(--typo-column-header-line-height)}.text.label{font-size:var(--typo-label-font-size);font-weight:var(--typo-label-font-weight);letter-spacing:var(--typo-label-letter-spacing);line-height:var(--typo-label-line-height)}.text.field{font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.text.primary{color:var(--color-text-primary)}.text.secondary{color:var(--color-text-secondary)}.text.muted{color:var(--color-text-muted)}.text.inverse{color:var(--color-text-inverse)}.text.accent{color:var(--color-text-accent)}.text.error{color:var(--color-state-error)}.text.on-sidebar{color:var(--color-text-on-sidebar)}.text.state-warning{color:var(--color-state-warning)}.text.state-info{color:var(--color-state-info)}.text.constrained{display:block;min-width:0;max-width:100%}.text.uppercase{text-transform:uppercase}.text.italic{font-style:italic}.text.ellipsis{display:-webkit-box;width:100%;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:var(--vt-text-max-lines)}.text.wrap{white-space:normal;overflow-wrap:anywhere}\n"], changeDetection: i0.ChangeDetectionStrategy.OnPush });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyTextComponent, decorators: [{
-            type: Component,
-            args: [{ selector: "vt-text", changeDetection: ChangeDetectionStrategy.OnPush, template: "<span [class]=\"textClasses()\" [style.--vt-text-max-lines]=\"maxLines()\">\n  {{ content() }}\n</span>\n", styles: [":host{display:contents}.text{color:var(--color-text-primary)}.text.h1{font-size:var(--typo-h1-font-size);font-weight:var(--typo-h1-font-weight);letter-spacing:var(--typo-h1-letter-spacing);line-height:var(--typo-h1-line-height)}.text.h2{font-size:var(--typo-h2-font-size);font-weight:var(--typo-h2-font-weight);letter-spacing:var(--typo-h2-letter-spacing);line-height:var(--typo-h2-line-height)}.text.h3{font-size:var(--typo-h3-font-size);font-weight:var(--typo-h3-font-weight);letter-spacing:var(--typo-h3-letter-spacing);line-height:var(--typo-h3-line-height)}.text.h4{font-size:var(--typo-h4-font-size);font-weight:var(--typo-h4-font-weight);letter-spacing:var(--typo-h4-letter-spacing);line-height:var(--typo-h4-line-height)}.text.h5{font-size:var(--typo-h5-font-size);font-weight:var(--typo-h5-font-weight);letter-spacing:var(--typo-h5-letter-spacing);line-height:var(--typo-h5-line-height)}.text.display-l{font-size:var(--typo-display-l-font-size);font-weight:var(--typo-display-l-font-weight);letter-spacing:var(--typo-display-l-letter-spacing);line-height:var(--typo-display-l-line-height)}.text.body-2xl{font-size:var(--typo-body-2xl-font-size);font-weight:var(--typo-body-2xl-font-weight);letter-spacing:var(--typo-body-2xl-letter-spacing);line-height:var(--typo-body-2xl-line-height)}.text.body-xl{font-size:var(--typo-body-xl-font-size);font-weight:var(--typo-body-xl-font-weight);letter-spacing:var(--typo-body-xl-letter-spacing);line-height:var(--typo-body-xl-line-height)}.text.body-l{font-size:var(--typo-body-l-font-size);font-weight:var(--typo-body-l-font-weight);letter-spacing:var(--typo-body-l-letter-spacing);line-height:var(--typo-body-l-line-height)}.text.body-l-semibold{font-size:var(--typo-body-l-semibold-font-size);font-weight:var(--typo-body-l-semibold-font-weight);letter-spacing:var(--typo-body-l-semibold-letter-spacing);line-height:var(--typo-body-l-semibold-line-height)}.text.body-l-bold{font-size:var(--typo-body-l-bold-font-size);font-weight:var(--typo-body-l-bold-font-weight);letter-spacing:var(--typo-body-l-bold-letter-spacing);line-height:var(--typo-body-l-bold-line-height)}.text.body{font-size:var(--typo-body-font-size);font-weight:var(--typo-body-font-weight);letter-spacing:var(--typo-body-letter-spacing);line-height:var(--typo-body-line-height)}.text.body-s{font-size:var(--typo-body-s-font-size);font-weight:var(--typo-body-s-font-weight);letter-spacing:var(--typo-body-s-letter-spacing);line-height:var(--typo-body-s-line-height)}.text.caption{font-size:var(--typo-caption-font-size);font-weight:var(--typo-caption-font-weight);letter-spacing:var(--typo-caption-letter-spacing);line-height:var(--typo-caption-line-height)}.text.caption-extrabold{font-size:var(--typo-caption-extrabold-font-size);font-weight:var(--typo-caption-extrabold-font-weight);letter-spacing:var(--typo-caption-extrabold-letter-spacing);line-height:var(--typo-caption-extrabold-line-height)}.text.caption-light{font-size:var(--typo-caption-light-font-size);font-weight:var(--typo-caption-light-font-weight);letter-spacing:var(--typo-caption-light-letter-spacing);line-height:var(--typo-caption-light-line-height)}.text.caption-s{font-size:var(--typo-caption-s-font-size);font-weight:var(--typo-caption-s-font-weight);letter-spacing:var(--typo-caption-s-letter-spacing);line-height:var(--typo-caption-s-line-height)}.text.micro{font-size:var(--typo-micro-font-size);font-weight:var(--typo-micro-font-weight);letter-spacing:var(--typo-micro-letter-spacing);line-height:var(--typo-micro-line-height)}.text.action{font-size:var(--typo-action-font-size);font-weight:var(--typo-action-font-weight);letter-spacing:var(--typo-action-letter-spacing);line-height:var(--typo-action-line-height)}.text.action-s{font-size:var(--typo-action-s-font-size);font-weight:var(--typo-action-s-font-weight);letter-spacing:var(--typo-action-s-letter-spacing);line-height:var(--typo-action-s-line-height)}.text.column-header{font-size:var(--typo-column-header-font-size);font-weight:var(--typo-column-header-font-weight);letter-spacing:var(--typo-column-header-letter-spacing);line-height:var(--typo-column-header-line-height)}.text.label{font-size:var(--typo-label-font-size);font-weight:var(--typo-label-font-weight);letter-spacing:var(--typo-label-letter-spacing);line-height:var(--typo-label-line-height)}.text.field{font-size:var(--typo-field-font-size);font-weight:var(--typo-field-font-weight);letter-spacing:var(--typo-field-letter-spacing);line-height:var(--typo-field-line-height)}.text.primary{color:var(--color-text-primary)}.text.secondary{color:var(--color-text-secondary)}.text.muted{color:var(--color-text-muted)}.text.inverse{color:var(--color-text-inverse)}.text.accent{color:var(--color-text-accent)}.text.error{color:var(--color-state-error)}.text.on-sidebar{color:var(--color-text-on-sidebar)}.text.state-warning{color:var(--color-state-warning)}.text.state-info{color:var(--color-state-info)}.text.constrained{display:block;min-width:0;max-width:100%}.text.uppercase{text-transform:uppercase}.text.italic{font-style:italic}.text.ellipsis{display:-webkit-box;width:100%;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:var(--vt-text-max-lines)}.text.wrap{white-space:normal;overflow-wrap:anywhere}\n"] }]
-        }], propDecorators: { content: [{ type: i0.Input, args: [{ isSignal: true, alias: "content", required: true }] }], variant: [{ type: i0.Input, args: [{ isSignal: true, alias: "variant", required: false }] }], color: [{ type: i0.Input, args: [{ isSignal: true, alias: "color", required: false }] }], uppercase: [{ type: i0.Input, args: [{ isSignal: true, alias: "uppercase", required: false }] }], italic: [{ type: i0.Input, args: [{ isSignal: true, alias: "italic", required: false }] }], wrap: [{ type: i0.Input, args: [{ isSignal: true, alias: "wrap", required: false }] }], maxLines: [{ type: i0.Input, args: [{ isSignal: true, alias: "maxLines", required: false }] }] } });
 
 const VoteyButtonVariants = [
     "primary",
@@ -3716,9 +3741,287 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImpo
 
 const VoteyTableHeaderVariants = ["standard", "heavy"];
 
+class VoteyModalRef {
+    result = new ReplaySubject(1);
+    controller;
+    closed = this.result.asObservable();
+    id;
+    constructor(id) {
+        this.id = id;
+    }
+    get busy() {
+        return this.controller.busy;
+    }
+    get closing() {
+        return this.controller.closing;
+    }
+    close(value, reason = "action") {
+        return this.controller.close(value, reason);
+    }
+    setBusy(busy) {
+        this.controller.setBusy(busy);
+    }
+    updateActions(actions) {
+        this.controller.updateActions(actions);
+    }
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
+    connect(controller) {
+        this.controller = controller;
+    }
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
+    finish(result) {
+        this.result.next(result);
+        this.result.complete();
+    }
+}
+
+class VoteyModalComponent {
+    data = inject(DIALOG_DATA);
+    ref = inject(VoteyModalRef);
+    injector = inject(Injector);
+    dialogRef = inject(DialogRef);
+    errorHandler = inject(ErrorHandler);
+    manualBusy = signal(false, ...(ngDevMode ? [{ debugName: "manualBusy" }] : /* istanbul ignore next */ []));
+    callbackPending = signal(false, ...(ngDevMode ? [{ debugName: "callbackPending" }] : /* istanbul ignore next */ []));
+    closePending = signal(false, ...(ngDevMode ? [{ debugName: "closePending" }] : /* istanbul ignore next */ []));
+    actions = signal(this.data.config, ...(ngDevMode ? [{ debugName: "actions" }] : /* istanbul ignore next */ []));
+    finished = false;
+    invokingAction = false;
+    destroyRef = inject(DestroyRef);
+    acceptedResult;
+    requestBusy = computed(() => {
+        const source = this.actions().busy;
+        return source ? source() : this.manualBusy();
+    }, ...(ngDevMode ? [{ debugName: "requestBusy" }] : /* istanbul ignore next */ []));
+    closing = this.closePending.asReadonly();
+    busy = computed(() => this.requestBusy() || this.callbackPending(), ...(ngDevMode ? [{ debugName: "busy" }] : /* istanbul ignore next */ []));
+    blocked = computed(() => this.busy() || this.closing(), ...(ngDevMode ? [{ debugName: "blocked" }] : /* istanbul ignore next */ []));
+    confirmDisabled = computed(() => {
+        const disabled = this.actions().confirmDisabled;
+        return (this.blocked() ||
+            !this.actions().onConfirm ||
+            (typeof disabled === "function" ? disabled() : disabled ?? false));
+    }, ...(ngDevMode ? [{ debugName: "confirmDisabled" }] : /* istanbul ignore next */ []));
+    hasThirdAction = computed(() => Boolean(this.actions().thirdActionText && this.actions().onThirdAction), ...(ngDevMode ? [{ debugName: "hasThirdAction" }] : /* istanbul ignore next */ []));
+    hasActions = computed(() => !this.actions().hideModalActions &&
+        Boolean(this.actions().confirmText ||
+            this.actions().cancelText ||
+            this.hasThirdAction()), ...(ngDevMode ? [{ debugName: "hasActions" }] : /* istanbul ignore next */ []));
+    template = this.data.content instanceof TemplateRef ? this.data.content : null;
+    component = this.data.content instanceof TemplateRef ? null : this.data.content;
+    context = {
+        $implicit: this.data.config.data,
+        modal: this.ref,
+    };
+    constructor() {
+        this.ref.connect(this);
+    }
+    setBusy(busy) {
+        if (this.actions().busy)
+            throw new Error("This modal uses a bound busy signal; update its owner instead of calling setBusy.");
+        this.manualBusy.set(busy);
+    }
+    updateActions(actions) {
+        this.actions.update((current) => ({
+            ...current,
+            ...actions,
+        }));
+    }
+    async close(value, reason = "action") {
+        if (this.finished ||
+            this.requestBusy() ||
+            this.closing() ||
+            (this.callbackPending() && reason !== "action" && reason !== "cancel"))
+            return false;
+        const result = { value, reason };
+        this.closePending.set(true);
+        try {
+            if (this.data.config.beforeClose &&
+                !(await this.data.config.beforeClose(result)))
+                return false;
+            if (this.finished || this.requestBusy())
+                return false;
+            this.acceptedResult = result;
+            this.dialogRef.close();
+            return true;
+        }
+        catch (error) {
+            this.errorHandler.handleError(error);
+            return false;
+        }
+        finally {
+            this.closePending.set(false);
+        }
+    }
+    confirm() {
+        if (!this.confirmDisabled())
+            this.runAction(this.actions().onConfirm);
+    }
+    cancel() {
+        if (this.blocked())
+            return;
+        if (this.actions().onCancel)
+            void this.runAction(this.actions().onCancel);
+        else
+            void this.close(undefined, "cancel");
+    }
+    thirdAction() {
+        if (!this.blocked())
+            void this.runAction(this.actions().onThirdAction);
+    }
+    runAction(callback) {
+        if (!callback || this.blocked() || this.finished || this.invokingAction)
+            return;
+        this.invokingAction = true;
+        try {
+            const result = callback(this.ref);
+            if (!result) {
+                this.callbackPending.set(false);
+                return;
+            }
+            if (this.finished)
+                return;
+            this.callbackPending.set(true);
+            (isObservable(result) ? result : from(result))
+                .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.callbackPending.set(false)))
+                .subscribe({
+                error: (error) => this.errorHandler.handleError(error),
+            });
+        }
+        catch (error) {
+            this.callbackPending.set(false);
+            this.errorHandler.handleError(error);
+        }
+        finally {
+            this.invokingAction = false;
+        }
+    }
+    ngOnDestroy() {
+        this.finished = true;
+    }
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
+    finish() {
+        this.ref.finish(this.acceptedResult ?? { value: undefined, reason: "navigation" });
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.2.17", type: VoteyModalComponent, isStandalone: true, selector: "vt-modal", host: { properties: { "class.small": "data.config.size === \"small\"", "class.wide": "data.config.size === \"wide\"" } }, ngImport: i0, template: "<section class=\"frame\" [attr.data-cy]=\"data.config.dataCy ?? null\" [attr.aria-busy]=\"busy()\">\r\n  <header class=\"header\">\r\n    <div class=\"heading\">\r\n      <h3 [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-title' : null\" [id]=\"ref.id + '-title'\">\r\n        <vt-text\r\n          variant=\"h3\"\r\n          [content]=\"data.config.title | vtTranslate\"\r\n          [wrap]=\"true\"\r\n        />\r\n      </h3>\r\n      @if (data.config.description) {\r\n      <vt-text\r\n        color=\"secondary\"\r\n        [content]=\"data.config.description | vtTranslate\"\r\n        [wrap]=\"true\"\r\n      />\r\n      }\r\n    </div>\r\n    @if (data.config.showCloseButton ?? true) {\r\n    <vt-button\r\n      variant=\"primary\"\r\n      size=\"small\"\r\n      ico=\"ui-close\"\r\n      [ariaLabel]=\"data.config.closeLabel ?? 'BUTTON.CLOSE'\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"close(undefined, 'close-button')\"\r\n    />\r\n    }\r\n  </header>\r\n  <div class=\"body\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-content' : null\">\r\n    @if (data.config.message) {\r\n    <vt-text [content]=\"data.config.message | vtTranslate\" [wrap]=\"true\" /> }\r\n    @if (template) {\r\n    <ng-container\r\n      [ngTemplateOutlet]=\"template\"\r\n      [ngTemplateOutletContext]=\"context\"\r\n    />\r\n    } @else if (component) {\r\n    <ng-container\r\n      [ngComponentOutlet]=\"component\"\r\n      [ngComponentOutletInjector]=\"injector\"\r\n    />\r\n    }\r\n  </div>\r\n  @if (hasActions()) {\r\n  <footer class=\"actions\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-footer' : null\">\r\n    @if (busy()) {\r\n    <span class=\"progress\" role=\"status\"\r\n      ><span class=\"spinner\" aria-hidden=\"true\"></span\r\n      >{{ actions().busyText ?? \"\" | vtTranslate }}</span\r\n    >\r\n    } @if (hasThirdAction()) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().thirdActionText ?? ''\"\r\n      [attr.data-cy]=\"actions().thirdActionDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"thirdAction()\"\r\n    />\r\n    } @if (actions().cancelText) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().cancelText ?? ''\"\r\n      [attr.data-cy]=\"actions().cancelDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"cancel()\"\r\n    />\r\n    } @if (actions().confirmText) {\r\n    <vt-button\r\n      [text]=\"actions().confirmText ?? ''\"\r\n      [attr.data-cy]=\"actions().confirmDataCy ?? null\"\r\n      [variant]=\"actions().confirmVariant ?? 'primary'\"\r\n      [disabled]=\"confirmDisabled()\"\r\n      (pressed)=\"confirm()\"\r\n    />\r\n    }\r\n  </footer>\r\n  }\r\n</section>\r\n", styles: ["::ng-deep .votey-modal-overlay>.cdk-dialog-container{outline:none}:host{display:block;outline:none;min-width:0;width:55vw}:host.small{width:40vw}:host.wide{width:75vw}@media(max-width:768px){:host,:host.small,:host.wide{width:92vw}}:host .frame{display:flex;flex-direction:column;max-height:calc(100dvh - 48px);overflow:hidden;background:var(--color-bg-surface);color:var(--color-text-primary);border:1px solid var(--color-border-subtle);border-radius:var(--radius-2xl);box-shadow:0 24px 70px color-mix(in srgb,var(--color-navy-blue-900) 24%,transparent)}:host .frame .header{display:flex;flex:0 0 auto;align-items:flex-start;justify-content:space-between;gap:var(--space-gap-s);padding:var(--space-inset-l)}:host .frame .header .heading{display:flex;flex-direction:column;gap:var(--space-gap-xs);min-width:0;overflow-wrap:anywhere}:host .frame .header .heading h3{margin:0;outline:none}:host .frame .body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 var(--space-inset-l) var(--space-inset-l);overflow-wrap:anywhere}:host .frame .actions{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;gap:var(--space-gap-s);padding:var(--space-inset-m) var(--space-inset-l);border-top:1px solid var(--color-border-subtle)}:host .frame .actions .progress{display:inline-flex;align-items:center;gap:var(--space-gap-xs);color:var(--color-text-secondary)}:host .frame .actions .progress .spinner{width:16px;height:16px;border:2px solid var(--color-border-subtle);border-top-color:var(--color-text-primary);border-radius:var(--radius-full);animation:modal-progress .8s linear infinite}@media(prefers-reduced-motion:reduce){:host .frame .actions .progress .spinner{animation:none}}:host .frame .actions:empty{display:none}@keyframes modal-progress{to{transform:rotate(360deg)}}\n"], dependencies: [{ kind: "directive", type: NgComponentOutlet, selector: "[ngComponentOutlet]", inputs: ["ngComponentOutlet", "ngComponentOutletInputs", "ngComponentOutletInjector", "ngComponentOutletEnvironmentInjector", "ngComponentOutletContent", "ngComponentOutletNgModule"], exportAs: ["ngComponentOutlet"] }, { kind: "directive", type: NgTemplateOutlet, selector: "[ngTemplateOutlet]", inputs: ["ngTemplateOutletContext", "ngTemplateOutlet", "ngTemplateOutletInjector"] }, { kind: "component", type: VoteyButtonComponent, selector: "vt-button", inputs: ["disabled", "type", "variant", "size", "text", "ariaLabel", "ico", "badge", "tooltipText", "disabledNote", "ariaExpanded", "ariaHasPopup", "ariaControls", "iconColor"], outputs: ["pressed"] }, { kind: "component", type: VoteyTextComponent, selector: "vt-text", inputs: ["content", "variant", "color", "uppercase", "italic", "wrap", "maxLines"] }, { kind: "pipe", type: VoteyTranslatePipe, name: "vtTranslate" }], changeDetection: i0.ChangeDetectionStrategy.OnPush });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalComponent, decorators: [{
+            type: Component,
+            args: [{ selector: "vt-modal", changeDetection: ChangeDetectionStrategy.OnPush, host: {
+                        "[class.small]": 'data.config.size === "small"',
+                        "[class.wide]": 'data.config.size === "wide"',
+                    }, imports: [
+                        NgComponentOutlet,
+                        NgTemplateOutlet,
+                        VoteyButtonComponent,
+                        VoteyTextComponent,
+                        VoteyTranslatePipe,
+                    ], template: "<section class=\"frame\" [attr.data-cy]=\"data.config.dataCy ?? null\" [attr.aria-busy]=\"busy()\">\r\n  <header class=\"header\">\r\n    <div class=\"heading\">\r\n      <h3 [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-title' : null\" [id]=\"ref.id + '-title'\">\r\n        <vt-text\r\n          variant=\"h3\"\r\n          [content]=\"data.config.title | vtTranslate\"\r\n          [wrap]=\"true\"\r\n        />\r\n      </h3>\r\n      @if (data.config.description) {\r\n      <vt-text\r\n        color=\"secondary\"\r\n        [content]=\"data.config.description | vtTranslate\"\r\n        [wrap]=\"true\"\r\n      />\r\n      }\r\n    </div>\r\n    @if (data.config.showCloseButton ?? true) {\r\n    <vt-button\r\n      variant=\"primary\"\r\n      size=\"small\"\r\n      ico=\"ui-close\"\r\n      [ariaLabel]=\"data.config.closeLabel ?? 'BUTTON.CLOSE'\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"close(undefined, 'close-button')\"\r\n    />\r\n    }\r\n  </header>\r\n  <div class=\"body\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-content' : null\">\r\n    @if (data.config.message) {\r\n    <vt-text [content]=\"data.config.message | vtTranslate\" [wrap]=\"true\" /> }\r\n    @if (template) {\r\n    <ng-container\r\n      [ngTemplateOutlet]=\"template\"\r\n      [ngTemplateOutletContext]=\"context\"\r\n    />\r\n    } @else if (component) {\r\n    <ng-container\r\n      [ngComponentOutlet]=\"component\"\r\n      [ngComponentOutletInjector]=\"injector\"\r\n    />\r\n    }\r\n  </div>\r\n  @if (hasActions()) {\r\n  <footer class=\"actions\" [attr.data-cy]=\"data.config.dataCy ? data.config.dataCy + '-footer' : null\">\r\n    @if (busy()) {\r\n    <span class=\"progress\" role=\"status\"\r\n      ><span class=\"spinner\" aria-hidden=\"true\"></span\r\n      >{{ actions().busyText ?? \"\" | vtTranslate }}</span\r\n    >\r\n    } @if (hasThirdAction()) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().thirdActionText ?? ''\"\r\n      [attr.data-cy]=\"actions().thirdActionDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"thirdAction()\"\r\n    />\r\n    } @if (actions().cancelText) {\r\n    <vt-button\r\n      variant=\"secondary\"\r\n      [text]=\"actions().cancelText ?? ''\"\r\n      [attr.data-cy]=\"actions().cancelDataCy ?? null\"\r\n      [disabled]=\"blocked()\"\r\n      (pressed)=\"cancel()\"\r\n    />\r\n    } @if (actions().confirmText) {\r\n    <vt-button\r\n      [text]=\"actions().confirmText ?? ''\"\r\n      [attr.data-cy]=\"actions().confirmDataCy ?? null\"\r\n      [variant]=\"actions().confirmVariant ?? 'primary'\"\r\n      [disabled]=\"confirmDisabled()\"\r\n      (pressed)=\"confirm()\"\r\n    />\r\n    }\r\n  </footer>\r\n  }\r\n</section>\r\n", styles: ["::ng-deep .votey-modal-overlay>.cdk-dialog-container{outline:none}:host{display:block;outline:none;min-width:0;width:55vw}:host.small{width:40vw}:host.wide{width:75vw}@media(max-width:768px){:host,:host.small,:host.wide{width:92vw}}:host .frame{display:flex;flex-direction:column;max-height:calc(100dvh - 48px);overflow:hidden;background:var(--color-bg-surface);color:var(--color-text-primary);border:1px solid var(--color-border-subtle);border-radius:var(--radius-2xl);box-shadow:0 24px 70px color-mix(in srgb,var(--color-navy-blue-900) 24%,transparent)}:host .frame .header{display:flex;flex:0 0 auto;align-items:flex-start;justify-content:space-between;gap:var(--space-gap-s);padding:var(--space-inset-l)}:host .frame .header .heading{display:flex;flex-direction:column;gap:var(--space-gap-xs);min-width:0;overflow-wrap:anywhere}:host .frame .header .heading h3{margin:0;outline:none}:host .frame .body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 var(--space-inset-l) var(--space-inset-l);overflow-wrap:anywhere}:host .frame .actions{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;gap:var(--space-gap-s);padding:var(--space-inset-m) var(--space-inset-l);border-top:1px solid var(--color-border-subtle)}:host .frame .actions .progress{display:inline-flex;align-items:center;gap:var(--space-gap-xs);color:var(--color-text-secondary)}:host .frame .actions .progress .spinner{width:16px;height:16px;border:2px solid var(--color-border-subtle);border-top-color:var(--color-text-primary);border-radius:var(--radius-full);animation:modal-progress .8s linear infinite}@media(prefers-reduced-motion:reduce){:host .frame .actions .progress .spinner{animation:none}}:host .frame .actions:empty{display:none}@keyframes modal-progress{to{transform:rotate(360deg)}}\n"] }]
+        }], ctorParameters: () => [] });
+
+const VOTEY_MODAL_DATA = new InjectionToken("VOTEY_MODAL_DATA");
+
+class VoteyModalService {
+    dialog = inject(Dialog);
+    translator = inject(VOTEY_TRANSLATOR);
+    location = inject(Location, {
+        optional: true,
+    });
+    refs = new Map();
+    open(content, config) {
+        if (config.id && this.refs.has(config.id))
+            throw new Error(`Modal '${config.id}' is already open.`);
+        let ref;
+        const dialogRef = this.dialog.open(VoteyModalComponent, {
+            id: config.id,
+            maxWidth: "92vw",
+            panelClass: "votey-modal-overlay",
+            disableClose: true,
+            closeOnNavigation: false,
+            closeOnOverlayDetachments: false,
+            autoFocus: config.autoFocus ?? "first-heading",
+            restoreFocus: config.restoreFocus ?? true,
+            ariaLabel: this.translator.translate(config.title),
+            ariaLabelledBy: null,
+            injector: config.injector,
+            viewContainerRef: config.viewContainerRef,
+            data: { config, content },
+            providers: (cdkRef) => {
+                ref = new VoteyModalRef(cdkRef.id);
+                return [
+                    { provide: VoteyModalRef, useValue: ref },
+                    { provide: VOTEY_MODAL_DATA, useValue: config.data },
+                ];
+            },
+        });
+        const modalRef = ref;
+        const componentInstance = dialogRef.componentInstance;
+        this.refs.set(modalRef.id, modalRef);
+        dialogRef.backdropClick.pipe(takeUntil(dialogRef.closed)).subscribe(() => {
+            if (config.closeOnBackdrop ?? true)
+                void modalRef.close(undefined, "backdrop");
+        });
+        dialogRef.keydownEvents
+            .pipe(filter((event) => event.key === "Escape" &&
+            !event.altKey &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !event.shiftKey), takeUntil(dialogRef.closed))
+            .subscribe((event) => {
+            if (config.closeOnEscape ?? true) {
+                event.preventDefault();
+                void modalRef.close(undefined, "escape");
+            }
+        });
+        const stopLocationListener = config.closeOnNavigation ?? true
+            ? this.location?.onUrlChange(() => {
+                void modalRef.close(undefined, "navigation");
+            })
+            : undefined;
+        dialogRef.closed.pipe(take(1)).subscribe(() => {
+            stopLocationListener?.();
+            this.refs.delete(modalRef.id);
+            componentInstance.finish();
+        });
+        return modalRef;
+    }
+    confirm(config) {
+        return this.open(null, config);
+    }
+    getById(id) {
+        return this.refs.get(id);
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, providedIn: "root" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.17", ngImport: i0, type: VoteyModalService, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: "root" }]
+        }] });
+
+const VoteyModalSizes = ["small", "standard", "wide"];
+const VoteyModalCloseReasons = [
+    "action",
+    "cancel",
+    "close-button",
+    "backdrop",
+    "escape",
+    "navigation",
+];
+
 /**
  * Generated bundle index. Do not edit.
  */
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_MODAL_DATA, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInfoTileComponent, VoteyInfoTileStates, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyModalCloseReasons, VoteyModalComponent, VoteyModalRef, VoteyModalService, VoteyModalSizes, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
 //# sourceMappingURL=pleodigital-design-system-votey-angular.mjs.map

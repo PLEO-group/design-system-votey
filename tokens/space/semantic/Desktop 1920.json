@@ -387,6 +387,15 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "width-collapsed": {
+      "value": "{space.80}",
+      "type": "dimension",
+      "$extensions": {
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
     }
   },
   "nav-item": {
@@ -1155,6 +1164,35 @@
         "com.figma.hiddenFromPublishing": false
       },
       "description": "Token semantyczny (DEC-56)."
+    }
+  },
+  "grid": {
+    "columns": {
+      "value": 12,
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "margin": {
+      "value": "{space.64}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "gutter": {
+      "value": "{space.40}",
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
     }
   }
 }

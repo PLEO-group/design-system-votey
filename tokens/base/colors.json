@@ -613,6 +613,15 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "orange-200": {
+      "value": "#feb87e",
+      "type": "color",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
     }
   }
 }

@@ -28,6 +28,12 @@ const typographyRoleLabels = {
     'column-header': 'Column header',
     label: 'Label',
     field: 'Field',
+    'body-xl-light': 'Body xl light',
+    'overline': 'Overline',
+    'caption-s-bold': 'Caption s bold',
+    'body-bold': 'Body bold',
+    'body-semibold': 'Body semibold',
+    'body-s-bold': 'Body s bold',
 };
 
 const typographyRoles = Object.keys(desktopTypographyTokens).map((role) => [

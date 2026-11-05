@@ -33,6 +33,12 @@ export const VoteyTextVariants = [
   "column-header",
   "label",
   "field",
+  "body-xl-light",
+  "overline",
+  "caption-s-bold",
+  "body-bold",
+  "body-semibold",
+  "body-s-bold",
 ] as const;
 
 export const VoteyTextColors = [
@@ -45,6 +51,8 @@ export const VoteyTextColors = [
   "on-sidebar",
   "state-warning",
   "state-info",
+  "eyebrow",
+  "description",
 ] as const;
 
 export type VoteyTextVariant = (typeof VoteyTextVariants)[number];

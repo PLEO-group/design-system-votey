@@ -21,7 +21,13 @@ $text-variants: (
   "action-s",
   "column-header",
   "label",
-  "field"
+  "field",
+  "body-xl-light",
+  "overline",
+  "caption-s-bold",
+  "body-bold",
+  "body-semibold",
+  "body-s-bold"
 );
 
 $text-colors: (
@@ -34,6 +40,8 @@ $text-colors: (
   "on-sidebar": var(--color-text-on-sidebar),
   "state-warning": var(--color-state-warning),
   "state-info": var(--color-state-info),
+  "eyebrow": var(--color-text-eyebrow),
+  "description": var(--color-text-description),
 );
 
 @mixin text-variant($variant) {

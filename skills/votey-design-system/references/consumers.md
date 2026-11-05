@@ -37,6 +37,18 @@ katalog SVG i lokalny layout; PWA za lokalne prymitywy, grid, `rv-*`, viewport,
 theme i fonty. Używaj wyłącznie publicznych importów. Upgrade paczki wymaga
 sprawdzenia release notes, peer dependencies, asset copy/mapping i smoke testu.
 
+### Weryfikacja konsumenta po zmianie runtime'u paczki
+
+Gdy zadanie obejmuje sprawdzenie lub integrację poprawki runtime'u w konsumencie,
+nie uznawaj go za aktualny tylko dlatego, że korzysta ze zgodnego API. Sprawdź
+deklarację zależności w `package.json`, lockfile i wersję faktycznie zainstalowaną
+w `node_modules`. Jeśli konsument używa lokalnego archiwum `file:`, zbuduj i spakuj
+bieżącą paczkę DS zgodnie z jej workflow, zaktualizuj zależność konsumenta oraz
+lockfile do tego archiwum, zainstaluj je i uruchom build wskazany w tabeli powyżej.
+Rozdziel wynik oceny kompatybilności API od potwierdzenia, że konsument uruchamia
+artefakt zawierający poprawkę. Zmiany w repozytorium konsumenta wprowadzaj tylko,
+gdy jego aktualizacja mieści się w zakresie zadania.
+
 Przy aktywnej migracji release candidate utwórz w root aplikacji
 `.tmp/design-system-consumer-migration.md`, powiąż inventory i waliduj plany przed
 publikacją. Nie publikuj pakietu tylko dlatego, że plan migracji został utworzony.

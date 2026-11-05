@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.18.1
+version: 1.20.2
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -51,6 +51,7 @@ i publiczne API. Katalog źródłowy nie jest dowodem eksportu.
 | Źródłowy SVG albo integracja opublikowanego assetu | [svg-assets.md](references/svg-assets.md), [assets.md](references/assets.md) oraz referencję frameworka |
 | Device, grid, breakpoint albo layout z Figmy | [responsiveness.md](references/responsiveness.md) |
 | Publiczny komponent, wariant, wrapper lub authoring | [components.md](references/components.md); dla źródła Angular także [angular-components.md](references/angular-components.md) |
+| Tworzenie, użycie, migracja, debugowanie lub review wycentrowanego modala Angular, jego akcji, zapisu i zamykania | [angular-modal.md](references/angular-modal.md); przy requestach CRM także [loader-contract.md](references/loader-contract.md) |
 | Użycie, migracja, debugowanie lub zmiana `vt-table` w Angularze | [angular-table.md](references/angular-table.md); pomiń dla innych komponentów i React/Next |
 | Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |

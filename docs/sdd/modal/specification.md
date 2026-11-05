@@ -1,4 +1,4 @@
-# WERSJA 1.0.0
+# WERSJA 1.0.1
 # AUTOR n.koktysz@pleodigital.com
 
 # Spec Driven Specification: Modal Votey — stan obecny
@@ -73,7 +73,11 @@ Publiczny import: `@pleodigital/design-system-votey/angular`. Modal nie importuj
 
 | Źródło względem repo | Potwierdzany zakres |
 | --- | --- |
-| `angular/src/lib/modal/modal.model.ts` | Typy konfiguracji, callbacków, danych, wyniku i powodów close |
+| `angular/src/lib/modal/modal.model.ts` | Rozmiary, wynik i powody zamknięcia |
+| `angular/src/lib/modal/modal-actions.model.ts` | Konfiguracja akcji i typ callbacka |
+| `angular/src/lib/modal/modal-config.model.ts` | Konfiguracja dialogu |
+| `angular/src/lib/modal/modal-content.model.ts` | Token danych i kontekst treści |
+| `angular/src/lib/modal/modal-controller.model.ts` | Wewnętrzny kontrakt kontrolera, poza publicznym entry pointem |
 | `angular/src/lib/modal/votey-modal.service.ts` | Otwarcie, DI, rejestr, CDK, listenery i cleanup instancji |
 | `angular/src/lib/modal/votey-modal.component.ts` | Stan, akcje, close guard i cleanup subskrypcji |
 | `angular/src/lib/modal/votey-modal.component.html` i `.scss` | Struktura, akcje, ARIA, selektory, rozmiary i przewijanie |
@@ -270,7 +274,7 @@ Duplikat ID i konflikt manualnego busy ze związanym stanem są wyjątkami progr
 
 ### 8.5 Dostępność i i18n
 
-- Dialog i fokus zapewnia CDK; serwis ustawia ariaLabel z tłumaczenia title, a treść ma h2. Nie wymusza aria-modal=true, zachowując zachowanie CDK dla zagnieżdżonych overlayów.
+- Dialog i fokus zapewnia CDK; serwis ustawia ariaLabel z tłumaczenia title, a treść ma nagłówek h3 z typografią h3. Nie wymusza aria-modal=true, zachowując zachowanie CDK dla zagnieżdżonych overlayów.
 - Outline fokusu jest wyłączony na kontenerze CDK, hoście ramy i nagłówku. Override kontenera jest ograniczony do `votey-modal-overlay`, ponieważ kontener jest przodkiem treści. Fokus i jego wskaźniki na kontrolkach nie są tym nadpisaniem wyłączane.
 - Rama ma aria-busy od busy; sam close guard nie ustawia go na true, choć blokuje akcje.
 - Standardowa stopka ma role=status i spinner aria-hidden. Przy własnej belce komunikat oczekiwania należy do treści.
@@ -341,3 +345,7 @@ Brak rollbacku danych DS. Wycofanie UI i anulowanie subskrypcji nie cofają muta
 Lokalny Draft typu SPECIFICATION, bez Jira key i uruchomionego workflow. Standardowy obieg: `BE → FE → TESTER`; backend komponentu to N/A. Publikacja wymaga osobnego zlecenia i właściwego Jira key.
 
 Pełny kontrakt jest w Markdown; diagram/PNG nie są wymagane do review. Źródła są w sekcji 4. Pomocnicza mapa projektu: `docs/sdd/project-maps/PLEO-group/design-system-votey/project_map.py`; stack: `.agent-library.yaml`.
+
+### Korekta CR — 2026-11-05
+
+Podział modeli na pliki nie zmienia nazw eksportów publicznych. Metody oznaczone `@internal` służą wyłącznie współpracy klas DS i nie mogą być używane przez aplikacje konsumenckie. Subskrypcja zamknięcia w serwisie kończy się po pierwszej emisji.

@@ -1,13 +1,13 @@
 <section class="frame" [attr.data-cy]="data.config.dataCy ?? null" [attr.aria-busy]="busy()">
   <header class="header">
     <div class="heading">
-      <h2 [attr.data-cy]="data.config.dataCy ? data.config.dataCy + '-title' : null" [id]="ref.id + '-title'">
+      <h3 [attr.data-cy]="data.config.dataCy ? data.config.dataCy + '-title' : null" [id]="ref.id + '-title'">
         <vt-text
           variant="h3"
           [content]="data.config.title | vtTranslate"
           [wrap]="true"
         />
-      </h2>
+      </h3>
       @if (data.config.description) {
       <vt-text
         color="secondary"

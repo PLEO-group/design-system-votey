@@ -1,18 +1,11 @@
 import { type Signal } from "@angular/core";
 import { ReplaySubject, type Observable } from "rxjs";
+import type { ModalController } from "./modal-controller.model";
+import type { VoteyModalActions } from "./modal-actions.model";
 import type {
-  VoteyModalActions,
   VoteyModalCloseReason,
   VoteyModalResult,
 } from "./modal.model";
-
-export interface ModalController<TResult> {
-  readonly busy: Signal<boolean>;
-  readonly closing: Signal<boolean>;
-  close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
-  setBusy(busy: boolean): void;
-  updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
-}
 
 export class VoteyModalRef<TResult = unknown> {
   private readonly result: ReplaySubject<VoteyModalResult<TResult>> =
@@ -21,7 +14,11 @@ export class VoteyModalRef<TResult = unknown> {
   public readonly closed: Observable<VoteyModalResult<TResult>> =
     this.result.asObservable();
 
-  public constructor(public readonly id: string) {}
+  public readonly id: string;
+
+  constructor(id: string) {
+    this.id = id;
+  }
 
   public get busy(): Signal<boolean> {
     return this.controller.busy;
@@ -46,12 +43,18 @@ export class VoteyModalRef<TResult = unknown> {
     this.controller.updateActions(actions);
   }
 
-  /** @internal */
+  /**
+   * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+   * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+   */
   public connect(controller: ModalController<TResult>): void {
     this.controller = controller;
   }
 
-  /** @internal */
+  /**
+   * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+   * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+   */
   public finish(result: VoteyModalResult<TResult>): void {
     this.result.next(result);
     this.result.complete();

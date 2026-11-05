@@ -156,17 +156,16 @@ export { VoteySearchComponent } from "./lib/search/votey-search.component";
 export { VoteyModalComponent } from "./lib/modal/votey-modal.component";
 export { VoteyModalService } from "./lib/modal/votey-modal.service";
 export { VoteyModalRef } from "./lib/modal/votey-modal-ref";
-export {
-  VOTEY_MODAL_DATA,
-  VoteyModalSizes,
-  VoteyModalCloseReasons,
-} from "./lib/modal/modal.model";
+export { VoteyModalSizes, VoteyModalCloseReasons } from "./lib/modal/modal.model";
+export { VOTEY_MODAL_DATA } from "./lib/modal/modal-content.model";
 export type {
   VoteyModalSize,
   VoteyModalCloseReason,
   VoteyModalResult,
-  VoteyModalConfig,
-  VoteyModalTemplateContext,
+} from "./lib/modal/modal.model";
+export type { VoteyModalConfig } from "./lib/modal/modal-config.model";
+export type { VoteyModalTemplateContext } from "./lib/modal/modal-content.model";
+export type {
   VoteyModalActions,
   VoteyModalCallback,
-} from "./lib/modal/modal.model";
+} from "./lib/modal/modal-actions.model";

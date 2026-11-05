@@ -1115,14 +1115,6 @@ declare class VoteySearchComponent extends VoteyFormControlApplyDirective<string
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteySearchComponent, "vt-search", never, { "label": { "alias": "label"; "required": true; "isSignal": true; }; "placeholder": { "alias": "placeholder"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": false; "isSignal": true; }; "searchLabel": { "alias": "searchLabel"; "required": false; "isSignal": true; }; "clearLabel": { "alias": "clearLabel"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": false; "isSignal": true; }; "name": { "alias": "name"; "required": false; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; "control": { "alias": "control"; "required": false; }; }, { "searched": "searched"; "cleared": "cleared"; }, never, never, true, never>;
 }
 
-declare const VoteyModalSizes: readonly ["small", "standard", "wide"];
-type VoteyModalSize = (typeof VoteyModalSizes)[number];
-declare const VoteyModalCloseReasons: readonly ["action", "cancel", "close-button", "backdrop", "escape", "navigation"];
-type VoteyModalCloseReason = (typeof VoteyModalCloseReasons)[number];
-interface VoteyModalResult<TResult> {
-    readonly reason: VoteyModalCloseReason;
-    readonly value: TResult | undefined;
-}
 type VoteyModalCallback<TResult = unknown> = (modal: VoteyModalRef<TResult>) => void | Observable<unknown> | Promise<unknown>;
 interface VoteyModalActions<TResult = unknown> {
     confirmText?: string;
@@ -1140,6 +1132,48 @@ interface VoteyModalActions<TResult = unknown> {
     busyText?: string;
     busy?: Signal<boolean>;
 }
+
+declare const VoteyModalSizes: readonly ["small", "standard", "wide"];
+type VoteyModalSize = (typeof VoteyModalSizes)[number];
+declare const VoteyModalCloseReasons: readonly ["action", "cancel", "close-button", "backdrop", "escape", "navigation"];
+type VoteyModalCloseReason = (typeof VoteyModalCloseReasons)[number];
+interface VoteyModalResult<TResult> {
+    readonly reason: VoteyModalCloseReason;
+    readonly value: TResult | undefined;
+}
+
+/** @internal Kontrakt komunikacji wewnątrz DS; nie używać w aplikacjach konsumenckich. */
+interface ModalController<TResult> {
+    readonly busy: Signal<boolean>;
+    readonly closing: Signal<boolean>;
+    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
+    setBusy(busy: boolean): void;
+    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
+}
+
+declare class VoteyModalRef<TResult = unknown> {
+    private readonly result;
+    private controller;
+    readonly closed: Observable<VoteyModalResult<TResult>>;
+    readonly id: string;
+    constructor(id: string);
+    get busy(): Signal<boolean>;
+    get closing(): Signal<boolean>;
+    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
+    setBusy(busy: boolean): void;
+    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
+    connect(controller: ModalController<TResult>): void;
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
+    finish(result: VoteyModalResult<TResult>): void;
+}
+
 interface VoteyModalConfig<TData = unknown, TResult = unknown> extends VoteyModalActions<TResult> {
     title: string;
     dataCy?: string;
@@ -1159,6 +1193,7 @@ interface VoteyModalConfig<TData = unknown, TResult = unknown> extends VoteyModa
     viewContainerRef?: ViewContainerRef;
     beforeClose?: (result: VoteyModalResult<TResult>) => boolean | Promise<boolean>;
 }
+
 interface VoteyModalTemplateContext<TData = unknown, TResult = unknown> {
     $implicit: TData | undefined;
     modal: VoteyModalRef<TResult>;
@@ -1167,30 +1202,6 @@ declare const VOTEY_MODAL_DATA: InjectionToken<unknown>;
 interface ModalData {
     config: VoteyModalConfig;
     content: Type<unknown> | TemplateRef<VoteyModalTemplateContext> | null;
-}
-
-interface ModalController<TResult> {
-    readonly busy: Signal<boolean>;
-    readonly closing: Signal<boolean>;
-    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
-    setBusy(busy: boolean): void;
-    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
-}
-declare class VoteyModalRef<TResult = unknown> {
-    readonly id: string;
-    private readonly result;
-    private controller;
-    readonly closed: Observable<VoteyModalResult<TResult>>;
-    constructor(id: string);
-    get busy(): Signal<boolean>;
-    get closing(): Signal<boolean>;
-    close(value?: TResult, reason?: VoteyModalCloseReason): Promise<boolean>;
-    setBusy(busy: boolean): void;
-    updateActions(actions: Partial<VoteyModalActions<TResult>>): void;
-    /** @internal */
-    connect(controller: ModalController<TResult>): void;
-    /** @internal */
-    finish(result: VoteyModalResult<TResult>): void;
 }
 
 declare class VoteyModalComponent implements OnDestroy {
@@ -1226,7 +1237,10 @@ declare class VoteyModalComponent implements OnDestroy {
     protected thirdAction(): void;
     private runAction;
     ngOnDestroy(): void;
-    /** @internal */
+    /**
+     * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+     * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+     */
     finish(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyModalComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyModalComponent, "vt-modal", never, {}, {}, never, never, true, never>;

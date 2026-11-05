@@ -21,13 +21,11 @@ import { VoteyButtonComponent } from "../button/votey-button.component";
 import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteyTranslatePipe } from "../translation/votey-translate.pipe";
 import { VoteyModalRef } from "./votey-modal-ref";
+import type { ModalData, VoteyModalTemplateContext } from "./modal-content.model";
+import type { VoteyModalActions, VoteyModalCallback } from "./modal-actions.model";
 import type {
-  ModalData,
-  VoteyModalActions,
-  VoteyModalCallback,
   VoteyModalCloseReason,
   VoteyModalResult,
-  VoteyModalTemplateContext,
 } from "./modal.model";
 
 @Component({
@@ -107,7 +105,7 @@ export class VoteyModalComponent implements OnDestroy {
     modal: this.ref,
   };
 
-  public constructor() {
+  constructor() {
     this.ref.connect(this);
   }
 
@@ -205,7 +203,10 @@ export class VoteyModalComponent implements OnDestroy {
     this.finished = true;
   }
 
-  /** @internal */
+  /**
+   * @internal Wyłącznie do współpracy klas wewnątrz Design Systemu.
+   * Aplikacje konsumujące Design System nie mogą korzystać z tej metody.
+   */
   public finish(): void {
     this.ref.finish(
       this.acceptedResult ?? { value: undefined, reason: "navigation" }

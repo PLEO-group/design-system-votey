@@ -1,18 +1,18 @@
 import { Location } from "@angular/common";
 import { Dialog, type DialogRef } from "@angular/cdk/dialog";
 import { Injectable, inject, type TemplateRef, type Type } from "@angular/core";
-import { filter, takeUntil } from "rxjs";
+import { filter, take, takeUntil } from "rxjs";
 import {
   VOTEY_TRANSLATOR,
   type VoteyTranslator,
 } from "../translation/votey-translation";
+import type { VoteyModalConfig } from "./modal-config.model";
 import { VoteyModalComponent } from "./votey-modal.component";
 import { VoteyModalRef } from "./votey-modal-ref";
 import {
   VOTEY_MODAL_DATA,
-  type VoteyModalConfig,
   type VoteyModalTemplateContext,
-} from "./modal.model";
+} from "./modal-content.model";
 
 @Injectable({ providedIn: "root" })
 export class VoteyModalService {
@@ -92,7 +92,7 @@ export class VoteyModalService {
             void modalRef.close(undefined, "navigation");
           })
         : undefined;
-    dialogRef.closed.subscribe((): void => {
+    dialogRef.closed.pipe(take(1)).subscribe((): void => {
       stopLocationListener?.();
       this.refs.delete(modalRef.id);
       componentInstance.finish();

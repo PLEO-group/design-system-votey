@@ -24,6 +24,16 @@ test("confirm stays open until the callback explicitly closes; cancel closes by 
   assert.deepEqual(results, [{ value: undefined, reason: "cancel" }]);
 });
 
+test("the title uses a level-three heading with its matching typography and stable selector", async () => {
+  const { panel, ref } = await open({ id: "heading", dataCy: "heading-modal" });
+  const heading = panel.querySelector("h3");
+  assert.ok(heading);
+  assert.equal(heading.id, ref.id + "-title");
+  assert.equal(heading.getAttribute("data-cy"), "heading-modal-title");
+  assert.equal(heading.querySelector("vt-text").getAttribute("variant"), "h3");
+  assert.equal(panel.querySelector("h2"), null);
+});
+
 test("custom cancel takes ownership while dismiss never invokes its callback", async () => {
   let cancelled = 0;
   const { panel, ref, fixture } = await open({
@@ -292,7 +302,7 @@ test("confirmation uses the common frame, labelled dialog and fixed action foote
   const { panel, ref, fixture } = await open();
   assert.equal(panel.getAttribute("role"), "dialog");
   assert.equal(panel.getAttribute("aria-label"), "Delete?");
-  assert.match(panel.querySelector("h2").textContent, /Delete/);
+  assert.match(panel.querySelector("h3").textContent, /Delete/);
   assert.equal(panel.querySelectorAll("footer button").length, 2);
   const results = [];
   ref.closed.subscribe((result) => results.push(result));

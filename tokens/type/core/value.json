@@ -425,6 +425,15 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "2_6": {
+      "value": 2.5999999046325684,
+      "type": "number",
+      "$extensions": {
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
     }
   }
 }

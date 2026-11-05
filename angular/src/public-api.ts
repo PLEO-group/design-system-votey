@@ -22,6 +22,8 @@ export type {
   VoteySvgRegistryEntry,
 } from "./lib/votey-assets";
 export { VoteyIconComponent } from "./lib/icon/votey-icon.component";
+export { VoteyInfoTileComponent, VoteyInfoTileStates } from "./lib/info-tile/votey-info-tile.component";
+export type { VoteyInfoTileItem, VoteyInfoTileState } from "./lib/info-tile/votey-info-tile.component";
 export {
   provideVoteySvgRegistry,
   VOTEY_SVG_REGISTRY_CONFIG,

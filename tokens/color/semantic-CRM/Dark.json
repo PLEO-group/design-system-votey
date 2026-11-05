@@ -69,6 +69,16 @@
         ],
         "com.figma.hiddenFromPublishing": false
       }
+    },
+    "section": {
+      "value": "{color.navy-blue-700}",
+      "type": "color.background",
+      "$extensions": {
+        "com.figma.scopes": [
+          "FRAME_FILL",
+          "SHAPE_FILL"
+        ]
+      }
     }
   },
   "text": {
@@ -150,6 +160,28 @@
           "ALL_SCOPES"
         ],
         "com.figma.hiddenFromPublishing": false
+      }
+    },
+    "eyebrow": {
+      "value": "{color.orange-200}",
+      "type": "color.background",
+      "$extensions": {
+        "com.figma.scopes": [
+          "FRAME_FILL",
+          "SHAPE_FILL",
+          "TEXT_FILL"
+        ]
+      }
+    },
+    "description": {
+      "value": "{color.navy-blue-100}",
+      "type": "color.background",
+      "$extensions": {
+        "com.figma.scopes": [
+          "FRAME_FILL",
+          "SHAPE_FILL",
+          "TEXT_FILL"
+        ]
       }
     }
   },

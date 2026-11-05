@@ -65,6 +65,7 @@
   --color-blue-10: #f4f9ff;
   --color-blue-50: #ebf4fd;
   --color-mint-green-1000: #12505e;
+  --color-orange-200: #feb87e;
   --spacing-0: 0px;
   --spacing-2: 2px;
   --spacing-4: 4px;
@@ -220,6 +221,7 @@
   --color-bg-sidebar: var(--color-navy-blue-800);
   --color-bg-hero: var(--color-orange-100);
   --color-bg-inverse: var(--color-navy-blue-800);
+  --color-bg-section: var(--color-blue-70);
   --color-text-primary: var(--color-navy-blue-800);
   --color-text-secondary: var(--color-gray-700);
   --color-text-muted: var(--color-gray-500);
@@ -228,6 +230,8 @@
   --color-text-accent: var(--color-mint-green-600);
   --color-text-on-sidebar: var(--color-white);
   --color-text-inverse-secondary: var(--color-navy-blue-100);
+  --color-text-eyebrow: var(--color-orange-200);
+  --color-text-description: var(--color-gray-900);
   --color-accent-primary: var(--color-mint-green-400);
   --color-accent-strong: var(--color-mint-green-600);
   --color-accent-on-accent: var(--color-navy-blue-800);
@@ -255,6 +259,7 @@
   --color-bg-sidebar: var(--color-navy-blue-800);
   --color-bg-hero: var(--color-mint-green-500);
   --color-bg-inverse: var(--color-navy-blue-800);
+  --color-bg-section: var(--color-navy-blue-700);
   --color-text-primary: var(--color-white);
   --color-text-secondary: var(--color-navy-blue-100);
   --color-text-muted: var(--color-navy-blue-100);
@@ -263,6 +268,8 @@
   --color-text-accent: var(--color-mint-green-500);
   --color-text-on-sidebar: var(--color-white);
   --color-text-inverse-secondary: var(--color-navy-blue-100);
+  --color-text-eyebrow: var(--color-orange-200);
+  --color-text-description: var(--color-navy-blue-100);
   --color-accent-primary: var(--color-mint-green-500);
   --color-accent-strong: var(--color-mint-green-500);
   --color-accent-on-accent: var(--color-navy-blue-800);
@@ -319,6 +326,7 @@
   --space-profile-bottom: 0px;
   --space-avatar: 0px;
   --space-avatar-name-gap: 0px;
+  --space-width-collapsed: 0px;
   --space-padding-top: 0px;
   --space-gap: 0px;
   --space-padding-bottom: 0px;
@@ -375,6 +383,9 @@
   --space-area-min: 0px;
   --space-area-max: 0px;
   --space-overlay-max: 0px;
+  --space-columns: 0px;
+  --space-margin: 0px;
+  --space-gutter: 0px;
 }
 
 body[data-device=desktop] {
@@ -2079,6 +2090,450 @@ body[data-device=desktop] {
     --typo-column-header-line-height: 18px;
   }
 }
+body[data-device=desktop] {
+  --typo-body-xl-light-font-weight: 300;
+  --typo-body-xl-light-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: calc(26.6666666667vw + -80px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: calc(-1.272264631vw + 24.7709923664px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: calc(-0.6510416667vw + 20px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: calc(1.0416666667vw + 2.6666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: calc(0.3125vw + 12px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-font-size: 18px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: 27px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: calc(45vw + -135px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: calc(-2.2264631043vw + 42.0992366412px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: calc(-0.9765625vw + 32.5px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: calc(1.7578125vw + 4.5px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: calc(0.46875vw + 21px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-xl-light-line-height: 30px;
+  }
+}
+body[data-device=desktop] {
+  --typo-overline-font-weight: 400;
+  --typo-overline-letter-spacing: 2.5999999046px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: calc(21.6666666667vw + -65px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: calc(-1.3782866836vw + 21.4185750636px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: calc(-0.3255208333vw + 13.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: calc(0.78125vw + 2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: calc(0.15625vw + 10px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: 17px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: calc(28.3333333333vw + -85px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: calc(-1.802374894vw + 28.0089058524px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: calc(-0.3255208333vw + 16.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: calc(1.0416666667vw + 2.6666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: calc(0.15625vw + 14px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-overline-line-height: 17px;
+  }
+}
+body[data-device=desktop] {
+  --typo-caption-s-bold-font-weight: 700;
+  --typo-caption-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: calc(20vw + -60px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: calc(-1.272264631vw + 19.7709923664px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: calc(0vw + 10px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: calc(0.78125vw + 2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: calc(0vw + 12px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: calc(26.6666666667vw + -80px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: calc(-1.6963528414vw + 26.3613231552px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: calc(0vw + 13.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: calc(1.0416666667vw + 2.6666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: calc(0vw + 16px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+body[data-device=desktop] {
+  --typo-body-bold-font-weight: 700;
+  --typo-body-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: calc(25vw + -75px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: calc(-1.5903307888vw + 24.713740458px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: calc(-0.6510416667vw + 17.5px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: calc(0.8463541667vw + 2.1666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: calc(0.3125vw + 9px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: calc(33.3333333333vw + -100px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: calc(-2.1204410517vw + 32.951653944px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: calc(-0.6510416667vw + 21.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: calc(1.171875vw + 3px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: calc(0.3125vw + 14px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+body[data-device=desktop] {
+  --typo-body-semibold-font-weight: 600;
+  --typo-body-semibold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: calc(25vw + -75px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: calc(-1.5903307888vw + 24.713740458px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: calc(-0.6510416667vw + 17.5px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: calc(0.8463541667vw + 2.1666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: calc(0.3125vw + 9px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: calc(33.3333333333vw + -100px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: calc(-2.1204410517vw + 32.951653944px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: calc(-0.6510416667vw + 21.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: calc(1.171875vw + 3px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: calc(0.3125vw + 14px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+body[data-device=desktop] {
+  --typo-body-s-bold-font-weight: 700;
+  --typo-body-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: calc(23.3333333333vw + -70px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: calc(-1.4843087362vw + 23.0661577608px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: calc(0vw + 11.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: calc(0.9114583333vw + 2.3333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: calc(0vw + 14px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: calc(30vw + -90px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: calc(-1.9083969466vw + 29.6564885496px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: calc(0vw + 15px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: calc(1.171875vw + 3px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: calc(0vw + 18px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
 @media (max-width: 360px) {
   body[data-device=desktop] {
     --space-page-margin: 16px;
@@ -3372,6 +3827,41 @@ body[data-device=desktop] {
 @media (min-width: 1920px) {
   body[data-device=desktop] {
     --space-avatar-name-gap: 9px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: 80px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: calc(133.3333333333vw + -400px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: calc(-8.481764207vw + 131.8066157761px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: calc(0vw + 66.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: calc(5.2083333333vw + 13.3333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: calc(0vw + 80px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --space-width-collapsed: 80px;
   }
 }
 @media (max-width: 360px) {
@@ -5334,6 +5824,111 @@ body[data-device=desktop] {
     --space-overlay-max: 288px;
   }
 }
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --space-columns: 4px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --space-columns: calc(6.6666666667vw + -20px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --space-columns: calc(0.4240882103vw + 3.4096692112px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --space-columns: calc(0vw + 6.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --space-columns: calc(2.0833333333vw + -14.6666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --space-columns: calc(0vw + 12px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --space-columns: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --space-margin: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --space-margin: calc(26.6666666667vw + -80px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --space-margin: calc(0vw + 20px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --space-margin: calc(5.859375vw + -25px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --space-margin: calc(-1.171875vw + 47px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --space-margin: calc(5vw + -32px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --space-margin: 64px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=desktop] {
+    --space-gutter: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=desktop] {
+    --space-gutter: calc(26.6666666667vw + -80px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=desktop] {
+    --space-gutter: calc(0vw + 20px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=desktop] {
+    --space-gutter: calc(0vw + 20px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=desktop] {
+    --space-gutter: calc(1.5625vw + 4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=desktop] {
+    --space-gutter: calc(2.5vw + -8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=desktop] {
+    --space-gutter: 40px;
+  }
+}
 
 body[data-device=tablet] {
   --typo-h1-font-weight: 800;
@@ -7037,6 +7632,450 @@ body[data-device=tablet] {
     --typo-column-header-line-height: 18px;
   }
 }
+body[data-device=tablet] {
+  --typo-body-xl-light-font-weight: 300;
+  --typo-body-xl-light-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: calc(53.3333333333vw + -176px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: calc(-1.5267175573vw + 29.7251908397px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: calc(-0.78125vw + 24px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: calc(1.25vw + 3.2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: calc(0.375vw + 14.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-font-size: 18px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: 27px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: calc(90vw + -297px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: calc(-2.6717557252vw + 50.5190839695px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: calc(-1.171875vw + 39px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: calc(2.109375vw + 5.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: calc(0.5625vw + 25.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-xl-light-line-height: 30px;
+  }
+}
+body[data-device=tablet] {
+  --typo-overline-font-weight: 400;
+  --typo-overline-letter-spacing: 2.5999999046px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: calc(43.3333333333vw + -143px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: calc(-1.6539440204vw + 25.7022900763px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: calc(-0.390625vw + 16px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: calc(0.9375vw + 2.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: calc(0.1875vw + 12px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: 17px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: calc(56.6666666667vw + -187px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: calc(-2.1628498728vw + 33.6106870229px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: calc(-0.390625vw + 20px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: calc(1.25vw + 3.2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: calc(0.1875vw + 16.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-overline-line-height: 17px;
+  }
+}
+body[data-device=tablet] {
+  --typo-caption-s-bold-font-weight: 700;
+  --typo-caption-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: calc(40vw + -132px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: calc(-1.5267175573vw + 23.7251908397px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: calc(0vw + 12px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: calc(0.9375vw + 2.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: calc(0vw + 14.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: calc(53.3333333333vw + -176px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: calc(-2.0356234097vw + 31.6335877863px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: calc(0vw + 16px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: calc(1.25vw + 3.2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: calc(0vw + 19.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+body[data-device=tablet] {
+  --typo-body-bold-font-weight: 700;
+  --typo-body-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: calc(50vw + -165px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: calc(-1.9083969466vw + 29.6564885496px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: calc(-0.78125vw + 21px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: calc(1.015625vw + 2.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: calc(0.375vw + 10.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: calc(66.6666666667vw + -220px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: calc(-2.5445292621vw + 39.5419847328px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: calc(-0.78125vw + 26px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: calc(1.40625vw + 3.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: calc(0.375vw + 16.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+body[data-device=tablet] {
+  --typo-body-semibold-font-weight: 600;
+  --typo-body-semibold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: calc(50vw + -165px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: calc(-1.9083969466vw + 29.6564885496px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: calc(-0.78125vw + 21px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: calc(1.015625vw + 2.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: calc(0.375vw + 10.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: calc(66.6666666667vw + -220px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: calc(-2.5445292621vw + 39.5419847328px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: calc(-0.78125vw + 26px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: calc(1.40625vw + 3.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: calc(0.375vw + 16.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+body[data-device=tablet] {
+  --typo-body-s-bold-font-weight: 700;
+  --typo-body-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: calc(46.6666666667vw + -154px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: calc(-1.7811704835vw + 27.679389313px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: calc(0vw + 14px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: calc(1.09375vw + 2.8px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: calc(0vw + 16.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: calc(60vw + -198px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: calc(-2.2900763359vw + 35.5877862595px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: calc(0vw + 18px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: calc(1.40625vw + 3.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: calc(0vw + 21.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
 @media (max-width: 360px) {
   body[data-device=tablet] {
     --space-page-margin: 16px;
@@ -8330,6 +9369,41 @@ body[data-device=tablet] {
 @media (min-width: 1920px) {
   body[data-device=tablet] {
     --space-avatar-name-gap: 9px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: 80px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: calc(266.6666666667vw + -880px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: calc(-10.1781170483vw + 158.1679389313px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: calc(0vw + 80px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: calc(6.25vw + 16px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: calc(0vw + 96px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --space-width-collapsed: 80px;
   }
 }
 @media (max-width: 360px) {
@@ -10292,6 +11366,111 @@ body[data-device=tablet] {
     --space-overlay-max: 288px;
   }
 }
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --space-columns: 4px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --space-columns: calc(13.3333333333vw + -44px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --space-columns: calc(0.5089058524vw + 4.0916030534px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --space-columns: calc(0vw + 8px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --space-columns: calc(2.5vw + -17.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --space-columns: calc(0vw + 14.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --space-columns: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --space-margin: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --space-margin: calc(53.3333333333vw + -176px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --space-margin: calc(0vw + 24px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --space-margin: calc(7.03125vw + -30px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --space-margin: calc(-1.40625vw + 56.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --space-margin: calc(6vw + -38.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --space-margin: 64px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=tablet] {
+    --space-gutter: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=tablet] {
+    --space-gutter: calc(53.3333333333vw + -176px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=tablet] {
+    --space-gutter: calc(0vw + 24px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=tablet] {
+    --space-gutter: calc(0vw + 24px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=tablet] {
+    --space-gutter: calc(1.875vw + 4.8px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=tablet] {
+    --space-gutter: calc(3vw + -9.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=tablet] {
+    --space-gutter: 40px;
+  }
+}
 
 body[data-device=mobile] {
   --typo-h1-font-weight: 800;
@@ -11995,6 +13174,450 @@ body[data-device=mobile] {
     --typo-column-header-line-height: 18px;
   }
 }
+body[data-device=mobile] {
+  --typo-body-xl-light-font-weight: 300;
+  --typo-body-xl-light-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: calc(0vw + 16px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: calc(-1.0178117048vw + 19.8167938931px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: calc(-0.5208333333vw + 16px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: calc(0.8333333333vw + 2.1333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: calc(0.25vw + 9.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-font-size: 18px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: 27px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: calc(0vw + 27px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: calc(-1.7811704835vw + 33.679389313px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: calc(-0.78125vw + 26px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: calc(1.40625vw + 3.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: calc(0.375vw + 16.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-xl-light-line-height: 30px;
+  }
+}
+body[data-device=mobile] {
+  --typo-overline-font-weight: 400;
+  --typo-overline-letter-spacing: 2.5999999046px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: calc(0vw + 13px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: calc(-1.1026293469vw + 17.1348600509px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: calc(-0.2604166667vw + 10.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: calc(0.625vw + 1.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: calc(0.125vw + 8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-overline-font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: 17px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: calc(0vw + 17px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: calc(-1.4418999152vw + 22.4071246819px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: calc(-0.2604166667vw + 13.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: calc(0.8333333333vw + 2.1333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: calc(0.125vw + 11.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-overline-line-height: 17px;
+  }
+}
+body[data-device=mobile] {
+  --typo-caption-s-bold-font-weight: 700;
+  --typo-caption-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: calc(0vw + 12px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: calc(-1.0178117048vw + 15.8167938931px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: calc(0vw + 8px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: calc(0.625vw + 1.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: calc(0vw + 9.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-font-size: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: calc(0vw + 16px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: calc(-1.3570822731vw + 21.0890585242px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: calc(0vw + 10.6666666667px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: calc(0.8333333333vw + 2.1333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: calc(0vw + 12.8px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-caption-s-bold-line-height: 16px;
+  }
+}
+body[data-device=mobile] {
+  --typo-body-bold-font-weight: 700;
+  --typo-body-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: calc(0vw + 15px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: calc(-1.272264631vw + 19.7709923664px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: calc(-0.5208333333vw + 14px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: calc(0.6770833333vw + 1.7333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: calc(0.25vw + 7.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-bold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: calc(0vw + 20px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: calc(-1.6963528414vw + 26.3613231552px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: calc(-0.5208333333vw + 17.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: calc(0.9375vw + 2.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: calc(0.25vw + 11.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-bold-line-height: 20px;
+  }
+}
+body[data-device=mobile] {
+  --typo-body-semibold-font-weight: 600;
+  --typo-body-semibold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: calc(0vw + 15px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: calc(-1.272264631vw + 19.7709923664px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: calc(-0.5208333333vw + 14px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: calc(0.6770833333vw + 1.7333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: calc(0.25vw + 7.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-font-size: 15px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: calc(0vw + 20px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: calc(-1.6963528414vw + 26.3613231552px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: calc(-0.5208333333vw + 17.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: calc(0.9375vw + 2.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: calc(0.25vw + 11.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-semibold-line-height: 20px;
+  }
+}
+body[data-device=mobile] {
+  --typo-body-s-bold-font-weight: 700;
+  --typo-body-s-bold-letter-spacing: 0px;
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: calc(0vw + 14px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: calc(-1.187446989vw + 18.4529262087px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: calc(0vw + 9.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: calc(0.7291666667vw + 1.8666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: calc(0vw + 11.2px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: calc(0vw + 18px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: calc(-1.5267175573vw + 23.7251908397px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: calc(0vw + 12px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: calc(0.9375vw + 2.4px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: calc(0vw + 14.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --typo-body-s-bold-line-height: 18px;
+  }
+}
 @media (max-width: 360px) {
   body[data-device=mobile] {
     --space-page-margin: 16px;
@@ -13288,6 +14911,41 @@ body[data-device=mobile] {
 @media (min-width: 1920px) {
   body[data-device=mobile] {
     --space-avatar-name-gap: 9px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: 80px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: calc(0vw + 80px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: calc(-6.7854113656vw + 105.4452926209px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: calc(0vw + 53.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: calc(4.1666666667vw + 10.6666666667px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: calc(0vw + 64px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --space-width-collapsed: 80px;
   }
 }
 @media (max-width: 360px) {
@@ -15248,6 +16906,111 @@ body[data-device=mobile] {
 @media (min-width: 1920px) {
   body[data-device=mobile] {
     --space-overlay-max: 288px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --space-columns: 4px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --space-columns: calc(0vw + 4px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --space-columns: calc(0.3392705683vw + 2.727735369px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --space-columns: calc(0vw + 5.3333333333px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --space-columns: calc(1.6666666667vw + -11.7333333333px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --space-columns: calc(0vw + 9.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --space-columns: 12px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --space-margin: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --space-margin: calc(0vw + 16px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --space-margin: calc(0vw + 16px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --space-margin: calc(4.6875vw + -20px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --space-margin: calc(-0.9375vw + 37.6px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --space-margin: calc(4vw + -25.6px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --space-margin: 64px;
+  }
+}
+@media (max-width: 360px) {
+  body[data-device=mobile] {
+    --space-gutter: 16px;
+  }
+}
+@media (min-width: 360px) and (max-width: 374px) {
+  body[data-device=mobile] {
+    --space-gutter: calc(0vw + 16px);
+  }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  body[data-device=mobile] {
+    --space-gutter: calc(0vw + 16px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  body[data-device=mobile] {
+    --space-gutter: calc(0vw + 16px);
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body[data-device=mobile] {
+    --space-gutter: calc(1.25vw + 3.2px);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1919px) {
+  body[data-device=mobile] {
+    --space-gutter: calc(2vw + -6.4px);
+  }
+}
+@media (min-width: 1920px) {
+  body[data-device=mobile] {
+    --space-gutter: 40px;
   }
 }
 

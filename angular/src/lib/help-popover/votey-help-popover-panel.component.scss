@@ -1,0 +1,102 @@
+@use "../../../../styles/angular/ds-device-mixins" as device;
+
+:host {
+  display: block;
+}
+
+.frame {
+  display: flex;
+  width: calc(6 * var(--grid-column-width) + 5 * var(--grid-column-gap));
+  max-width: calc(100vw - 2 * var(--spacing-16));
+  min-height: min(560px, calc(100dvh - 2 * var(--spacing-16)));
+  max-height: calc(100dvh - 2 * var(--spacing-16));
+  overflow: hidden;
+
+  .art {
+    display: flex;
+    flex: 0 0 48%;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    background: var(--color-bg-surface-tint);
+
+    .illustration {
+      width: 85%;
+      aspect-ratio: 10 / 7;
+
+      &.info {
+        width: 100%;
+        aspect-ratio: 10 / 9;
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-stack-gap-l);
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-section-gap);
+    overflow-wrap: anywhere;
+
+    .title {
+      flex-shrink: 0;
+      margin: 0;
+      outline: none;
+    }
+
+    .entries {
+      display: flex;
+      flex-shrink: 0;
+      flex-direction: column;
+      gap: var(--spacing-24);
+
+      .entry {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-gap-xs);
+
+        .heading,
+        .paragraph {
+          margin: 0;
+        }
+      }
+    }
+
+    .action {
+      flex-shrink: 0;
+      color: var(--color-accent-primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  @include device.device("desktop") {
+    min-height: min(560px, 50vh, calc(100dvh - 2 * var(--spacing-16)));
+    max-height: min(50vh, calc(100dvh - 2 * var(--spacing-16)));
+  }
+
+  @include device.device("mobile") {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
+
+    .art {
+      flex: none;
+
+      .illustration {
+        width: 100%;
+      }
+    }
+
+    .content {
+      flex: none;
+      overflow: visible;
+    }
+  }
+}

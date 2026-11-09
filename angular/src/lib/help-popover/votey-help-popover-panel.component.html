@@ -1,0 +1,57 @@
+<div class="frame" [class.text-only]="!content().illustration">
+  @if (content().illustration; as illustration) {
+  <div class="art" aria-hidden="true">
+    <div class="illustration" [class.info]="isInfoIllustration()">
+      <vt-icon [ico]="illustration" />
+    </div>
+  </div>
+  }
+  <div class="content">
+    <div cdkFocusInitial class="title" role="heading" aria-level="2" tabindex="-1">
+      <vt-text
+        variant="h3"
+        [content]="content().title | vtTranslate"
+        [wrap]="true"
+      />
+    </div>
+    <div class="entries">
+      @for (section of content().sections; track section) {
+      <div class="entry">
+        @if (section.heading; as heading) {
+        <div class="heading" role="heading" aria-level="3">
+          <vt-text
+            variant="body-l"
+            [content]="heading | vtTranslate"
+            [wrap]="true"
+          />
+        </div>
+        } @for (paragraph of section.paragraphs; track $index) {
+        <div class="paragraph">
+          <vt-text
+            variant="body-s"
+            color="description"
+            [content]="paragraph | vtTranslate"
+            [wrap]="true"
+          />
+        </div>
+        }
+      </div>
+      } @if (customTemplate(); as custom) {
+      <ng-container
+        [ngTemplateOutlet]="custom"
+        [ngTemplateOutletContext]="context()"
+      />
+      }
+    </div>
+    @if (content().action; as action) {
+    <a class="action" [href]="action.href" (click)="handleAction($event)">
+      <vt-text
+        variant="body-l-bold"
+        color="accent"
+        [content]="action.label | vtTranslate"
+        [wrap]="true"
+      />
+    </a>
+    }
+  </div>
+</div>

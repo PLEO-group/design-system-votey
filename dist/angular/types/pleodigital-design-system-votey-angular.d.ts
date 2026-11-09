@@ -1,7 +1,8 @@
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, Signal, PipeTransform, OutputEmitterRef, ElementRef, WritableSignal, ModelSignal, InputSignalWithTransform, TemplateRef, OnInit, ChangeDetectorRef, Injector, ViewContainerRef, Type } from '@angular/core';
+import { EnvironmentProviders, OnDestroy, InjectionToken, InputSignal, Signal, PipeTransform, OutputEmitterRef, ElementRef, WritableSignal, TemplateRef, ModelSignal, InputSignalWithTransform, OnInit, ChangeDetectorRef, Injector, ViewContainerRef, Type } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import { MenuPositionX, MenuPositionY } from '@angular/material/menu';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MatSelect, MatSelectChange } from '@angular/material/select';
@@ -221,6 +222,73 @@ declare class VoteyMultiSelectPopoverComponent {
     private handleOutsidePointerDown;
     static ɵfac: i0.ɵɵFactoryDeclaration<VoteyMultiSelectPopoverComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<VoteyMultiSelectPopoverComponent, "vt-multi-select-popover", never, { "items": { "alias": "items"; "required": false; "isSignal": true; }; "selectedIds": { "alias": "selectedIds"; "required": false; "isSignal": true; }; "triggerText": { "alias": "triggerText"; "required": true; "isSignal": true; }; "triggerIcon": { "alias": "triggerIcon"; "required": false; "isSignal": true; }; "triggerVariant": { "alias": "triggerVariant"; "required": false; "isSignal": true; }; "confirmText": { "alias": "confirmText"; "required": true; "isSignal": true; }; "cancelText": { "alias": "cancelText"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; "dataCy": { "alias": "dataCy"; "required": false; "isSignal": true; }; }, { "confirmed": "confirmed"; "dismissed": "dismissed"; }, never, never, true, never>;
+}
+
+interface VoteyPopoverContentContext {
+    readonly close: () => void;
+}
+declare class VoteyPopoverContentDirective {
+    readonly template: TemplateRef<VoteyPopoverContentContext>;
+    static ngTemplateContextGuard(_directive: VoteyPopoverContentDirective, context: unknown): context is VoteyPopoverContentContext;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyPopoverContentDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<VoteyPopoverContentDirective, "ng-template[vtPopoverContent]", never, {}, {}, never, never, true, never>;
+}
+
+declare const VoteyPopoverPlacements: readonly ["bottom-end", "bottom-start", "top-end", "top-start"];
+type VoteyPopoverPlacement = (typeof VoteyPopoverPlacements)[number];
+declare class VoteyPopoverComponent {
+    readonly ariaLabel: InputSignal<string>;
+    readonly triggerText: InputSignal<string>;
+    readonly triggerIcon: InputSignal<VoteyIcon | "">;
+    readonly openIcon: InputSignal<VoteyIcon | "">;
+    readonly triggerVariant: InputSignal<VoteyButtonVariant>;
+    readonly triggerSize: InputSignal<VoteyButtonSize>;
+    readonly badge: InputSignal<string | number | null>;
+    readonly disabled: InputSignal<boolean>;
+    readonly placement: InputSignal<VoteyPopoverPlacement>;
+    readonly openedChange: OutputEmitterRef<boolean>;
+    private readonly opened;
+    readonly isOpen: Signal<boolean>;
+    protected readonly trigger: Signal<ElementRef<HTMLElement>>;
+    private readonly menuTrigger;
+    protected readonly content: Signal<VoteyPopoverContentDirective | undefined>;
+    protected readonly context: VoteyPopoverContentContext;
+    protected readonly currentIcon: Signal<VoteyIcon | "">;
+    protected readonly menuPositionX: Signal<MenuPositionX>;
+    protected readonly menuPositionY: Signal<MenuPositionY>;
+    constructor();
+    open(): void;
+    close(): void;
+    toggle(): void;
+    protected handleOpenedChange(open: boolean): void;
+    protected handleContentKeydown(event: KeyboardEvent): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyPopoverComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyPopoverComponent, "vt-popover", never, { "ariaLabel": { "alias": "ariaLabel"; "required": true; "isSignal": true; }; "triggerText": { "alias": "triggerText"; "required": false; "isSignal": true; }; "triggerIcon": { "alias": "triggerIcon"; "required": false; "isSignal": true; }; "openIcon": { "alias": "openIcon"; "required": false; "isSignal": true; }; "triggerVariant": { "alias": "triggerVariant"; "required": false; "isSignal": true; }; "triggerSize": { "alias": "triggerSize"; "required": false; "isSignal": true; }; "badge": { "alias": "badge"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; "placement": { "alias": "placement"; "required": false; "isSignal": true; }; }, { "openedChange": "openedChange"; }, ["content"], ["*"], true, never>;
+}
+
+interface VoteyHelpPopoverSection {
+    readonly heading?: string;
+    readonly paragraphs: readonly string[];
+}
+interface VoteyHelpPopoverContent {
+    readonly title: string;
+    readonly illustration?: VoteyIllustration;
+    readonly sections: readonly VoteyHelpPopoverSection[];
+    readonly action?: {
+        readonly label: string;
+        readonly href: string;
+    };
+}
+
+declare class VoteyHelpPopoverComponent {
+    readonly content: InputSignal<VoteyHelpPopoverContent>;
+    readonly placement: InputSignal<VoteyPopoverPlacement>;
+    readonly disabled: InputSignal<boolean>;
+    readonly openedChange: OutputEmitterRef<boolean>;
+    readonly actionPressed: OutputEmitterRef<MouseEvent>;
+    protected readonly customContent: Signal<VoteyPopoverContentDirective | undefined>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<VoteyHelpPopoverComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<VoteyHelpPopoverComponent, "vt-help-popover", never, { "content": { "alias": "content"; "required": true; "isSignal": true; }; "placement": { "alias": "placement"; "required": false; "isSignal": true; }; "disabled": { "alias": "disabled"; "required": false; "isSignal": true; }; }, { "openedChange": "openedChange"; "actionPressed": "actionPressed"; }, ["customContent"], never, true, never>;
 }
 
 declare class VoteyFormControlApplyDirective<T> {
@@ -1277,5 +1345,5 @@ declare class VoteyModalService {
     static ɵprov: i0.ɵɵInjectableDeclaration<VoteyModalService>;
 }
 
-export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_MODAL_DATA, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInfoTileComponent, VoteyInfoTileStates, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyModalCloseReasons, VoteyModalComponent, VoteyModalRef, VoteyModalService, VoteyModalSizes, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
-export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyIcon, VoteyIllustration, VoteyInfoTileItem, VoteyInfoTileState, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyModalActions, VoteyModalCallback, VoteyModalCloseReason, VoteyModalConfig, VoteyModalResult, VoteyModalSize, VoteyModalTemplateContext, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyRadioButtonLabelPosition, VoteySelectPanelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableHeaderVariant, VoteyTableKey, VoteyTablePaginationMode, VoteyTableQuery, VoteyTableReorderEvent, VoteyTableRowConfig, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableValue, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };
+export { VOTEY_DEFAULT_GRID_CONFIG, VOTEY_GRID_CONFIG, VOTEY_MODAL_DATA, VOTEY_SVG_REGISTRY_CONFIG, VOTEY_TRANSLATOR, VoteyButtonComponent, VoteyButtonSizes, VoteyButtonVariants, VoteyCheckboxComponent, VoteyChipComponent, VoteyDatePickerComponent, VoteyDatePickerModes, VoteyDeviceService, VoteyFilePickerComponent, VoteyFilePickerValidationErrors, VoteyFormControlApplyDirective, VoteyFormErrorComponent, VoteyHelpPopoverComponent, VoteyIconComponent, VoteyIconNames, VoteyIconRegistryEntries, VoteyIllustrationNames, VoteyIllustrationRegistryEntries, VoteyInfoTileComponent, VoteyInfoTileStates, VoteyInputComponent, VoteyInputModes, VoteyInputTypeNames, VoteyInputTypes, VoteyInputVariants, VoteyMenuComponent, VoteyModalCloseReasons, VoteyModalComponent, VoteyModalRef, VoteyModalService, VoteyModalSizes, VoteyMultiSelectPopoverComponent, VoteyPaginationComponent, VoteyPopoverComponent, VoteyPopoverContentDirective, VoteyPopoverPlacements, VoteyRadioButtonComponent, VoteyRadioOptionContentDirective, VoteySearchComponent, VoteySelectComponent, VoteySelectVariants, VoteySvgRegistryService, VoteyTabContentDirective, VoteyTableCellDirective, VoteyTableComponent, VoteyTableHeaderVariants, VoteyTabsComponent, VoteyTextAreaComponent, VoteyTextColors, VoteyTextComponent, VoteyTextVariants, VoteyTimeEntryPolicies, VoteyTimePickerComponent, VoteyTranslatePipe, VoteyViewTransitionService, defaultFetchParams, emptyPaginatedList, emptyPaginatedListLoading, noPaginationParams, provideVoteyDeviceDetection, provideVoteySvgRegistry };
+export type { PaginatedList, PaginationEvent, PickerMode, PickerTimeEntryPolicy, VoteyButtonAriaHasPopup, VoteyButtonSize, VoteyButtonType, VoteyButtonVariant, VoteyCheckboxLabelPosition, VoteyDevice, VoteyDeviceDimensions, VoteyDeviceOrientation, VoteyFilePickerFile, VoteyFilePickerFileState, VoteyFilePickerRejection, VoteyFilePickerValidationError, VoteyFilePickerValidationErrorKeys, VoteyFilePickerVariant, VoteyGridConfig, VoteyHelpPopoverContent, VoteyHelpPopoverSection, VoteyIcon, VoteyIllustration, VoteyInfoTileItem, VoteyInfoTileState, VoteyInputMode, VoteyInputTrimmer, VoteyInputType, VoteyInputVariant, VoteyMenuItem, VoteyModalActions, VoteyModalCallback, VoteyModalCloseReason, VoteyModalConfig, VoteyModalResult, VoteyModalSize, VoteyModalTemplateContext, VoteyMultiSelectItem, VoteyPaginationEvent, VoteyPopoverContentContext, VoteyPopoverPlacement, VoteyRadioButtonLabelPosition, VoteySelectPanelPosition, VoteySelectSearchFn, VoteySelectVariant, VoteySvgRegistryConfig, VoteySvgRegistryEntry, VoteyTabContentContext, VoteyTabItem, VoteyTableCellContext, VoteyTableColumn, VoteyTableFilters, VoteyTableHeaderVariant, VoteyTableKey, VoteyTablePaginationMode, VoteyTableQuery, VoteyTableReorderEvent, VoteyTableRowConfig, VoteyTableSearchMode, VoteyTableSelectionContext, VoteyTableValue, VoteyTextColor, VoteyTextVariant, VoteyTranslationParams, VoteyTranslator, VtOption, VtRadioOption };

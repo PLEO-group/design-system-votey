@@ -1,0 +1,47 @@
+<vt-button
+  #trigger
+  ariaHasPopup="menu"
+  [matMenuTriggerFor]="disabled() ? null : menu"
+  [matMenuTriggerRestoreFocus]="false"
+  [text]="triggerText()"
+  [ico]="currentIcon()"
+  [variant]="triggerVariant()"
+  [size]="triggerSize()"
+  [badge]="badge()"
+  [disabled]="disabled()"
+  [ariaLabel]="ariaLabel()"
+  [ariaExpanded]="isOpen()"
+  [ariaControls]="isOpen() ? menu.panelId : null"
+  (menuOpened)="handleOpenedChange(true)"
+  (menuClosed)="handleOpenedChange(false)"
+/>
+<mat-menu
+  #menu="matMenu"
+  class="vt-popover-panel"
+  [xPosition]="menuPositionX()"
+  [yPosition]="menuPositionY()"
+  [overlapTrigger]="false"
+  [hasBackdrop]="true"
+  [aria-label]="ariaLabel() | vtTranslate"
+>
+  <ng-template matMenuContent>
+    <div
+      cdkTrapFocus
+      cdkFocusInitial
+      class="panel"
+      tabindex="-1"
+      [cdkTrapFocusAutoCapture]="true"
+      (click)="$event.stopPropagation()"
+      (keydown)="handleContentKeydown($event)"
+    >
+      @if (content(); as panelContent) {
+      <ng-container
+        [ngTemplateOutlet]="panelContent.template"
+        [ngTemplateOutletContext]="context"
+      />
+      } @else {
+      <ng-content />
+      }
+    </div>
+  </ng-template>
+</mat-menu>

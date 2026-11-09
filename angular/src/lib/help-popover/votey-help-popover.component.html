@@ -1,0 +1,18 @@
+<vt-popover
+  triggerIcon="ui-question"
+  openIcon="ui-close"
+  triggerVariant="primary"
+  [ariaLabel]="content().title"
+  [placement]="placement()"
+  [disabled]="disabled()"
+  (openedChange)="openedChange.emit($event)"
+>
+  <ng-template vtPopoverContent let-close="close">
+    <vt-help-popover-panel
+      [content]="content()"
+      [customTemplate]="customContent()?.template"
+      [closePanel]="close"
+      (actionPressed)="actionPressed.emit($event)"
+    />
+  </ng-template>
+</vt-popover>

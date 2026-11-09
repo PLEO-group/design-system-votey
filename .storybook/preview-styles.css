@@ -40,3 +40,8 @@ body {
 #storybook-root > div {
     min-height: 100%;
 }
+
+vt-popover,
+.vt-popover-panel {
+    font-family: 'Open Sans', sans-serif;
+}

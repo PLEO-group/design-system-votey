@@ -1,0 +1,32 @@
+:host {
+  display: inline-flex;
+}
+
+::ng-deep {
+  .vt-popover-panel {
+    &.mat-mdc-menu-panel {
+      box-sizing: border-box;
+      min-width: 0;
+      max-width: calc(100vw - 2 * var(--spacing-16));
+      max-height: calc(100dvh - 2 * var(--spacing-16));
+      overflow: auto;
+      overscroll-behavior: contain;
+      outline: none;
+      background: var(--color-bg-surface);
+      color: var(--color-text-primary);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--color-navy-blue-800)
+            12%, transparent);
+
+      .mat-mdc-menu-content {
+        padding: 0;
+        font-family: inherit;
+
+        .panel {
+          min-width: 0;
+          outline: none;
+        }
+      }
+    }
+  }
+}

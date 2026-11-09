@@ -50,6 +50,12 @@ export type {
 export { VoteyMenuComponent } from "./lib/menu/votey-menu.component";
 export type { VoteyMenuItem } from "./lib/menu/votey-menu.component";
 export { VoteyMultiSelectPopoverComponent } from "./lib/multi-select-popover/votey-multi-select-popover.component";
+export { VoteyPopoverComponent, VoteyPopoverPlacements } from "./lib/popover/votey-popover.component";
+export type { VoteyPopoverPlacement } from "./lib/popover/votey-popover.component";
+export { VoteyPopoverContentDirective } from "./lib/popover/votey-popover-content.directive";
+export type { VoteyPopoverContentContext } from "./lib/popover/votey-popover-content.directive";
+export { VoteyHelpPopoverComponent } from "./lib/help-popover/votey-help-popover.component";
+export type { VoteyHelpPopoverContent, VoteyHelpPopoverSection } from "./lib/help-popover/help-popover.model";
 export type { VoteyMultiSelectItem } from "./lib/multi-select-popover/votey-multi-select-popover.component";
 export { VoteyCheckboxComponent } from "./lib/checkbox/votey-checkbox.component";
 export type { VoteyCheckboxLabelPosition } from "./lib/checkbox/votey-checkbox.component";

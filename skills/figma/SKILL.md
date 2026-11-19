@@ -9,7 +9,7 @@ description: >
   Triggery: link do Figmy, pixel-perfect, "odczytaj z Figmy", "zmień hover", "dodaj wariant",
   "component set", "macierz wariantów", figma-to-code,
   get_design_context, get_screenshot, get_metadata.
-version: 1.28.0
+version: 1.29.0
 author: s.stawowy@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -141,7 +141,7 @@ Kontrakt musi zawierać tylko pola istotne dla realnego zakresu zmiany:
 - `Critical values`: 4-8 krytycznych wartości z Kroku 5.1 z oznaczeniem `[P]`, `[I]`, `[B]`, jeśli zmiana dotyczy layoutu, stylu, wariantu komponentu albo stanu wizualnego.
 - `Token mapping`: kolory, typografia, border/radius/shadow z Figmy zmapowane na token albo klasę projektu, jeśli zmiana dotyczy stylu.
 - `Class mapping`: wartości spacingu/size z Figmy zmapowane na utility albo prymitywy właściwe dla projektu, np. grid/container, responsive helpers albo komponent DS, jeśli zmiana dotyczy layoutu albo rozmiaru.
-- `DS mapping gate`: jeśli projekt używa Design Systemu, potwierdź dla każdego krytycznego elementu mapowanie `Figma value -> DS token/grid/component/asset`; brak mapowania oznacza gap albo fallback bez deklaracji pixel-perfect.
+- `DS mapping gate`: jeśli projekt używa Design Systemu, potwierdź dla każdego krytycznego elementu mapowanie `Figma value -> DS token/grid/component/asset`; brak wariantu istniejącego komponentu wymaga zgłoszenia użytkownikowi i uzgodnienia z designem.
 - `Icon asset mapping`: nazwy ikon, wariant rozmiaru i źródło assetu z Figmy zmapowane na publiczny asset projektu albo DS, jeśli UI zawiera ikony.
 - `Visible text parity`: widoczne teksty/CTA/tab labels z Figmy porównane z CMS, specem albo aktualnym kodem.
 - `Runtime validation plan`: route, breakpointy i sposób screenshot/DOM validation albo jawny status `blocked`.
@@ -181,7 +181,9 @@ Figma -> Design System:
 ```
 
 Nie przenoś wartości pixelowych z Figmy bezpośrednio do implementacji stylów, jeśli istnieje token, grid primitive, komponent albo wariant
-assetu. Gdy nie ma jednoznacznego mapowania, wpisz to jako `gap` i wybierz jedną z dwóch ścieżek: zatrzymaj zakres
+assetu. Przy użyciu istniejącego komponentu DS lub projektu zawsze sprawdź publiczne warianty w używanej wersji. Nigdy nie nadpisuj jego stylów lokalnie. Jeśli brakuje wariantu, zgłoś użytkownikowi komponent, sprawdzone warianty i konkretną różnicę względem Figmy. Wstrzymaj dopasowanie tego elementu do decyzji z designem.
+
+Dla pozostałych elementów, gdy nie ma jednoznacznego mapowania, wpisz to jako `gap` i wybierz jedną z dwóch ścieżek: zatrzymaj zakres
 krytyczny albo zastosuj jawnie opisany fallback bez deklaracji pixel-perfect. W projektach z Design Systemem ta bramka ma
 pierwszeństwo przed mechanicznym kopiowaniem wygenerowanych stylów z Figmy.
 

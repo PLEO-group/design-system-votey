@@ -14,7 +14,6 @@ const selectInputs = [
   "id",
   "name",
   "dataCy",
-  "multiple",
   "disabled",
   "flagSelect",
   "clearable",
@@ -116,6 +115,7 @@ function AngularSelectPreview(props) {
         environmentInjector: applicationRef.injector,
         hostElement: selectHost,
       });
+      componentRef.setInput("multiple", latestPropsRef.current.multiple);
       const control = new FormControl(null);
       const selectionSubscription =
         componentRef.instance.selectionChange.subscribe((event) =>
@@ -235,7 +235,6 @@ export default {
     id: "storybook-select",
     name: "storybook-select",
     dataCy: "",
-    multiple: false,
     disabled: false,
     flagSelect: false,
     clearable: false,
@@ -268,18 +267,34 @@ export default {
   },
 };
 
-export const Playground = {
-  render: function Render(args) {
-    const [, updateArgs] = useArgs();
+function renderPlayground(args, { parameters }) {
+  const [, updateArgs] = useArgs();
 
-    return (
-      <AngularSelectPreview
-        {...args}
-        onSelectionChange={(event) => {
-          args.onSelectionChange(event);
-          updateArgs({ selectedValue: event });
-        }}
-      />
-    );
+  return (
+    <AngularSelectPreview
+      {...args}
+      multiple={parameters.selectMultiple}
+      onSelectionChange={(event) => {
+        args.onSelectionChange(event);
+        updateArgs({ selectedValue: event });
+      }}
+    />
+  );
+}
+
+export const SingleSelect = {
+  name: "Playground – Single Select",
+  parameters: { selectMultiple: false },
+  render: renderPlayground,
+};
+
+export const MultiSelect = {
+  name: "Playground – Multi Select",
+  args: {
+    selectedValue: ["pl", "en"],
+    label: "Języki wydarzenia",
+    placeholder: "Wybierz języki",
   },
+  parameters: { selectMultiple: true },
+  render: renderPlayground,
 };

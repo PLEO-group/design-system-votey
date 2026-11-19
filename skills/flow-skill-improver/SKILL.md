@@ -7,7 +7,7 @@ description: >
   "użyj skilla flow-skill-improver", "użyj skilla flow-improver",
   "przeanalizuj ten flow pod skille",
   "co możemy poprawić w skillach po tej rozmowie".
-version: 1.3.1
+version: 1.4.0
 author: d.kawula@pleodigital.com
 scope: SHARED
 category: Workflow
@@ -29,19 +29,25 @@ Głównym wynikiem pracy nie są case-specific poprawki, tylko uogólnione wzorc
 
 Najpierw oceń, czy jest wystarczający kontekst do sensownej retrospekcji.
 
-Kontekst jest wystarczający, jeśli wystąpił przynajmniej jeden silny sygnał:
+Kontekst jest wystarczający, jeśli w rozmowie widać konkretny przebieg zadania,
+decyzję, wynik działania albo problem, na których da się oprzeć retrospekcję.
+Dowodów szukaj w takich sygnałach jak:
 
 - kilka realnych wymian użytkownik-agent dotyczących jednego zadania lub obszaru,
-- użycie co najmniej jednego skilla,
+- użycie skilla z widocznym wpływem na decyzję, działanie lub wynik,
 - zmiany w plikach, uruchamianie narzędzi, publikacja, testy albo walidacja,
 - powtarzający się błąd, poprawka, cofnięcie, retriable flow albo niejasność proceduralna,
 - użytkownik prosi o wnioski po zakończonym etapie pracy.
 
-Jeśli użytkownik używa skilla na początku rozmowy albo bez materiału do analizy, odpowiedz dokładnie:
+Samo wywołanie skilla, liczba wiadomości lub prośba o wnioski nie wystarczają.
+Krótka rozmowa wystarcza, jeśli zawiera konkretny dowód do analizy.
+
+Gdy brakuje takiego dowodu, zacznij odpowiedź od tej frazy w niezmienionym brzmieniu:
 
 > Przed wyruszeniem w drogę należy zebrać drużynę.
 
-Następnie krótko wyjaśnij, że ten skill ma sens po dłuższej wymianie pracy z AI, gdy są już decyzje, błędy, narzędzia albo użyte skille do oceny.
+Następnie krótko wskaż, jakiego materiału brakuje, i zakończ odpowiedź bez
+pytania o sprawdzenie wzorca w innych skillach.
 
 ## 2. Zakres Analizy
 
@@ -77,6 +83,15 @@ Przed zaproponowaniem zmiany skilla albo instrukcji sprawdź tylko materiały uj
 - `niezweryfikowano` — materiał nie był dostępny w bieżącym flow.
 
 Nie proponuj dopisania zasady, jeśli jest wystarczająca i problem polegał tylko na jej niezastosowaniu. Zamiast tego wskaż działanie naprawcze dla wykonania albo oznacz obserwację jako jednorazową. Nie skanuj dodatkowych skilli wyłącznie po to, aby znaleźć podobne reguły.
+
+Jeżeli proponowana reguła wpływa na HTML, CSS, dostępność lub użycie API
+przeglądarki, sprawdź właściwy przewodnik Modern Web Guidance (MWG), jeśli jest
+dostępny w bieżącej sesji. Sprawdzaj tylko proponowaną regułę. W razie
+rozbieżności opisz w rekomendacji obie zasady i wskaż, która ma pierwszeństwo.
+W zakresie objętym lokalnym standardem Angulara lub kontraktem design systemu
+stosuj lokalną regułę. Jeżeli rekomendacja wymaga zmiany tego kontraktu, wskaż
+konkretną decyzję do podjęcia. Jeśli MWG lub przewodnik jest niedostępny,
+dokończ retrospekcję na podstawie lokalnych źródeł. Instalacja MWG jest opcjonalna.
 
 ## 3. Uogólnianie Wniosków
 
@@ -156,6 +171,10 @@ Wskaż krótko, jeśli coś nie powinno być robione:
 
 ## 8. Format Odpowiedzi
 
+Poniższy format stosuj wyłącznie po przejściu bramki z sekcji 1. Przy
+niewystarczającym kontekście obowiązuje krótka odpowiedź z sekcji 1,
+która zaczyna się od ustalonej frazy.
+
 Stosuj nagłówki Markdown (`##`, `###`), a nie same pogrubione etykiety. Najpierw pokaż zwięzły werdykt, a następnie tylko rekomendacje wymagające decyzji. Nie powtarzaj wszystkich pól jako jednolitej listy — grupuj je według znaczenia.
 
 Każdy wzorzec nadal musi zawierać wszystkie pola wymagane w sekcji 4, ale prezentuj je w czterech czytelnych blokach:
@@ -170,7 +189,7 @@ Użyj stałej, krótkiej struktury:
 ```md
 ## Czy kontekst jest wystarczający?
 
-Tak/Nie — <jedno zdanie uzasadnienia>.
+Tak — <jedno zdanie uzasadnienia>.
 
 ## Werdykt
 
@@ -221,6 +240,6 @@ W `Rekomendowany Następny Krok` wskaż jeden najlepszy krok. Pełny plan rozpis
 
 Jeśli nie ma rekomendacji w danej sekcji, napisz `Brak sensownych rekomendacji na podstawie tego flow.`
 
-Na końcu zawsze dodaj pytanie:
+Po przeprowadzonej retrospekcji dodaj na końcu pytanie:
 
 > Czy chcesz bym sprawdzil, czy ten sam wzorzec problemu istnieje w innych skilach?

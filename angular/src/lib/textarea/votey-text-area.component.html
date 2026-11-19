@@ -9,7 +9,7 @@
 >
   @if (label()) {
   <label class="label" [for]="resolvedId()">
-    <vt-text variant="label" color="primary" [content]="translatedLabel" />
+    <vt-text variant="label" [color]="isDisabled ? 'muted' : 'primary'" [content]="translatedLabel" />
   </label>
   }
 

@@ -93,6 +93,8 @@ describe("VoteyTextAreaComponent", () => {
 
     expect(control.enabled).toBe(true);
     expect(textarea.disabled).toBe(true);
+    const label: HTMLElement = fixture.nativeElement.querySelector("label vt-text .text");
+    expect(label.classList.contains("muted")).toBe(true);
     expect(
       fixture.nativeElement.querySelector("label .text.primary")
     ).not.toBeNull();

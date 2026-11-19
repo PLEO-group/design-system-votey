@@ -1,7 +1,7 @@
 <div class="picker" [class.disabled]="isDisabled" [class.error]="hasError">
   @if (label()) {
     <label class="label" [for]="inputId">
-      <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
+      <vt-text variant="label" [color]="isDisabled ? 'muted' : 'primary'" [content]="label() | vtTranslate" />
     </label>
   }
   <div class="field" cdkOverlayOrigin #origin="cdkOverlayOrigin" (click)="open()">

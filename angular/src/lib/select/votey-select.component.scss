@@ -50,7 +50,8 @@ vt-select {
         letter-spacing: var(--typo-field-letter-spacing);
         line-height: var(--typo-field-line-height);
 
-        .mat-mdc-select-placeholder {
+        .mat-mdc-select-placeholder,
+        .selection-placeholder {
           color: var(--color-text-placeholder);
         }
 

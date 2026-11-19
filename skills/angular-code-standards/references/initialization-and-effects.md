@@ -90,6 +90,8 @@ Weryfikuj szczegóły API i schedulingu w wersji używanej przez projekt:
 
 ## Zakres obserwacji i pomiary DOM
 
+Gdy opcjonalna nakładka zależy od geometrii DOM, wczytaj [reguły rejestracji listenerów i ponownego pomiaru](optional-overlays.md).
+
 - Przed dodaniem `MutationObserver`, `ResizeObserver` lub listenera określ właściciela, obszar obserwacji, zdarzenia wymagające reakcji i moment odłączenia. Nie rejestruj kolejnych obserwatorów na każdy render lub przebieg efektu bez cleanupu poprzednich.
 - Dla `MutationObserver` wybierz najwęższy stabilny kontener oraz potrzebne typy zmian i atrybuty. Obserwację całego dokumentu uzasadnij np. dynamicznym pojawianiem się kontenera poza dostępnym lokalnym rootem. Jeśli służy odkrywaniu elementów, ogranicz ją do zmian struktury; atrybuty obserwuj przy właściwych kontenerach. Uwzględnij wpływ przodków na widoczność i ponowne podłączenie obserwacji po wymianie kontenera.
 - Wyszukiwanie elementów oddziel od odczytu geometrii: nie skanuj całego dokumentu przy każdym resize, jeśli zbiór obserwowanych elementów nie mógł się zmienić.

@@ -11,7 +11,7 @@ description: >
   debugowania i wszelkich pytań o styl kodu w tym projekcie. Zasady są
   obowiązkowe, nie opcjonalne.
   Wczytaj jako pierwszy krok przed generowaniem jakiegokolwiek kodu.
-version: 1.28.1
+version: 1.30.3
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Angular
@@ -76,7 +76,7 @@ Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 - Koszt rozwiązania: gdy planowana zmiana mnoży requesty przez elementy kolekcji, pobiera duże zbiory dla prostej decyzji albo powtarza pobrania, oceń koszt i przedstaw tańsze podejście przed implementacją; rozważ rozszerzenie istniejącego kontraktu BE → [3.20](references/conditional-playbooks.md#320-koszt-pobierania-danych-pomocniczych). Nie wymaga to rutynowego sprawdzania repo BE.
 - SCSS: hierarchia zgodna z HTML → [1.1], nazwy klas wyłącznie w kebab-case → [1.3], tylko tokeny kolorów → [1.2].
 - Wymiary: nie składaj stałych px z przypadkowych tokenów; zachowaj prostą wartość, gdy brak odpowiedniego tokenu → [1.6].
-- Design System: najpierw publiczne API komponentu, override internali tylko lokalnie i z powodem → [1.4].
+- Design System: obowiązkowa weryfikacja publicznych wariantów i zakaz lokalnych nadpisań komponentów DS oraz projektu → [1.4].
 - HTML: brak stylów inline i klasy wyłącznie w kebab-case → [2.2], brak logiki wywoływanej podczas renderowania oraz audyt wywołań → [2.3], statyczne inputy bez `[]` → [2.1], długie wyrażenia w `@let` → [2.4], `@for` z stabilnym `track` → [2.7], poprawna kolejność atrybutów → [2.6].
 - TypeScript: brak `any` → [3.2], jawne typy publicznych i klasowych symboli → [3.2], brak porównań do powtarzalnych stringów kontraktowych → [playbook 3.16](references/conditional-playbooks.md#316-powtarzalne-stringi-kontraktowe), nowe komponenty obowiązkowo na Signals API → [3.5], typed forms dla nowych modali → [3.3], sensowny reaktywny state → [3.4], parent/container buduje view model → [3.6], przed validatorem lub checkerem potwierdź konieczność reguły i osiągalność błędnego stanu, dopiero potem wykonaj discovery → [playbook 3.17](references/conditional-playbooks.md#317-discovery-przed-lokalnymi-mechanizmami-sprawdzającymi), ocena wpływu na testy → [3.11].
 - Tłumaczenia: w każdym edytowanym pliku usuń zauważone, nietłumaczone polskie teksty UI; użyj wyłącznie istniejących prefiksów grup i wypisz użytkownikowi klucze z polskimi tekstami → [3.12].
@@ -91,6 +91,10 @@ Przed wygenerowaniem kodu sprawdź reguły naruszane najczęściej:
 
 ## Warunkowe playbooki i twarde bramki
 
+Gdy Modern Web Guidance jest dostępne i dotyczy zadania, przed wyborem
+implementacji przeczytaj [zasady pierwszeństwa](references/modern-web-guidance.md).
+Bez MWG kontynuuj według lokalnych standardów.
+
 Nie wczytuj [pełnych playbooków](references/conditional-playbooks.md) przy prostej zmianie SCSS albo typów, jeśli żaden z poniższych warunków nie zachodzi. Gdy warunek zachodzi, wczytaj wyłącznie wskazaną sekcję przed edycją.
 
 | Warunek | Twarda bramka pozostająca zawsze w mocy | Referencja |
@@ -103,6 +107,7 @@ Nie wczytuj [pełnych playbooków](references/conditional-playbooks.md) przy pro
 | Dodajesz nowy typ, tryb lub wariant do istniejącej funkcjonalności. | Odtwórz wspólny kontrakt i konieczne różnice; wskaż dotknięte stare warianty i ich weryfikację. | [3.18 Rozszerzanie o wariant](references/conditional-playbooks.md#318-rozszerzanie-istniejącej-funkcjonalności-o-wariant) |
 | Operacja czeka na request lub modal, a zasób, uprawnienia albo widok mogą się zmienić. | Zachowaj tożsamość zasobu i sprawdź aktualny kontekst przed mutacją oraz zastosowaniem wyniku. | [3.19 Kontekst operacji](references/conditional-playbooks.md#319-kontekst-operacji-asynchronicznych) |
 | Widok pobiera listy pomocnicze, opcje selektorów, szczegóły elementów kolekcji albo odświeża dane do walidacji lub akcji użytkownika. | Oceń lokalnie koszt requestów i zakres odświeżenia. Gdy rozwiązanie jest kosztowne, przedstaw koszt i tańszą alternatywę, w tym ewentualną zmianę kontraktu BE, przed jego wdrożeniem. | [3.20 Dane pomocnicze](references/conditional-playbooks.md#320-koszt-pobierania-danych-pomocniczych) |
+| Stylujesz warunkową klasę hosta, pozycjonujesz element przy hoście z `display: contents` albo piszesz izolowany test ze stubem pipe'a. | Sprawdź selektor hosta, kontener pozycjonowania lub jawny kontrakt stuba. | [Host, geometria kontenera i stub pipe'a](references/component-host-and-pipe-stubs.md) |
 
 ## Priorytet reguł przy konflikcie
 
@@ -179,21 +184,15 @@ Reguła obejmuje HTML, SCSS, klasy przekazywane przez inputy oraz klasy tworzone
 Nie zmieniaj nazw klas bibliotek zewnętrznych, których projekt nie kontroluje.
 Preferuj krótkie, semantyczne nazwy i hierarchię SCSS zamiast powtarzania pełnej nazwy komponentu.
 
-### [1.4] Design System i override budget
+### [1.4] Istniejące komponenty DS i projektu
 
-Najpierw używaj publicznego API komponentów Design System i istniejących wariantów.
-Nie odtwarzaj ręcznie komponentów Design System, jeśli DS ma gotowy komponent albo publiczne API pasujące do zadania. Dotyczy to zwłaszcza komponentów formularzowych, tabelarycznych, nawigacyjnych, overlayowych, ikon, linków i akcji.
+**Nigdy nie nadpisuj stylów istniejącego komponentu w miejscu użycia.** Reguła dotyczy każdego widoku i każdego stanu komponentu, również przy wymaganiu zgodności z Figmą.
 
-Override internali Design System (`::ng-deep`, `.mdc-*`, prywatne klasy DS, style zagnieżdżone w komponentach bibliotek) traktuj jako ostatnią opcję.
-Jeśli override jest konieczny:
+1. Sprawdź publiczne warianty i inputy w wersji używanej przez projekt. Porównaj z makietą właściwości, których dotyczy zmiana. Użyj gotowego wariantu, jeśli spełnia wymagania.
+2. Jeśli odpowiedniego wariantu brakuje, zgłoś użytkownikowi nazwę komponentu, sprawdzone warianty i konkretną różnicę względem Figmy. Wstrzymaj dopasowanie tego elementu do decyzji z designem.
+3. Nie odtwarzaj komponentu lokalnie ani nie obchodź tej reguły przez style hosta lub potomków, wrapper, prywatne selektory, `::ng-deep`, `!important`, style inline, podmianę tokenów ani własną klasę przekazaną przez `customClass`. Dozwolony jest udokumentowany wariant udostępniony przez takie API. Layout rodzica może określać położenie komponentów i odstępy między nimi.
 
-- ogranicz selector do lokalnego wrappera komponentu,
-- zmieniaj najmniejszą możliwą liczbę właściwości,
-- nie zmieniaj globalnego zachowania komponentu DS,
-- nie nadpisuj rozmiaru, paddingu albo tła komponentu DS, jeśli ten sam efekt da się osiągnąć przez input, wariant, `customClass` albo istniejący token,
-- po zmianie sprawdź przynajmniej stan default, hover, disabled i selected, jeśli komponent te stany posiada.
-
-Nie używaj `!important` poza wąskim override'em internala biblioteki, gdy publiczne API komponentu nie pozwala osiągnąć wymaganego efektu.
+Przy weryfikacji sprawdź stany objęte zmianą, w tym default, hover, disabled i selected, jeśli komponent je obsługuje.
 
 ### [1.5] Zmienne pomocnicze: SCSS przed CSS
 
@@ -327,6 +326,10 @@ Nie używaj `track $index`, jeśli lista może być filtrowana, sortowana, prze�
 
 Używaj `@empty`, gdy widok ma jawny stan pustej listy.
 
+### [2.8] Konflikt szablonu przy zmianie selektorów testowych
+
+Jeśli jedna strona konfliktu zmienia tylko selektory testowe (np. `data-cy`), a druga przebudowuje kontrolkę, przed rozwiązaniem konfliktu przeczytaj [zasady przenoszenia selektorów testowych](references/template-conflicts-test-selectors.md).
+
 ---
 
 ## 3. TypeScript
@@ -389,6 +392,12 @@ Nowe modale formularzowe muszą mieć typed form:
 
 ### [3.4] Reaktywny state
 
+Dobieraj reaktywność do wymaganego zachowania w czasie życia widoku. Przed dodaniem `effect()`, subskrypcji albo konwersji `toSignal()` / `toObservable()` ustal, jaka zmiana źródła ma powodować jaką aktualizację UI lub operację. Sama dostępność reaktywnego API ani możliwość zmiany wartości nie uzasadniają obserwacji.
+
+Jeśli wartość jest potrzebna tylko podczas inicjalizacji albo akcji użytkownika, odczytaj istniejący stan w tym momencie. Przykład: wybór prezentacji menu przy jego otwarciu może korzystać z aktualnej właściwości serwisu, gdy produkt nie wymaga przełączania już otwartego menu po zmianie urządzenia. Nie dodawaj publicznego sygnału ani efektu wyłącznie na potrzeby takiego jednorazowego odczytu.
+
+Zachowaj reaktywność, gdy zmiana rzeczywiście powinna aktualizować aktywny widok, np. przy zmianie edytowanego zasobu, uprawnień, danych lub dostępnej przestrzeni dla otwartego panelu. Nie zastępuj takiej zależności jednorazowym odczytem. Scenariusz odtwarzany w DevTools oceń względem wymagań produktu i rzeczywistych zmian środowiska; sam sposób odtworzenia nie rozstrzyga, czy obserwacja jest potrzebna.
+
 Dobieraj strukturę stanu do rzeczywistej liczby i tożsamości zasobów. Dla kilku stałych źródeł danych preferuj nazwane sygnały lub strumienie; mapę statusów stosuj dla kolekcji zasobów identyfikowanych kluczem, gdy widok rzeczywiście obsługuje wiele takich zasobów. Sama możliwość wystąpienia różnych urządzeń albo wariantów nie uzasadnia mapy, jeżeli aktywny widok korzysta z jednego z nich. Odczyt istniejącego sygnału serwisu nie wymaga tworzenia i synchronizowania drugiej kopii stanu. Stan zbiorczy wyliczaj przez `computed()` albo pipeline RxJS.
 
 Preferuj:
@@ -441,6 +450,22 @@ Zostań przy constructor injection, jeśli zachodzi którykolwiek z poniższych 
 Edge case: jeśli legacy komponent używa constructor injection, nie migruj go do `inject()` tylko dlatego, że dotykasz jednego inputu, stylu albo małej metody.
 
 ### [3.6] Pattern discovery i odpowiedzialności komponentów
+
+Używaj komponentu docelowego bezpośrednio w szablonie rodzica. Gdy komponent
+pośredniczący jedynie przekazuje inputy i outputy, usuń tę warstwę po
+sprawdzeniu konsumentów i zachowaniu ich kontraktu.
+
+Jeśli pośrednik wykonuje niewielką transformację danych, ustawia domyślne
+wartości lub obsługuje pojedynczą akcję, najpierw sprawdź publiczne API
+komponentu docelowego. Przygotuj dane lub obsłuż zdarzenie w rodzicu.
+Powtarzalną konfigurację lub transformację współdziel przez typowaną stałą
+albo funkcję. Dobierz dyrektywę, jeśli współdzielone zachowanie dotyczy
+istniejącego elementu i naturalnie pasuje do jej roli.
+
+Wydziel osobny komponent, gdy ma własną odpowiedzialność, np. zarządza stanem
+i cyklem życia, składa kilka elementów w spójną kontrolkę albo utrzymuje
+stabilny kontrakt wymagany przez wielu konsumentów. Uzasadnij tę odpowiedzialność
+przed wprowadzeniem dodatkowej warstwy.
 
 Przed dodaniem nowego komponentu w istniejącym module sprawdź lokalne wzorce:
 

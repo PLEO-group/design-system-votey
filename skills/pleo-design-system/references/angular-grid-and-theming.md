@@ -23,11 +23,11 @@ Wybierz dokładnie jeden adapter zgodny z `responsive.mode`:
 - `device-contract` → `device-grid-contract.example.scss`; `data-device` wybiera breakpoint referencyjny z manifestu, a gutter/margin/margin-extra są płynnie przeliczane na `vw`; szerokość kolumny wynika z szerokości viewportu pomniejszonej o marginesy i wszystkie guttery;
 - `css-media` → `breakpoint-grid-contract.example.scss`; adapter przechodzi po uporządkowanych breakpointach i emituje media query dla każdego punktu, dla którego istnieją tokeny danego wariantu.
 
-Nie mieszaj adapterów. Nazwy `deviceTypes` oznaczają rodzaj urządzenia w pierwszym wariancie, a profile viewportu w drugim. Skopiuj `grid.provider.example.ts`, ustaw `data-grid-type` na tym samym hoście co kontrakt i zarejestruj `provideDesignSystemGrid({ variant })` w konsumencie. Nazwa wariantu musi odpowiadać tokenom.
+Nie mieszaj adapterów. Nazwy `deviceTypes` oznaczają rodzaj urządzenia w pierwszym wariancie, a profile viewportu w drugim. Skopiuj `grid.provider.example.ts` i zarejestruj `provideDesignSystemGrid({ variant, target })` w konsumencie. Nazwa wariantu musi odpowiadać tokenom, a `target` musi wskazywać host używany przez adapter CSS. Provider gridu używa `provideAppInitializer`, aby ustawić `data-grid-type` na tym hoście podczas startu aplikacji w przeglądarce.
 
 Preferuj CSS Grid i `grid-column` zamiast ręcznego obliczania szerokości kolumn. Komponenty DS mogą używać `--grid-column-gap` i `--grid-margin`, ale nie mogą zawierać projektowych wartości liczbowych ani importować konfiguracji aplikacji.
 
-Testy gridu muszą pokryć każdy wariant i tryb, obecność wymaganych tokenów, liczbę kolumn oraz brak jednoczesnego adaptera device/media. Preview powinno używać `grid-overlay.component.example.ts` albo równoważnego overlayu dla każdej konfiguracji.
+Testy gridu muszą pokryć każdy wariant i tryb, obecność wymaganych tokenów, liczbę kolumn oraz brak jednoczesnego adaptera device/media. W integracji konsumenta sprawdź, czy po starcie `data-grid-type` ma skonfigurowaną wartość na hoście używanym przez adapter CSS. Preview powinno używać `grid-overlay.component.example.ts` albo równoważnego overlayu dla każdej konfiguracji.
 
 ## Theming
 
@@ -43,6 +43,15 @@ Theming Angular jest jednym firmowym kontraktem:
 
 Skopiuj `theme.service.example.ts`, `theme.service.example.spec.ts`, `theme-contract.example.scss` oraz fragment `theme-host.example.html`. Wyeksportuj service przez publiczne Angular API. W konsumencie wstrzyknij service i wywołaj `loadTheme()` dokładnie raz podczas startu aplikacji; komponent przełącznika może użyć zwróconego boolean jako stanu początkowego.
 
-Nie dodawaj providera inicjalizującego, `APP_INITIALIZER`, `provideAppInitializer`, `localStorage`, hosta `html`, `prefers-color-scheme` ani osobnego skryptu bootstrapującego. Są to inne warianty architektoniczne, a nie firmowy Angular default. Nowy wariant może wejść do bazy scenariuszy dopiero po jawnej decyzji dewelopera skonsultowanej z szefem.
+Do inicjalizacji motywu używaj jawnego `loadTheme()` bez providera inicjalizującego, `APP_INITIALIZER` ani `provideAppInitializer`. Ta reguła dotyczy wyłącznie motywu. Grid używa własnego inicjalizatora zgodnie z sekcją [Grid](#grid).
+
+Kontrakt motywu wyklucza `localStorage`, hosta `html`, `prefers-color-scheme` i osobny skrypt bootstrapujący motyw. Nowy wariant może wejść do bazy scenariuszy dopiero po jawnej decyzji dewelopera skonsultowanej z szefem.
+
+Bez Modern Web Guidance stosuj powyższy kontrakt. Gdy skill jest dostępny,
+zalecenie dotyczące motywu systemowego, trwałości wyboru
+lub inicjalizacji przed pierwszym renderem wymaga decyzji o zmianie firmowego
+kontraktu, jeśli zmienia zachowanie opisane powyżej. Zobacz
+[zasady pierwszeństwa](../../angular-code-standards/references/modern-web-guidance.md),
+jeśli referencja jest dostępna.
 
 Testy muszą pokryć light, dark, zapis i odczyt sesji, brak zapisanej preferencji, fallback bez View Transitions oraz ścieżkę z View Transitions. Weryfikuj identyczny zestaw ścieżek semantic tokenów między modes: każdy publiczny token zależny od theme musi istnieć w obu trybach. Komponent nie może odwoływać się bezpośrednio do core colors, jeśli polityka manifestu dopuszcza wyłącznie semantic colors.

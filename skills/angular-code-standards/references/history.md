@@ -2,6 +2,10 @@
 
 Wczytuj ten plik tylko przy audycie wersji, analizie regresji zachowania skilla albo przygotowaniu publikacji.
 
+## 1.29.1
+
+Doprecyzowano dobór reaktywności według wymaganej reakcji aktywnego widoku. Odczyt podczas inicjalizacji lub akcji użytkownika korzysta z istniejącego stanu bez dodatkowej obserwacji. Zachowano reaktywne aktualizacje wymagane przez zmiany danych, uprawnień i geometrii otwartego panelu oraz ocenę scenariuszy DevTools według wymagań produktu.
+
 ## 1.28.0
 
 Dodano zasady ograniczania zakresu obserwatorów DOM, rozdzielania odkrywania elementów od pomiarów, scalania zgłoszeń przez RAF, współdzielenia odczytów i odrzucania niezmienionej geometrii przed wejściem do NgZone. Zachowano wyjątki dla wymagań synchronicznych i aplikacji zoneless.

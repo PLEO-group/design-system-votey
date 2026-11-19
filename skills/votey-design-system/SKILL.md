@@ -6,7 +6,7 @@ description: >
   tokenów, SVG, responsywności, komponentów, Storybooka i integracji wyłącznie
   przez publiczne entry pointy `./angular`, `./ds-device-mixins` oraz
   `./dist/assets/react`.
-version: 1.20.2
+version: 1.20.3
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -55,6 +55,7 @@ i publiczne API. Katalog źródłowy nie jest dowodem eksportu.
 | Użycie, migracja, debugowanie lub zmiana `vt-table` w Angularze | [angular-table.md](references/angular-table.md); pomiń dla innych komponentów i React/Next |
 | Migracja istniejącego widoku Angular/CRM z legacy UI do Votey albo upgrade lokalnego konsumenta | [angular-consumer-migration.md](references/angular-consumer-migration.md), [angular.md](references/angular.md) |
 | Storybook, dokumentacja lub visual smoke test | [preview.md](references/preview.md) |
+| Użycie lub zmiana `vt-help-popover` albo `vt-popover` w Angularze | [angular-popover.md](references/angular-popover.md) |
 | Instalacja, upgrade lub smoke test aplikacji | [consumers.md](references/consumers.md) oraz referencję frameworka |
 | `design-system-votey` albo konsument Angular | [angular.md](references/angular.md) |
 | Konsument React/Next | [react.md](references/react.md) |

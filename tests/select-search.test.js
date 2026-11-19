@@ -2,6 +2,36 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { setTimeout: delay } = require("node:timers/promises");
 
+test("multi-select with chips keeps the placeholder after choosing an option", async () => {
+  const env = await import("./helpers/angular-dom.mjs");
+  env.TestBed.configureTestingModule({
+    imports: [env.ds.VoteySelectComponent],
+  });
+  const fixture = env.TestBed.createComponent(env.ds.VoteySelectComponent);
+  const control = new env.forms.FormControl([]);
+
+  try {
+    fixture.componentRef.setInput("options", [{ label: "First", value: "first" }]);
+    fixture.componentRef.setInput("control", control);
+    fixture.componentRef.setInput("bindValue", "value");
+    fixture.componentRef.setInput("multiple", true);
+    fixture.componentRef.setInput("showSelectionChips", true);
+    fixture.componentRef.setInput("placeholder", "Choose options");
+    await env.settle(fixture);
+
+    assert.equal(env.by(fixture, ".mat-mdc-select-value").textContent.trim(), "Choose options");
+
+    control.setValue(["first"]);
+    await env.settle(fixture);
+
+    assert.equal(env.by(fixture, ".mat-mdc-select-value").textContent.trim(), "Choose options");
+    assert.equal(env.by(fixture, "vt-chip").textContent.trim(), "First");
+  } finally {
+    fixture.destroy();
+    env.TestBed.resetTestingModule();
+  }
+});
+
 async function createSelect() {
   const env = await import("./helpers/angular-dom.mjs");
   env.TestBed.configureTestingModule({

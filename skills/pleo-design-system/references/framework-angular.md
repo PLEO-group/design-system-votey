@@ -11,7 +11,7 @@
 - Runtime detector klasyfikuje rodzaj urządzenia na podstawie informacji o urządzeniu/user agenta, a nie szerokości viewportu. Zmiana rozmiaru okna może aktualizować orientację i jednostkę wysokości, ale nie może przeklasyfikować desktopu na urządzenie mobilne.
 - Dla wariantu z `assets/angular/device-detector.example.ts` dodaj `node-device-detector` do zależności paczki i testy klasyfikacji smartphone/phablet/feature phone, tablet, dotykowy Macintosh oraz desktop. Zapewnij bezpieczne zachowanie SSR.
 - Gdy `responsive.grid.enabled: true`, przeczytaj `angular-grid-and-theming.md`, wygeneruj grid tokens i responsive SCSS config przez Style Dictionary, dodaj angularowy provider wariantu i wybierz wyłącznie adapter device albo breakpoint zgodny z `responsive.mode`.
-- Dla light/dark runtime użyj `ThemeService` i kontraktu z `assets/angular/theming/`: `body[data-theme]`, `sessionStorage["theme"]`, początkowy light i jawne `loadTheme()`. Nie dodawaj providera ani nie duplikuj semantic values w ręcznym SCSS.
+- Dla light/dark runtime użyj `ThemeService` i kontraktu z `assets/angular/theming/`: `body[data-theme]`, `sessionStorage["theme"]`, początkowy light i jawne `loadTheme()`. Inicjalizacja motywu odbywa się bez providera. Grid rejestruj przez jego własny provider zgodnie z [kontraktem gridu](angular-grid-and-theming.md#grid). Nie duplikuj semantic values w ręcznym SCSS.
 - Dla ikon i ilustracji publikuj typowane nazwy, standalone icon component/provider registry i kontrakt kopiowania raw SVG.
 - Importuj wpisy registry wyłącznie z generowanego pliku wskazanego przez `assets.generatedTypesPath`; provider nie może przyjmować ręcznie utrzymywanej listy pojedynczych SVG.
 - Używaj selectorów z prefiksem zadeklarowanym w manifeście.

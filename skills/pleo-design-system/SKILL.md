@@ -1,7 +1,7 @@
 ---
 name: pleo-design-system
 description: 'Orkiestruje audyt całego design systemu, implementację lub remediację DS, audyt integracji konsumenta oraz wprowadzenie istniejącej paczki do aplikacji; udostępnia też wersjonowane standardy skillom konkretnych DS. Uruchamiaj wyłącznie, gdy użytkownik jawnie prosi o taką pracę nad design systemem, jawnie wymienia pleo-design-system z nazwy albo aktywny skill konkretnego DS bezpośrednio kieruje po dokładny kontrakt firmowy. Nie jest domyślnym właścicielem bieżącego utrzymania ani pojedynczych zmian implementacyjnych.'
-version: 1.2.1
+version: 1.2.2
 author: n.koktysz@pleodigital.com
 scope: SHARED
 category: Frontend
@@ -227,6 +227,7 @@ Zastosuj kryteria końcowe właściwe dla trybu z `references/workflow-and-disco
 | Potrzeba | Wczytaj |
 |---|---|
 | Pełny standard i antywzorce | `references/company-standard.md` |
+| Rozbieżność z dostępnym Modern Web Guidance | [Zasady pierwszeństwa](../angular-code-standards/references/modern-web-guidance.md), jeśli referencja jest dostępna |
 | Osobne repo, współlokowana paczka, mini-DS | `references/repository-topology-and-boundaries.md` |
 | Pytania, akceptacje, zakończenie | `references/workflow-and-discovery.md` |
 | Tryby pracy i artefakty `.tmp` | `references/work-artifacts.md` |

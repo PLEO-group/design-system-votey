@@ -6,7 +6,7 @@
   [class.filled]="hasFile()"
 >
   @if (label()) {
-  <vt-text variant="label" color="primary" [content]="label() | vtTranslate" />
+  <vt-text variant="label" [color]="effectiveDisabled() ? 'muted' : 'primary'" [content]="label() | vtTranslate" />
   } @if (isDropzone()) {
   <div
     class="dropzone-field"

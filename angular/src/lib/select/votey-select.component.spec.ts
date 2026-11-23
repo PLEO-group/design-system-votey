@@ -2,6 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testin
 import { FormControl, Validators } from "@angular/forms";
 import { MatSelect } from "@angular/material/select";
 import { By } from "@angular/platform-browser";
+import { VoteyTextComponent } from "../text/votey-text.component";
 import { VoteySelectComponent, type VtOption } from "./votey-select.component";
 
 describe("VoteySelectComponent", () => {
@@ -19,6 +20,19 @@ describe("VoteySelectComponent", () => {
       { label: "FIRST", value: "first" },
       { label: "SECOND", value: "second" },
     ]);
+  });
+
+  it("should use the disabled field background and muted label when disabled", (): void => {
+    const host: HTMLElement = fixture.nativeElement;
+    host.style.setProperty("--color-bg-surface-tint", "rgb(234, 241, 250)");
+    fixture.componentRef.setInput("label", "LANGUAGE");
+    fixture.componentRef.setInput("disabled", true);
+    fixture.detectChanges();
+
+    const field: HTMLElement = fixture.debugElement.query(By.css(".field")).nativeElement;
+    const label: VoteyTextComponent = fixture.debugElement.query(By.css("label vt-text")).componentInstance;
+    expect(getComputedStyle(field).backgroundColor).toBe("rgb(234, 241, 250)");
+    expect(label.color()).toBe("muted");
   });
 
   for (const multiple of [false, true]) {
